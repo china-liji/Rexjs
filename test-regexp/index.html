@@ -1,0 +1,34 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>index.html</title>
+	<base href="../ "/>
+</head>
+<body>
+	<div></div>
+	<script src="rex-core.js"></script>
+	<script src="rex-regexp.js"></script>
+	
+	<script>
+		new function(){
+			var length = 100//000000
+			var regx = /b{10}|[\s\S]{10}/g, text = "a".repeat(length)
+			var i = 0;
+			return;
+			console.time("ss")
+			
+			window.dd= text.match(regx)
+			//while(regx.exec(text))i++;
+			
+			console.timeEnd("ss")
+			console.log(i === length)
+			
+			
+			;[
+				
+			]
+		}();
+	</script>
+</body>
+</html>
