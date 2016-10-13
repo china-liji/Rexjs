@@ -1385,7 +1385,6 @@ this.BinaryExpression = function(){
 
 	BinaryExpression.props({
 		extractTo: function(){
-			debugger
 			return ""
 		}
 		/**
