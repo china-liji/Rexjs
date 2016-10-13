@@ -1,5 +1,4 @@
-1
-//window.a / 99// + window.b
+a / window.b / window.c
 /*
 (d = 1, e = 3, f = 9;)
 !!!window.a + 99 + window.b

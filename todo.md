@@ -114,6 +114,34 @@ async
 
 	- 优先级较后
 
+对象属性的连续简写方式 - 2016.10.12
+	- 如：
+		源码：
+			function getElements(){
+				return jQuery(".class") <= css("color", "red"), timeStr = Date.now(), ["+1"] = 1, attr("data-key", 0);
+			};
+
+		解析后（大概意思如下）：
+			function getElements(){
+				var $els = jQuery(".class");
+
+				$els.("color", "red");
+
+				$els.timeStr = Date.now();
+				$els["+1"] = 1;
+
+				$els.attr("data-key", 0);
+				return $els;
+			};
+		
+	- 原因：
+		1. 有时候，一个函数，我就想让读代码和维护代码的人一看，就知道我要返回的是什么，而不是我中间做了哪些无关紧要的事情，
+		简单的说，让他人关注的是结果，而不是过程
+		
+		2. 如果你需要别人关注过程，那么可以不这么写，可以采取解析后的代码方式写，以上只不过提供了一种选择
+
+	- 优先级较后
+
 --------
 已完成功能
 --------

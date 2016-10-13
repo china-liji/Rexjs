@@ -674,7 +674,7 @@ this.List = function(Array, Object, toArray){
 // 语法标签相关
 void function(){
 	
-this.SyntaxTag = function(TYPE_UNEXPECTED, parseInt, empty){
+this.SyntaxTag = function(TYPE_UNEXPECTED, parseInt){
 	/**
 	 * 语法标签
 	 * @param {Number} _type - 标签类型
@@ -728,16 +728,14 @@ this.SyntaxTag = function(TYPE_UNEXPECTED, parseInt, empty){
 		unexpected: function(){
 			return (this.type & TYPE_UNEXPECTED) === TYPE_UNEXPECTED;
 		},
-		visitor: empty
+		visitor: function(){}
 	});
 
 	return SyntaxTag;
 }(
 	// TYPE_UNEXPECTED
 	null,
-	parseInt,
-	// empty
-	Function.prototype
+	parseInt
 );
 
 this.WhitespaceTag = function(SyntaxTag){
@@ -894,22 +892,6 @@ this.SyntaxTags = function(List, sort, distinct){
 		
 		// 对标签进行排序
 		tags.sort(function(tag1, tag2){
-			// 如果 tag1 的排序更大
-			if(
-				tag1.order - tag2.order > 0
-			){
-				// 将 tag1 插入到 tag2 前面
-				return -1;
-			}
-			
-			// 如果 tag2 的排序更大
-			if(
-				tag1.order - tag2.order < 0
-			){
-				// 将 tag2 插入到 tag1 前面
-				return 1;
-			}
-			
 			// 如果 tag1 是可捕获的
 			if(
 				(tag1.type & TYPE_MATCHABLE) === TYPE_MATCHABLE
@@ -929,28 +911,48 @@ this.SyntaxTags = function(List, sort, distinct){
 				// 将 tag2 插入到 tag1 前面
 				return 1;
 			}
-			
-			// 如果 tag1 是可能被误解的
-			if(
-				(tag1.type & TYPE_MISTAKABLE) === TYPE_MISTAKABLE
-			){
-				// 如果 tag2 不是可能被误解的
+			// 如果 tag1、tag2 都不是可捕获的
+			else {
+				// 如果 tag1 是可能被误解的
 				if(
-					(tag2.type & TYPE_MISTAKABLE) !== TYPE_MISTAKABLE
+					(tag1.type & TYPE_MISTAKABLE) === TYPE_MISTAKABLE
 				){
-					// 将 tag1 插入到 tag2 前面
-					return -1;
+					// 如果 tag2 不是可能被误解的
+					if(
+						(tag2.type & TYPE_MISTAKABLE) !== TYPE_MISTAKABLE
+					){
+						// 将 tag1 插入到 tag2 前面
+						return -1;
+					}
+				}
+				// 如果 tag2 是可能被误解的，而 tag1 不是
+				else if(
+					(tag2.type & TYPE_MISTAKABLE) === TYPE_MISTAKABLE
+				){
+					// 将 tag2 插入到 tag1 前面
+					return 1;
 				}
 			}
-			// 如果 tag2 是可能被误解的，而 tag1 不是
-			else if(
-				(tag2.type & TYPE_MISTAKABLE) === TYPE_MISTAKABLE
+
+			// 进入这里，要不两个都是可捕获，要不两个都是可误解的
+
+			// 如果 tag1 的排序更大
+			if(
+				tag1.order - tag2.order > 0
+			){
+				// 将 tag1 插入到 tag2 前面
+				return -1;
+			}
+			
+			// 如果 tag2 的排序更大
+			if(
+				tag1.order - tag2.order < 0
 			){
 				// 将 tag2 插入到 tag1 前面
 				return 1;
 			}
 			
-			// 默认，不改变排序，即 tag1 和 tag2 都是不可捕获且不可能被误解的。ps：不能使用 0，0 会使 tag1 排到 tag2 前面
+			// 默认，即，order 相同，则不改变排序。ps：不能使用 0，0 会使 tag1 排到 tag2 前面
 			return copy.indexOf(tag1) - copy.indexOf(tag2);
 		});
 	},
@@ -1410,7 +1412,7 @@ this.Context = function(){
 
 
 // 语法解析转换相关
-void function(SyntaxTag, empty){
+void function(SyntaxTag){
 
 this.Syntax = function(){
 	/**
@@ -1420,7 +1422,7 @@ this.Syntax = function(){
 	Syntax = new Rexjs(Syntax);
 	
 	Syntax.props({
-		extratTo: empty,
+		extratTo: function(){},
 		target: null
 	});
 	
@@ -1470,138 +1472,6 @@ this.Expression = function(Syntax, parseInt){
 	parseInt
 );
 
-this.ListExpression = function(Expression){
-	/**
-	 * 列表表达式
-	 * @param {String} join - 表达式连接符
-	 */
-	function ListExpression(join){
-		Expression.call(this, null);
-
-		this.join = join;
-	};
-	ListExpression = new Rexjs(ListExpression, Expression);
-	
-	ListExpression.props({
-		/**
-		 * 添加表达式
-		 * @param {Expression} expression - 需要添加的表达式
-		 */
-		add: function(expression){
-			this[this.length] = expression;
-			
-			this.length++;
-		},
-		/**
-		 * 提取表达式文本内容
-		 * @param {ContentBuilder} contentBuilder - 内容生成器
-		 */
-		extractTo: function(contentBuilder){
-			var join = this.join;
-
-			this[0].extractTo(contentBuilder);
-
-			// 遍历项
-			for(
-				var i = 1, j = this.length;i < j;i++
-			){
-				// 添加表达式连接符
-				contentBuilder.appendString(join);
-
-				// 提取项表达式
-				this[i].extractTo(contentBuilder);
-			}
-		},
-		join: "",
-		length: 0
-	});
-	
-	return ListExpression;
-}(
-	this.Expression
-);
-
-this.EmptyExpression = function(Expression){
-	/**
-	 * 空表达式
-	 * @param {Context} context - 语法标签上下文
-	 */
-	function EmptyExpression(context){
-		Expression.call(this, context);
-	};
-	EmptyExpression = new Rexjs(EmptyExpression, Expression);
-	
-	EmptyExpression.props({
-		/**
-		 * 提取文本内容，空函数，不做任何处理
-		 */
-		extractTo: empty
-	});
-	
-	return EmptyExpression;
-}(
-	this.Expression
-);
-
-this.EmptyStatementExpression = function(EmptyExpression, STATE_STATEMENT_ENDED){
-	/**
-	 * 空语句表达式
-	 * @param {Context} context - 语法标签上下文
-	 */
-	function EmptyStatementExpression(context){
-		EmptyExpression.call(this, context);
-	};
-	EmptyStatementExpression = new Rexjs(EmptyStatementExpression, EmptyExpression);
-	
-	EmptyStatementExpression.props({
-		state: STATE_STATEMENT_ENDED
-	});
-	
-	return EmptyStatementExpression;
-}(
-	this.EmptyExpression,
-	this.EmptyExpression.STATE_STATEMENT_ENDED
-);
-
-this.PartnerExpression = function(Expression, end, endWith){
-	/**
-	 * 匹配组表达式
-	 * @param {Context} open - 起始标签上下文
-	 */
-	function PartnerExpression(open){
-		Expression.call(this, open);
-		
-		this.open = open;
-	};
-	PartnerExpression = new Rexjs(PartnerExpression, Expression);
-	
-	PartnerExpression.props({
-		close: null,
-		/**
-		 * 提取文本内容
-		 * @param {ContentBuilder} contentBuilder - 内容生成器
-		 */
-		extractTo: function(contentBuilder){
-			// 追加起始标签内容
-			contentBuilder.appendContext(this.open);
-			
-			// 追加中间内容
-			this.inner.extractTo(contentBuilder);
-			
-			// 追加结束标签内容
-			contentBuilder.appendContext(this.close);
-		},
-		inner: null,
-		open: null
-	});
-	
-	return PartnerExpression;
-}(
-	this.Expression,
-	this.Expression.prototype.end,
-	this.Expression.prototype.endWith
-);
-
 this.Statement = function(Syntax, TYPE_MISTAKABLE, CLASS_STATEMENT, STATE_STATEMENT_ENDABLE, parseInt, getCatchedTag){
 	/**
 	 * 语句
@@ -1631,9 +1501,7 @@ this.Statement = function(Syntax, TYPE_MISTAKABLE, CLASS_STATEMENT, STATE_STATEM
 		 * @param {Context} context - 语法标签上下文
 		 */
 		catch: function(parser, context){
-			var target = this.target;
-			
-			return target ? target.try(parser, context) : null;
+			return null;
 		},
 		expression: null,
 		/**
@@ -1703,14 +1571,12 @@ this.Statement = function(Syntax, TYPE_MISTAKABLE, CLASS_STATEMENT, STATE_STATEM
 						return t;
 					}
 
-					var statements = this.statements;
-
 					// 如果表达式还可以结束
 					if(
-						(statements.statement.expression.state & STATE_STATEMENT_ENDABLE) === STATE_STATEMENT_ENDABLE
+						(this.expression.state & STATE_STATEMENT_ENDABLE) === STATE_STATEMENT_ENDABLE
 					){
 						// 创建新语句
-						statements.newStatement();
+						this.statements.newStatement();
 						return tag;
 					}
 
@@ -1877,9 +1743,171 @@ this.Statements = function(Syntax, Statement, STATE_STATEMENT_ENDED){
 
 }.call(
 	this,
-	this.SyntaxTag,
-	// empty
-	Function.prototype
+	this.SyntaxTag
+);
+
+
+// 其他表达式
+void function(Expression){
+
+this.ListExpression = function(){
+	/**
+	 * 列表表达式
+	 * @param {String} join - 表达式连接符
+	 */
+	function ListExpression(join){
+		Expression.call(this, null);
+
+		this.join = join;
+	};
+	ListExpression = new Rexjs(ListExpression, Expression);
+	
+	ListExpression.props({
+		/**
+		 * 添加表达式
+		 * @param {Expression} expression - 需要添加的表达式
+		 */
+		add: function(expression){
+			this[this.length] = expression;
+			
+			this.length++;
+		},
+		/**
+		 * 提取表达式文本内容
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 */
+		extractTo: function(contentBuilder){
+			var join = this.join;
+
+			this[0].extractTo(contentBuilder);
+
+			// 遍历项
+			for(
+				var i = 1, j = this.length;i < j;i++
+			){
+				// 添加表达式连接符
+				contentBuilder.appendString(join);
+
+				// 提取项表达式
+				this[i].extractTo(contentBuilder);
+			}
+		},
+		join: "",
+		length: 0
+	});
+	
+	return ListExpression;
+}();
+
+this.EmptyExpression = function(){
+	/**
+	 * 空表达式
+	 * @param {Context} context - 语法标签上下文
+	 */
+	function EmptyExpression(context){
+		Expression.call(this, context);
+	};
+	EmptyExpression = new Rexjs(EmptyExpression, Expression);
+	
+	EmptyExpression.props({
+		/**
+		 * 提取文本内容，空函数，不做任何处理
+		 */
+		extractTo: function(){}
+	});
+	
+	return EmptyExpression;
+}();
+
+this.EmptyStatementExpression = function(EmptyExpression, STATE_STATEMENT_ENDED){
+	/**
+	 * 空语句表达式
+	 * @param {Context} context - 语法标签上下文
+	 */
+	function EmptyStatementExpression(context){
+		EmptyExpression.call(this, context);
+	};
+	EmptyStatementExpression = new Rexjs(EmptyStatementExpression, EmptyExpression);
+	
+	EmptyStatementExpression.props({
+		state: STATE_STATEMENT_ENDED
+	});
+	
+	return EmptyStatementExpression;
+}(
+	this.EmptyExpression,
+	this.EmptyExpression.STATE_STATEMENT_ENDED
+);
+
+this.PartnerExpression = function(end, endWith){
+	/**
+	 * 匹配组表达式
+	 * @param {Context} open - 起始标签上下文
+	 */
+	function PartnerExpression(open){
+		Expression.call(this, open);
+		
+		this.open = open;
+	};
+	PartnerExpression = new Rexjs(PartnerExpression, Expression);
+	
+	PartnerExpression.props({
+		close: null,
+		/**
+		 * 提取文本内容
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 */
+		extractTo: function(contentBuilder){
+			// 追加起始标签内容
+			contentBuilder.appendContext(this.open);
+			
+			// 追加中间内容
+			this.inner.extractTo(contentBuilder);
+			
+			// 追加结束标签内容
+			contentBuilder.appendContext(this.close);
+		},
+		inner: null,
+		open: null
+	});
+	
+	return PartnerExpression;
+}(
+	Expression.prototype.end,
+	Expression.prototype.endWith
+);
+
+this.LeftHandSideExpression = function(){
+	/**
+	 * 左侧表达式
+	 * @param {Expression} left - 左侧表达式
+	 * @param {Context} context - 语法标签上下文
+	 */
+	function LeftHandSideExpression(left, context){
+		Expression.call(this, context);
+
+		this.left = left;
+	};
+	LeftHandSideExpression = new Rexjs(LeftHandSideExpression, Expression);
+
+	LeftHandSideExpression.props({
+		left: null,
+		/**
+		 * 提取文本内容
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 */
+		extractTo: function(contentBuilder){
+			this.left.extractTo(contentBuilder);
+			contentBuilder.appendContext(this.context);
+		}
+	});
+
+	return LeftHandSideExpression;
+}();
+
+}.call(
+	this,
+	this.Expression
 );
 
 

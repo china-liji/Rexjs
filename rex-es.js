@@ -1,7 +1,7 @@
 new function(
 	Rexjs,
 	// 表达式相关
-	Expression, ListExpression, EmptyExpression, PartnerExpression,
+	Expression, ListExpression, EmptyExpression, PartnerExpression, LeftHandSideExpression,
 	// ECMAScript 解析器相关
 	ECMAScriptStatement, ECMAScriptStatements,
 	// 标签相关类
@@ -22,7 +22,7 @@ new function(
 // 语法解析转换相关
 void function(Statement, ContentBuilder){
 	
-this.ECMAScriptStatement = ECMAScriptStatement = function(parseInt){
+this.ECMAScriptStatement = ECMAScriptStatement = function(){
 	/**
 	 * ECMAScript 语句
 	 * @param {Statements} statements - 该语句将要所处的语句块
@@ -38,7 +38,7 @@ this.ECMAScriptStatement = ECMAScriptStatement = function(parseInt){
 		 * @param {SyntaxParser} parser - 语法解析器
 		 * @param {Context} context - 语法标签上下文
 		 */
-		catch: function(parser, context){
+		catch: function(parser, context){return null;
 			var target = this.target;
 			
 			// 如果 target 存在
@@ -73,9 +73,7 @@ this.ECMAScriptStatement = ECMAScriptStatement = function(parseInt){
 	});
 	
 	return ECMAScriptStatement;
-}(
-	parseInt
-);
+}();
 
 this.ECMAScriptStatements = ECMAScriptStatements = function(Statements){
 	/**
@@ -265,6 +263,14 @@ this.IdentifierTag = function(RegExp, keywords){
 			IDENTIFIER_REGEXP_SOURCE
 		),
 		/**
+		 * 获取此标签接下来所需匹配的标签列表
+		 * @param {TagsMap} tagsMap - 标签集合映射
+		 * @param {SyntaxTags} currentTags - 之前标签所需匹配的标签列表
+		 */
+		require: function(tagMaps){
+			return tagMaps.expressionContextTags;
+		},
+		/**
 		 * 标签访问器
 		 * @param {SyntaxParser} parser - 语法解析器
 		 * @param {Context} context - 标签上下文
@@ -305,6 +311,14 @@ this.LiteralTag = function(){
 	
 	LiteralTag.props({
 		class: CLASS_EXPRESSION,
+		/**
+		 * 获取此标签接下来所需匹配的标签列表
+		 * @param {TagsMap} tagsMap - 标签集合映射
+		 * @param {SyntaxTags} currentTags - 之前标签所需匹配的标签列表
+		 */
+		require: function(tagMaps){
+			return tagMaps.expressionContextTags;
+		},
 		/**
 		 * 标签访问器
 		 * @param {SyntaxParser} parser - 语法解析器
@@ -1363,18 +1377,22 @@ this.BinaryStorage = function(ifZero, ifMax, ifOthers){
 this.BinaryExpression = function(){
 	/**
 	 * 二元表达式
-	 * @param {Context} context - 标签上下文
 	 */
-	function BinaryExpression(context){
-		Expression.call(this, context);
+	function BinaryExpression(){
+		ListExpression.call(this, "");
 	};
-	BinaryExpression = new Rexjs(BinaryExpression, Expression);
+	BinaryExpression = new Rexjs(BinaryExpression, ListExpression);
 
 	BinaryExpression.props({
+		extractTo: function(){
+			debugger
+			return ""
+		}
 		/**
 		 * 提取表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
 		 */
+		/*
 		extractTo: function(contentBuilder){
 			var context = this.context;
 			
@@ -1403,12 +1421,13 @@ this.BinaryExpression = function(){
 		left: null,
 		right: null,
 		storage: null
+		*/
 	});
 	
 	return BinaryExpression;
 }();
 
-this.BinaryStatement = function(){
+this.BinaryStatement = function(tryMethod){
 	/**
 	 * 二元语句
 	 * @param {Statements} statements - 该语句将要所处的语句块
@@ -1418,6 +1437,14 @@ this.BinaryStatement = function(){
 	};
 	BinaryStatement = new Rexjs(BinaryStatement, ECMAScriptStatement);
 	
+	BinaryStatement.props({
+		catch: function(parser, context){
+			this.out().expression.add(this.expression);
+			return null;
+		}
+	});
+
+	return BinaryStatement;
 	BinaryStatement.props({
 		/**
 		 * 获取该语句的黑名单
@@ -1432,22 +1459,33 @@ this.BinaryStatement = function(){
 			this.target.blacklist = blacklist;
 		},
 		/**
+		 * 尝试处理异常，此方法捕获的一般都是处理当前语句正确、明了的信息
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 语法标签上下文
+		 */
+		catch: function(parser, context){
+			this.out();
+			return null;
+		},
+		/**
 		 * 获取表达式
 		 */
 		get expression(){
-			return this.target.$expression.storage.current.right;
+			return this.target.expression.storage.current.right;
 		},
 		/**
 		 * 设置表达式
 		 * @param {Expression} expression - 需要设置的表达式
 		 */
 		set expression(expression){
-			this.requestFormalize().storage.current.right = expression;
+			this.target.expression.storage.current.right = expression;
 		}
 	});
 	
 	return BinaryStatement;
-}();
+}(
+	ECMAScriptStatement.prototype.try
+);
 
 this.BinaryTag = function(BinaryStorage, BinaryExpression, BinaryStatement){
 	/**
@@ -1478,30 +1516,30 @@ this.BinaryTag = function(BinaryStorage, BinaryExpression, BinaryStatement){
 		 * @param {Statements} statements - 当前语句块
 		 */
 		visitor: function(parser, context, statement, statements){
-			var storage, expression = statement.expression;
-			
-			// 如果当前表达式也是二元表达式
+			var expression = statement.expression;
+
 			if(
-				expression instanceof BinaryExpression
+				statement instanceof BinaryStatement
 			){
-				// 获取 storage 并设置当前二元表达式
-				storage = expression.storage.set(
-					new BinaryExpression(context),
-					statement.expression
-				);
+				statement
+					.target
+					.expression
+					.add(
+						new LeftHandSideExpression(expression, context)
+					);
+
+				statement.expression = null;
 			}
 			else {
-				// 获取初始化的 storage
-				storage = new BinaryStorage(
-					new BinaryExpression(context),
-					statement.expression
+				(
+					statement.expression = new BinaryExpression()
+				)
+				.add(
+					new LeftHandSideExpression(expression, context)
 				);
-			}
 
-			// 设置当前表达式
-			statement.$expression = storage[storage.min];
-			// 设置当前语句
-			statements.statement = new BinaryStatement(statements);
+				statements.statement = new BinaryStatement(statements);
+			}
 		}
 	});
 	
@@ -2141,12 +2179,14 @@ this.DotAccessorTag = function(DotExpression){
 		 * @param {Statements} statements - 当前语句块
 		 */
 		visitor: function(parser, context, statement, statements){
+			var expression = statement.expression;
+
 			// 设置临时表达式
 			(
-				statement.$expression = new DotExpression(context)
+				statement.expression = new DotExpression(context)
 			)
 			// 设置 object
-			.object = statement.expression;
+			.object = expression;
 			
 			// 设置当前语句
 			statements.statement = new ECMAScriptStatement(statements);
@@ -2178,7 +2218,7 @@ this.PropertyNameTag = function(IdentifierTag, RegExp){
 		 * @param {Statements} statements - 当前语句块
 		 */
 		visitor: function(parser, context, statement, statements){
-			statement.requestFormalize().property = context;
+			statement.out().expression.property = context;
 		}
 	});
 	
@@ -7627,10 +7667,9 @@ Rexjs.static(this);
 	Rexjs.ListExpression,
 	Rexjs.EmptyExpression,
 	Rexjs.PartnerExpression,
-	// ECMAScriptStatement
-	null,
-	// ECMAScriptStatements
-	null,
+	Rexjs.LeftHandSideExpression,
+	Rexjs.Statement,
+	Rexjs.Statements,
 	Rexjs.SyntaxTag,
 	Rexjs.SyntaxTag.CLASS_STATEMENT,
 	Rexjs.SyntaxTag.CLASS_EXPRESSION,
