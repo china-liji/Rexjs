@@ -118,7 +118,7 @@ async
 	- 如：
 		源码：
 			function getElements(){
-				return jQuery(".class") <= css("color", "red"), timeStr = Date.now(), ["+1"] = 1, attr("data-key", 0);
+				return jQuery(".class") <- css("color", "red"), timeStr = Date.now(), ["+1"] = 1, attr("data-key", 0);
 			};
 
 		解析后（大概意思如下）：

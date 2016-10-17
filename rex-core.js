@@ -672,35 +672,137 @@ this.List = function(Array, Object, toArray){
 
 
 // 语法标签相关
-void function(){
-	
-this.SyntaxTag = function(TYPE_UNEXPECTED, parseInt){
+void function(parseInt){
+
+this.TagData = function(){
+	/**
+	 * 标签数据
+	 * @param {*} value - 标签数据
+	 */
+	function TagData(value){
+		this.bind(value);
+	};
+	TagData = new Rexjs(TagData);
+
+	TagData.props({
+		/**
+		 * 绑定标签数据
+		 * @param {*} value - 需要绑定的数据
+		 */
+		bind: function(value){
+			this.value = value;
+		},
+		value: null
+	});
+
+	return TagData;
+}();
+
+this.TagClass = function(TagData, CLASS_STATEMENT, CLASS_EXPRESSION, CLASS_EXPRESSION_CONTEXT, bind){
+	/**
+	 * 标签类别
+	 * @param {Number} value - 标签类别
+	 */
+	function TagClass(value){
+		TagData.call(this, value);
+	};
+	TagClass = new Rexjs(TagClass, TagData);
+
+	TagClass.static({
+		CLASS_NONE: parseInt(0, 2),
+		CLASS_STATEMENT: CLASS_STATEMENT = parseInt(10, 2),
+		CLASS_EXPRESSION: CLASS_EXPRESSION = parseInt(110, 2),
+		CLASS_EXPRESSION_CONTEXT: CLASS_EXPRESSION_CONTEXT = parseInt(1000, 2)
+	});
+
+	TagClass.props({
+		/**
+		 * 绑定标签类别
+		 * @param {Number} value - 需要绑定的类别
+		 */
+		bind: function(value){
+			this.expression = (value & CLASS_EXPRESSION) === CLASS_EXPRESSION;
+			this.expressionContext = (value & CLASS_EXPRESSION_CONTEXT) === CLASS_EXPRESSION_CONTEXT;
+			this.statement = (value & CLASS_STATEMENT) === CLASS_STATEMENT;
+
+			bind.call(this, value);
+		},
+		expression: false,
+		expressionContext: false,
+		statement: false
+	});
+
+	return TagClass;
+}(
+	this.TagData,
+	// CLASS_STATEMENT
+	null,
+	// CLASS_EXPRESSION
+	null,
+	// CLASS_EXPRESSION_CONTEXT
+	null,
+	this.TagData.prototype.bind
+);
+
+this.TagType = function(TagData, TYPE_MATCHABLE, TYPE_UNEXPECTED, TYPE_MISTAKABLE, bind){
+	/**
+	 * 标签类型
+	 * @param {Number} value - 标签类型
+	 */
+	function TagType(value){
+		TagData.call(this, value);
+	};
+	TagType = new Rexjs(TagType);
+
+	TagType.static({
+		TYPE_MATCHABLE: TYPE_MATCHABLE = parseInt(10, 2),
+		TYPE_UNEXPECTED: TYPE_UNEXPECTED = parseInt(100, 2),
+		TYPE_MISTAKABLE: TYPE_MISTAKABLE = parseInt(1100, 2)
+	});
+
+	TagType.props({
+		/**
+		 * 绑定标签类型
+		 * @param {Number} value - 需要绑定的类型
+		 */
+		bind: function(value){
+			this.matchable = (value & TYPE_MATCHABLE) === TYPE_MATCHABLE;
+			this.mistakable = (value & TYPE_MISTAKABLE) === TYPE_MISTAKABLE;
+			this.unexpected = (value & TYPE_UNEXPECTED) === TYPE_UNEXPECTED;
+
+			bind.call(this, value);
+		},
+		matchable: true,
+		mistakable: false,
+		unexpected: false
+	});
+
+	return TagType;
+}(
+	this.TagData,
+	// TYPE_MATCHABLE
+	null,
+	// TYPE_UNEXPECTED
+	null,
+	// TYPE_MISTAKABLE
+	null,
+	this.TagData.prototype.bind
+);
+
+this.SyntaxTag = function(TagClass, TagType, TYPE_UNEXPECTED, parseInt){
 	/**
 	 * 语法标签
 	 * @param {Number} _type - 标签类型
 	 */
 	function SyntaxTag(_type){
-		if(
-			_type === void 0
-		){
-			return;
-		}
-		
-		this.type = _type;
+		this.type = new TagType(_type || this.$type);
+		this.class = new TagClass(this.$class);
 	};
 	SyntaxTag = new Rexjs(SyntaxTag);
-	
-	SyntaxTag.static({
-		CLASS_NONE: parseInt(0, 2),
-		CLASS_STATEMENT: parseInt(10, 2),
-		CLASS_EXPRESSION: parseInt(110, 2),
-		CLASS_EXPRESSION_CONTEXT: parseInt(1000, 2),
-		TYPE_MATCHABLE: parseInt(10, 2),
-		TYPE_UNEXPECTED: TYPE_UNEXPECTED = parseInt(100, 2),
-		TYPE_MISTAKABLE: parseInt(1100, 2)
-	});
 
 	SyntaxTag.props({
+		$class: TagClass.CLASS_NONE,
+		$type: TagType.TYPE_MATCHABLE,
 		/**
 		 * 提取该标签上下文，此方法的目的是针对某些特殊的标签，在提取时进行处理上下文
 		 * @param {Context} context - 标签上下文
@@ -710,7 +812,7 @@ this.SyntaxTag = function(TYPE_UNEXPECTED, parseInt){
 			// 不做任何处理，直接添加
 			contentBuilder.appendContext(context);
 		},
-		class: SyntaxTag.CLASS_NONE,
+		class: null,
 		order: 0,
 		regexp: null,
 		/**
@@ -721,24 +823,35 @@ this.SyntaxTag = function(TYPE_UNEXPECTED, parseInt){
 		require: function(tagsMap, currentTags){
 			return currentTags;
 		},
-		type: SyntaxTag.TYPE_MATCHABLE,
+		type: null,
 		/**
 		 * 判断该标签是否是意外标签
 		 */
 		unexpected: function(){
-			return (this.type & TYPE_UNEXPECTED) === TYPE_UNEXPECTED;
+			return this.type.unexpected;
 		},
 		visitor: function(){}
 	});
 
 	return SyntaxTag;
 }(
+	this.TagClass,
+	this.TagType,
 	// TYPE_UNEXPECTED
 	null,
 	parseInt
 );
 
-this.WhitespaceTag = function(SyntaxTag){
+}.call(
+	this,
+	parseInt
+);
+
+
+// 子类标签相关
+void function(SyntaxTag){
+
+this.WhitespaceTag = function(){
 	/**
 	 * 空白字符标签
 	 * @param {Number} _type - 标签类型
@@ -753,9 +866,7 @@ this.WhitespaceTag = function(SyntaxTag){
 	});
 	
 	return WhitespaceTag;
-}(
-	this.SyntaxTag
-);
+}();
 
 this.LineTerminatorTag = function(WhitespaceTag){
 	/**
@@ -789,7 +900,7 @@ this.LineTerminatorTag = function(WhitespaceTag){
 	this.WhitespaceTag
 );
 
-this.TokenTag = function(SyntaxTag){
+this.TokenTag = function(){
 	/**
 	 * 标记标签，一般指定的是两次匹配字符串之间的内容
 	 * @param {Number} _type - 标签类型
@@ -800,16 +911,15 @@ this.TokenTag = function(SyntaxTag){
 	TokenTag = new Rexjs(TokenTag, SyntaxTag);
 	
 	TokenTag.props({
-		type: SyntaxTag.TYPE_UNEXPECTED
+		$type: SyntaxTag.TYPE_UNEXPECTED
 	});
 	
 	return TokenTag;
-}(
-	this.SyntaxTag
-);
+}();
 
 }.call(
-	this
+	this,
+	this.SyntaxTag
 );
 
 
@@ -892,13 +1002,15 @@ this.SyntaxTags = function(List, sort, distinct){
 		
 		// 对标签进行排序
 		tags.sort(function(tag1, tag2){
+			var type1 = tag1.type, type2 = tag2.type;
+
 			// 如果 tag1 是可捕获的
 			if(
-				(tag1.type & TYPE_MATCHABLE) === TYPE_MATCHABLE
+				type1.matchable
 			){
 				// 如果 tag2 不可以捕获的
 				if(
-					(tag2.type & TYPE_MATCHABLE) !== TYPE_MATCHABLE
+					!type2.matchable
 				){
 					// 将 tag1 插入到 tag2 前面
 					return -1;
@@ -906,7 +1018,7 @@ this.SyntaxTags = function(List, sort, distinct){
 			}
 			// 如果 tag2 是可以捕获的，而 tag1 不可捕获
 			else if(
-				(tag2.type & TYPE_MATCHABLE) === TYPE_MATCHABLE
+				type2.matchable
 			){
 				// 将 tag2 插入到 tag1 前面
 				return 1;
@@ -915,11 +1027,11 @@ this.SyntaxTags = function(List, sort, distinct){
 			else {
 				// 如果 tag1 是可能被误解的
 				if(
-					(tag1.type & TYPE_MISTAKABLE) === TYPE_MISTAKABLE
+					type1.mistakable
 				){
 					// 如果 tag2 不是可能被误解的
 					if(
-						(tag2.type & TYPE_MISTAKABLE) !== TYPE_MISTAKABLE
+						!type2.mistakable
 					){
 						// 将 tag1 插入到 tag2 前面
 						return -1;
@@ -927,7 +1039,7 @@ this.SyntaxTags = function(List, sort, distinct){
 				}
 				// 如果 tag2 是可能被误解的，而 tag1 不是
 				else if(
-					(tag2.type & TYPE_MISTAKABLE) === TYPE_MISTAKABLE
+					type2.mistakable
 				){
 					// 将 tag2 插入到 tag1 前面
 					return 1;
@@ -1491,12 +1603,12 @@ this.Statement = function(Syntax, TYPE_MISTAKABLE, CLASS_STATEMENT, STATE_STATEM
 		BLACKLIST_SEMICOLON: parseInt(1000, 2),
 		BLACKLIST_COMMA: parseInt(10000, 2)
 	});
-	
+
 	Statement.props({
 		$expression: null,
 		blacklist: Statement.BLACKLIST_CONTEXT_TAGS,
 		/**
-		 * 捕获并处理错误异常，此方法一般是处理一些未知或底层统一处理的异常
+		 * 捕获并处理错误异常
 		 * @param {SyntaxParser} parser - 语法解析器
 		 * @param {Context} context - 语法标签上下文
 		 */
@@ -1552,80 +1664,7 @@ this.Statement = function(Syntax, TYPE_MISTAKABLE, CLASS_STATEMENT, STATE_STATEM
 		 * @param {Context} context - 语法标签上下文
 		 */
 		try: function(parser, context){
-			var tag = context.tag;
-
-			// 如果标签是可能被误解的
-			if(
-				(tag.type & TYPE_MISTAKABLE) === TYPE_MISTAKABLE
-			){
-				// 如果是语句标签
-				if(
-					(tag.class & CLASS_STATEMENT) === CLASS_STATEMENT
-				){
-					var t = getCatchedTag(this, parser, context);
-
-					// 如果标签存在
-					if(
-						t
-					){
-						return t;
-					}
-
-					// 如果表达式还可以结束
-					if(
-						(this.expression.state & STATE_STATEMENT_ENDABLE) === STATE_STATEMENT_ENDABLE
-					){
-						// 创建新语句
-						this.statements.newStatement();
-						return tag;
-					}
-
-					return null;
-				}
-				
-				return tag;
-			}
-
-			return getCatchedTag(this, parser, context);
-
-			if(
-				tag
-			){
-				return tag;
-			}
-
-			var target = this.target;
-			
-			// 如果 target 存在
-			if(
-				target
-			){
-				// 返回 target 的结果
-				return target.try(parser, context);
-			}
-
-
-			switch(
-				true
-			){
-				// 如果标签不是可能被误解的
-				case (tag.type & TYPE_MISTAKABLE) !== TYPE_MISTAKABLE:
-					break;
-				
-				// 如果表达式还并不可以结束
-				case (this.expression.state & STATE_STATEMENT_ENDABLE) !== STATE_STATEMENT_ENDABLE:
-					break;
-
-				// 默认
-				default:
-					// 创建新语句
-					this.statements.newStatement();
-					// 返回标签
-					return tag;
-			}
-
-			// 直接调用 catch
-			return this.catch(parser, context);
+			return null;
 		}
 	});
 	
@@ -1897,7 +1936,9 @@ this.LeftHandSideExpression = function(){
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
 		 */
 		extractTo: function(contentBuilder){
+			// 提取左侧的表达式内容
 			this.left.extractTo(contentBuilder);
+			// 添加上下文内容
 			contentBuilder.appendContext(this.context);
 		}
 	});
@@ -1920,8 +1961,9 @@ this.SyntaxError = function(MappingBuilder, e){
 	 * @param {File} file - 具有语法错误的文件
 	 * @param {Context} context - 出错处的上下文
 	 * @param {String} description - 错误描述
+	 * @param {Boolean} _reference - 是否是引用错误
 	 */
-	function SyntaxError(file, context, description){
+	function SyntaxError(file, context, description, _reference){
 		var filename = file.filename, position = context.position;
 		
 		// 如果支持 MappingBuilder
@@ -1937,9 +1979,7 @@ this.SyntaxError = function(MappingBuilder, e){
 		this.file = file;
 		this.context = context;
 		this.description = description;
-		this.message = "SyntaxError: " + description + " @ " + filename + ":" + position.line + ":" + position.column;
-		
-		throw this;
+		this.message = (_reference ? "Reference" : "Syntax") + "Error: " + description + " @ " + filename + ":" + position.line + ":" + position.column;
 	};
 	SyntaxError = new Rexjs(SyntaxError);
 	
@@ -2070,9 +2110,9 @@ this.SyntaxRegExp = function(RegExp, Infinity){
 
 
 // 语法树相关
-void function(document){
+void function(STATE_STATEMENT_ENDABLE, document){
 
-this.SyntaxParser = function(SyntaxRegExp, SyntaxError, Statement, Statements, Position, Context, ContentBuilder){
+this.SyntaxParser = function(SyntaxRegExp, SyntaxError, Statement, Statements, Position, Context, ContentBuilder, toTryCatch){
 	/**
 	 * 语法树类，初始化语法树是个耗性能过程，建议作为单例使用
 	 * @param {SyntaxTagsMap} tagsMap - 标签列表映射
@@ -2102,12 +2142,13 @@ this.SyntaxParser = function(SyntaxRegExp, SyntaxError, Statement, Statements, P
 		 * 报错
 		 * @param {Context} context - 错误信息上下文
 		 * @param {String} description - 错误描述
+		 * @param {Boolean} _reference - 是否是引用错误
 		 */
-		error: function(context, description){
+		error: function(context, description, _reference){
 			// 中断匹配，结束解析
 			this.regexp.break();
 			// 抛出语法错误
-			new SyntaxError(this.file, context, description);
+			throw new SyntaxError(this.file, context, description, _reference);
 		},
 		file: null,
 		/**
@@ -2143,28 +2184,23 @@ this.SyntaxParser = function(SyntaxRegExp, SyntaxError, Statement, Statements, P
 					
 					// 增加列数
 					position.column += content.length;
+
+					if(
+						tag instanceof Rexjs.FileEndTag
+					){
+						// debugger
+					}
 					
 					// 如果标签异常，即不应该被捕获
 					if(
 						tag.unexpected(statement)
 					){
 						// 如果表达式存在，则进入异常捕获处理
-						tag = statement.expression ? statement.try(parser, context) : null;
-						
-						// 如果标签存在
-						if(
-							tag
-						){
-							context.tag = tag;
-							statements = parser.statements;
-							statement = statements.statement;
-						}
-						// 否则
-						else {
-							// 报错
-							parser.error(context, "Unexpected token " + content);
-							return;
-						}
+						context.tag = tag = toTryCatch(parser, context, tag, statement, statements);
+						// 可能在 try catch 中会被改变
+						statements = parser.statements;
+						// 可能在 try catch 中会被改变
+						statement = statements.statement;
 					}
 					
 					// 访问标签
@@ -2196,11 +2232,81 @@ this.SyntaxParser = function(SyntaxRegExp, SyntaxError, Statement, Statements, P
 	this.Statements,
 	this.Position,
 	this.Context,
-	this.ContentBuilder
+	this.ContentBuilder,
+	// toTryCatch
+	function(parser, context, tag, statement, statements){
+		// 如果表达式存在
+		outerBlock:
+		if(
+			statement.expression
+		){
+			var mistakable = tag.type.mistakable;
+
+			// 如果标签不是可能被误解的
+			if(
+				mistakable ? tag.class.statement : true
+			){
+				var t = null;
+
+				// 当语句存在
+				while(
+					statement
+				){
+					// 获取 try 所返回的标签
+					t = statement.try(parser, context);
+
+					// 如果标签存在
+					if(
+						t
+					){
+						// 返回该标签
+						return t;
+					}
+
+					// 设置语句为 target
+					statement = statement.target;
+				}
+
+				switch(
+					false
+				){
+					// 如果不是被误解的
+					case mistakable:
+						break;
+
+					// 如果表达式不可以结束
+					case (statements.statement.expression.state & STATE_STATEMENT_ENDABLE) === STATE_STATEMENT_ENDABLE:
+						break;
+
+					default:
+						// 创建新语句
+						statements.newStatement();
+						// 返回标签
+						return tag;
+				}
+
+				// 跳出外层语句块
+				break outerBlock;
+			}
+
+			// 如果是可误解的，且不是语句标签（上面的判断保证了一定不是语句标签）
+			if(
+				mistakable
+			){
+				// 如果 try 的处理结果存在，则返回，不然返回 tag
+				return statement.try(parser, context) || tag;
+			}
+		}
+
+		// 报错
+		parser.error(context, "Unexpected token " + context.content);
+		return null;
+	}
 );
 
 }.call(
 	this,
+	this.Expression.STATE_STATEMENT_ENDABLE,
 	document
 );
 

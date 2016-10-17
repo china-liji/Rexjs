@@ -204,7 +204,7 @@ this.DeclarationTag = function(){
 	DeclarationTag = new Rexjs(DeclarationTag, SyntaxTag);
 	
 	DeclarationTag.props({
-		class: CLASS_STATEMENT
+		$class: CLASS_STATEMENT
 	});
 	
 	return DeclarationTag;
@@ -238,7 +238,7 @@ this.FilePositionTag = function(){
 	FilePositionTag = new Rexjs(FilePositionTag, SyntaxTag);
 
 	FilePositionTag.props({
-		class: CLASS_STATEMENT
+		$class: CLASS_STATEMENT
 	});
 	
 	return FilePositionTag;
@@ -255,7 +255,7 @@ this.IdentifierTag = function(RegExp, keywords){
 	IdentifierTag = new Rexjs(IdentifierTag, SyntaxTag);
 	
 	IdentifierTag.props({
-		class: CLASS_EXPRESSION,
+		$class: CLASS_EXPRESSION,
 		order: 200,
 		regexp: new RegExp(
 			"(?:(?:" + keywords + ")|(?!" + keywords + "))"
@@ -310,7 +310,7 @@ this.LiteralTag = function(){
 	LiteralTag = new Rexjs(LiteralTag, SyntaxTag);
 	
 	LiteralTag.props({
-		class: CLASS_EXPRESSION,
+		$class: CLASS_EXPRESSION,
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
@@ -808,7 +808,7 @@ this.UnaryTag = function(UnaryExpression, UnaryStatement){
 	UnaryTag = new Rexjs(UnaryTag, SyntaxTag);
 	
 	UnaryTag.props({
-		class: CLASS_EXPRESSION,
+		$class: CLASS_EXPRESSION,
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
@@ -1203,230 +1203,64 @@ this.LogicalNOTTag = function(){
 
 
 // 二元标签基类
-void function(){
-	
-this.BinaryStorage = function(ifZero, ifMax, ifOthers){
-	/**
-	 * 二元存储器
-	 * @param {BinaryExpression} binaryExpression - 根二元表达式
-	 * @param {Expression} left - 根二元表达式的左侧表达式
-	 */
-	function BinaryStorage(binaryExpression, left){
-		var precedence = binaryExpression.context.tag.precedence;
-		
-		// 设置 left
-		binaryExpression.left = left;
-		// 记录 storage
-		binaryExpression.storage = this;
-		
-		// 设置 min 和 max
-		this.min = this.max = precedence;
-		// 设置当前表达式与优先级别对应的表达式
-		this.current = this[precedence] = binaryExpression;
-	};
-	BinaryStorage = new Rexjs(BinaryStorage);
-	
-	BinaryStorage.static({
-		/**
-		 * 设置优先级的最大值，便于加快数据访问
-		 * @param {Number} max - 最大值
-		 */
-		setMax: function(max){
-			var prototype = this.prototype;
-			
-			// 从 0 开始，依次添加 null
-			for(
-				var i = 0;i <= max;i++
-			){
-				prototype[i] = null;
-			}
-		}
-	});
-	
-	BinaryStorage.props({
-		current: null,
-		max: -1,
-		min: -1,
-		/**
-		 * 设置二元表达式
-		 * @param {BinaryExpression} binaryExpression - 需要设置的二元表达式
-		 * @param {Expression} expression - 当前语句的二元表达式
-		 */
-		set: function(binaryExpression, expression){
-			var min = this.min, precedence = binaryExpression.context.tag.precedence;
-			
-			// 当优先级小于等于最小值
-			if(
-				precedence <= min
-			){
-				// 优先级大于 0，说明不是赋值符号
-				if(
-					precedence > 0
-				){
-					// 重新创建并返回 storage，因为当前 storage 存储了优先级比 min 更大的二元表达式，统统都要删除，而循环删除耗性能，所以懒得删除，直接重新创建
-					return new BinaryStorage(binaryExpression, this[min]);
-				}
-				
-				// 优先级为 0 的处理
-				ifZero(this, binaryExpression);
-				return this;
-			}
-			
-			var max = this.max;
-			
-			// 如果优先级等于最大值
-			if(
-				precedence === max
-			){
-				// 优先级为 max 的处理
-				ifMax(this, binaryExpression, expression, max, precedence);
-			}
-			// 大于最小值且不等于最大值
-			else {
-				ifOthers(this, binaryExpression, max, precedence);
-			}
-			
-			// 记录 storage
-			binaryExpression.storage = this;
-			// 设置 max
-			this.max = precedence;
-			// 优先级别的对应的表达式并设置当前二元表达式
-			this[precedence] = this.current = binaryExpression;
-			return this;
-		}
-	});
-	
-	BinaryStorage.setMax(99);
-	return BinaryStorage;
-}(
-	// ifZero
-	function(storage, binaryExpression){
-		// 如果是赋值符号，说明之前的所有二元符号都是赋值类型，而 this[0] 一定存在，标签匹配机制做了保障
-		var exp = storage[0];
-		
-		// 设置当前二元表达式的左侧表达式为之前表达式的右侧表达式
-		binaryExpression.left = exp.right;
-		// 设置之前表达式的右侧表达式
-		exp.right = binaryExpression;
-		// 记录 storage
-		binaryExpression.storage = storage;
-		// 优先级别的对应的表达式并设置当前二元表达式
-		storage.current = binaryExpression;
-	},
-	// ifMax
-	function(storage, binaryExpression, expression, max, precedence){
-		// 获取上一个二元表达式
-		var targetBinaryExpression = storage[precedence - 1];
-		
-		// 设置当前二元表达式的左侧表达式
-		binaryExpression.left = storage[max];
-		
-		// 如果该二元表达式不存在
-		if(
-			targetBinaryExpression === null
-		){
-			// 如果 expression 的优先级比设置的优先级低，ps：expression 一定是二元表达式，因为只有之前的表达式是二元表达式才会进入 set 方法
-			while(
-				expression.context.tag.precedence < precedence
-			){
-				targetBinaryExpression = expression;
-				expression = expression.right;
-			}
-		}
-		
-		// 设置右侧表达式为当前二元表达式
-		targetBinaryExpression.right = binaryExpression;
-	},
-	// ifOthers
-	function(storage, binaryExpression, max, precedence){
-		var targetBinaryExpression;
-		
-		// 如果优先级大于最大值
-		if(
-			precedence > max
-		){
-			targetBinaryExpression = storage[max];
-		}
-		// 如果优先级大于最小值且小于最大值
-		else {
-			// todo: 优化掉 2 个 while 循环
-			
-			// 清空其他更大值的表达式记录
-			while(
-				max > precedence
-			){
-				storage[max] = null;
-				max--;
-			}
-			
-			// 一定会有一个不等于 null，因为有 min 确保
-			while(
-				(targetBinaryExpression = storage[precedence]) === null
-			){
-				precedence--;
-			}
-		}
-		
-		// 设置当前二元表达式的左侧表达式为之前表达式的右侧表达式
-		binaryExpression.left = targetBinaryExpression.right;
-		// 设置之前表达式的右侧表达式
-		targetBinaryExpression.right = binaryExpression;
-	}
-);
+void function(BinaryTag, BinaryKeywordTag){
 
 this.BinaryExpression = function(){
 	/**
 	 * 二元表达式
+	 * @param {Expression} left - 左侧表达式
+	 * @param {Context} context - 语法标签上下文
 	 */
-	function BinaryExpression(){
-		ListExpression.call(this, "");
+	function BinaryExpression(left, context){
+		LeftHandSideExpression.call(this, left, context);
 	};
-	BinaryExpression = new Rexjs(BinaryExpression, ListExpression);
+	BinaryExpression = new Rexjs(BinaryExpression, LeftHandSideExpression);
 
 	BinaryExpression.props({
-		extractTo: function(){
-			return ""
-		}
 		/**
 		 * 提取表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
 		 */
-		/*
 		extractTo: function(contentBuilder){
-			var context = this.context;
-			
-			// 提取左侧表达式内容
+			var context = this.context, tag = context.tag;
+
+			// 提取左侧的表达式内容
 			this.left.extractTo(contentBuilder);
-			
-			// 如果二元标签是关键字
+
+			// 如果是关键字标签
 			if(
-				context.tag.keyword
+				tag instanceof BinaryKeywordTag
 			){
 				// 添加空格
 				contentBuilder.appendSpace();
 				// 添加该二元标签内容
-				contentBuilder.appendContext(this.context);
+				contentBuilder.appendContext(context);
 				// 添加空格
 				contentBuilder.appendSpace();
 			}
 			else {
 				// 添加该二元标签内容
-				contentBuilder.appendContext(this.context);
+				contentBuilder.appendContext(context);
 			}
-			
-			// 提取右侧表达式内容
-			this.right.extractTo(contentBuilder);
-		},
-		left: null,
-		right: null,
-		storage: null
-		*/
+		}
 	});
 	
 	return BinaryExpression;
 }();
 
-this.BinaryStatement = function(tryMethod){
+this.BinaryListExpression = function(){
+	/**
+	 * 二元列表表达式
+	 */
+	function BinaryListExpression(){
+		ListExpression.call(this, "");
+	};
+	BinaryListExpression = new Rexjs(BinaryListExpression, ListExpression);
+
+	return BinaryListExpression;
+}();
+
+this.BinaryStatement = function(){
 	/**
 	 * 二元语句
 	 * @param {Statements} statements - 该语句将要所处的语句块
@@ -1437,56 +1271,44 @@ this.BinaryStatement = function(tryMethod){
 	BinaryStatement = new Rexjs(BinaryStatement, ECMAScriptStatement);
 	
 	BinaryStatement.props({
-		catch: function(parser, context){
-			this.out().expression.add(this.expression);
-			return null;
-		}
-	});
-
-	return BinaryStatement;
-	BinaryStatement.props({
 		/**
-		 * 获取该语句的黑名单
-		 */
-		get blacklist(){
-			return this.target.blacklist;
-		},
-		/**
-		 * 设置该语句的黑名单
-		 */
-		set blacklist(blacklist){
-			this.target.blacklist = blacklist;
-		},
-		/**
-		 * 尝试处理异常，此方法捕获的一般都是处理当前语句正确、明了的信息
+		 * 尝试处理异常
 		 * @param {SyntaxParser} parser - 语法解析器
 		 * @param {Context} context - 语法标签上下文
 		 */
-		catch: function(parser, context){
-			this.out();
+		try: function(parser, context){
+			var expression = this.out().expression, tag = context.tag;
+
+			// 如果是二元标签
+			if(
+				tag instanceof BinaryTag
+			){
+				// 如果是赋值标签
+				if(
+					tag.precedence === 0
+				){
+					// 如果上一个不是赋值标签
+					if(
+						expression[expression.length - 1].context.tag.precedence > 0
+					){
+						// 报错
+						parser.error(context, "Invalid left-hand side in assignment", true);
+					}
+				}
+			}
+			else {
+				// 添加表达式
+				expression.add(this.expression);
+			}
+			
 			return null;
-		},
-		/**
-		 * 获取表达式
-		 */
-		get expression(){
-			return this.target.expression.storage.current.right;
-		},
-		/**
-		 * 设置表达式
-		 * @param {Expression} expression - 需要设置的表达式
-		 */
-		set expression(expression){
-			this.target.expression.storage.current.right = expression;
 		}
 	});
 	
 	return BinaryStatement;
-}(
-	ECMAScriptStatement.prototype.try
-);
+}();
 
-this.BinaryTag = function(BinaryStorage, BinaryExpression, BinaryStatement){
+this.BinaryTag = BinaryTag = function(BinaryExpression, BinaryListExpression, BinaryStatement){
 	/**
 	 * 二元标签
 	 * @param {Number} _type - 标签类型
@@ -1497,7 +1319,7 @@ this.BinaryTag = function(BinaryStorage, BinaryExpression, BinaryStatement){
 	BinaryTag = new Rexjs(BinaryTag, SyntaxTag);
 	
 	BinaryTag.props({
-		class: CLASS_EXPRESSION_CONTEXT,
+		$class: CLASS_EXPRESSION_CONTEXT,
 		keyword: false,
 		precedence: 0,
 		/**
@@ -1517,151 +1339,124 @@ this.BinaryTag = function(BinaryStorage, BinaryExpression, BinaryStatement){
 		visitor: function(parser, context, statement, statements){
 			var expression = statement.expression;
 
+			// 如果当前语句是二元语句
 			if(
-				statement instanceof BinaryStatement
+				expression instanceof BinaryListExpression
 			){
-				statement
-					.target
-					.expression
-					.add(
-						new LeftHandSideExpression(expression, context)
-					);
-
-				statement.expression = null;
+				// 跳出语句并添加二元表达式
+				expression.add(
+					new BinaryExpression(expression, context)
+				);
 			}
 			else {
 				(
-					statement.expression = new BinaryExpression()
+					// 设置当前表达式
+					statement.expression = new BinaryListExpression()
 				)
+				// 添加二元表达式
 				.add(
-					new LeftHandSideExpression(expression, context)
+					new BinaryExpression(expression, context)
 				);
-
-				statements.statement = new BinaryStatement(statements);
 			}
+
+			// 设置当前语句
+			statements.statement = new BinaryStatement(statements);
 		}
 	});
 	
 	return BinaryTag;
 }(
-	this.BinaryStorage,
 	this.BinaryExpression,
+	this.BinaryListExpression,
 	this.BinaryStatement
 );
 
-this.BasicAssignmentTag = function(BinaryTag, unexpected){
+this.AssignmentTag = function(BinaryTag){
 	/**
-	 * 二元基础赋值运算符“等于号”标签
+	 * 二元赋值运算符标签
 	 * @param {Number} _type - 标签类型
 	 */
-	function BasicAssignmentTag(_type){
+	function AssignmentTag(_type){
 		BinaryTag.call(this, _type);
 	};
-	BasicAssignmentTag = new Rexjs(BasicAssignmentTag, BinaryTag);
+	AssignmentTag = new Rexjs(AssignmentTag, BinaryTag);
 	
-	BasicAssignmentTag.props({
-		regexp: /=/,
-		/**
-		 * 返回处于解析上下文中的标签类型
-		 * @param {Statement} statement - 当前解析的语句
-		 */
-		unexpected: function(statement){
-			// 如果当前语句不允许出现赋值运算符
-			if(
-				(statement.blacklist & BLACKLIST_ASSGINMENT) === BLACKLIST_ASSGINMENT
-			){
-				return true;
-			}
-			
-			return unexpected.call(this, statement);
-		}
-	});
-	
-	return BasicAssignmentTag;
+	return AssignmentTag;
 }(
-	this.BinaryTag,
-	this.BinaryTag.prototype.unexpected
+	this.BinaryTag
 );
 
-this.OtherBinaryTag = function(BinaryTag, visitor){
-	/**
-	 * 其他二元关键字标签，即非赋值二元运算符标签
-	 * @param {Number} _type - 标签类型
-	 */
-	function OtherBinaryTag(_type){
-		BinaryTag.call(this, _type);
-	};
-	OtherBinaryTag = new Rexjs(OtherBinaryTag, BinaryTag);
-	
-	OtherBinaryTag.props({
-		/**
-		 * 标签访问器
-		 * @param {SyntaxParser} parser - 语法解析器
-		 * @param {Context} context - 标签上下文
-		 * @param {Statement} statement - 当前语句
-		 * @param {Statements} statements - 当前语句块
-		 */
-		visitor: function(parser, context, statement, statements){
-			// 当前语句不再允许赋值运算
-			statement.blacklist |= BLACKLIST_ASSGINMENT;
-			
-			visitor.call(this, parser, context, statement, statements);
-		}
-	});
-	
-	return OtherBinaryTag;
-}(
-	this.BinaryTag,
-	this.BinaryTag.prototype.visitor
-);
-
-this.BinaryKeywordTag = function(OtherBinaryTag){
+this.BinaryKeywordTag = BinaryKeywordTag = function(BinaryTag){
 	/**
 	 * 二元关键字标签
 	 * @param {Number} _type - 标签类型
 	 */
 	function BinaryKeywordTag(_type){
-		OtherBinaryTag.call(this, _type);
+		BinaryTag.call(this, _type);
 	};
-	BinaryKeywordTag = new Rexjs(BinaryKeywordTag, OtherBinaryTag);
-	
-	BinaryKeywordTag.props({
-		keyword: true
-	});
+	BinaryKeywordTag = new Rexjs(BinaryKeywordTag, BinaryTag);
 	
 	return BinaryKeywordTag;
 }(
-	this.OtherBinaryTag
+	this.BinaryTag
 );
 
 }.call(
-	this
+	this,
+	// BinaryTag
+	null,
+	// BinaryKeywordTag
+	null
 );
 
 
-// 二元标签
-void function(OtherBinaryTag, BinaryKeywordTag){
+// 二元赋值标签
+void function(AssignmentTag){
 
-this.AssignmentTag = function(BasicAssignmentTag){
+this.BasicAssignmentTag = function(){
 	/**
-	 * 二元赋值运算符“等于号”标签
+	 * 二元基础赋值运算符“等于号”标签
 	 * @param {Number} _type - 标签类型
 	 */
-	function AssignmentTag(_type){
-		BasicAssignmentTag.call(this, _type);
+	function BasicAssignmentTag(_type){
+		AssignmentTag.call(this, _type);
 	};
-	AssignmentTag = new Rexjs(AssignmentTag, BasicAssignmentTag);
+	BasicAssignmentTag = new Rexjs(BasicAssignmentTag, AssignmentTag);
 	
-	AssignmentTag.props({
+	BasicAssignmentTag.props({
+		regexp: /=/
+	});
+	
+	return BasicAssignmentTag;
+}();
+
+this.ShorthandAssignmentTag = function(){
+	/**
+	 * 简写的二元赋值运算符标签
+	 * @param {Number} _type - 标签类型
+	 */
+	function ShorthandAssignmentTag(_type){
+		AssignmentTag.call(this, _type);
+	};
+	ShorthandAssignmentTag = new Rexjs(ShorthandAssignmentTag, AssignmentTag);
+	
+	ShorthandAssignmentTag.props({
 		// 防止与其他二元运算符冲突
 		order: 302,
 		regexp: /\+=|-=|\*=|\/=|%=|<<=|>>=|>>>=|\&=|\|=|\^=/
 	});
 	
-	return AssignmentTag;
-}(
-	this.BasicAssignmentTag
+	return ShorthandAssignmentTag;
+}();
+
+}.call(
+	this,
+	this.AssignmentTag
 );
+
+
+// 非赋值二元标签
+void function(BinaryTag, BinaryKeywordTag){
 
 this.LogicalORTag = function(){
 	/**
@@ -1669,9 +1464,9 @@ this.LogicalORTag = function(){
 	 * @param {Number} _type - 标签类型
 	 */
 	function LogicalORTag(_type){
-		OtherBinaryTag.call(this, _type);
+		BinaryTag.call(this, _type);
 	};
-	LogicalORTag = new Rexjs(LogicalORTag, OtherBinaryTag);
+	LogicalORTag = new Rexjs(LogicalORTag, BinaryTag);
 	
 	LogicalORTag.props({
 		// 防止与 "|" 冲突
@@ -1689,9 +1484,9 @@ this.LogicalANDTag = function(){
 	 * @param {Number} _type - 标签类型
 	 */
 	function LogicalANDTag(_type){
-		OtherBinaryTag.call(this, _type);
+		BinaryTag.call(this, _type);
 	};
-	LogicalANDTag = new Rexjs(LogicalANDTag, OtherBinaryTag);
+	LogicalANDTag = new Rexjs(LogicalANDTag, BinaryTag);
 	
 	LogicalANDTag.props({
 		// 防止与 "&" 冲突
@@ -1709,9 +1504,9 @@ this.BitwiseORTag = function(){
 	 * @param {Number} _type - 标签类型
 	 */
 	function BitwiseORTag(_type){
-		OtherBinaryTag.call(this, _type);
+		BinaryTag.call(this, _type);
 	};
-	BitwiseORTag = new Rexjs(BitwiseORTag, OtherBinaryTag);
+	BitwiseORTag = new Rexjs(BitwiseORTag, BinaryTag);
 	
 	BitwiseORTag.props({
 		precedence: 3,
@@ -1727,9 +1522,9 @@ this.BitwiseXORTag = function(){
 	 * @param {Number} _type - 标签类型
 	 */
 	function BitwiseXORTag(_type){
-		OtherBinaryTag.call(this, _type);
+		BinaryTag.call(this, _type);
 	};
-	BitwiseXORTag = new Rexjs(BitwiseXORTag, OtherBinaryTag);
+	BitwiseXORTag = new Rexjs(BitwiseXORTag, BinaryTag);
 	
 	BitwiseXORTag.props({
 		precedence: 4,
@@ -1745,9 +1540,9 @@ this.BitwiseANDTag = function(){
 	 * @param {Number} _type - 标签类型
 	 */
 	function BitwiseANDTag(_type){
-		OtherBinaryTag.call(this, _type);
+		BinaryTag.call(this, _type);
 	};
-	BitwiseANDTag = new Rexjs(BitwiseANDTag, OtherBinaryTag);
+	BitwiseANDTag = new Rexjs(BitwiseANDTag, BinaryTag);
 	
 	BitwiseANDTag.props({
 		precedence: 5,
@@ -1763,13 +1558,13 @@ this.IdentityTag = function(){
 	 * @param {Number} _type - 标签类型
 	 */
 	function IdentityTag(_type){
-		OtherBinaryTag.call(this, _type);
+		BinaryTag.call(this, _type);
 	};
-	IdentityTag = new Rexjs(IdentityTag, OtherBinaryTag);
+	IdentityTag = new Rexjs(IdentityTag, BinaryTag);
 	
 	IdentityTag.props({
 		// 防止与 "==" 或 "=" 冲突
-		order: 301,
+		order: 302,
 		precedence: 6,
 		regexp: /===/
 	});
@@ -1783,13 +1578,13 @@ this.NonidentityTag = function(){
 	 * @param {Number} _type - 标签类型
 	 */
 	function NonidentityTag(_type){
-		OtherBinaryTag.call(this, _type);
+		BinaryTag.call(this, _type);
 	};
-	NonidentityTag = new Rexjs(NonidentityTag, OtherBinaryTag);
+	NonidentityTag = new Rexjs(NonidentityTag, BinaryTag);
 	
 	NonidentityTag.props({
 		// 防止与 "!=" 冲突
-		order: 301,
+		order: 302,
 		precedence: 6,
 		regexp: /!==/
 	});
@@ -1804,9 +1599,9 @@ this.EqualityTag = function(){
 	 * @param {Number} _type - 标签类型
 	 */
 	function EqualityTag(_type){
-		OtherBinaryTag.call(this, _type);
+		BinaryTag.call(this, _type);
 	};
-	EqualityTag = new Rexjs(EqualityTag, OtherBinaryTag);
+	EqualityTag = new Rexjs(EqualityTag, BinaryTag);
 	
 	EqualityTag.props({
 		order: 301,
@@ -1823,12 +1618,12 @@ this.InequalityTag = function(){
 	 * @param {Number} _type - 标签类型
 	 */
 	function InequalityTag(_type){
-		OtherBinaryTag.call(this, _type);
+		BinaryTag.call(this, _type);
 	};
-	InequalityTag = new Rexjs(InequalityTag, OtherBinaryTag);
+	InequalityTag = new Rexjs(InequalityTag, BinaryTag);
 	
 	InequalityTag.props({
-		order: 300,
+		order: 301,
 		precedence: 6,
 		regexp: /!=/
 	});
@@ -1842,10 +1637,10 @@ this.LessThanOrEqualTag = function(){
 	 * @param {Number} _type - 标签类型
 	 */
 	function LessThanOrEqualTag(_type){
-		OtherBinaryTag.call(this, _type);
+		BinaryTag.call(this, _type);
 	};
-	LessThanOrEqualTag = new Rexjs(LessThanOrEqualTag, OtherBinaryTag);
-	
+	LessThanOrEqualTag = new Rexjs(LessThanOrEqualTag, BinaryTag);
+
 	LessThanOrEqualTag.props({
 		order: 300,
 		precedence: 7,
@@ -1861,9 +1656,9 @@ this.GreaterThanOrEqualTag = function(){
 	 * @param {Number} _type - 标签类型
 	 */
 	function GreaterThanOrEqualTag(_type){
-		OtherBinaryTag.call(this, _type);
+		BinaryTag.call(this, _type);
 	};
-	GreaterThanOrEqualTag = new Rexjs(GreaterThanOrEqualTag, OtherBinaryTag);
+	GreaterThanOrEqualTag = new Rexjs(GreaterThanOrEqualTag, BinaryTag);
 	
 	GreaterThanOrEqualTag.props({
 		order: 300,
@@ -1880,9 +1675,9 @@ this.LessThanTag = function(){
 	 * @param {Number} _type - 标签类型
 	 */
 	function LessThanTag(_type){
-		OtherBinaryTag.call(this, _type);
+		BinaryTag.call(this, _type);
 	};
-	LessThanTag = new Rexjs(LessThanTag, OtherBinaryTag);
+	LessThanTag = new Rexjs(LessThanTag, BinaryTag);
 	
 	LessThanTag.props({
 		precedence: 7,
@@ -1898,9 +1693,9 @@ this.GreaterThanTag = function(){
 	 * @param {Number} _type - 标签类型
 	 */
 	function GreaterThanTag(_type){
-		OtherBinaryTag.call(this, _type);
+		BinaryTag.call(this, _type);
 	};
-	GreaterThanTag = new Rexjs(GreaterThanTag, OtherBinaryTag);
+	GreaterThanTag = new Rexjs(GreaterThanTag, BinaryTag);
 	
 	GreaterThanTag.props({
 		precedence: 7,
@@ -1952,9 +1747,9 @@ this.UnsignedRightShiftTag = function(){
 	 * @param {Number} _type - 标签类型
 	 */
 	function UnsignedRightShiftTag(_type){
-		OtherBinaryTag.call(this, _type);
+		BinaryTag.call(this, _type);
 	};
-	UnsignedRightShiftTag = new Rexjs(UnsignedRightShiftTag, OtherBinaryTag);
+	UnsignedRightShiftTag = new Rexjs(UnsignedRightShiftTag, BinaryTag);
 	
 	UnsignedRightShiftTag.props({
 		order: 301,
@@ -1971,9 +1766,9 @@ this.LeftShiftTag = function(){
 	 * @param {Number} _type - 标签类型
 	 */
 	function LeftShiftTag(_type){
-		OtherBinaryTag.call(this, _type);
+		BinaryTag.call(this, _type);
 	};
-	LeftShiftTag = new Rexjs(LeftShiftTag, OtherBinaryTag);
+	LeftShiftTag = new Rexjs(LeftShiftTag, BinaryTag);
 	
 	LeftShiftTag.props({
 		order: 300,
@@ -1990,9 +1785,9 @@ this.RightShiftTag = function(){
 	 * @param {Number} _type - 标签类型
 	 */
 	function RightShiftTag(_type){
-		OtherBinaryTag.call(this, _type);
+		BinaryTag.call(this, _type);
 	};
-	RightShiftTag = new Rexjs(RightShiftTag, OtherBinaryTag);
+	RightShiftTag = new Rexjs(RightShiftTag, BinaryTag);
 	
 	RightShiftTag.props({
 		order: 300,
@@ -2009,9 +1804,9 @@ this.AdditionTag = function(){
 	 * @param {Number} _type - 标签类型
 	 */
 	function AdditionTag(_type){
-		OtherBinaryTag.call(this, _type);
+		BinaryTag.call(this, _type);
 	};
-	AdditionTag = new Rexjs(AdditionTag, OtherBinaryTag);
+	AdditionTag = new Rexjs(AdditionTag, BinaryTag);
 	
 	AdditionTag.props({
 		precedence: 9,
@@ -2034,9 +1829,9 @@ this.SubtractionTag = function(){
 	 * @param {Number} _type - 标签类型
 	 */
 	function SubtractionTag(_type){
-		OtherBinaryTag.call(this, _type);
+		BinaryTag.call(this, _type);
 	};
-	SubtractionTag = new Rexjs(SubtractionTag, OtherBinaryTag);
+	SubtractionTag = new Rexjs(SubtractionTag, BinaryTag);
 	
 	SubtractionTag.props({
 		precedence: 9,
@@ -2059,9 +1854,9 @@ this.DivisionTag = function(){
 	 * @param {Number} _type - 标签类型
 	 */
 	function DivisionTag(_type){
-		OtherBinaryTag.call(this, _type);
+		BinaryTag.call(this, _type);
 	};
-	DivisionTag = new Rexjs(DivisionTag, OtherBinaryTag);
+	DivisionTag = new Rexjs(DivisionTag, BinaryTag);
 	
 	DivisionTag.props({
 		// 防止与单行注释混合成正则表达式
@@ -2079,9 +1874,9 @@ this.MultiplicationTag = function(){
 	 * @param {Number} _type - 标签类型
 	 */
 	function MultiplicationTag(_type){
-		OtherBinaryTag.call(this, _type);
+		BinaryTag.call(this, _type);
 	};
-	MultiplicationTag = new Rexjs(MultiplicationTag, OtherBinaryTag);
+	MultiplicationTag = new Rexjs(MultiplicationTag, BinaryTag);
 	
 	MultiplicationTag.props({
 		precedence: 10,
@@ -2097,9 +1892,9 @@ this.RemainderTag = function(){
 	 * @param {Number} _type - 标签类型
 	 */
 	function RemainderTag(_type){
-		OtherBinaryTag.call(this, _type);
+		BinaryTag.call(this, _type);
 	};
-	RemainderTag = new Rexjs(RemainderTag, OtherBinaryTag);
+	RemainderTag = new Rexjs(RemainderTag, BinaryTag);
 	
 	RemainderTag.props({
 		precedence: 10,
@@ -2111,7 +1906,7 @@ this.RemainderTag = function(){
 	
 }.call(
 	this,
-	this.OtherBinaryTag,
+	this.BinaryTag,
 	this.BinaryKeywordTag
 );
 
@@ -2161,7 +1956,7 @@ this.DotAccessorTag = function(DotExpression){
 	DotAccessorTag = new Rexjs(DotAccessorTag, SyntaxTag);
 	
 	DotAccessorTag.props({
-		class: CLASS_EXPRESSION_CONTEXT,
+		$class: CLASS_EXPRESSION_CONTEXT,
 		regexp: /\./,
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
@@ -2323,7 +2118,7 @@ this.OpenBracketAccessorTag = function(OpenBracketTag, BracketAccessorExpression
 	OpenBracketAccessorTag = new Rexjs(OpenBracketAccessorTag, OpenBracketTag);
 	
 	OpenBracketAccessorTag.props({
-		class: CLASS_EXPRESSION_CONTEXT,
+		$class: CLASS_EXPRESSION_CONTEXT,
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
@@ -2412,7 +2207,7 @@ this.StatementEndTag = function(unexpected){
 	StatementEndTag = new Rexjs(StatementEndTag, SemicolonTag);
 	
 	StatementEndTag.props({
-		class: CLASS_EXPRESSION_CONTEXT,
+		$class: CLASS_EXPRESSION_CONTEXT,
 		regexp: /;|$/,
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
@@ -2463,7 +2258,7 @@ this.EmptyStatementTag = function(EmptyStatementExpression){
 	EmptyStatementTag = new Rexjs(EmptyStatementTag, SemicolonTag);
 	
 	EmptyStatementTag.props({
-		class: CLASS_STATEMENT,
+		$class: CLASS_STATEMENT,
 		regexp: /;/,
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
@@ -2509,9 +2304,9 @@ this.UnexpectedLineTerminatorTag = function(){
 	UnexpectedLineTerminatorTag = new Rexjs(UnexpectedLineTerminatorTag, SpecialLineTerminatorTag);
 	
 	UnexpectedLineTerminatorTag.props({
+		$type: TYPE_UNEXPECTED,
 		order: 401,
-		regexp: /(?:\/\*(?:[^*]|\*(?!\/))*)?(?:\r|\n|\u2028|\u2029)/,
-		type: TYPE_UNEXPECTED
+		regexp: /(?:\/\*(?:[^*]|\*(?!\/))*)?(?:\r|\n|\u2028|\u2029)/
 	});
 	
 	return UnexpectedLineTerminatorTag;
@@ -2686,19 +2481,14 @@ this.FileStartTag = function(FileStartExpression){
 this.FileEndTag = function(FileEndExpression){
 	/**
 	 * 文件结束符标签
-	 * @param {Number} _type - 标签类型
 	 */
-	function FileEndTag(_type){
-		FilePositionTag.call(this, _type);
+	function FileEndTag(){
+		FilePositionTag.call(this, TYPE_MISTAKABLE);
 	};
 	FileEndTag = new Rexjs(FileEndTag, FilePositionTag);
 	
 	FileEndTag.props({
 		regexp: /$/,
-		get type(){
-			return TYPE_MISTAKABLE
-		},
-		set type(type){},
 		/**
 		 * 标签访问器
 		 * @param {SyntaxParser} parser - 语法解析器
@@ -2769,7 +2559,7 @@ this.CommaTag = function(CommaStatement, unexpected){
 	CommaTag = new Rexjs(CommaTag, SyntaxTag);
 	
 	CommaTag.props({
-		class: CLASS_EXPRESSION_CONTEXT,
+		$class: CLASS_EXPRESSION_CONTEXT,
 		regexp: /,/,
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
@@ -2887,7 +2677,7 @@ this.OpenGroupingTag = function(OpenParenTag, GroupingStatement){
 	OpenGroupingTag = new Rexjs(OpenGroupingTag, OpenParenTag);
 	
 	OpenGroupingTag.props({
-		class: CLASS_EXPRESSION,
+		$class: CLASS_EXPRESSION,
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
@@ -3098,7 +2888,7 @@ this.OpenArrayTag = function(OpenBracketTag, ArrayExpression, ArrayStatement){
 	OpenArrayTag = new Rexjs(OpenArrayTag, OpenBracketTag);
 	
 	OpenArrayTag.props({
-		class: CLASS_EXPRESSION,
+		$class: CLASS_EXPRESSION,
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
@@ -3174,7 +2964,7 @@ this.ArrayItemSparatorTag = function(CommaTag, ArrayItemSeparatorExpression, Arr
 	ArrayItemSparatorTag = new Rexjs(ArrayItemSparatorTag, CommaTag);
 	
 	ArrayItemSparatorTag.props({
-		class: CLASS_EXPRESSION,
+		$class: CLASS_EXPRESSION,
 		/**
 		 * 标签访问器
 		 * @param {SyntaxParser} parser - 语法解析器
@@ -3311,7 +3101,7 @@ this.OpenBlockTag = function(OpenBraceTag, BlockStatements, BlockExpression){
 	OpenBlockTag = new Rexjs(OpenBlockTag, OpenBraceTag);
 	
 	OpenBlockTag.props({
-		class: CLASS_STATEMENT,
+		$class: CLASS_STATEMENT,
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
@@ -3670,7 +3460,7 @@ this.TerminatedFlowTag = function(TerminatedFlowExpression, TerminatedFlowStatem
 	TerminatedFlowTag = new Rexjs(TerminatedFlowTag, SyntaxTag);
 	
 	TerminatedFlowTag.props({
-		class: CLASS_STATEMENT,
+		$class: CLASS_STATEMENT,
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
@@ -3917,7 +3707,7 @@ this.IfTag = function(IfExpression){
 	IfTag = new Rexjs(IfTag, SyntaxTag);
 	
 	IfTag.props({
-		class: CLASS_STATEMENT,
+		$class: CLASS_STATEMENT,
 		regexp: /if/,
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
@@ -4158,7 +3948,7 @@ this.ReturnTag = function(ReturnExpression, ReturnStatement){
 	ReturnTag = new Rexjs(ReturnTag, SyntaxTag);
 	
 	ReturnTag.props({
-		class: CLASS_STATEMENT,
+		$class: CLASS_STATEMENT,
 		regexp: /return/,
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
@@ -4266,7 +4056,7 @@ this.ThrowTag = function(ThrowExpression, ThrowStatement){
 	ThrowTag = new Rexjs(ThrowTag, SyntaxTag);
 	
 	ThrowTag.props({
-		class: CLASS_STATEMENT,
+		$class: CLASS_STATEMENT,
 		regexp: /throw/,
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
@@ -4811,7 +4601,7 @@ this.ForTag = function(ForExpression){
 	ForTag = new Rexjs(ForTag, SyntaxTag);
 	
 	ForTag.props({
-		class: CLASS_STATEMENT,
+		$class: CLASS_STATEMENT,
 		regexp: /for/,
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
@@ -5239,7 +5029,7 @@ this.TryTag = function(TryExpression, TryStatement){
 	TryTag = new Rexjs(TryTag, SyntaxTag);
 	
 	TryTag.props({
-		class: CLASS_STATEMENT,
+		$class: CLASS_STATEMENT,
 		regexp: /try/,
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
@@ -5766,7 +5556,7 @@ this.SwitchTag = function(SwitchExpression){
 	SwitchTag = new Rexjs(SwitchTag, SyntaxTag);
 	
 	SwitchTag.props({
-		class: CLASS_STATEMENT,
+		$class: CLASS_STATEMENT,
 		regexp: /switch/,
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
@@ -6248,7 +6038,7 @@ this.WhileTag = function(WhileExpression, WhileStatement){
 	WhileTag = new Rexjs(WhileTag, SyntaxTag);
 	
 	WhileTag.props({
-		class: CLASS_STATEMENT,
+		$class: CLASS_STATEMENT,
 		regexp: /while/,
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
@@ -6504,7 +6294,7 @@ this.DoTag = function(DoExpression, DoStatement){
 	DoTag = new Rexjs(DoTag, SyntaxTag);
 	
 	DoTag.props({
-		class: CLASS_STATEMENT,
+		$class: CLASS_STATEMENT,
 		regexp: /do/,
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
@@ -6661,7 +6451,7 @@ this.DebuggerTag = function(){
 	DebuggerTag = new Rexjs(DebuggerTag, SyntaxTag);
 	
 	DebuggerTag.props({
-		class: CLASS_STATEMENT,
+		$class: CLASS_STATEMENT,
 		regexp: /debugger/,
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
@@ -6759,8 +6549,8 @@ this.ECMAScriptTags = function(DefaultTags, data){
 			type: TYPE_UNEXPECTED,
 			// 这个数组一定要按顺序
 			list: [
-				this.AssignmentTag,
 				this.BasicAssignmentTag,
+				this.ShorthandAssignmentTag,
 				this.LogicalORTag,
 				this.LogicalANDTag,
 				this.BitwiseORTag,
@@ -6874,10 +6664,10 @@ this.ExpressionTags = function(VariableTag){
 		filter: function(tag){
 			// 如果是表达式标签
 			if(
-				(tag.class & CLASS_EXPRESSION) === CLASS_EXPRESSION
+				tag.class.expression
 			){
 				// 设置为可匹配
-				tag.type = TYPE_MATCHABLE;
+				tag.type.bind(TYPE_MATCHABLE);
 			}
 			
 			return false;
@@ -6890,7 +6680,7 @@ this.ExpressionTags = function(VariableTag){
 	this.VariableTag
 );
 
-this.ExpressionContextTags = function(StatementEndTag, ExpressionBreakTag, OpenBracketAccessorTag){
+this.ExpressionContextTags = function(StatementEndTag, ExpressionBreakTag, OpenBracketAccessorTag, BinaryTag){
 	/**
 	 * 表达式上下文标签列表
 	 * @param {String} _id - 该标签列表的 id
@@ -6915,10 +6705,12 @@ this.ExpressionContextTags = function(StatementEndTag, ExpressionBreakTag, OpenB
 		filter: function(tag){
 			// 如果是表达式上下文标签
 			if(
-				(tag.class & CLASS_EXPRESSION_CONTEXT) === CLASS_EXPRESSION_CONTEXT
+				tag.class.expressionContext
 			){
 				// 设置为可匹配
-				tag.type = TYPE_MATCHABLE;
+				tag.type.bind(
+					tag instanceof BinaryTag ? TYPE_MISTAKABLE : TYPE_MATCHABLE
+				);
 			}
 			
 			return false;
@@ -6930,7 +6722,8 @@ this.ExpressionContextTags = function(StatementEndTag, ExpressionBreakTag, OpenB
 }(
 	this.StatementEndTag,
 	this.ExpressionBreakTag,
-	this.OpenBracketAccessorTag
+	this.OpenBracketAccessorTag,
+	this.BinaryTag
 );
 
 this.StatementTags = function(){
@@ -6951,10 +6744,10 @@ this.StatementTags = function(){
 		filter: function(tag){
 			// 如果是语句标签
 			if(
-				(tag.class & CLASS_STATEMENT) === CLASS_STATEMENT
+				tag.class.statement
 			){
 				// 设置为可匹配
-				tag.type = TYPE_MATCHABLE;
+				tag.type.bind(TYPE_MATCHABLE);
 			}
 			
 			return false;
@@ -7375,7 +7168,7 @@ this.NewContextTags = function(UnaryTag, NewTag, filter){
 					tag instanceof NewTag
 				){
 					// 设置为可匹配
-					tag.type = TYPE_MATCHABLE;
+					tag.type.bind(TYPE_MATCHABLE);
 				}
 				
 				return false;
@@ -7670,12 +7463,12 @@ Rexjs.static(this);
 	Rexjs.Statement,
 	Rexjs.Statements,
 	Rexjs.SyntaxTag,
-	Rexjs.SyntaxTag.CLASS_STATEMENT,
-	Rexjs.SyntaxTag.CLASS_EXPRESSION,
-	Rexjs.SyntaxTag.CLASS_EXPRESSION_CONTEXT,
-	Rexjs.SyntaxTag.TYPE_MATCHABLE,
-	Rexjs.SyntaxTag.TYPE_UNEXPECTED,
-	Rexjs.SyntaxTag.TYPE_MISTAKABLE,
+	Rexjs.TagClass.CLASS_STATEMENT,
+	Rexjs.TagClass.CLASS_EXPRESSION,
+	Rexjs.TagClass.CLASS_EXPRESSION_CONTEXT,
+	Rexjs.TagType.TYPE_MATCHABLE,
+	Rexjs.TagType.TYPE_UNEXPECTED,
+	Rexjs.TagType.TYPE_MISTAKABLE,
 	Rexjs.Expression.STATE_STATEMENT_ENDABLE,
 	Rexjs.Expression.STATE_STATEMENT_END,
 	Rexjs.Expression.STATE_STATEMENT_ENDED,
