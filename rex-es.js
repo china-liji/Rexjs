@@ -7,7 +7,7 @@ new function(
 	// 标签相关类
 	SyntaxTag,
 	// 标签分类相关
-	CLASS_STATEMENT, CLASS_EXPRESSION, CLASS_EXPRESSION_CONTEXT,
+	CLASS_STATEMENT_BEGIN, CLASS_EXPRESSION, CLASS_EXPRESSION_CONTEXT,
 	// 标签类型相关
 	TYPE_MATCHABLE, TYPE_UNEXPECTED, TYPE_MISTAKABLE,
 	// 表达式状态相关
@@ -204,7 +204,7 @@ this.DeclarationTag = function(){
 	DeclarationTag = new Rexjs(DeclarationTag, SyntaxTag);
 	
 	DeclarationTag.props({
-		$class: CLASS_STATEMENT
+		$class: CLASS_STATEMENT_BEGIN
 	});
 	
 	return DeclarationTag;
@@ -238,7 +238,7 @@ this.FilePositionTag = function(){
 	FilePositionTag = new Rexjs(FilePositionTag, SyntaxTag);
 
 	FilePositionTag.props({
-		$class: CLASS_STATEMENT
+		$class: CLASS_STATEMENT_BEGIN
 	});
 	
 	return FilePositionTag;
@@ -731,6 +731,316 @@ this.VariableTag = function(IdentifierTag){
 
 }.call(
 	this
+);
+
+
+// 分号标签
+void function(SemicolonTag){
+
+this.EmptyStatementTag = function(EmptyStatementExpression){
+	/**
+	 * 空语句标签
+	 * @param {Number} _type - 标签类型
+	 */
+	function EmptyStatementTag(_type){
+		SemicolonTag.call(this, _type);
+	};
+	EmptyStatementTag = new Rexjs(EmptyStatementTag, SemicolonTag);
+	
+	EmptyStatementTag.props({
+		$class: CLASS_STATEMENT_BEGIN,
+		regexp: /;/,
+		/**
+		 * 获取此标签接下来所需匹配的标签列表
+		 * @param {TagsMap} tagsMap - 标签集合映射
+		 */
+		require: function(tagsMap){
+			return tagsMap.unexpectedTags;
+		},
+		/**
+		 * 标签访问器
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 标签上下文
+		 * @param {Statement} statement - 当前语句
+		 * @param {Statements} statements - 当前语句块
+		 */
+		visitor: function(parser, context, statement){
+			statement.expression = new EmptyStatementExpression(context);
+		}
+	});
+	
+	return EmptyStatementTag;
+}(
+	Rexjs.EmptyStatementExpression
+);
+
+this.StatementEndTag = function(CLASS_STATEMENT_END, unexpected){
+	/**
+	 * 语句结束标签
+	 * @param {Number} _type - 标签类型
+	 */
+	function StatementEndTag(_type){
+		SemicolonTag.call(this, _type);
+	};
+	StatementEndTag = new Rexjs(StatementEndTag, SemicolonTag);
+	
+	StatementEndTag.props({
+		$class: CLASS_STATEMENT_END,
+		// 防止与 EmptyStatementTag 冲突
+		order: 100,
+		regexp: /;|$/,
+		/**
+		 * 获取此标签接下来所需匹配的标签列表
+		 * @param {TagsMap} tagsMap - 标签集合映射
+		 */
+		require: function(tagsMap){
+			return tagsMap.unexpectedTags;
+		},
+		/**
+		 * 标签访问器
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 标签上下文
+		 * @param {Statement} statement - 当前语句
+		 * @param {Statements} statements - 当前语句块
+		 */
+		visitor: function(parser, context, statement, statements){
+			statement.expression.state |= STATE_STATEMENT_END;
+		}
+	});
+	
+	return StatementEndTag;
+}(
+	Rexjs.TagClass.CLASS_STATEMENT_END,
+	SemicolonTag.prototype.unexpected
+);
+
+}.call(
+	this,
+	this.SemicolonTag
+);
+
+
+// 行结束符标签
+void function(SpecialLineTerminatorTag, visitor){
+
+this.UnexpectedLineTerminatorTag = function(){
+	/**
+	 * 未捕获的行结束符标签
+	 * @param {Number} _type - 标签类型
+	 */
+	function UnexpectedLineTerminatorTag(_type){
+		SpecialLineTerminatorTag.call(this, _type);
+	};
+	UnexpectedLineTerminatorTag = new Rexjs(UnexpectedLineTerminatorTag, SpecialLineTerminatorTag);
+	
+	UnexpectedLineTerminatorTag.props({
+		$type: TYPE_UNEXPECTED,
+		order: 401,
+		regexp: /(?:\/\*(?:[^*]|\*(?!\/))*)?(?:\r|\n|\u2028|\u2029)/
+	});
+	
+	return UnexpectedLineTerminatorTag;
+}();
+
+this.ExpressionBreakTag = function(){
+	/**
+	 * 表达式行结束符标签
+	 * @param {Number} _type - 标签类型
+	 */
+	function ExpressionBreakTag(_type){
+		SpecialLineTerminatorTag.call(this, _type);
+	};
+	ExpressionBreakTag = new Rexjs(ExpressionBreakTag, SpecialLineTerminatorTag);
+	
+	ExpressionBreakTag.props({
+		/**
+		 * 标签访问器
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 标签上下文
+		 * @param {Statement} statement - 当前语句
+		 * @param {Statements} statements - 当前语句块
+		 */
+		visitor: function(parser, context, statement, statements){
+			// 设置状态
+			statement.expression.state |= STATE_STATEMENT_ENDABLE;
+			
+			visitor.call(this, parser, context, statement, statements);
+		}
+	});
+	
+	return ExpressionBreakTag;
+}();
+
+this.StatementBreakTag = function(){
+	/**
+	 * 语句行结束符标签
+	 * @param {Number} _type - 标签类型
+	 */
+	function StatementBreakTag(_type){
+		SpecialLineTerminatorTag.call(this, _type);
+	};
+	StatementBreakTag = new Rexjs(StatementBreakTag, SpecialLineTerminatorTag);
+	
+	StatementBreakTag.props({
+		/**
+		 * 获取此标签接下来所需匹配的标签列表
+		 * @param {TagsMap} tagsMap - 标签集合映射
+		 */
+		require: function(tagsMap){
+			return tagsMap.unexpectedTags;
+		},
+		/**
+		 * 标签访问器
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 标签上下文
+		 * @param {Statement} statement - 当前语句
+		 * @param {Statements} statements - 当前语句块
+		 */
+		visitor: function(parser, context, statement, statements){
+			// 设置状态
+			statement.expression.state |= STATE_STATEMENT_END;
+			
+			visitor.call(this, parser, context, statement, statements);
+		}
+	});
+	
+	return StatementBreakTag;
+}();
+
+}.call(
+	this,
+	this.SpecialLineTerminatorTag,
+	this.SpecialLineTerminatorTag.prototype.visitor
+);
+
+
+// 文件位置标签
+void function(FilePositionTag, EmptyStatementExpression){
+
+this.FileStartExpression = function(){
+	/**
+	 * 文件起始表达式
+	 * @param {Context} context - 语法标签上下文
+	 */
+	function FileStartExpression(context){
+		EmptyStatementExpression.call(this, context);
+	};
+	FileStartExpression = new Rexjs(FileStartExpression, EmptyStatementExpression);
+	
+	FileStartExpression.props({
+		/**
+		 * 提取表达式文本内容
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 */
+		extractTo: function(contentBuilder){
+			// 追加闭包函数起始部分
+			contentBuilder.appendString('void function(){');
+			// 创建新行
+			contentBuilder.newline();
+			// 追加严格表达式字符串
+			contentBuilder.appendString('"use strict";');
+			// 创建新行
+			contentBuilder.newline();
+		}
+	});
+	
+	return FileStartExpression;
+}();
+
+this.FileEndExpression = function(){
+	/**
+	 * 文件结束表达式
+	 * @param {Context} context - 语法标签上下文
+	 */
+	function FileEndExpression(context){
+		EmptyStatementExpression.call(this, context);
+	};
+	FileEndExpression = new Rexjs(FileEndExpression, EmptyStatementExpression);
+	
+	FileEndExpression.props({
+		/**
+		 * 提取表达式文本内容
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 */
+		extractTo: function(contentBuilder){
+			// 创建新行
+			contentBuilder.newline();
+			// 追加闭包函数结束部分
+			contentBuilder.appendString("}();");
+		}
+	});
+	
+	return FileEndExpression;
+}();
+
+this.FileStartTag = function(FileStartExpression){
+	/**
+	 * 文件起始符标签
+	 * @param {Number} _type - 标签类型
+	 */
+	function FileStartTag(_type){
+		FilePositionTag.call(this, _type);
+	};
+	FileStartTag = new Rexjs(FileStartTag, FilePositionTag);
+	
+	FileStartTag.props({
+		order: Infinity,
+		regexp: /^/,
+		/**
+		 * 获取此标签接下来所需匹配的标签列表
+		 * @param {TagsMap} tagsMap - 标签集合映射
+		 */
+		require: function(tagMaps){
+			return tagMaps.unexpectedTags;
+		},
+		/**
+		 * 标签访问器
+		 * @param {SyntaxParser} parser - 语法解析器
+		 */
+		visitor: function(parser, context, statement){
+			// 设置当前表达式
+			statement.expression = new FileStartExpression(context);
+		}
+	});
+	
+	return FileStartTag;
+}(
+	this.FileStartExpression
+);
+
+this.FileEndTag = function(FileEndExpression){
+	/**
+	 * 文件结束符标签
+	 */
+	function FileEndTag(){
+		FilePositionTag.call(this, TYPE_MISTAKABLE);
+	};
+	FileEndTag = new Rexjs(FileEndTag, FilePositionTag);
+	
+	FileEndTag.props({
+		regexp: /$/,
+		/**
+		 * 标签访问器
+		 * @param {SyntaxParser} parser - 语法解析器
+		 */
+		visitor: function(parser, context, statement){
+			// 设置当前表达式
+			statement.expression = new FileEndExpression(context);
+			
+			// 终止解析
+			parser.regexp.break();
+		}
+	});
+	
+	return FileEndTag;
+}(
+	this.FileEndExpression
+);
+	
+}.call(
+	this,
+	this.FilePositionTag,
+	Rexjs.EmptyStatementExpression
 );
 
 
@@ -1237,11 +1547,11 @@ this.BinaryExpression = function(){
 				contentBuilder.appendContext(context);
 				// 添加空格
 				contentBuilder.appendSpace();
+				return;
 			}
-			else {
-				// 添加该二元标签内容
-				contentBuilder.appendContext(context);
-			}
+
+			// 添加该二元标签内容
+			contentBuilder.appendContext(context);
 		}
 	});
 	
@@ -1277,30 +1587,8 @@ this.BinaryStatement = function(){
 		 * @param {Context} context - 语法标签上下文
 		 */
 		try: function(parser, context){
-			var expression = this.out().expression, tag = context.tag;
-
-			// 如果是二元标签
-			if(
-				tag instanceof BinaryTag
-			){
-				// 如果是赋值标签
-				if(
-					tag.precedence === 0
-				){
-					// 如果上一个不是赋值标签
-					if(
-						expression[expression.length - 1].context.tag.precedence > 0
-					){
-						// 报错
-						parser.error(context, "Invalid left-hand side in assignment", true);
-					}
-				}
-			}
-			else {
-				// 添加表达式
-				expression.add(this.expression);
-			}
-			
+			// 跳出语句并添加表达式
+			this.out().expression.add(this.expression);
 			return null;
 		}
 	});
@@ -1343,10 +1631,10 @@ this.BinaryTag = BinaryTag = function(BinaryExpression, BinaryListExpression, Bi
 			if(
 				expression instanceof BinaryListExpression
 			){
-				// 跳出语句并添加二元表达式
-				expression.add(
-					new BinaryExpression(expression, context)
-				);
+				var maxIndex = expression.length - 1;
+
+				// 替换成二元表达式
+				expression[maxIndex] = new BinaryExpression(expression[maxIndex], context);
 			}
 			else {
 				(
@@ -1371,7 +1659,7 @@ this.BinaryTag = BinaryTag = function(BinaryExpression, BinaryListExpression, Bi
 	this.BinaryStatement
 );
 
-this.AssignmentTag = function(BinaryTag){
+this.AssignmentTag = function(BinaryTag, BinaryListExpression, visitor){
 	/**
 	 * 二元赋值运算符标签
 	 * @param {Number} _type - 标签类型
@@ -1380,10 +1668,42 @@ this.AssignmentTag = function(BinaryTag){
 		BinaryTag.call(this, _type);
 	};
 	AssignmentTag = new Rexjs(AssignmentTag, BinaryTag);
+
+	AssignmentTag.props({
+		/**
+		 * 标签访问器
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 标签上下文
+		 * @param {Statement} statement - 当前语句
+		 * @param {Statements} statements - 当前语句块
+		 */
+		visitor: function(parser, context, statement, statements){
+			var expression = statement.expression;
+
+			// 如果当前语句是二元语句
+			if(
+				expression instanceof BinaryListExpression
+			){
+				// 如果上一个二元表达式不是赋值表达式
+				if(
+					expression[expression.length - 2].context.tag.precedence > 0
+				){
+					// 报错
+					parser.error(context, "Invalid left-hand side in assignment", true);
+					return;
+				}
+			}
+
+			// 调用父类方法
+			visitor.call(this, parser, context, statement, statements);
+		}
+	});
 	
 	return AssignmentTag;
 }(
-	this.BinaryTag
+	this.BinaryTag,
+	this.BinaryListExpression,
+	this.BinaryTag.prototype.visitor
 );
 
 this.BinaryKeywordTag = BinaryKeywordTag = function(BinaryTag){
@@ -2193,327 +2513,6 @@ closeBracketAccessorTag = new this.CloseBracketAccessorTag();
 );
 
 
-// 分号标签
-void function(SemicolonTag){
-
-this.StatementEndTag = function(unexpected){
-	/**
-	 * 语句结束标签
-	 * @param {Number} _type - 标签类型
-	 */
-	function StatementEndTag(_type){
-		SemicolonTag.call(this, _type);
-	};
-	StatementEndTag = new Rexjs(StatementEndTag, SemicolonTag);
-	
-	StatementEndTag.props({
-		$class: CLASS_EXPRESSION_CONTEXT,
-		regexp: /;|$/,
-		/**
-		 * 获取此标签接下来所需匹配的标签列表
-		 * @param {TagsMap} tagsMap - 标签集合映射
-		 */
-		require: function(tagsMap){
-			return tagsMap.unexpectedTags;
-		},
-		/**
-		 * 返回处于解析上下文中的标签类型
-		 * @param {Statement} statement - 当前解析的语句
-		 */
-		unexpected: function(statement){
-			// 如果当前语句不允许出现分号
-			if(
-				(statement.blacklist & BLACKLIST_SEMICOLON) === BLACKLIST_SEMICOLON
-			){
-				return true;
-			}
-			
-			return unexpected.call(this, statement);
-		},
-		/**
-		 * 标签访问器
-		 * @param {SyntaxParser} parser - 语法解析器
-		 * @param {Context} context - 标签上下文
-		 * @param {Statement} statement - 当前语句
-		 * @param {Statements} statements - 当前语句块
-		 */
-		visitor: function(parser, context, statement, statements){
-			statement.expression.state |= STATE_STATEMENT_END;
-		}
-	});
-	
-	return StatementEndTag;
-}(
-	SemicolonTag.prototype.unexpected
-);
-
-this.EmptyStatementTag = function(EmptyStatementExpression){
-	/**
-	 * 空语句标签
-	 * @param {Number} _type - 标签类型
-	 */
-	function EmptyStatementTag(_type){
-		SemicolonTag.call(this, _type);
-	};
-	EmptyStatementTag = new Rexjs(EmptyStatementTag, SemicolonTag);
-	
-	EmptyStatementTag.props({
-		$class: CLASS_STATEMENT,
-		regexp: /;/,
-		/**
-		 * 获取此标签接下来所需匹配的标签列表
-		 * @param {TagsMap} tagsMap - 标签集合映射
-		 */
-		require: function(tagsMap){
-			return tagsMap.unexpectedTags;
-		},
-		/**
-		 * 标签访问器
-		 * @param {SyntaxParser} parser - 语法解析器
-		 * @param {Context} context - 标签上下文
-		 * @param {Statement} statement - 当前语句
-		 * @param {Statements} statements - 当前语句块
-		 */
-		visitor: function(parser, context, statement){
-			statement.expression = new EmptyStatementExpression(context);
-		}
-	});
-	
-	return EmptyStatementTag;
-}(
-	Rexjs.EmptyStatementExpression
-);
-
-}.call(
-	this,
-	this.SemicolonTag
-);
-
-
-// 行结束符标签
-void function(SpecialLineTerminatorTag, visitor){
-
-this.UnexpectedLineTerminatorTag = function(){
-	/**
-	 * 未捕获的行结束符标签
-	 * @param {Number} _type - 标签类型
-	 */
-	function UnexpectedLineTerminatorTag(_type){
-		SpecialLineTerminatorTag.call(this, _type);
-	};
-	UnexpectedLineTerminatorTag = new Rexjs(UnexpectedLineTerminatorTag, SpecialLineTerminatorTag);
-	
-	UnexpectedLineTerminatorTag.props({
-		$type: TYPE_UNEXPECTED,
-		order: 401,
-		regexp: /(?:\/\*(?:[^*]|\*(?!\/))*)?(?:\r|\n|\u2028|\u2029)/
-	});
-	
-	return UnexpectedLineTerminatorTag;
-}();
-
-this.ExpressionBreakTag = function(){
-	/**
-	 * 表达式行结束符标签
-	 * @param {Number} _type - 标签类型
-	 */
-	function ExpressionBreakTag(_type){
-		SpecialLineTerminatorTag.call(this, _type);
-	};
-	ExpressionBreakTag = new Rexjs(ExpressionBreakTag, SpecialLineTerminatorTag);
-	
-	ExpressionBreakTag.props({
-		/**
-		 * 标签访问器
-		 * @param {SyntaxParser} parser - 语法解析器
-		 * @param {Context} context - 标签上下文
-		 * @param {Statement} statement - 当前语句
-		 * @param {Statements} statements - 当前语句块
-		 */
-		visitor: function(parser, context, statement, statements){
-			// 设置状态
-			statement.expression.state |= STATE_STATEMENT_ENDABLE;
-			
-			visitor.call(this, parser, context, statement, statements);
-		}
-	});
-	
-	return ExpressionBreakTag;
-}();
-
-this.StatementBreakTag = function(){
-	/**
-	 * 语句行结束符标签
-	 * @param {Number} _type - 标签类型
-	 */
-	function StatementBreakTag(_type){
-		SpecialLineTerminatorTag.call(this, _type);
-	};
-	StatementBreakTag = new Rexjs(StatementBreakTag, SpecialLineTerminatorTag);
-	
-	StatementBreakTag.props({
-		/**
-		 * 获取此标签接下来所需匹配的标签列表
-		 * @param {TagsMap} tagsMap - 标签集合映射
-		 */
-		require: function(tagsMap){
-			return tagsMap.unexpectedTags;
-		},
-		/**
-		 * 标签访问器
-		 * @param {SyntaxParser} parser - 语法解析器
-		 * @param {Context} context - 标签上下文
-		 * @param {Statement} statement - 当前语句
-		 * @param {Statements} statements - 当前语句块
-		 */
-		visitor: function(parser, context, statement, statements){
-			// 设置状态
-			statement.expression.state |= STATE_STATEMENT_END;
-			
-			visitor.call(this, parser, context, statement, statements);
-		}
-	});
-	
-	return StatementBreakTag;
-}();
-
-}.call(
-	this,
-	this.SpecialLineTerminatorTag,
-	this.SpecialLineTerminatorTag.prototype.visitor
-);
-
-
-// 文件位置标签
-void function(FilePositionTag, EmptyStatementExpression){
-
-this.FileStartExpression = function(){
-	/**
-	 * 文件起始表达式
-	 * @param {Context} context - 语法标签上下文
-	 */
-	function FileStartExpression(context){
-		EmptyStatementExpression.call(this, context);
-	};
-	FileStartExpression = new Rexjs(FileStartExpression, EmptyStatementExpression);
-	
-	FileStartExpression.props({
-		/**
-		 * 提取表达式文本内容
-		 * @param {ContentBuilder} contentBuilder - 内容生成器
-		 */
-		extractTo: function(contentBuilder){
-			// 追加闭包函数起始部分
-			contentBuilder.appendString('void function(){');
-			// 创建新行
-			contentBuilder.newline();
-			// 追加严格表达式字符串
-			contentBuilder.appendString('"use strict";');
-			// 创建新行
-			contentBuilder.newline();
-		}
-	});
-	
-	return FileStartExpression;
-}();
-
-this.FileEndExpression = function(){
-	/**
-	 * 文件结束表达式
-	 * @param {Context} context - 语法标签上下文
-	 */
-	function FileEndExpression(context){
-		EmptyStatementExpression.call(this, context);
-	};
-	FileEndExpression = new Rexjs(FileEndExpression, EmptyStatementExpression);
-	
-	FileEndExpression.props({
-		/**
-		 * 提取表达式文本内容
-		 * @param {ContentBuilder} contentBuilder - 内容生成器
-		 */
-		extractTo: function(contentBuilder){
-			// 创建新行
-			contentBuilder.newline();
-			// 追加闭包函数结束部分
-			contentBuilder.appendString("}();");
-		}
-	});
-	
-	return FileEndExpression;
-}();
-
-this.FileStartTag = function(FileStartExpression){
-	/**
-	 * 文件起始符标签
-	 * @param {Number} _type - 标签类型
-	 */
-	function FileStartTag(_type){
-		FilePositionTag.call(this, _type);
-	};
-	FileStartTag = new Rexjs(FileStartTag, FilePositionTag);
-	
-	FileStartTag.props({
-		order: Infinity,
-		regexp: /^/,
-		/**
-		 * 获取此标签接下来所需匹配的标签列表
-		 * @param {TagsMap} tagsMap - 标签集合映射
-		 */
-		require: function(tagMaps){
-			return tagMaps.unexpectedTags;
-		},
-		/**
-		 * 标签访问器
-		 * @param {SyntaxParser} parser - 语法解析器
-		 */
-		visitor: function(parser, context, statement){
-			// 设置当前表达式
-			statement.expression = new FileStartExpression(context);
-		}
-	});
-	
-	return FileStartTag;
-}(
-	this.FileStartExpression
-);
-
-this.FileEndTag = function(FileEndExpression){
-	/**
-	 * 文件结束符标签
-	 */
-	function FileEndTag(){
-		FilePositionTag.call(this, TYPE_MISTAKABLE);
-	};
-	FileEndTag = new Rexjs(FileEndTag, FilePositionTag);
-	
-	FileEndTag.props({
-		regexp: /$/,
-		/**
-		 * 标签访问器
-		 * @param {SyntaxParser} parser - 语法解析器
-		 */
-		visitor: function(parser, context, statement){
-			// 设置当前表达式
-			statement.expression = new FileEndExpression(context);
-			
-			// 终止解析
-			parser.regexp.break();
-		}
-	});
-	
-	return FileEndTag;
-}(
-	this.FileEndExpression
-);
-	
-}.call(
-	this,
-	this.FilePositionTag,
-	Rexjs.EmptyStatementExpression
-);
-
-
 // 逗号相关
 void function(){
 
@@ -3101,7 +3100,7 @@ this.OpenBlockTag = function(OpenBraceTag, BlockStatements, BlockExpression){
 	OpenBlockTag = new Rexjs(OpenBlockTag, OpenBraceTag);
 	
 	OpenBlockTag.props({
-		$class: CLASS_STATEMENT,
+		$class: CLASS_STATEMENT_BEGIN,
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
@@ -3460,7 +3459,7 @@ this.TerminatedFlowTag = function(TerminatedFlowExpression, TerminatedFlowStatem
 	TerminatedFlowTag = new Rexjs(TerminatedFlowTag, SyntaxTag);
 	
 	TerminatedFlowTag.props({
-		$class: CLASS_STATEMENT,
+		$class: CLASS_STATEMENT_BEGIN,
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
@@ -3707,7 +3706,7 @@ this.IfTag = function(IfExpression){
 	IfTag = new Rexjs(IfTag, SyntaxTag);
 	
 	IfTag.props({
-		$class: CLASS_STATEMENT,
+		$class: CLASS_STATEMENT_BEGIN,
 		regexp: /if/,
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
@@ -3866,7 +3865,7 @@ elseTag = new this.ElseTag();
 
 
 // return 语句相关
-void function(StatementEndTag, SpecialLineTerminatorTag){
+void function(SpecialLineTerminatorTag){
 
 this.ReturnExpression = function(){
 	/**
@@ -3948,7 +3947,7 @@ this.ReturnTag = function(ReturnExpression, ReturnStatement){
 	ReturnTag = new Rexjs(ReturnTag, SyntaxTag);
 	
 	ReturnTag.props({
-		$class: CLASS_STATEMENT,
+		$class: CLASS_STATEMENT_BEGIN,
 		regexp: /return/,
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
@@ -3980,7 +3979,6 @@ this.ReturnTag = function(ReturnExpression, ReturnStatement){
 
 }.call(
 	this,
-	this.StatementEndTag,
 	this.SpecialLineTerminatorTag
 );
 
@@ -4056,7 +4054,7 @@ this.ThrowTag = function(ThrowExpression, ThrowStatement){
 	ThrowTag = new Rexjs(ThrowTag, SyntaxTag);
 	
 	ThrowTag.props({
-		$class: CLASS_STATEMENT,
+		$class: CLASS_STATEMENT_BEGIN,
 		regexp: /throw/,
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
@@ -4147,7 +4145,7 @@ this.VarExpression = function(BinaryExpression, extractTo){
 	ListExpression.prototype.extractTo
 );
 
-this.VarStatement = function(StatementEndTag){
+this.VarStatement = function(){
 	/**
 	 * var 语句
 	 * @param {Statements} statements - 该语句将要所处的语句块
@@ -4174,9 +4172,7 @@ this.VarStatement = function(StatementEndTag){
 	});
 	
 	return VarStatement;
-}(
-	this.StatementEndTag
-);
+}();
 
 this.VarClauseStatement = function(){
 	/**
@@ -4601,7 +4597,7 @@ this.ForTag = function(ForExpression){
 	ForTag = new Rexjs(ForTag, SyntaxTag);
 	
 	ForTag.props({
-		$class: CLASS_STATEMENT,
+		$class: CLASS_STATEMENT_BEGIN,
 		regexp: /for/,
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
@@ -5029,7 +5025,7 @@ this.TryTag = function(TryExpression, TryStatement){
 	TryTag = new Rexjs(TryTag, SyntaxTag);
 	
 	TryTag.props({
-		$class: CLASS_STATEMENT,
+		$class: CLASS_STATEMENT_BEGIN,
 		regexp: /try/,
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
@@ -5556,7 +5552,7 @@ this.SwitchTag = function(SwitchExpression){
 	SwitchTag = new Rexjs(SwitchTag, SyntaxTag);
 	
 	SwitchTag.props({
-		$class: CLASS_STATEMENT,
+		$class: CLASS_STATEMENT_BEGIN,
 		regexp: /switch/,
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
@@ -6038,7 +6034,7 @@ this.WhileTag = function(WhileExpression, WhileStatement){
 	WhileTag = new Rexjs(WhileTag, SyntaxTag);
 	
 	WhileTag.props({
-		$class: CLASS_STATEMENT,
+		$class: CLASS_STATEMENT_BEGIN,
 		regexp: /while/,
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
@@ -6294,7 +6290,7 @@ this.DoTag = function(DoExpression, DoStatement){
 	DoTag = new Rexjs(DoTag, SyntaxTag);
 	
 	DoTag.props({
-		$class: CLASS_STATEMENT,
+		$class: CLASS_STATEMENT_BEGIN,
 		regexp: /do/,
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
@@ -6451,7 +6447,7 @@ this.DebuggerTag = function(){
 	DebuggerTag = new Rexjs(DebuggerTag, SyntaxTag);
 	
 	DebuggerTag.props({
-		$class: CLASS_STATEMENT,
+		$class: CLASS_STATEMENT_BEGIN,
 		regexp: /debugger/,
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
@@ -6707,10 +6703,21 @@ this.ExpressionContextTags = function(StatementEndTag, ExpressionBreakTag, OpenB
 			if(
 				tag.class.expressionContext
 			){
-				// 设置为可匹配
-				tag.type.bind(
-					tag instanceof BinaryTag ? TYPE_MISTAKABLE : TYPE_MATCHABLE
-				);
+				var type = TYPE_MATCHABLE;
+
+				switch(
+					true
+				){
+					// 如果是二元标签
+					case tag instanceof BinaryTag:
+					// 如果是语句结束标签
+					case tag instanceof StatementEndTag:
+						type = TYPE_MISTAKABLE;
+						break;
+				}
+
+				// 重新绑定类型
+				tag.type.bind(type);
 			}
 			
 			return false;
@@ -6744,7 +6751,7 @@ this.StatementTags = function(){
 		filter: function(tag){
 			// 如果是语句标签
 			if(
-				tag.class.statement
+				tag.class.statementBegin
 			){
 				// 设置为可匹配
 				tag.type.bind(TYPE_MATCHABLE);
@@ -7463,7 +7470,7 @@ Rexjs.static(this);
 	Rexjs.Statement,
 	Rexjs.Statements,
 	Rexjs.SyntaxTag,
-	Rexjs.TagClass.CLASS_STATEMENT,
+	Rexjs.TagClass.CLASS_STATEMENT_BEGIN,
 	Rexjs.TagClass.CLASS_EXPRESSION,
 	Rexjs.TagClass.CLASS_EXPRESSION_CONTEXT,
 	Rexjs.TagType.TYPE_MATCHABLE,

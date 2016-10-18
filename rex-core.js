@@ -671,8 +671,8 @@ this.List = function(Array, Object, toArray){
 );
 
 
-// 语法标签相关
-void function(parseInt){
+// 标签数据相关
+void function(){
 
 this.TagData = function(){
 	/**
@@ -698,7 +698,15 @@ this.TagData = function(){
 	return TagData;
 }();
 
-this.TagClass = function(TagData, CLASS_STATEMENT, CLASS_EXPRESSION, CLASS_EXPRESSION_CONTEXT, bind){
+}.call(
+	this
+);
+
+
+// 子类标签数据相关
+void function(TagData, bind, parseInt){
+
+this.TagClass = function(CLASS_NONE, CLASS_STATEMENT, CLASS_STATEMENT_BEGIN, CLASS_EXPRESSION, CLASS_EXPRESSION_CONTEXT, CLASS_STATEMENT_END){
 	/**
 	 * 标签类别
 	 * @param {Number} value - 标签类别
@@ -709,10 +717,12 @@ this.TagClass = function(TagData, CLASS_STATEMENT, CLASS_EXPRESSION, CLASS_EXPRE
 	TagClass = new Rexjs(TagClass, TagData);
 
 	TagClass.static({
-		CLASS_NONE: parseInt(0, 2),
-		CLASS_STATEMENT: CLASS_STATEMENT = parseInt(10, 2),
-		CLASS_EXPRESSION: CLASS_EXPRESSION = parseInt(110, 2),
-		CLASS_EXPRESSION_CONTEXT: CLASS_EXPRESSION_CONTEXT = parseInt(1000, 2)
+		CLASS_NONE: CLASS_NONE,
+		CLASS_EXPRESSION: CLASS_EXPRESSION,
+		CLASS_EXPRESSION_CONTEXT: CLASS_EXPRESSION_CONTEXT,
+		CLASS_STATEMENT: CLASS_STATEMENT,
+		CLASS_STATEMENT_BEGIN: CLASS_STATEMENT_BEGIN,
+		CLASS_STATEMENT_END: CLASS_STATEMENT_END
 	});
 
 	TagClass.props({
@@ -724,27 +734,35 @@ this.TagClass = function(TagData, CLASS_STATEMENT, CLASS_EXPRESSION, CLASS_EXPRE
 			this.expression = (value & CLASS_EXPRESSION) === CLASS_EXPRESSION;
 			this.expressionContext = (value & CLASS_EXPRESSION_CONTEXT) === CLASS_EXPRESSION_CONTEXT;
 			this.statement = (value & CLASS_STATEMENT) === CLASS_STATEMENT;
+			this.statementBegin = (value & CLASS_STATEMENT_BEGIN) === CLASS_STATEMENT_BEGIN;
+			this.statementEnd = (value & CLASS_STATEMENT_END) === CLASS_STATEMENT_END;
 
 			bind.call(this, value);
 		},
 		expression: false,
 		expressionContext: false,
-		statement: false
+		statement: false,
+		statementBegin: false,
+		statementEnd: false
 	});
 
 	return TagClass;
 }(
-	this.TagData,
+	// CLASS_NONE
+	parseInt(0, 2),
 	// CLASS_STATEMENT
-	null,
+	parseInt(10, 2),
+	// CLASS_STATEMENT_BEGIN
+	parseInt(110, 2),
 	// CLASS_EXPRESSION
-	null,
+	parseInt(1110, 2),
 	// CLASS_EXPRESSION_CONTEXT
-	null,
-	this.TagData.prototype.bind
+	parseInt(10000, 2),
+	// CLASS_STATEMENT_END
+	parseInt(10010, 2)
 );
 
-this.TagType = function(TagData, TYPE_MATCHABLE, TYPE_UNEXPECTED, TYPE_MISTAKABLE, bind){
+this.TagType = function(TYPE_MATCHABLE, TYPE_UNEXPECTED, TYPE_MISTAKABLE){
 	/**
 	 * 标签类型
 	 * @param {Number} value - 标签类型
@@ -755,9 +773,9 @@ this.TagType = function(TagData, TYPE_MATCHABLE, TYPE_UNEXPECTED, TYPE_MISTAKABL
 	TagType = new Rexjs(TagType);
 
 	TagType.static({
-		TYPE_MATCHABLE: TYPE_MATCHABLE = parseInt(10, 2),
-		TYPE_UNEXPECTED: TYPE_UNEXPECTED = parseInt(100, 2),
-		TYPE_MISTAKABLE: TYPE_MISTAKABLE = parseInt(1100, 2)
+		TYPE_MATCHABLE: TYPE_MATCHABLE,
+		TYPE_UNEXPECTED: TYPE_UNEXPECTED,
+		TYPE_MISTAKABLE: TYPE_MISTAKABLE
 	});
 
 	TagType.props({
@@ -779,17 +797,26 @@ this.TagType = function(TagData, TYPE_MATCHABLE, TYPE_UNEXPECTED, TYPE_MISTAKABL
 
 	return TagType;
 }(
-	this.TagData,
 	// TYPE_MATCHABLE
-	null,
+	parseInt(10, 2),
 	// TYPE_UNEXPECTED
-	null,
+	parseInt(100, 2),
 	// TYPE_MISTAKABLE
-	null,
-	this.TagData.prototype.bind
+	parseInt(1100, 2)
 );
 
-this.SyntaxTag = function(TagClass, TagType, TYPE_UNEXPECTED, parseInt){
+}.call(
+	this,
+	this.TagData,
+	this.TagData.prototype.bind,
+	parseInt
+);
+
+
+// 语法标签相关
+void function(){
+
+this.SyntaxTag = function(TagClass, TagType){
 	/**
 	 * 语法标签
 	 * @param {Number} _type - 标签类型
@@ -836,15 +863,11 @@ this.SyntaxTag = function(TagClass, TagType, TYPE_UNEXPECTED, parseInt){
 	return SyntaxTag;
 }(
 	this.TagClass,
-	this.TagType,
-	// TYPE_UNEXPECTED
-	null,
-	parseInt
+	this.TagType
 );
 
 }.call(
-	this,
-	parseInt
+	this
 );
 
 
@@ -1964,8 +1987,6 @@ this.SyntaxError = function(MappingBuilder, e){
 	 * @param {Boolean} _reference - 是否是引用错误
 	 */
 	function SyntaxError(file, context, description, _reference){
-		var filename = file.filename, position = context.position;
-		
 		// 如果支持 MappingBuilder
 		if(
 			MappingBuilder.supported
@@ -1975,19 +1996,33 @@ this.SyntaxError = function(MappingBuilder, e){
 				new MappingBuilder(file).complete()
 			);
 		}
+
+		// 如果是引用错误
+		if(
+			_reference
+		){
+			this.reference = true;
+		}
 		
 		this.file = file;
 		this.context = context;
 		this.description = description;
-		this.message = (_reference ? "Reference" : "Syntax") + "Error: " + description + " @ " + filename + ":" + position.line + ":" + position.column;
 	};
 	SyntaxError = new Rexjs(SyntaxError);
 	
 	SyntaxError.props({
 		context: null,
 		description: "",
-		message: "",
+		/**
+		 * 获悉错误消息
+		 */
+		get message(){
+			var position = this.context.position;
+
+			return (this.reference ? "Reference" : "Syntax") + "Error: " + this.description + " @ " + this.file.filename + ":" + position.line + ":" + position.column;
+		},
 		file: null,
+		reference: false,
 		/**
 		 * 转字符串
 		 */
@@ -2184,12 +2219,6 @@ this.SyntaxParser = function(SyntaxRegExp, SyntaxError, Statement, Statements, P
 					
 					// 增加列数
 					position.column += content.length;
-
-					if(
-						tag instanceof Rexjs.FileEndTag
-					){
-						// debugger
-					}
 					
 					// 如果标签异常，即不应该被捕获
 					if(
@@ -2240,11 +2269,11 @@ this.SyntaxParser = function(SyntaxRegExp, SyntaxError, Statement, Statements, P
 		if(
 			statement.expression
 		){
-			var mistakable = tag.type.mistakable;
+			var mistakable = tag.type.mistakable, tagClass = tag.class;
 
 			// 如果标签不是可能被误解的
 			if(
-				mistakable ? tag.class.statement : true
+				mistakable ? tagClass.statement : true
 			){
 				var t = null;
 
@@ -2267,22 +2296,27 @@ this.SyntaxParser = function(SyntaxRegExp, SyntaxError, Statement, Statements, P
 					statement = statement.target;
 				}
 
-				switch(
-					false
+				// 如果是被误解的
+				if(
+					mistakable
 				){
-					// 如果不是被误解的
-					case mistakable:
-						break;
+					// 如果是语句结束标签
+					if(
+						tagClass.statementEnd
+					){
+						// 返回标签
+						return tag;
+					}
 
-					// 如果表达式不可以结束
-					case (statements.statement.expression.state & STATE_STATEMENT_ENDABLE) === STATE_STATEMENT_ENDABLE:
-						break;
-
-					default:
+					// 如果表达式可以结束
+					if(
+						(statements.statement.expression.state & STATE_STATEMENT_ENDABLE) === STATE_STATEMENT_ENDABLE
+					){
 						// 创建新语句
 						statements.newStatement();
 						// 返回标签
 						return tag;
+					}
 				}
 
 				// 跳出外层语句块
