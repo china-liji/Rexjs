@@ -830,15 +830,6 @@ this.SyntaxTag = function(TagClass, TagType){
 	SyntaxTag.props({
 		$class: TagClass.CLASS_NONE,
 		$type: TagType.TYPE_MATCHABLE,
-		/**
-		 * 提取该标签上下文，此方法的目的是针对某些特殊的标签，在提取时进行处理上下文
-		 * @param {Context} context - 标签上下文
-		 * @param {ContentBuilder} contentBuilder - 内容生成器
-		 */
-		extractContextTo: function(context, contentBuilder){
-			// 不做任何处理，直接添加
-			contentBuilder.appendContext(context);
-		},
 		class: null,
 		order: 0,
 		regexp: null,
@@ -851,12 +842,6 @@ this.SyntaxTag = function(TagClass, TagType){
 			return currentTags;
 		},
 		type: null,
-		/**
-		 * 判断该标签是否是意外标签
-		 */
-		unexpected: function(){
-			return this.type.unexpected;
-		},
 		visitor: function(){}
 	});
 
@@ -1620,16 +1605,7 @@ this.Statement = function(Syntax, TYPE_MISTAKABLE, CLASS_STATEMENT, STATE_STATEM
 	};
 	Statement = new Rexjs(Statement, Syntax);
 	
-	Statement.static({
-		BLACKLIST_CONTEXT_TAGS: parseInt(10, 2),
-		BLACKLIST_ASSGINMENT: parseInt(100, 2),
-		BLACKLIST_SEMICOLON: parseInt(1000, 2),
-		BLACKLIST_COMMA: parseInt(10000, 2)
-	});
-
 	Statement.props({
-		$expression: null,
-		blacklist: Statement.BLACKLIST_CONTEXT_TAGS,
 		/**
 		 * 捕获并处理错误异常
 		 * @param {SyntaxParser} parser - 语法解析器
@@ -1648,37 +1624,18 @@ this.Statement = function(Syntax, TYPE_MISTAKABLE, CLASS_STATEMENT, STATE_STATEM
 			this.expression.extractTo(contentBuilder);
 		},
 		/**
-		 * 将临时的表达式设置为正式的表达式
-		 */
-		formalize: function(){
-			var $expression = this.$expression;
-			
-			this.expression = $expression;
-			this.$expression = null;
-			
-			return $expression;
-		},
-		/**
 		 * 跳出该语句
 		 */
 		out: function(){
-			return this.statements.statement = this.target;
-		},
-		/**
-		 * 请求将 target 语句的临时表达式设置为正式表达式并跳出该语句
-		 */
-		requestFormalize: function(){
-			var expression = this.expression, targetExpression = this.out().formalize();
-			
-			// 如果当前语句有表达式
-			if(
-				expression
-			){
-				// 设置 state
-				targetExpression.state = expression.state;
-			}
-			
-			return targetExpression;
+			var target = this.target;
+
+			// 将当前表达式的状态记录在目标语句的表达式上
+			target.expression.state = this.expression.state;
+			// 设置当前语句
+			this.statements.statement = target;
+
+			// 返回目标语句
+			return target;
 		},
 		statements: null,
 		/**
@@ -2222,7 +2179,7 @@ this.SyntaxParser = function(SyntaxRegExp, SyntaxError, Statement, Statements, P
 					
 					// 如果标签异常，即不应该被捕获
 					if(
-						tag.unexpected(statement)
+						tag.type.unexpected
 					){
 						// 如果表达式存在，则进入异常捕获处理
 						context.tag = tag = toTryCatch(parser, context, tag, statement, statements);

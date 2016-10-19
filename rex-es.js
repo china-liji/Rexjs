@@ -2293,17 +2293,12 @@ this.DotAccessorTag = function(DotExpression){
 		 * @param {Statements} statements - 当前语句块
 		 */
 		visitor: function(parser, context, statement, statements){
-			var expression = statement.expression;
+			var dotExpression = new DotExpression(context);
 
-			// 设置临时表达式
-			(
-				statement.expression = new DotExpression(context)
-			)
 			// 设置 object
-			.object = expression;
-			
-			// 设置当前语句
-			statements.statement = new ECMAScriptStatement(statements);
+			dotExpression.object = statement.expression;
+			// 设置当前表达式
+			statement.expression = dotExpression;
 		}
 	});
 	
@@ -2332,7 +2327,7 @@ this.PropertyNameTag = function(IdentifierTag, RegExp){
 		 * @param {Statements} statements - 当前语句块
 		 */
 		visitor: function(parser, context, statement, statements){
-			statement.out().expression.property = context;
+			statement.expression.property = context;
 		}
 	});
 	
