@@ -1,5 +1,5 @@
 // a / window.b / window.c
-
+!!window.b + window.c
 a = b += c >>>= 1 + 2 / this - null in window.d
 
 /*

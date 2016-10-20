@@ -1065,8 +1065,8 @@ this.UnaryExpression = function(){
 		extractTo: function(contentBuilder){
 			var context = this.context;
 			
-			// 提取上下文
-			context.tag.extractContextTo(context, contentBuilder);
+			// 提取一元操作符的内容
+			contentBuilder.appendContext(context);
 			// 提取操作对象内容
 			this.operand.extractTo(contentBuilder);
 		},
@@ -1088,20 +1088,14 @@ this.UnaryStatement = function(){
 	
 	UnaryStatement.props({
 		/**
-		 * 获取表达式
+		 * 尝试处理异常
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 语法标签上下文
 		 */
-		get expression(){
-			return this.target.$expression.operand;
-		},
-		/**
-		 * 设置表达式
-		 * @param {Expression} expression - 需要设置的表达式
-		 */
-		set expression(expression){
-			// 临时表达式转正并设置 operand
-			this.requestFormalize().operand = expression;
-		},
-		statements: null
+		try: function(parser, context){
+			// 跳出语句并设置 operand
+			this.out().expression.operand = this.expression;
+		}
 	});
 	
 	return UnaryStatement;
@@ -1134,11 +1128,8 @@ this.UnaryTag = function(UnaryExpression, UnaryStatement){
 		 * @param {Statements} statements - 当前语句块
 		 */
 		visitor: function(parser, context, statement, statements){
-			// 当前语句不再允许赋值运算
-			statement.blacklist |= BLACKLIST_ASSGINMENT;
 			// 设置临时表达式
-			statement.$expression = new UnaryExpression(context);
-			
+			statement.expression = new UnaryExpression(context);
 			// 设置当前语句
 			statements.statement = new UnaryStatement(statements);
 		}
@@ -1150,7 +1141,15 @@ this.UnaryTag = function(UnaryExpression, UnaryStatement){
 	this.UnaryStatement
 );
 
-this.UnaryKeywordTag = function(UnaryTag){
+}.call(
+	this
+);
+
+
+// 特殊一元标签
+void function(UnaryTag, visitor){
+
+this.UnaryKeywordTag = function(){
 	/**
 	 * 一元关键字标签
 	 * @param {Number} _type - 标签类型
@@ -1162,24 +1161,24 @@ this.UnaryKeywordTag = function(UnaryTag){
 	
 	UnaryKeywordTag.props({
 		/**
-		 * 提取该标签上下文
+		 * 标签访问器
+		 * @param {SyntaxParser} parser - 语法解析器
 		 * @param {Context} context - 标签上下文
-		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 * @param {Statement} statement - 当前语句
+		 * @param {Statements} statements - 当前语句块
 		 */
-		extractContextTo: function(context, contentBuilder){
-			// 添加上下文
-			contentBuilder.appendContext(context);
-			// 添加空格
-			contentBuilder.appendSpace();
+		visitor: function(parser, context, statement, statements){
+			// 关键字后面添加空格
+			context.content = context.fragment + " ";
+
+			visitor.call(this, parser, context, statement, statements);
 		}
 	});
 	
 	return UnaryKeywordTag;
-}(
-	this.UnaryTag
-);
+}();
 
-this.UnarySiblingTag = function(UnaryTag){
+this.UnarySiblingTag = function(){
 	/**
 	 * 相邻的一元标签，即与前一个标签内容相重复的一元标签
 	 * 此标签的存在，就是为了减少判断前面是否还是同样内容的一元标签，
@@ -1192,31 +1191,33 @@ this.UnarySiblingTag = function(UnaryTag){
 	UnarySiblingTag = new Rexjs(UnarySiblingTag, UnaryTag);
 	
 	UnarySiblingTag.props({
+		order: 300,
 		/**
-		 * 提取该标签上下文
+		 * 标签访问器
+		 * @param {SyntaxParser} parser - 语法解析器
 		 * @param {Context} context - 标签上下文
-		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 * @param {Statement} statement - 当前语句
+		 * @param {Statements} statements - 当前语句块
 		 */
-		extractContextTo: function(context, contentBuilder){
-			// 添加空格
-			contentBuilder.appendSpace();
-			// 添加上下文
-			contentBuilder.appendContext(context);
-		},
-		order: 300
+		visitor: function(parser, context, statement, statements){
+			// 前面添加空格
+			context.content = " " + context.fragment;
+
+			visitor.call(this, parser, context, statement, statements);
+		}
 	});
 	
 	return UnarySiblingTag;
-}(
-	this.UnaryTag
-);
+}();
 
 }.call(
-	this
+	this,
+	this.UnaryTag,
+	this.UnaryTag.prototype.visitor
 );
 
 
-// 一元标签
+// 所有具体的一元标签
 void function(UnaryTag, UnaryKeywordTag, UnarySiblingTag){
 
 this.DeleteTag = function(){
@@ -1513,61 +1514,18 @@ this.LogicalNOTTag = function(){
 
 
 // 二元标签基类
-void function(BinaryTag, BinaryKeywordTag){
+void function(){
 
 this.BinaryExpression = function(){
 	/**
 	 * 二元表达式
-	 * @param {Expression} left - 左侧表达式
-	 * @param {Context} context - 语法标签上下文
 	 */
-	function BinaryExpression(left, context){
-		LeftHandSideExpression.call(this, left, context);
-	};
-	BinaryExpression = new Rexjs(BinaryExpression, LeftHandSideExpression);
-
-	BinaryExpression.props({
-		/**
-		 * 提取表达式文本内容
-		 * @param {ContentBuilder} contentBuilder - 内容生成器
-		 */
-		extractTo: function(contentBuilder){
-			var context = this.context, tag = context.tag;
-
-			// 提取左侧的表达式内容
-			this.left.extractTo(contentBuilder);
-
-			// 如果是关键字标签
-			if(
-				tag instanceof BinaryKeywordTag
-			){
-				// 添加空格
-				contentBuilder.appendSpace();
-				// 添加该二元标签内容
-				contentBuilder.appendContext(context);
-				// 添加空格
-				contentBuilder.appendSpace();
-				return;
-			}
-
-			// 添加该二元标签内容
-			contentBuilder.appendContext(context);
-		}
-	});
-	
-	return BinaryExpression;
-}();
-
-this.BinaryListExpression = function(){
-	/**
-	 * 二元列表表达式
-	 */
-	function BinaryListExpression(){
+	function BinaryExpression(){
 		ListExpression.call(this, "");
 	};
-	BinaryListExpression = new Rexjs(BinaryListExpression, ListExpression);
+	BinaryExpression = new Rexjs(BinaryExpression, ListExpression);
 
-	return BinaryListExpression;
+	return BinaryExpression;
 }();
 
 this.BinaryStatement = function(){
@@ -1589,14 +1547,13 @@ this.BinaryStatement = function(){
 		try: function(parser, context){
 			// 跳出语句并添加表达式
 			this.out().expression.add(this.expression);
-			return null;
 		}
 	});
 	
 	return BinaryStatement;
 }();
 
-this.BinaryTag = BinaryTag = function(BinaryExpression, BinaryListExpression, BinaryStatement){
+this.BinaryTag = function(BinaryExpression, BinaryStatement){
 	/**
 	 * 二元标签
 	 * @param {Number} _type - 标签类型
@@ -1627,23 +1584,23 @@ this.BinaryTag = BinaryTag = function(BinaryExpression, BinaryListExpression, Bi
 		visitor: function(parser, context, statement, statements){
 			var expression = statement.expression;
 
-			// 如果当前语句是二元语句
+			// 如果当前表达式是二元表达式
 			if(
-				expression instanceof BinaryListExpression
+				expression instanceof BinaryExpression
 			){
 				var maxIndex = expression.length - 1;
 
-				// 替换成二元表达式
-				expression[maxIndex] = new BinaryExpression(expression[maxIndex], context);
+				// 替换表达式
+				expression[maxIndex] = new LeftHandSideExpression(expression[maxIndex], context);
 			}
 			else {
 				(
 					// 设置当前表达式
-					statement.expression = new BinaryListExpression()
+					statement.expression = new BinaryExpression()
 				)
-				// 添加二元表达式
+				// 添加表达式
 				.add(
-					new BinaryExpression(expression, context)
+					new LeftHandSideExpression(expression, context)
 				);
 			}
 
@@ -1655,11 +1612,18 @@ this.BinaryTag = BinaryTag = function(BinaryExpression, BinaryListExpression, Bi
 	return BinaryTag;
 }(
 	this.BinaryExpression,
-	this.BinaryListExpression,
 	this.BinaryStatement
 );
 
-this.AssignmentTag = function(BinaryTag, BinaryListExpression, visitor){
+}.call(
+	this
+);
+
+
+// 特殊的二元标签
+void function(BinaryTag, visitor){
+
+this.AssignmentTag = function(BinaryExpression){
 	/**
 	 * 二元赋值运算符标签
 	 * @param {Number} _type - 标签类型
@@ -1680,11 +1644,11 @@ this.AssignmentTag = function(BinaryTag, BinaryListExpression, visitor){
 		visitor: function(parser, context, statement, statements){
 			var expression = statement.expression;
 
-			// 如果当前语句是二元语句
+			// 如果当前表达式是二元表达式
 			if(
-				expression instanceof BinaryListExpression
+				expression instanceof BinaryExpression
 			){
-				// 如果上一个二元表达式不是赋值表达式
+				// 如果上一个表达式不是赋值表达式
 				if(
 					expression[expression.length - 2].context.tag.precedence > 0
 				){
@@ -1701,12 +1665,10 @@ this.AssignmentTag = function(BinaryTag, BinaryListExpression, visitor){
 	
 	return AssignmentTag;
 }(
-	this.BinaryTag,
-	this.BinaryListExpression,
-	this.BinaryTag.prototype.visitor
+	this.BinaryExpression
 );
 
-this.BinaryKeywordTag = BinaryKeywordTag = function(BinaryTag){
+this.BinaryKeywordTag = function(){
 	/**
 	 * 二元关键字标签
 	 * @param {Number} _type - 标签类型
@@ -1715,23 +1677,36 @@ this.BinaryKeywordTag = BinaryKeywordTag = function(BinaryTag){
 		BinaryTag.call(this, _type);
 	};
 	BinaryKeywordTag = new Rexjs(BinaryKeywordTag, BinaryTag);
+
+	BinaryKeywordTag.props({
+		/**
+		 * 标签访问器
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 标签上下文
+		 * @param {Statement} statement - 当前语句
+		 * @param {Statements} statements - 当前语句块
+		 */
+		visitor: function(parser, context, statement, statements){
+			// 给关键字两端加上空格
+			context.content = " " + context.fragment + " ";
+
+			// 调用父类方法
+			visitor.call(this, parser, context, statement, statements);
+		}
+	});
 	
 	return BinaryKeywordTag;
-}(
-	this.BinaryTag
-);
+}();
 
 }.call(
 	this,
-	// BinaryTag
-	null,
-	// BinaryKeywordTag
-	null
+	this.BinaryTag,
+	this.BinaryTag.prototype.visitor
 );
 
 
-// 二元赋值标签
-void function(AssignmentTag){
+// 所有具体的二元标签
+void function(BinaryTag, AssignmentTag, BinaryKeywordTag){
 
 this.BasicAssignmentTag = function(){
 	/**
@@ -1768,15 +1743,6 @@ this.ShorthandAssignmentTag = function(){
 	
 	return ShorthandAssignmentTag;
 }();
-
-}.call(
-	this,
-	this.AssignmentTag
-);
-
-
-// 非赋值二元标签
-void function(BinaryTag, BinaryKeywordTag){
 
 this.LogicalORTag = function(){
 	/**
@@ -2227,6 +2193,7 @@ this.RemainderTag = function(){
 }.call(
 	this,
 	this.BinaryTag,
+	this.AssignmentTag,
 	this.BinaryKeywordTag
 );
 
