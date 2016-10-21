@@ -1631,8 +1631,17 @@ this.Statement = function(Syntax, TYPE_MISTAKABLE, CLASS_STATEMENT, STATE_STATEM
 		 * 跳出该语句
 		 */
 		out: function(){
+			var target = this.target;
+
+			// 记录当前表达式的状态
+			target.expression.state = this.expression.state;
+			// 恢复语句
+			this.statements.statement = target;
+			// 清空语句块与 target
+			this.target = this.statements = null;
+
 			// 设置当前语句
-			return this.statements.statement = this.target;
+			return target;
 		},
 		statements: null,
 		/**
@@ -2131,7 +2140,7 @@ this.SyntaxParser = function(SyntaxRegExp, SyntaxError, Statement, Statements, P
 				tags.regexp,
 				file.source,
 				function(fragment, tagIndex){
-					var context, tag = tags[tagIndex], statements = parser.statements, statement = statements.statement;
+					var context, statements, tag = tags[tagIndex];
 					
 					// 初始化 context
 					context = new Context(
@@ -2151,15 +2160,14 @@ this.SyntaxParser = function(SyntaxRegExp, SyntaxError, Statement, Statements, P
 						tag.type.unexpected
 					){
 						// 如果表达式存在，则进入异常捕获处理
-						context.tag = tag = toTryCatch(parser, context, tag, statement, statements);
-						// 可能在 try catch 中会被改变
-						statements = parser.statements;
-						// 可能在 try catch 中会被改变
-						statement = statements.statement;
+						context.tag = tag = toTryCatch(parser, context, tag, parser.statements);
 					}
+
+					// 获取语句块
+					statements = parser.statements;
 					
 					// 访问标签
-					tag.visitor(parser, context, statement, statements);
+					tag.visitor(parser, context, statements.statement, statements);
 					
 					// 编译正则
 					this.compile(
@@ -2189,7 +2197,9 @@ this.SyntaxParser = function(SyntaxRegExp, SyntaxError, Statement, Statements, P
 	this.Context,
 	this.ContentBuilder,
 	// toTryCatch
-	function(parser, context, tag, statement, statements){
+	function(parser, context, tag, statements){
+		var statement = statements.statement;
+
 		// 如果表达式存在
 		outerBlock:
 		if(
@@ -2201,14 +2211,14 @@ this.SyntaxParser = function(SyntaxRegExp, SyntaxError, Statement, Statements, P
 			if(
 				mistakable ? tagClass.statement : true
 			){
-				var t, s = statement;
+				var t, s;
 
 				// 当语句存在
 				while(
-					s
+					statement
 				){
 					// 获取 try 所返回的标签
-					t = s.try(parser, context);
+					t = statement.try(parser, context);
 
 					// 如果标签存在
 					if(
@@ -2218,8 +2228,12 @@ this.SyntaxParser = function(SyntaxRegExp, SyntaxError, Statement, Statements, P
 						return t;
 					}
 
-					// 设置语句为 target
-					s = s.target;
+					// 获取当前语句块
+					statements = parser.statements;
+					// 获取当前语句
+					s = statements.statement;
+					// 如果是当前语句，则取 target，否则取当前语句
+					statement = statement === s ? statement.target : s;
 				}
 
 				// 如果是被误解的
@@ -2236,10 +2250,10 @@ this.SyntaxParser = function(SyntaxRegExp, SyntaxError, Statement, Statements, P
 
 					// 如果表达式可以结束
 					if(
-						(statement.expression.state & STATE_STATEMENT_ENDABLE) === STATE_STATEMENT_ENDABLE
+						(statements.statement.expression.state & STATE_STATEMENT_ENDABLE) === STATE_STATEMENT_ENDABLE
 					){
-						// 创建新语句
-						parser.statements.newStatement();
+						// 创建新语句，这里不能直接用 statements，因为在上面可能当前语句块已经发生改变
+						statements.newStatement();
 						// 返回标签
 						return tag;
 					}

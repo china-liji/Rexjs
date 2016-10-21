@@ -1093,8 +1093,14 @@ this.UnaryStatement = function(){
 		 * @param {Context} context - 语法标签上下文
 		 */
 		try: function(parser, context){
-			// 跳出语句并设置 operand
-			this.out().expression.operand = this.expression;
+			// 跳出语句
+			var target = this.out();
+
+			// 设置 operand
+			target.expression.operand = this.expression;
+			
+			// 调用 target 语句的 try，因为当前语句不具备连接2个表达式
+			target.try(parser, context);
 		}
 	});
 	

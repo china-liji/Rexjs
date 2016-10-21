@@ -1,6 +1,6 @@
 // a / window.b / window.c
-!!window.b + window.c
-a = b += c >>>= 1 + 2 / this - null in window.d
+!+window.b + window.c
+a = b += c >>>= window.g + 2 / this - null in window.d
 
 /*
 (d = 1, e = 3, f = 9;)
