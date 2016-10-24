@@ -24,7 +24,7 @@ this.Rexjs = function(Function, create, getProperties, setPrototypeOf){
 			// 如果是 undefined
 			case "undefined":
 				__proto__ = Rexjs.getOwnPrototype();
-				prototype = this.getOwnClass().prototype;
+				prototype = this.constructor.prototype;
 				break;
 
 			// 默认
@@ -143,21 +143,6 @@ this.assign = function(){
 	};
 }();
 
-this.getSuperClass = function(getPrototypeOf){
-	/**
-	 * 获取父类
-	 */
-	return function(){
-		return getPrototypeOf(
-				this.getOwnClass()
-					.prototype
-			)
-			.constructor;
-	};
-}(
-	Object.getPrototypeOf
-);
-
 this.constructor = function(constructor, assign, call, apply, bind, toString, getOwnPrototype, defineProperties){
 	defineProperties(
 		definePrototype(
@@ -170,12 +155,6 @@ this.constructor = function(constructor, assign, call, apply, bind, toString, ge
 			bind: bind,
 			call: call,
 			getOwnPrototype: getOwnPrototype,
-			/**
-			 * 获取父类
-			 */
-			getSuperClass: function(){
-				return this.prototype.getSuperClass();
-			},
 			/**
 			 * 将一个或多个属性添加到该类，并/或修改现有属性的特性
 			 * @param {Object} props - 包含一个或多个属性的键值对
@@ -224,15 +203,6 @@ this.constructor = function(constructor, assign, call, apply, bind, toString, ge
 		}
 	}
 );
-
-this.getOwnClass = function(){
-	/**
-	 * 获取自身类
-	 */
-	return function(){
-		return this.constructor;
-	};
-}();
 
 this.toString = function(){
 	/**
@@ -1622,6 +1592,14 @@ this.Statement = function(Syntax, TYPE_MISTAKABLE, CLASS_STATEMENT, STATE_STATEM
 	Statement = new Rexjs(Statement, Syntax);
 	
 	Statement.props({
+		/**
+		 * 捕获处理异常
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 语法标签上下文
+		 */
+		catch: function(parser, context){
+			return null;
+		},
 		expression: null,
 		/**
 		 * 提取文本内容
@@ -1630,6 +1608,15 @@ this.Statement = function(Syntax, TYPE_MISTAKABLE, CLASS_STATEMENT, STATE_STATEM
 		extractTo: function(contentBuilder){
 			// 提取表达式内容
 			this.expression.extractTo(contentBuilder);
+		},
+		/**
+		 * 最后的异常处理
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 语法标签上下文
+		 * @param {Boolean} afterTry - 是否是在 try 之后执行的
+		 */
+		finally: function(parser, context, afterTry){
+			return null;
 		},
 		/**
 		 * 跳出该语句
@@ -1651,7 +1638,9 @@ this.Statement = function(Syntax, TYPE_MISTAKABLE, CLASS_STATEMENT, STATE_STATEM
 		 * @param {SyntaxParser} parser - 语法解析器
 		 * @param {Context} context - 语法标签上下文
 		 */
-		try: function(parser, context){}
+		try: function(parser, context){
+			return null;
+		}
 	});
 	
 	return Statement;
@@ -1936,15 +1925,49 @@ this.SyntaxError = function(MappingBuilder, e){
 			);
 		}
 
-		throw (_reference ? "Reference" : "Syntax") +
-			"Error: " +
-			(
-				_description || "Unexpected " + context.tag.throw + (fragment ? " " + fragment : "")
-			) +
-			" @ " +
-			file.filename + ":" + position.line + ":" + position.column;
+		// 如果是引用错误
+		if(
+			_reference
+		){
+			this.reference = true;
+		}
+
+		// 如果提供了错误描述
+		if(
+			_description
+		){
+			this.description = _description;
+		}
+		// 设置默认描述
+		else {
+			this.description = "Unexpected " + context.tag.throw + (fragment ? " " + fragment : "");
+		}
+		
+		this.file = file;
+		this.context = context;
 	};
 	SyntaxError = new Rexjs(SyntaxError);
+	
+	SyntaxError.props({
+		context: null,
+		description: "",
+		/**
+		 * 获悉错误消息
+		 */
+		get message(){
+			var position = this.context.position;
+
+			return (this.reference ? "Reference" : "Syntax") + "Error: " + this.description + " @ " + this.file.filename + ":" + position.line + ":" + position.column;
+		},
+		file: null,
+		reference: false,
+		/**
+		 * 转字符串
+		 */
+		toString: function(){
+			return this.message;
+		}
+	});
 
 	return SyntaxError;
 }(
@@ -2089,6 +2112,7 @@ this.SyntaxParser = function(SyntaxRegExp, SyntaxError, Statement, Statements, P
 			return contentBuilder.complete();
 		},
 		content: "",
+		details: null,
 		/**
 		 * 报错
 		 * @param {Context} context - 错误信息上下文
@@ -2096,10 +2120,15 @@ this.SyntaxParser = function(SyntaxRegExp, SyntaxError, Statement, Statements, P
 		 * @param {Boolean} _reference - 是否是引用错误
 		 */
 		error: function(context, _description, _reference){
+			var error = new SyntaxError(this.file, context, _description, _reference);
+
 			// 中断匹配，结束解析
 			this.regexp.break();
+
+			// 记录错误详情
+			this.details = error;
 			// 报错
-			new SyntaxError(this.file, context, _description, _reference)
+			throw error.message;
 		},
 		file: null,
 		/**
@@ -2109,7 +2138,10 @@ this.SyntaxParser = function(SyntaxRegExp, SyntaxError, Statement, Statements, P
 		parse: function(file){
 			var parser = this, tagsMap = this.tagsMap, tags = tagsMap.entranceTags, statements = this.statements, position = this.position = new Position(1, 1);
 
+			// 记录文件
 			this.file = file;
+			// 清空错误
+			this.details = null;
 			
 			// 清空语句块
 			statements.clear();
@@ -2198,8 +2230,8 @@ this.SyntaxParser = function(SyntaxRegExp, SyntaxError, Statement, Statements, P
 				while(
 					statement
 				){
-					// 获取 try 所返回的标签
-					t = statement.try(parser, context);
+					// 获取 catch 所返回的标签
+					t = statement.catch(parser, context) || statement.finally(parser, context, false);
 
 					// 如果标签存在
 					if(
@@ -2248,8 +2280,8 @@ this.SyntaxParser = function(SyntaxRegExp, SyntaxError, Statement, Statements, P
 			if(
 				mistakable
 			){
-				// 如果 try 的处理结果存在，则返回，不然返回 tag
-				return statement.try(parser, context) || tag;
+				// 首取 try 的处理结果，再取 finally 的处理结果，如果都不存在，则最后返回 tag
+				return statement.try(parser, context) || statement.finally(parser, context, true) || tag;
 			}
 		}
 
@@ -2315,7 +2347,7 @@ this.SimpleTest = function(INNER_CONTENT_REGEXP, file, console, toArray, e, catc
 						description,
 						toArray(arguments, 2),
 						parser,
-						e
+						parser.details
 					)
 				){
 					// 打印成功捕获信息

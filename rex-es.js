@@ -2,8 +2,8 @@ new function(
 	Rexjs,
 	// 表达式相关
 	Expression, ListExpression, EmptyExpression, PartnerExpression, LeftHandSideExpression,
-	// ECMAScript 解析器相关
-	ECMAScriptStatement, ECMAScriptStatements,
+	// 语句相关
+	Statement, Statements,
 	// 标签相关类
 	SyntaxTag,
 	// 标签分类相关
@@ -18,92 +18,6 @@ new function(
 	IDENTIFIER_REGEXP_SOURCE
 ){
 "use strict";
-
-// 语法解析转换相关
-void function(Statement, ContentBuilder){
-	
-this.ECMAScriptStatement = ECMAScriptStatement = function(){
-	/**
-	 * ECMAScript 语句
-	 * @param {Statements} statements - 该语句将要所处的语句块
-	 */
-	function ECMAScriptStatement(statements){
-		Statement.call(this, statements);
-	};
-	ECMAScriptStatement = new Rexjs(ECMAScriptStatement, Statement);
-	
-	ECMAScriptStatement.props({
-		/**
-		 * 捕获并处理错误异常
-		 * @param {SyntaxParser} parser - 语法解析器
-		 * @param {Context} context - 语法标签上下文
-		 */
-		catch: function(parser, context){return null;
-			var target = this.target;
-			
-			// 如果 target 存在
-			if(
-				target
-			){
-				// 返回 target 的结果
-				return target.try(parser, context);
-			}
-
-			var tag = context.tag;
-
-			switch(
-				true
-			){
-				// 如果标签不是可能被误解的
-				case (tag.type & TYPE_MISTAKABLE) !== TYPE_MISTAKABLE:
-					return null;
-				
-				// 如果表达式还并不可以结束
-				case (this.expression.state & STATE_STATEMENT_ENDABLE) !== STATE_STATEMENT_ENDABLE:
-					return null;
-
-				// 默认
-				default:
-					// 创建新语句
-					this.statements.newStatement();
-					// 返回标签
-					return tag;
-			}
-		}
-	});
-	
-	return ECMAScriptStatement;
-}();
-
-this.ECMAScriptStatements = ECMAScriptStatements = function(Statements){
-	/**
-	 * ECMAScript 语句块
-	 */
-	function ECMAScriptStatements(){
-		Statements.call(this);
-	};
-	ECMAScriptStatements = new Rexjs(ECMAScriptStatements, Statements);
-	
-	ECMAScriptStatements.props({
-		/**
-		 * 初始化语句
-		 */
-		initStatement: function(){
-			return new ECMAScriptStatement(this);
-		}
-	});
-	
-	return ECMAScriptStatements;
-}(
-	Rexjs.Statements
-);
-
-}.call(
-	this,
-	Rexjs.Statement,
-	Rexjs.ContentBuilder
-); 
-
 
 // 基础标签
 void function(){
@@ -1086,25 +1000,29 @@ this.UnaryStatement = function(){
 	 * @param {Statements} statements - 该语句将要所处的语句块
 	 */
 	function UnaryStatement(statements){
-		ECMAScriptStatement.call(this, statements);
+		Statement.call(this, statements);
 	};
-	UnaryStatement = new Rexjs(UnaryStatement, ECMAScriptStatement);
+	UnaryStatement = new Rexjs(UnaryStatement, Statement);
 	
 	UnaryStatement.props({
 		/**
-		 * 尝试处理异常
+		 * 最后的异常处理
 		 * @param {SyntaxParser} parser - 语法解析器
 		 * @param {Context} context - 语法标签上下文
+		 * @param {Boolean} afterTry - 是否是在 try 之后执行的
 		 */
-		try: function(parser, context){
+		finally: function(parser, context, afterTry){
 			// 跳出语句
 			var target = this.out();
 
 			// 设置 operand
 			target.expression.operand = this.expression;
 			
-			// 调用 target 语句的 try，因为当前语句不具备连接2个表达式
-			target.try(parser, context);
+			return (
+				// 因为当前语句不具备连接2个表达式，所以要执行 target 语句的 try、catch
+				afterTry ? target.try(parser, context) : target.catchs(parser, context)
+			) ||
+			target.finally(parser, context, afterTry);
 		}
 	});
 	
@@ -1544,17 +1462,17 @@ this.BinaryStatement = function(){
 	 * @param {Statements} statements - 该语句将要所处的语句块
 	 */
 	function BinaryStatement(statements){
-		ECMAScriptStatement.call(this, statements);
+		Statement.call(this, statements);
 	};
-	BinaryStatement = new Rexjs(BinaryStatement, ECMAScriptStatement);
+	BinaryStatement = new Rexjs(BinaryStatement, Statement);
 	
 	BinaryStatement.props({
 		/**
-		 * 尝试处理异常
+		 * 最后的异常处理
 		 * @param {SyntaxParser} parser - 语法解析器
 		 * @param {Context} context - 语法标签上下文
 		 */
-		try: function(parser, context){
+		finally: function(parser, context){
 			// 跳出语句并添加表达式
 			this.out().expression.add(this.expression);
 		}
@@ -2366,27 +2284,17 @@ this.BracketAccessorStatement = function(){
 	 * @param {Statements} statements - 该语句将要所处的语句块
 	 */
 	function BracketAccessorStatement(statements){
-		ECMAScriptStatement.call(this, statements);
+		Statement.call(this, statements);
 	};
-	BracketAccessorStatement = new Rexjs(BracketAccessorStatement, ECMAScriptStatement);
+	BracketAccessorStatement = new Rexjs(BracketAccessorStatement, Statement);
 	
 	BracketAccessorStatement.props({
 		/**
-		 * 尝试处理异常
+		 * 捕获处理异常
 		 * @param {SyntaxParser} parser - 语法解析器
 		 * @param {Context} context - 语法标签上下文
 		 */
-		try: function(parser, context){
-			var tag = context.tag;
-			
-			// 如果是上下文标签
-			if(
-				tag.class.expressionContext
-			){
-				// 返回该标签
-				return tag;
-			}
-
+		catch: function(parser, context){
 			// 如果是关闭分组小括号
 			if(
 				context.content === "]"
@@ -2498,38 +2406,44 @@ closeBracketAccessorTag = new this.CloseBracketAccessorTag();
 // 逗号相关
 void function(){
 
+this.CommaExpression = function(){
+	/**
+	 * 逗号表达式
+	 */
+	function CommaExpression(){
+		ListExpression.call(this, ",");
+	};
+	CommaExpression = new Rexjs(CommaExpression, ListExpression);
+
+	return CommaExpression;
+}();
+
 this.CommaStatement = function(){
 	/**
 	 * 逗号语句
 	 * @param {Statements} statements - 该语句将要所处的语句块
 	 */
 	function CommaStatement(statements){
-		ECMAScriptStatement.call(this, statements);
+		Statement.call(this, statements);
 	};
-	CommaStatement = new Rexjs(CommaStatement, ECMAScriptStatement);
+	CommaStatement = new Rexjs(CommaStatement, Statement);
 	
 	CommaStatement.props({
 		/**
-		 * 尝试处理异常
+		 * 捕获处理异常
 		 * @param {SyntaxParser} parser - 语法解析器
 		 * @param {Context} context - 语法标签上下文
 		 */
-		try: function(parser, context){
-			// 临时表达式转正
-			this.requestFormalize()
-				// 添加项
-				.add(
-					this.expression
-				);
-				
-			return this.catch(parser, context)
+		catch: function(parser, context){
+			// 跳出语句并添加表达式
+			this.out().expression.add(this.expression);
 		}
 	});
 	
 	return CommaStatement;
 }();
 
-this.CommaTag = function(CommaStatement, unexpected){
+this.CommaTag = function(CommaExpression, CommaStatement){
 	/**
 	 * 逗号标签
 	 * @param {Number} _type - 标签类型
@@ -2550,20 +2464,6 @@ this.CommaTag = function(CommaStatement, unexpected){
 			return tagsMap.expressionTags;
 		},
 		/**
-		 * 返回处于解析上下文中的标签类型
-		 * @param {Statement} statement - 当前解析的语句
-		 */
-		unexpected: function(statement){
-			// 如果当前语句不允许出现分号
-			if(
-				(statement.blacklist & BLACKLIST_COMMA) === BLACKLIST_COMMA
-			){
-				return true;
-			}
-			
-			return unexpected.call(this, statement);
-		},
-		/**
 		 * 标签访问器
 		 * @param {SyntaxParser} parser - 语法解析器
 		 * @param {Context} context - 标签上下文
@@ -2571,23 +2471,26 @@ this.CommaTag = function(CommaStatement, unexpected){
 		 * @param {Statements} statements - 当前语句块
 		 */
 		visitor: function(parser, context, statement, statements){
-			var $expression;
-
 			// 如果当前语句也是逗号语句
 			if(
 				statement instanceof CommaStatement
 			){
-				// 跳出语句并添加项
-				$expression = statement.out().$expression;
+				// 跳出语句并添加表达式
+				statement.out().expression.add(statement.expression);
 			}
 			else {
-				// 设置临时表达式
-				$expression = statement.$expression = new ListExpression(",");
+				var expression = statement.expression;
+
+				// 设置表达式
+				(
+					statement.expression = new CommaExpression()
+				)
+				// 添加当前表达式
+				.add(
+					expression
+				);
 			}
 
-			// 添加当前表达式
-			$expression.add(statement.expression);
-			
 			// 设置当前语句
 			statements.statement = new CommaStatement(statements);
 		}
@@ -2595,8 +2498,8 @@ this.CommaTag = function(CommaStatement, unexpected){
 	
 	return CommaTag;
 }(
-	this.CommaStatement,
-	SyntaxTag.prototype.unexpected
+	this.CommaExpression,
+	this.CommaStatement
 );
 	
 }.call(
@@ -2613,9 +2516,9 @@ this.GroupingStatement = function(){
 	 * @param {Statements} statements - 该语句将要所处的语句块
 	 */
 	function GroupingStatement(statements){
-		ECMAScriptStatement.call(this, statements);
+		Statement.call(this, statements);
 	};
-	GroupingStatement = new Rexjs(GroupingStatement, ECMAScriptStatement);
+	GroupingStatement = new Rexjs(GroupingStatement, Statement);
 	
 	GroupingStatement.props({
 		blacklist: BLACKLIST_SEMICOLON,
@@ -2815,11 +2718,11 @@ this.ArrayStatement = function(){
 	 * @param {Statements} statements - 该语句将要所处的语句块
 	 */
 	function ArrayStatement(statements){
-		ECMAScriptStatement.call(this, statements);
+		Statement.call(this, statements);
 		
 		this.expression = new EmptyExpression(null);
 	};
-	ArrayStatement = new Rexjs(ArrayStatement, ECMAScriptStatement);
+	ArrayStatement = new Rexjs(ArrayStatement, Statement);
 	
 	ArrayStatement.props({
 		blacklist: BLACKLIST_COMMA | BLACKLIST_SEMICOLON,
@@ -3012,9 +2915,9 @@ this.BlockStatement = function(){
 	 * @param {Statements} statements - 该语句将要所处的语句块
 	 */
 	function BlockStatement(statements){
-		ECMAScriptStatement.call(this, statements);
+		Statement.call(this, statements);
 	};
-	BlockStatement = new Rexjs(BlockStatement, ECMAScriptStatement);
+	BlockStatement = new Rexjs(BlockStatement, Statement);
 	
 	BlockStatement.props({
 		/**
@@ -3054,9 +2957,9 @@ this.BlockStatements = function(BlockStatement){
 	 * 语句块
 	 */
 	function BlockStatements(){
-		ECMAScriptStatements.call(this);
+		Statements.call(this);
 	};
-	BlockStatements = new Rexjs(BlockStatements, ECMAScriptStatements);
+	BlockStatements = new Rexjs(BlockStatements, Statements);
 	
 	BlockStatements.props({
 		/**
@@ -3238,9 +3141,9 @@ this.LabelledStatement = function(){
 	 * @param {Statements} statements - 该语句将要所处的语句块
 	 */
 	function LabelledStatement(statements){
-		ECMAScriptStatement.call(this, statements);
+		Statement.call(this, statements);
 	};
-	LabelledStatement = new Rexjs(LabelledStatement, ECMAScriptStatement);
+	LabelledStatement = new Rexjs(LabelledStatement, Statement);
 	
 	LabelledStatement.props({
 		/**
@@ -3407,11 +3310,11 @@ this.TerminatedFlowStatement = function(){
 	 * @param {Statements} statements - 该语句将要所处的语句块
 	 */
 	function TerminatedFlowStatement(statements){
-		ECMAScriptStatement.call(this, statements);
+		Statement.call(this, statements);
 		
 		this.expression = new EmptyExpression(null);
 	};
-	TerminatedFlowStatement = new Rexjs(TerminatedFlowStatement, ECMAScriptStatement);
+	TerminatedFlowStatement = new Rexjs(TerminatedFlowStatement, Statement);
 	
 	TerminatedFlowStatement.props({
 		/**
@@ -3584,9 +3487,9 @@ this.IfConditionStatement = function(){
 	 * @param {Statements} statements - 该语句将要所处的语句块
 	 */
 	function IfConditionStatement(statements){
-		ECMAScriptStatement.call(this, statements);
+		Statement.call(this, statements);
 	};
-	IfConditionStatement = new Rexjs(IfConditionStatement, ECMAScriptStatement);
+	IfConditionStatement = new Rexjs(IfConditionStatement, Statement);
 	
 	IfConditionStatement.props({
 		blacklist: BLACKLIST_SEMICOLON,
@@ -3617,9 +3520,9 @@ this.IfBodyStatement = function(){
 	 * @param {Statements} statements - 该语句将要所处的语句块
 	 */
 	function IfBodyStatement(statements){
-		ECMAScriptStatement.call(this, statements);
+		Statement.call(this, statements);
 	};
-	IfBodyStatement = new Rexjs(IfBodyStatement, ECMAScriptStatement);
+	IfBodyStatement = new Rexjs(IfBodyStatement, Statement);
 	
 	IfBodyStatement.props({
 		/**
@@ -3657,9 +3560,9 @@ this.ElseBodyStatement = function(){
 	 * @param {Statements} statements - 该语句将要所处的语句块
 	 */
 	function ElseBodyStatement(statements){
-		ECMAScriptStatement.call(this, statements);
+		Statement.call(this, statements);
 	};
-	ElseBodyStatement = new Rexjs(ElseBodyStatement, ECMAScriptStatement);
+	ElseBodyStatement = new Rexjs(ElseBodyStatement, Statement);
 	
 	ElseBodyStatement.props({
 		/**
@@ -3895,11 +3798,11 @@ this.ReturnStatement = function(){
 	 * @param {Statements} statements - 该语句将要所处的语句块
 	 */
 	function ReturnStatement(statements){
-		ECMAScriptStatement.call(this, statements);
+		Statement.call(this, statements);
 		
 		this.expression = new EmptyExpression(null);
 	};
-	ReturnStatement = new Rexjs(ReturnStatement, ECMAScriptStatement);
+	ReturnStatement = new Rexjs(ReturnStatement, Statement);
 	
 	ReturnStatement.props({
 		/**
@@ -4004,9 +3907,9 @@ this.ThrowStatement = function(){
 	 * @param {Statements} statements - 该语句将要所处的语句块
 	 */
 	function ThrowStatement(statements){
-		ECMAScriptStatement.call(this, statements);
+		Statement.call(this, statements);
 	};
-	ThrowStatement = new Rexjs(ThrowStatement, ECMAScriptStatement);
+	ThrowStatement = new Rexjs(ThrowStatement, Statement);
 	
 	ThrowStatement.props({
 		/**
@@ -4133,11 +4036,11 @@ this.VarStatement = function(){
 	 * @param {Statements} statements - 该语句将要所处的语句块
 	 */
 	function VarStatement(statements){
-		ECMAScriptStatement.call(this, statements);
+		Statement.call(this, statements);
 
 		this.$expression = new ListExpression(",");
 	};
-	VarStatement = new Rexjs(VarStatement, ECMAScriptStatement);
+	VarStatement = new Rexjs(VarStatement, Statement);
 	
 	VarStatement.props({
 		/**
@@ -4162,9 +4065,9 @@ this.VarClauseStatement = function(){
 	 * @param {Statements} statements - 该语句将要所处的语句块
 	 */
 	function VarClauseStatement(statements){
-		ECMAScriptStatement.call(this, statements);
+		Statement.call(this, statements);
 	};
-	VarClauseStatement = new Rexjs(VarClauseStatement, ECMAScriptStatement);
+	VarClauseStatement = new Rexjs(VarClauseStatement, Statement);
 	
 	VarClauseStatement.props({
 		blacklist: BLACKLIST_COMMA,
@@ -4418,9 +4321,9 @@ this.ForConditionStatement = ForConditionStatement = function(){
 	 * @param {Statements} statements - 该语句将要所处的语句块
 	 */
 	function ForConditionStatement(statements){
-		ECMAScriptStatement.call(this, statements);
+		Statement.call(this, statements);
 	};
-	ForConditionStatement = new Rexjs(ForConditionStatement, ECMAScriptStatement);
+	ForConditionStatement = new Rexjs(ForConditionStatement, Statement);
 	
 	ForConditionStatement.props({
 		blacklist: BLACKLIST_SEMICOLON,
@@ -4548,9 +4451,9 @@ this.ForBodyStatement = function(){
 	 * @param {Statements} statements - 该语句将要所处的语句块
 	 */
 	function ForBodyStatement(statements){
-		ECMAScriptStatement.call(this, statements);
+		Statement.call(this, statements);
 	};
-	ForBodyStatement = new Rexjs(ForBodyStatement, ECMAScriptStatement);
+	ForBodyStatement = new Rexjs(ForBodyStatement, Statement);
 	
 	ForBodyStatement.props({
 		/**
@@ -4900,9 +4803,9 @@ this.TryStatement = function(){
 	 * @param {Statements} statements - 该语句将要所处的语句块
 	 */
 	function TryStatement(statements){
-		ECMAScriptStatement.call(this, statements);
+		Statement.call(this, statements);
 	};
-	TryStatement = new Rexjs(TryStatement, ECMAScriptStatement);
+	TryStatement = new Rexjs(TryStatement, Statement);
 	
 	TryStatement.props({
 		/**
@@ -4942,9 +4845,9 @@ this.CatchStatement = function(){
 	 * @param {Statements} statements - 该语句将要所处的语句块
 	 */
 	function CatchStatement(statements){
-		ECMAScriptStatement.call(this, statements);
+		Statement.call(this, statements);
 	};
-	CatchStatement = new Rexjs(CatchStatement, ECMAScriptStatement);
+	CatchStatement = new Rexjs(CatchStatement, Statement);
 	
 	CatchStatement.props({
 		/**
@@ -4976,9 +4879,9 @@ this.FinallyStatement = function(){
 	 * @param {Statements} statements - 该语句将要所处的语句块
 	 */
 	function FinallyStatement(statements){
-		ECMAScriptStatement.call(this, statements);
+		Statement.call(this, statements);
 	};
-	FinallyStatement = new Rexjs(FinallyStatement, ECMAScriptStatement);
+	FinallyStatement = new Rexjs(FinallyStatement, Statement);
 	
 	FinallyStatement.props({
 		/**
@@ -5355,9 +5258,9 @@ this.SwitchConditionStatement = function(){
 	 * @param {Statements} statements - 该语句将要所处的语句块
 	 */
 	function SwitchConditionStatement(statements){
-		ECMAScriptStatement.call(this, statements);
+		Statement.call(this, statements);
 	};
-	SwitchConditionStatement = new Rexjs(SwitchConditionStatement, ECMAScriptStatement);
+	SwitchConditionStatement = new Rexjs(SwitchConditionStatement, Statement);
 	
 	SwitchConditionStatement.props({
 		blacklist: BLACKLIST_SEMICOLON,
@@ -5387,9 +5290,9 @@ this.SwitchBodyStatements = function(){
 	 * switch 主体语句块
 	 */
 	function SwitchBodyStatements(){
-		ECMAScriptStatements.call(this);
+		Statements.call(this);
 	};
-	SwitchBodyStatements = new Rexjs(SwitchBodyStatements, ECMAScriptStatements);
+	SwitchBodyStatements = new Rexjs(SwitchBodyStatements, Statements);
 
 	SwitchBodyStatements.props({
 		hasDefault: false
@@ -5404,9 +5307,9 @@ this.CaseValueStatement = function(){
 	 * @param {Statements} statements - 该语句将要所处的语句块
 	 */
 	function CaseValueStatement(statements){
-		ECMAScriptStatement.call(this, statements);
+		Statement.call(this, statements);
 	};
-	CaseValueStatement = new Rexjs(CaseValueStatement, ECMAScriptStatement);
+	CaseValueStatement = new Rexjs(CaseValueStatement, Statement);
 	
 	CaseValueStatement.props({
 		/**
@@ -5432,11 +5335,11 @@ this.CaseBodyStatement = function(EmptyStatementExpression){
 	 * @param {Statements} statements - 该语句将要所处的语句块
 	 */
 	function CaseBodyStatement(statements){
-		ECMAScriptStatement.call(this, statements);
+		Statement.call(this, statements);
 
 		this.expression = new EmptyStatementExpression(null);
 	};
-	CaseBodyStatement = new Rexjs(CaseBodyStatement, ECMAScriptStatement);
+	CaseBodyStatement = new Rexjs(CaseBodyStatement, Statement);
 	
 	CaseBodyStatement.props({
 		/**
@@ -5505,9 +5408,9 @@ this.CaseBodyStatements = function(CaseBodyStatement){
 	 * case 语句块
 	 */
 	function CaseBodyStatements(){
-		ECMAScriptStatements.call(this);
+		Statements.call(this);
 	};
-	CaseBodyStatements = new Rexjs(CaseBodyStatements, ECMAScriptStatements);
+	CaseBodyStatements = new Rexjs(CaseBodyStatements, Statements);
 
 	CaseBodyStatements.props({
 		/**
@@ -5951,9 +5854,9 @@ this.WhileConditionStatement = function(){
 	 * @param {Statements} statements - 该语句将要所处的语句块
 	 */
 	function WhileConditionStatement(statements){
-		ECMAScriptStatement.call(this, statements);
+		Statement.call(this, statements);
 	};
-	WhileConditionStatement = new Rexjs(WhileConditionStatement, ECMAScriptStatement);
+	WhileConditionStatement = new Rexjs(WhileConditionStatement, Statement);
 	
 	WhileConditionStatement.props({
 		blacklist: BLACKLIST_SEMICOLON,
@@ -5984,9 +5887,9 @@ this.WhileBodyStatement = function(){
 	 * @param {Statements} statements - 该语句将要所处的语句块
 	 */
 	function WhileBodyStatement(statements){
-		ECMAScriptStatement.call(this, statements);
+		Statement.call(this, statements);
 	};
-	WhileBodyStatement = new Rexjs(WhileBodyStatement, ECMAScriptStatement);
+	WhileBodyStatement = new Rexjs(WhileBodyStatement, Statement);
 	
 	WhileBodyStatement.props({
 		/**
@@ -6190,9 +6093,9 @@ this.DoStatement = function(){
 	 * @param {Statements} statements - 该语句将要所处的语句块
 	 */
 	function DoStatement(statements){
-		ECMAScriptStatement.call(this, statements);
+		Statement.call(this, statements);
 	};
-	DoStatement = new Rexjs(DoStatement, ECMAScriptStatement);
+	DoStatement = new Rexjs(DoStatement, Statement);
 	
 	DoStatement.props({
 		/**
@@ -6235,9 +6138,9 @@ this.DoWhileConditionStatement = function(){
 	 * @param {Statements} statements - 该语句将要所处的语句块
 	 */
 	function DoWhileConditionStatement(statements){
-		ECMAScriptStatement.call(this, statements);
+		Statement.call(this, statements);
 	};
-	DoWhileConditionStatement = new Rexjs(DoWhileConditionStatement, ECMAScriptStatement);
+	DoWhileConditionStatement = new Rexjs(DoWhileConditionStatement, Statement);
 	
 	DoWhileConditionStatement.props({
 		blacklist: BLACKLIST_SEMICOLON,
@@ -6658,7 +6561,7 @@ this.ExpressionTags = function(VariableTag){
 	this.VariableTag
 );
 
-this.ExpressionContextTags = function(StatementEndTag, ExpressionBreakTag, OpenBracketAccessorTag, BinaryTag){
+this.ExpressionContextTags = function(StatementEndTag, ExpressionBreakTag, OpenBracketAccessorTag, BinaryTag, CommaTag){
 	/**
 	 * 表达式上下文标签列表
 	 * @param {String} _id - 该标签列表的 id
@@ -6694,6 +6597,8 @@ this.ExpressionContextTags = function(StatementEndTag, ExpressionBreakTag, OpenB
 					case tag instanceof BinaryTag:
 					// 如果是语句结束标签
 					case tag instanceof StatementEndTag:
+					// 如果是逗号标签
+					case tag instanceof CommaTag:
 						type = TYPE_MISTAKABLE;
 						break;
 				}
@@ -6712,7 +6617,8 @@ this.ExpressionContextTags = function(StatementEndTag, ExpressionBreakTag, OpenB
 	this.StatementEndTag,
 	this.ExpressionBreakTag,
 	this.OpenBracketAccessorTag,
-	this.BinaryTag
+	this.BinaryTag,
+	this.CommaTag
 );
 
 this.StatementTags = function(){
