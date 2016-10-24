@@ -2377,13 +2377,23 @@ this.BracketAccessorStatement = function(){
 		 * @param {Context} context - 语法标签上下文
 		 */
 		try: function(parser, context){
+			var tag = context.tag;
+			
+			// 如果是上下文标签
+			if(
+				tag.class.expressionContext
+			){
+				// 返回该标签
+				return tag;
+			}
+
 			// 如果是关闭分组小括号
 			if(
 				context.content === "]"
 			){
 				// 跳出该语句
 				this.out()
-					.$expression
+					.expression
 					// 设置 inner
 					.inner = this.expression;
 				
@@ -2391,8 +2401,8 @@ this.BracketAccessorStatement = function(){
 				return closeBracketAccessorTag;
 			}
 			
-			// 返回 null
-			return null;
+			// 报错
+			parser.error(context);
 		}
 	});
 	
@@ -2427,7 +2437,7 @@ this.OpenBracketAccessorTag = function(OpenBracketTag, BracketAccessorExpression
 		 */
 		visitor: function(parser, context, statement, statements){
 			// 设置临时表达式
-			statement.$expression = new BracketAccessorExpression(context, statement.expression);
+			statement.expression = new BracketAccessorExpression(context, statement.expression);
 			// 设置当前语句
 			statements.statement = new BracketAccessorStatement(statements);
 		}
@@ -2467,7 +2477,7 @@ this.CloseBracketAccessorTag = function(CloseBracketTag){
 		 */
 		visitor: function(parser, context, statement, statements){
 			// 设置表达式
-			statement.formalize().close = context;
+			statement.expression.close = context;
 		}
 	});
 	
