@@ -841,6 +841,7 @@ this.SyntaxTag = function(TagClass, TagType){
 		require: function(tagsMap, currentTags){
 			return currentTags;
 		},
+		throw: "token",
 		type: null,
 		/**
 		 * 标签访问器
@@ -915,22 +916,25 @@ this.LineTerminatorTag = function(WhitespaceTag){
 	this.WhitespaceTag
 );
 
-this.TokenTag = function(){
+this.IllegalTag = function(TYPE_UNEXPECTED){
 	/**
-	 * 标记标签，一般指定的是两次匹配字符串之间的内容
+	 * 非法的标签，一般指定的是两次匹配字符串之间的非法内容
 	 * @param {Number} _type - 标签类型
 	 */
-	function TokenTag(_type){
+	function IllegalTag(_type){
 		SyntaxTag.call(this, _type);
 	};
-	TokenTag = new Rexjs(TokenTag, SyntaxTag);
+	IllegalTag = new Rexjs(IllegalTag, SyntaxTag);
 	
-	TokenTag.props({
-		$type: SyntaxTag.TYPE_UNEXPECTED
+	IllegalTag.props({
+		$type: TYPE_UNEXPECTED,
+		throw: "token ILLEGAL"
 	});
 	
-	return TokenTag;
-}();
+	return IllegalTag;
+}(
+	this.TagType.TYPE_UNEXPECTED
+);
 
 }.call(
 	this,
@@ -1131,7 +1135,7 @@ this.SyntaxTags = function(List, sort, distinct){
 	}
 );
 
-this.DefaultTags = function(SyntaxTags, WhitespaceTag, LineTerminatorTag, TokenTag){
+this.DefaultTags = function(SyntaxTags, WhitespaceTag, LineTerminatorTag, IllegalTag){
 	/**
 	 * 默认标签列表
 	 */
@@ -1141,7 +1145,7 @@ this.DefaultTags = function(SyntaxTags, WhitespaceTag, LineTerminatorTag, TokenT
 		this.register(
 			new WhitespaceTag(),
 			new LineTerminatorTag(),
-			new TokenTag()
+			new IllegalTag()
 		);
 	};
 	DefaultTags = new Rexjs(DefaultTags, SyntaxTags);
@@ -1151,7 +1155,7 @@ this.DefaultTags = function(SyntaxTags, WhitespaceTag, LineTerminatorTag, TokenT
 	this.SyntaxTags,
 	this.WhitespaceTag,
 	this.LineTerminatorTag,
-	this.TokenTag
+	this.IllegalTag
 );
 
 this.SyntaxTagsMap = function(){
@@ -1637,8 +1641,6 @@ this.Statement = function(Syntax, TYPE_MISTAKABLE, CLASS_STATEMENT, STATE_STATEM
 			target.expression.state = this.expression.state;
 			// 恢复语句
 			this.statements.statement = target;
-			// 清空语句块与 target
-			this.target = this.statements = null;
 
 			// 设置当前语句
 			return target;
@@ -1918,10 +1920,12 @@ this.SyntaxError = function(MappingBuilder, e){
 	 * 抛出语法错误信息
 	 * @param {File} file - 具有语法错误的文件
 	 * @param {Context} context - 出错处的上下文
-	 * @param {String} description - 错误描述
+	 * @param {String} _description - 错误描述
 	 * @param {Boolean} _reference - 是否是引用错误
 	 */
-	function SyntaxError(file, context, description, _reference){
+	function SyntaxError(file, context, _description, _reference){
+		var fragment = context.fragment, position = context.position;
+
 		// 如果支持 MappingBuilder
 		if(
 			MappingBuilder.supported
@@ -1932,39 +1936,15 @@ this.SyntaxError = function(MappingBuilder, e){
 			);
 		}
 
-		// 如果是引用错误
-		if(
-			_reference
-		){
-			this.reference = true;
-		}
-		
-		this.file = file;
-		this.context = context;
-		this.description = description;
+		throw (_reference ? "Reference" : "Syntax") +
+			"Error: " +
+			(
+				_description || "Unexpected " + context.tag.throw + (fragment ? " " + fragment : "")
+			) +
+			" @ " +
+			file.filename + ":" + position.line + ":" + position.column;
 	};
 	SyntaxError = new Rexjs(SyntaxError);
-	
-	SyntaxError.props({
-		context: null,
-		description: "",
-		/**
-		 * 获悉错误消息
-		 */
-		get message(){
-			var position = this.context.position;
-
-			return (this.reference ? "Reference" : "Syntax") + "Error: " + this.description + " @ " + this.file.filename + ":" + position.line + ":" + position.column;
-		},
-		file: null,
-		reference: false,
-		/**
-		 * 转字符串
-		 */
-		toString: function(){
-			return this.message;
-		}
-	});
 
 	return SyntaxError;
 }(
@@ -2034,7 +2014,8 @@ this.SyntaxRegExp = function(RegExp, Infinity){
 					index = result.lastIndexOf("") - 1;
 				}
 				else {
-					fragment = source.substr(lastIndex, diff);
+					// 取第一个字符
+					fragment = source[lastIndex];
 					index = -1;
 				}
 
@@ -2111,14 +2092,14 @@ this.SyntaxParser = function(SyntaxRegExp, SyntaxError, Statement, Statements, P
 		/**
 		 * 报错
 		 * @param {Context} context - 错误信息上下文
-		 * @param {String} description - 错误描述
+		 * @param {String} _description - 错误描述
 		 * @param {Boolean} _reference - 是否是引用错误
 		 */
-		error: function(context, description, _reference){
+		error: function(context, _description, _reference){
 			// 中断匹配，结束解析
 			this.regexp.break();
-			// 抛出语法错误
-			throw new SyntaxError(this.file, context, description, _reference);
+			// 报错
+			new SyntaxError(this.file, context, _description, _reference)
 		},
 		file: null,
 		/**
@@ -2273,7 +2254,7 @@ this.SyntaxParser = function(SyntaxRegExp, SyntaxError, Statement, Statements, P
 		}
 
 		// 报错
-		parser.error(context, "Unexpected token " + context.fragment);
+		parser.error(context);
 		return null;
 	}
 );

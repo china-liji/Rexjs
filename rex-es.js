@@ -270,6 +270,7 @@ this.IdentifierTag = function(RegExp, keywords){
 		require: function(tagMaps){
 			return tagMaps.expressionContextTags;
 		},
+		name: "identifier",
 		/**
 		 * 标签访问器
 		 * @param {SyntaxParser} parser - 语法解析器
@@ -678,7 +679,8 @@ this.NumberTag = function(){
 	NumberTag.props({
 		// 防止与 "." 匹配冲突
 		order: 100,
-		regexp: /0[bB][01]+|0[oO][0-7]+|0[xX][0-9a-fA-F]+|(?:\d*\.\d+|\d+\.?)(?:e[+-]?\d+)?/
+		regexp: /0[bB][01]+|0[oO][0-7]+|0[xX][0-9a-fA-F]+|(?:\d*\.\d+|\d+\.?)(?:e[+-]?\d+)?/,
+		throw: "number"
 	});
 	
 	return NumberTag;
@@ -695,7 +697,8 @@ this.StringTag = function(){
 	StringTag = new Rexjs(StringTag, LiteralTag);
 	
 	StringTag.props({
-		regexp: /"(?:\\[\s\S]|[^"\\\r\n\u2028\u2029]+)*"|'(?:\\[\s\S]|[^'\\\r\n\u2028\u2029]+)*'/
+		regexp: /"(?:\\[\s\S]|[^"\\\r\n\u2028\u2029]+)*"|'(?:\\[\s\S]|[^'\\\r\n\u2028\u2029]+)*'/,
+		throw: "string"
 	});
 	
 	return StringTag;
@@ -1019,6 +1022,7 @@ this.FileEndTag = function(FileEndExpression){
 	
 	FileEndTag.props({
 		regexp: /$/,
+		throw: "end of input",
 		/**
 		 * 标签访问器
 		 * @param {SyntaxParser} parser - 语法解析器

@@ -1,7 +1,7 @@
 // a / window.b / window.c
-!+window.b + window.c
-a = b += c >>>= window.g + 2 / this - null in window.d
-
+//!+ new window.b + window.c
+// a = b += c >>>= window.g + 2 / this - null in window.d
+"\"
 /*
 (d = 1, e = 3, f = 9;)
 !!!window.a + 99 + window.b

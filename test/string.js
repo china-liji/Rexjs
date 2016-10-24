@@ -54,7 +54,7 @@ test.true(
 	})
 );
 
-test.false("错误的字符串 - 缺少分号", '"\\"');
+test.false("错误的字符串 - 缺少引号", '"\\"');
 test.false("错误的字符串 - 单双引号搭配", "'\"");
 
 test.groupEnd();
