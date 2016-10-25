@@ -19,6 +19,27 @@ new function(
 ){
 "use strict";
 
+// 公用的表达式
+void function(){
+
+this.AssignableExpression = function(){
+	/**
+	 * 可赋值的表达式
+	 * @param {Context} context - 语法标签上下文
+	 */
+	function AssignableExpression(context){
+		Expression.call(this, context);
+	};
+	AssignableExpression = new Rexjs(AssignableExpression, Expression);
+
+	return AssignableExpression;
+}();
+
+}.call(
+	this
+);
+
+
 // 基础标签
 void function(){
 
@@ -158,7 +179,7 @@ this.FilePositionTag = function(){
 	return FilePositionTag;
 }();
 
-this.IdentifierTag = function(RegExp, keywords){
+this.IdentifierTag = function(AssignableExpression, RegExp, keywords){
 	/**
 	 * 标识符标签
 	 * @param {Number} _type - 标签类型
@@ -194,12 +215,13 @@ this.IdentifierTag = function(RegExp, keywords){
 		 */
 		visitor: function(parser, context, statement){
 			// 设置表达式
-			statement.expression = new Expression(context);
+			statement.expression = new AssignableExpression(context);
 		}
 	});
 	
 	return IdentifierTag;
 }(
+	this.AssignableExpression,
 	RegExp,
 	// keywords
 	[
@@ -1020,7 +1042,7 @@ this.UnaryStatement = function(){
 			
 			return (
 				// 因为当前语句不具备连接2个表达式，所以要执行 target 语句的 try、catch
-				afterTry ? target.try(parser, context) : target.catchs(parser, context)
+				afterTry ? target.try(parser, context) : target.catch(parser, context)
 			) ||
 			target.finally(parser, context, afterTry);
 		}
@@ -1551,7 +1573,7 @@ this.BinaryTag = function(BinaryExpression, BinaryStatement){
 // 特殊的二元标签
 void function(BinaryTag, visitor){
 
-this.AssignmentTag = function(BinaryExpression){
+this.AssignmentTag = function(AssignableExpression, BinaryExpression){
 	/**
 	 * 二元赋值运算符标签
 	 * @param {Number} _type - 标签类型
@@ -1572,18 +1594,26 @@ this.AssignmentTag = function(BinaryExpression){
 		visitor: function(parser, context, statement, statements){
 			var expression = statement.expression;
 
-			// 如果当前表达式是二元表达式
-			if(
-				expression instanceof BinaryExpression
+			switch(
+				true
 			){
-				// 如果上一个表达式不是赋值表达式
-				if(
-					expression[expression.length - 2].context.tag.precedence > 0
-				){
+				// 如果上一个表达式是可赋值的表达式
+				case expression instanceof AssignableExpression:
+					break;
+
+				// 如果上一个表达式是二元表达式
+				case expression instanceof BinaryExpression:
+					// 如果上一个表达式也属于赋值表达式
+					if(
+						expression[expression.length - 2].context.tag.precedence === 0
+					){
+						break;
+					}
+
+				default:
 					// 报错
 					parser.error(context, "Invalid left-hand side in assignment", true);
 					return;
-				}
 			}
 
 			// 调用父类方法
@@ -1593,6 +1623,7 @@ this.AssignmentTag = function(BinaryExpression){
 	
 	return AssignmentTag;
 }(
+	this.AssignableExpression,
 	this.BinaryExpression
 );
 
@@ -2129,17 +2160,20 @@ this.RemainderTag = function(){
 // 点属性访问器相关
 void function(){
 
-this.DotExpression = function(){
+this.AccessorExpression = function(AssignableExpression){
 	/**
-	 * 点属性访问器表达式
+	 * 属性访问器表达式
+	 * @param {Expression} object - 拥有该属性的对象
 	 * @param {Context} context - 语法标签上下文
 	 */
-	function DotExpression(context){
-		Expression.call(this, context);
+	function AccessorExpression(object, context){
+		AssignableExpression.call(this, context);
+
+		this.object = object;
 	};
-	DotExpression = new Rexjs(DotExpression, Expression);
+	AccessorExpression = new Rexjs(AccessorExpression, AssignableExpression);
 	
-	DotExpression.props({
+	AccessorExpression.props({
 		/**
 		 * 提取表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
@@ -2157,10 +2191,12 @@ this.DotExpression = function(){
 		property: null
 	});
 	
-	return DotExpression;
-}();
+	return AccessorExpression;
+}(
+	this.AssignableExpression
+);
 
-this.DotAccessorTag = function(DotExpression){
+this.DotAccessorTag = function(AccessorExpression){
 	/**
 	 * 点属性访问器标签
 	 * @param {Number} _type - 标签类型
@@ -2188,18 +2224,14 @@ this.DotAccessorTag = function(DotExpression){
 		 * @param {Statements} statements - 当前语句块
 		 */
 		visitor: function(parser, context, statement, statements){
-			var dotExpression = new DotExpression(context);
-
-			// 设置 object
-			dotExpression.object = statement.expression;
 			// 设置当前表达式
-			statement.expression = dotExpression;
+			statement.expression = new AccessorExpression(statement.expression, context);
 		}
 	});
 	
 	return DotAccessorTag;
 }(
-	this.DotExpression
+	this.AccessorExpression
 );
 
 this.PropertyNameTag = function(IdentifierTag, RegExp){
@@ -2240,18 +2272,15 @@ this.PropertyNameTag = function(IdentifierTag, RegExp){
 // 中括号属性访问器
 void function(closeBracketAccessorTag){
 	
-this.BracketAccessorExpression = function(extractTo){
+this.BracketAccessorExpression = function(AccessorExpression){
 	/**
 	 * 中括号属性访问器表达式
-	 * @param {Context} context - 语法标签上下文
 	 * @param {Expression} object - 拥有该属性的对象
 	 */
-	function BracketAccessorExpression(context, object){
-		PartnerExpression.call(this, context);
-		
-		this.object = object;
+	function BracketAccessorExpression(object){
+		AccessorExpression.call(this, object, null);
 	};
-	BracketAccessorExpression = new Rexjs(BracketAccessorExpression, PartnerExpression);
+	BracketAccessorExpression = new Rexjs(BracketAccessorExpression, AccessorExpression);
 	
 	BracketAccessorExpression.props({
 		/**
@@ -2261,21 +2290,14 @@ this.BracketAccessorExpression = function(extractTo){
 		extractTo: function(contentBuilder){
 			// 提取对象
 			this.object.extractTo(contentBuilder);
-			
-			extractTo.call(this, contentBuilder);
-		},
-		object: null,
-		/**
-		 * 获取属性
-		 */
-		get property(){
-			return this.inner;
+			// 提取属性
+			this.property.extractTo(contentBuilder);
 		}
 	});
 	
 	return BracketAccessorExpression;
 }(
-	PartnerExpression.prototype.extractTo
+	this.AccessorExpression
 );
 	
 this.BracketAccessorStatement = function(){
@@ -2302,6 +2324,7 @@ this.BracketAccessorStatement = function(){
 				// 跳出该语句
 				this.out()
 					.expression
+					.property
 					// 设置 inner
 					.inner = this.expression;
 				
@@ -2345,7 +2368,12 @@ this.OpenBracketAccessorTag = function(OpenBracketTag, BracketAccessorExpression
 		 */
 		visitor: function(parser, context, statement, statements){
 			// 设置临时表达式
-			statement.expression = new BracketAccessorExpression(context, statement.expression);
+			(
+				statement.expression = new BracketAccessorExpression(statement.expression)
+			)
+			// 设置 property
+			.property = new PartnerExpression(context);
+
 			// 设置当前语句
 			statements.statement = new BracketAccessorStatement(statements);
 		}
@@ -2385,7 +2413,7 @@ this.CloseBracketAccessorTag = function(CloseBracketTag){
 		 */
 		visitor: function(parser, context, statement, statements){
 			// 设置表达式
-			statement.expression.close = context;
+			statement.expression.property.close = context;
 		}
 	});
 	
@@ -2521,29 +2549,24 @@ this.GroupingStatement = function(){
 	GroupingStatement = new Rexjs(GroupingStatement, Statement);
 	
 	GroupingStatement.props({
-		blacklist: BLACKLIST_SEMICOLON,
 		/**
-		 * 尝试处理异常
+		 * 捕获处理异常
 		 * @param {SyntaxParser} parser - 语法解析器
 		 * @param {Context} context - 语法标签上下文
 		 */
-		try: function(parser, context){
+		catch: function(parser, context){
 			// 如果是关闭分组小括号
 			if(
 				context.content === ")"
 			){
-				// 跳出该语句
-				this.out()
-					.$expression
-					// 设置 inner
-					.inner = this.expression;
-				
+				// 跳出该语句并设置 inner
+				this.out().expression.inner = this.expression;
 				// 返回关闭分组小括号标签
 				return closeGroupingTag;
 			}
 			
-			// 返回 null
-			return null;
+			// 报错
+			parser.error(context);
 		}
 	});
 	
@@ -2578,9 +2601,9 @@ this.OpenGroupingTag = function(OpenParenTag, GroupingStatement){
 		 */
 		visitor: function(parser, context, statement, statements){
 			// 设置临时表达式
-			statement.$expression = new PartnerExpression(context);
+			statement.expression = new PartnerExpression(context);
 			// 设置当前语句
-			statements.statement = new GroupingStatement(statements)
+			statements.statement = new GroupingStatement(statements);
 		}
 	});
 	
@@ -2616,10 +2639,8 @@ this.CloseGroupingTag = function(CloseParenTag){
 		 * @param {Statements} statements - 当前语句块
 		 */
 		visitor: function(parser, context, statement, statements){
-			// 当前语句不再允许赋值运算
-			statement.blacklist |= BLACKLIST_ASSGINMENT;
-			// 临时表达式转正并设置 close
-			statement.formalize().close = context;
+			// 设置表达式的 close
+			statement.expression.close = context;
 		}
 	});
 	

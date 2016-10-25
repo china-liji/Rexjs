@@ -2224,11 +2224,10 @@ this.SyntaxParser = function(SyntaxRegExp, SyntaxError, Statement, Statements, P
 			if(
 				mistakable ? tagClass.statement : true
 			){
-				var t, s;
+				var t, s, i = 0;
 
-				// 当语句存在
 				while(
-					statement
+					true
 				){
 					// 获取 catch 所返回的标签
 					t = statement.catch(parser, context) || statement.finally(parser, context, false);
@@ -2245,8 +2244,29 @@ this.SyntaxParser = function(SyntaxRegExp, SyntaxError, Statement, Statements, P
 					statements = parser.statements;
 					// 获取当前语句
 					s = statements.statement;
-					// 如果是当前语句，则取 target，否则取当前语句
-					statement = statement === s ? statement.target : s;
+
+					// 如果等于当前语句
+					if(
+						statement === s
+					){
+						// 获取 target
+						s = statement.target;
+
+						// 如果 target 存在
+						if(
+							s
+						){
+							// 跳出当前语句
+							statement.out();
+						}
+						// 如果 target 不存在
+						else {
+							// 中断循环
+							break;
+						}
+					}
+
+					statement = s;
 				}
 
 				// 如果是被误解的
