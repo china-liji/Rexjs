@@ -2756,7 +2756,7 @@ this.OpenArrayTag = function(OpenBracketTag, ArrayExpression, ArrayStatement){
 		 * @param {Statements} statements - 当前语句块
 		 */
 		visitor: function(parser, context, statement, statements){
-			// 设置临时表达式
+			// 设置表达式
 			statement.expression = new ArrayExpression(context);
 			// 设置当前语句
 			statements.statement = new ArrayStatement(statements);
@@ -2817,7 +2817,6 @@ this.ArrayItemSparatorTag = function(CommaTag, ArrayItemSeparatorExpression, Arr
 	ArrayItemSparatorTag = new Rexjs(ArrayItemSparatorTag, CommaTag);
 	
 	ArrayItemSparatorTag.props({
-		$class: CLASS_EXPRESSION,
 		/**
 		 * 标签访问器
 		 * @param {SyntaxParser} parser - 语法解析器
@@ -2887,11 +2886,11 @@ this.BlockStatement = function(){
 	
 	BlockStatement.props({
 		/**
-		 * 尝试处理异常
+		 * 捕获处理异常
 		 * @param {SyntaxParser} parser - 语法解析器
 		 * @param {Context} context - 语法标签上下文
 		 */
-		try: function(parser, context){
+		catch: function(parser, context){
 			// 如果是关闭大括号
 			if(
 				context.content === "}"
@@ -2903,15 +2902,15 @@ this.BlockStatement = function(){
 					parser.statements = statements.target
 				)
 				.statement
-				.$expression
+				.expression
 				.inner = statements;
 
 				// 返回结束语句块标签
 				return closeBlockTag;
 			}
 			
-			// 进入 catch
-			return this.catch(parser, context);
+			// 报错
+			parser.error(context);
 		}
 	});
 	
@@ -2967,8 +2966,8 @@ this.OpenBlockTag = function(OpenBraceTag, BlockStatements, BlockExpression){
 		 * @param {Statements} statements - 当前语句块
 		 */
 		visitor: function(parser, context, statement, statements){
-			// 设置当前语句的临时表达式
-			statement.$expression = new BlockExpression(context);
+			// 设置表达式
+			statement.expression = new BlockExpression(context);
 
 			// 设置当前语句块
 			(
@@ -3012,8 +3011,8 @@ this.CloseBlockTag = function(CloseBraceTag){
 		 * @param {Statements} statements - 当前语句块
 		 */
 		visitor: function(parser, context, statement, statements){
-			// 临时表达式转正
-			statement.formalize().close = context;
+			// 设置表达式的 close
+			statement.expression.close = context;
 		}
 	});
 	
@@ -3045,9 +3044,8 @@ this.CloseEmptyBlockTag = function(CloseBlockTag, visitor){
 			statements = parser.statements = statements.target;
 			// 重新获取 statement
 			statement = statements.statement;
-
 			// 设置 inner 为空表达式
-			statement.$expression.inner = new EmptyExpression(null);
+			statement.expression.inner = new EmptyExpression(null);
 			
 			visitor.call(this, parser, context, statement, statements);
 		}
