@@ -1034,17 +1034,8 @@ this.UnaryStatement = function(){
 		 * @param {Boolean} afterTry - 是否是在 try 之后执行的
 		 */
 		finally: function(parser, context, afterTry){
-			// 跳出语句
-			var target = this.out();
-
-			// 设置 operand
-			target.expression.operand = this.expression;
-			
-			return (
-				// 因为当前语句不具备连接2个表达式，所以要执行 target 语句的 try、catch
-				afterTry ? target.try(parser, context) : target.catch(parser, context)
-			) ||
-			target.finally(parser, context, afterTry);
+			// 跳出语句并设置 operand
+			this.out().expression.operand = this.expression;
 		}
 	});
 	
@@ -2669,66 +2660,10 @@ this.ArrayExpression = function(){
 	function ArrayExpression(context){
 		PartnerExpression.call(this, context);
 		
-		this.inner = [];
+		// 初始化 inner
+		this.inner = new ListExpression(",");
 	};
 	ArrayExpression = new Rexjs(ArrayExpression, PartnerExpression);
-	
-	ArrayExpression.props({
-		/**
-		 * 提取文本内容
-		 * @param {ContentBuilder} contentBuilder - 内容生成器
-		 */
-		extractTo: function(contentBuilder){
-			var inner = this.inner;
-
-			// 追加起始标签内容
-			contentBuilder.appendContext(this.open);
-			
-			// 先提取第一个表达式
-			inner[0].extractTo(contentBuilder);
-
-			for(
-				var i = 2, j = inner.length;i < j;i += 2
-			){
-				// 提取分隔符上下文
-				contentBuilder.appendContext(inner[i - 1]);
-				// 提取项表达式
-				inner[i].extractTo(contentBuilder);
-			}
-			
-			// 追加结束标签内容
-			contentBuilder.appendContext(this.close);
-		},
-		/**
-		 * 获取所有数组项
-		 */
-		get items(){
-			var items = [], inner = this.inner;
-
-			// 遍历项
-			for(
-				var i = 0, j = inner.length;i < j;i += 2
-			){
-				items.push(inner[i])
-			}
-
-			return items;
-		},
-		/**
-		 * 获取所有数组项分隔符
-		 */
-		get separators(){
-			var separators = [], inner = this.inner;
-
-			for(
-				var i = 1, j = inner.length;i < j;i += 2
-			){
-				separators.push(inner[i]);
-			}
-
-			return separators;
-		}
-	});
 	
 	return ArrayExpression;
 }();
@@ -2740,42 +2675,54 @@ this.ArrayStatement = function(){
 	 */
 	function ArrayStatement(statements){
 		Statement.call(this, statements);
-		
+
+		// 初始化表达式
 		this.expression = new EmptyExpression(null);
 	};
 	ArrayStatement = new Rexjs(ArrayStatement, Statement);
 	
 	ArrayStatement.props({
-		blacklist: BLACKLIST_COMMA | BLACKLIST_SEMICOLON,
+		/**
+		 * 捕获处理异常
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 语法标签上下文
+		 */
+		catch: function(parser, context){
+			// 跳出语句并添加表达式
+			this.out().expression.inner.add(this.expression);
+
+			switch(
+				context.content
+			){
+				// 如果是逗号，说明当前项属于空项
+				case ",":
+					return arrayItemSparatorTag;
+
+				// 如果是结束中括号
+				case "]":
+					return closeArrayTag;
+			}
+
+			// 其他则报错
+			parser.error(context);
+		},
 		/**
 		 * 尝试处理异常
 		 * @param {SyntaxParser} parser - 语法解析器
 		 * @param {Context} context - 语法标签上下文
 		 */
 		try: function(parser, context){
-			// 跳出该语句
-			this.out()
-				.$expression
-				.inner
-				.push(
-					this.expression
-				);
-
-			// 判断内容
-			switch(
-				context.content
+			// 如果不是逗号
+			if(
+				context.content !== ","
 			){
-				// 如果是逗号
-				case ",":
-					return arrayItemSparatorTag;
-				
-				// 如果是结束小括号
-				case "]":
-					return closeArrayTag;
-					
-				default:
-					return null;
+				return null;
 			}
+
+			// 跳出语句并添加表达式
+			this.out().expression.inner.add(this.expression);
+			// 返回标签
+			return arrayItemSparatorTag;
 		}
 	});
 	
@@ -2810,7 +2757,7 @@ this.OpenArrayTag = function(OpenBracketTag, ArrayExpression, ArrayStatement){
 		 */
 		visitor: function(parser, context, statement, statements){
 			// 设置临时表达式
-			statement.$expression = new ArrayExpression(context);
+			statement.expression = new ArrayExpression(context);
 			// 设置当前语句
 			statements.statement = new ArrayStatement(statements);
 		}
@@ -2849,7 +2796,8 @@ this.CloseArrayTag = function(CloseBracketTag){
 		 * @param {Statements} statements - 当前语句块
 		 */
 		visitor: function(parser, context, statement, statements){
-			statement.formalize().close = context;
+			// 设置表达式的 close
+			statement.expression.close = context;
 		}
 	});
 	
@@ -2878,9 +2826,6 @@ this.ArrayItemSparatorTag = function(CommaTag, ArrayItemSeparatorExpression, Arr
 		 * @param {Statements} statements - 当前语句块
 		 */
 		visitor: function(parser, context, statement, statements){
-			// 添加分隔符上下文
-			statement.$expression.inner.push(context);
-
 			// 重新设置当前语句
 			statements.statement = new ArrayStatement(statements);
 		}

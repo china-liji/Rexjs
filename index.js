@@ -3,7 +3,7 @@
 // a = b += c >>>= window.g + 2 / this - null in window.d
 //window["123" + 989 - 8888 / 666, 777 + 5555, window.a]
 
-window[1], a += 3
+[1 + 8,2,,3]
 /*
 (d = 1, e = 3, f = 9;)
 !!!window.a + 99 + window.b

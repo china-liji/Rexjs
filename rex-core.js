@@ -2084,7 +2084,7 @@ this.SyntaxRegExp = function(RegExp, Infinity){
 
 
 // 语法树相关
-void function(STATE_STATEMENT_ENDABLE, document){
+void function(STATE_STATEMENT_ENDABLE, getTagAfterTry){
 
 this.SyntaxParser = function(SyntaxRegExp, SyntaxError, Statement, Statements, Position, Context, ContentBuilder, toTryCatch){
 	/**
@@ -2224,13 +2224,11 @@ this.SyntaxParser = function(SyntaxRegExp, SyntaxError, Statement, Statements, P
 			if(
 				mistakable ? tagClass.statement : true
 			){
-				var t, s, i = 0;
-
 				while(
 					true
 				){
-					// 获取 catch 所返回的标签
-					t = statement.catch(parser, context) || statement.finally(parser, context, false);
+					// 获取 catch 所返回的标签，如果没有，则取 finally 所返回的标签
+					var t = statement.catch(parser, context) || statement.finally(parser, context, false);
 
 					// 如果标签存在
 					if(
@@ -2240,10 +2238,8 @@ this.SyntaxParser = function(SyntaxRegExp, SyntaxError, Statement, Statements, P
 						return t;
 					}
 
-					// 获取当前语句块
-					statements = parser.statements;
 					// 获取当前语句
-					s = statements.statement;
+					var s = (statements = parser.statements).statement;
 
 					// 如果等于当前语句
 					if(
@@ -2266,6 +2262,7 @@ this.SyntaxParser = function(SyntaxRegExp, SyntaxError, Statement, Statements, P
 						}
 					}
 
+					// 记录当前语句
 					statement = s;
 				}
 
@@ -2300,8 +2297,38 @@ this.SyntaxParser = function(SyntaxRegExp, SyntaxError, Statement, Statements, P
 			if(
 				mistakable
 			){
-				// 首取 try 的处理结果，再取 finally 的处理结果，如果都不存在，则最后返回 tag
-				return statement.try(parser, context) || statement.finally(parser, context, true) || tag;
+				// 如果语句存在
+				while(
+					statement
+				){
+					// 获取 try 所返回的标签，如果没有，则取 finally 所返回的标签
+					var t = statement.try(parser, context) || statement.finally(parser, context, true);
+
+					// 如果标签存在
+					if(
+						t
+					){
+						// 返回该标签
+						return t;
+					}
+
+					// 获取当前语句
+					var s = parser.statements.statement;
+
+					// 如果等于当前语句，说明没有跳出语句
+					if(
+						statement === s
+					){
+						// 中断循环
+						break;
+					}
+
+					// 记录语句
+					statement = s;
+				}
+
+				// 返回标签
+				return tag;
 			}
 		}
 
@@ -2313,8 +2340,7 @@ this.SyntaxParser = function(SyntaxRegExp, SyntaxError, Statement, Statements, P
 
 }.call(
 	this,
-	this.Expression.STATE_STATEMENT_ENDABLE,
-	document
+	this.Expression.STATE_STATEMENT_ENDABLE
 );
 
 
