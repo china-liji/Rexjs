@@ -650,18 +650,11 @@ this.TagData = function(){
 	 * @param {*} value - 标签数据
 	 */
 	function TagData(value){
-		this.bind(value);
+		this.value = value;
 	};
 	TagData = new Rexjs(TagData);
 
 	TagData.props({
-		/**
-		 * 绑定标签数据
-		 * @param {*} value - 需要绑定的数据
-		 */
-		bind: function(value){
-			this.value = value;
-		},
 		value: null
 	});
 
@@ -674,7 +667,7 @@ this.TagData = function(){
 
 
 // 子类标签数据相关
-void function(TagData, bind, parseInt){
+void function(TagData, parseInt){
 
 this.TagClass = function(CLASS_NONE, CLASS_STATEMENT, CLASS_STATEMENT_BEGIN, CLASS_EXPRESSION, CLASS_EXPRESSION_CONTEXT, CLASS_STATEMENT_END){
 	/**
@@ -683,6 +676,12 @@ this.TagClass = function(CLASS_NONE, CLASS_STATEMENT, CLASS_STATEMENT_BEGIN, CLA
 	 */
 	function TagClass(value){
 		TagData.call(this, value);
+
+		this.expression = (value & CLASS_EXPRESSION) === CLASS_EXPRESSION;
+		this.expressionContext = (value & CLASS_EXPRESSION_CONTEXT) === CLASS_EXPRESSION_CONTEXT;
+		this.statement = (value & CLASS_STATEMENT) === CLASS_STATEMENT;
+		this.statementBegin = (value & CLASS_STATEMENT_BEGIN) === CLASS_STATEMENT_BEGIN;
+		this.statementEnd = (value & CLASS_STATEMENT_END) === CLASS_STATEMENT_END;
 	};
 	TagClass = new Rexjs(TagClass, TagData);
 
@@ -696,19 +695,6 @@ this.TagClass = function(CLASS_NONE, CLASS_STATEMENT, CLASS_STATEMENT_BEGIN, CLA
 	});
 
 	TagClass.props({
-		/**
-		 * 绑定标签类别
-		 * @param {Number} value - 需要绑定的类别
-		 */
-		bind: function(value){
-			this.expression = (value & CLASS_EXPRESSION) === CLASS_EXPRESSION;
-			this.expressionContext = (value & CLASS_EXPRESSION_CONTEXT) === CLASS_EXPRESSION_CONTEXT;
-			this.statement = (value & CLASS_STATEMENT) === CLASS_STATEMENT;
-			this.statementBegin = (value & CLASS_STATEMENT_BEGIN) === CLASS_STATEMENT_BEGIN;
-			this.statementEnd = (value & CLASS_STATEMENT_END) === CLASS_STATEMENT_END;
-
-			bind.call(this, value);
-		},
 		expression: false,
 		expressionContext: false,
 		statement: false,
@@ -739,6 +725,10 @@ this.TagType = function(TYPE_MATCHABLE, TYPE_UNEXPECTED, TYPE_MISTAKABLE){
 	 */
 	function TagType(value){
 		TagData.call(this, value);
+
+		this.matchable = (value & TYPE_MATCHABLE) === TYPE_MATCHABLE;
+		this.mistakable = (value & TYPE_MISTAKABLE) === TYPE_MISTAKABLE;
+		this.unexpected = (value & TYPE_UNEXPECTED) === TYPE_UNEXPECTED;
 	};
 	TagType = new Rexjs(TagType);
 
@@ -749,17 +739,6 @@ this.TagType = function(TYPE_MATCHABLE, TYPE_UNEXPECTED, TYPE_MISTAKABLE){
 	});
 
 	TagType.props({
-		/**
-		 * 绑定标签类型
-		 * @param {Number} value - 需要绑定的类型
-		 */
-		bind: function(value){
-			this.matchable = (value & TYPE_MATCHABLE) === TYPE_MATCHABLE;
-			this.mistakable = (value & TYPE_MISTAKABLE) === TYPE_MISTAKABLE;
-			this.unexpected = (value & TYPE_UNEXPECTED) === TYPE_UNEXPECTED;
-
-			bind.call(this, value);
-		},
 		matchable: true,
 		mistakable: false,
 		unexpected: false
@@ -778,7 +757,6 @@ this.TagType = function(TYPE_MATCHABLE, TYPE_UNEXPECTED, TYPE_MISTAKABLE){
 }.call(
 	this,
 	this.TagData,
-	this.TagData.prototype.bind,
 	parseInt
 );
 

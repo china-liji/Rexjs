@@ -5,7 +5,7 @@ new function(
 	// 语句相关
 	Statement, Statements,
 	// 标签相关类
-	SyntaxTag,
+	SyntaxTag, TagType,
 	// 标签分类相关
 	CLASS_STATEMENT_BEGIN, CLASS_EXPRESSION, CLASS_EXPRESSION_CONTEXT,
 	// 标签类型相关
@@ -947,18 +947,29 @@ this.FileStartTag = function(FileStartExpression){
 	this.FileStartExpression
 );
 
-this.FileEndTag = function(FileEndExpression){
+this.FileEndTag = function(FileEndExpression, tagType){
 	/**
 	 * 文件结束符标签
 	 */
 	function FileEndTag(){
-		FilePositionTag.call(this, TYPE_MISTAKABLE);
+		FilePositionTag.call(this);
 	};
 	FileEndTag = new Rexjs(FileEndTag, FilePositionTag);
 	
 	FileEndTag.props({
 		regexp: /$/,
 		throw: "end of input",
+		/**
+		 * 获取标签类型
+		 */
+		get type(){
+			return tagType;
+		},
+		/**
+		 * 设置标签类型
+		 * @param {Number} type - 标签类型
+		 */
+		set type(type){},
 		/**
 		 * 标签访问器
 		 * @param {SyntaxParser} parser - 语法解析器
@@ -974,7 +985,9 @@ this.FileEndTag = function(FileEndExpression){
 	
 	return FileEndTag;
 }(
-	this.FileEndExpression
+	this.FileEndExpression,
+	// tagType
+	new TagType(TYPE_MISTAKABLE)
 );
 	
 }.call(
@@ -3080,7 +3093,6 @@ this.LabelledExpression = function(){
 	LabelledExpression = new Rexjs(LabelledExpression, Expression);
 	
 	LabelledExpression.props({
-		colon: null,
 		/**
 		 * 提取表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
@@ -3089,7 +3101,7 @@ this.LabelledExpression = function(){
 			// 追加标签名
 			contentBuilder.appendContext(this.context);
 			// 追加冒号
-			contentBuilder.appendContext(this.colon);
+			contentBuilder.appendString(":");
 			// 提取语句表达式内容
 			this.statementExpression.extractTo(contentBuilder);
 		},
@@ -3111,15 +3123,13 @@ this.LabelledStatement = function(){
 	
 	LabelledStatement.props({
 		/**
-		 * 尝试处理异常
+		 * 捕获处理异常
 		 * @param {SyntaxParser} parser - 语法解析器
 		 * @param {Context} context - 语法标签上下文
 		 */
-		try: function(parser, context){
-			// 临时表达式转正并设置 statementExpression
-			this.requestFormalize().statementExpression = this.expression
-			// 返回 catch 处理结果
-			return this.catch(parser, context);
+		catch: function(parser, context){
+			// 跳出语句并设置 statementExpression
+			this.out().expression.statementExpression = this.expression
 		}
 	});
 	
@@ -3176,17 +3186,17 @@ this.LabelledIdentifierTag = function(LabelTag){
 	this.LabelTag
 );
 
-this.LabelDeclarationTag = function(ColonTag, LabelledExpression, LabelledStatement){
+this.LabelColonTag = function(ColonTag, LabelledExpression, LabelledStatement){
 	/**
-	 * 标记申明标签，即标记所对应的冒号
+	 * 标记冒号标签
 	 * @param {Number} _type - 标签类型
 	 */
-	function LabelDeclarationTag(_type){
+	function LabelColonTag(_type){
 		ColonTag.call(this, _type);
 	};
-	LabelDeclarationTag = new Rexjs(LabelDeclarationTag, ColonTag);
+	LabelColonTag = new Rexjs(LabelColonTag, ColonTag);
 	
-	LabelDeclarationTag.props({
+	LabelColonTag.props({
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
@@ -3202,18 +3212,14 @@ this.LabelDeclarationTag = function(ColonTag, LabelledExpression, LabelledStatem
 		 * @param {Statements} statements - 当前语句块
 		 */
 		visitor: function(parser, context, statement, statements){
-			// 设置临时表达式
-			(
-				statement.$expression = new LabelledExpression(statement.expression.context)
-			)
-			.colon = context;
-			
+			// 设置表达式
+			statement.expression = new LabelledExpression(statement.expression.context)
 			// 设置当前语句
 			statements.statement = new LabelledStatement(statements);
 		}
 	});
 	
-	return LabelDeclarationTag;
+	return LabelColonTag;
 }(
 	this.ColonTag,
 	this.LabelledExpression,
@@ -6512,7 +6518,7 @@ this.ExpressionTags = function(VariableTag){
 				tag.class.expression
 			){
 				// 设置为可匹配
-				tag.type.bind(TYPE_MATCHABLE);
+				tag.type = new TagType(TYPE_MATCHABLE);
 			}
 			
 			return false;
@@ -6568,7 +6574,7 @@ this.ExpressionContextTags = function(StatementEndTag, ExpressionBreakTag, OpenB
 				}
 
 				// 重新绑定类型
-				tag.type.bind(type);
+				tag.type = new TagType(type);
 			}
 			
 			return false;
@@ -6606,7 +6612,7 @@ this.StatementTags = function(){
 				tag.class.statementBegin
 			){
 				// 设置为可匹配
-				tag.type.bind(TYPE_MATCHABLE);
+				tag.type = new TagType(TYPE_MATCHABLE);
 			}
 			
 			return false;
@@ -6964,7 +6970,7 @@ this.InitingVariableContextTags = function(BasicAssignmentTag){
 	this.BasicAssignmentTag
 );
 
-this.LabelContextTags = function(ExpressionContextTags, LabelDeclarationTag){
+this.LabelContextTags = function(ExpressionContextTags, LabelColonTag){
 	/**
 	 * 标记标签上下文列表
 	 */
@@ -6972,7 +6978,7 @@ this.LabelContextTags = function(ExpressionContextTags, LabelDeclarationTag){
 		ExpressionContextTags.call(this, "labelContextTags");
 		
 		this.register(
-			new LabelDeclarationTag()
+			new LabelColonTag()
 		);
 	};
 	LabelContextTags = new Rexjs(LabelContextTags, ExpressionContextTags);
@@ -6980,7 +6986,7 @@ this.LabelContextTags = function(ExpressionContextTags, LabelDeclarationTag){
 	return LabelContextTags;
 }(
 	this.ExpressionContextTags,
-	this.LabelDeclarationTag
+	this.LabelColonTag
 );
 
 this.NegationContextTags = function(NegationSiblingTag, DecrementSiblingTag){
@@ -7027,7 +7033,7 @@ this.NewContextTags = function(UnaryTag, NewTag, filter){
 					tag instanceof NewTag
 				){
 					// 设置为可匹配
-					tag.type.bind(TYPE_MATCHABLE);
+					tag.type = new TagType(TYPE_MATCHABLE);
 				}
 				
 				return false;
@@ -7162,7 +7168,7 @@ this.SwitchConditionTags = function(OpenSwitchConditionTag){
 
 this.TerminatedFlowContextTags = function(LabelledIdentifierTag){
 	/**
-	 * 中断了上下文标签列表
+	 * 中断流上下文标签列表
 	 */
 	function TerminatedFlowContextTags(){
 		StatementEndTags.call(this, "terminatedFlowContextTags");
@@ -7322,6 +7328,7 @@ Rexjs.static(this);
 	Rexjs.Statement,
 	Rexjs.Statements,
 	Rexjs.SyntaxTag,
+	Rexjs.TagType,
 	Rexjs.TagClass.CLASS_STATEMENT_BEGIN,
 	Rexjs.TagClass.CLASS_EXPRESSION,
 	Rexjs.TagClass.CLASS_EXPRESSION_CONTEXT,
