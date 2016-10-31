@@ -3,7 +3,7 @@ new function(
 	// 表达式相关
 	Expression, ListExpression, EmptyExpression, PartnerExpression, LeftHandSideExpression,
 	// 语句相关
-	Statement, Statements,
+	ECMAScriptStatement, ECMAScriptStatements,
 	// 标签相关类
 	SyntaxTag, TagType,
 	// 标签分类相关
@@ -18,6 +18,53 @@ new function(
 	IDENTIFIER_REGEXP_SOURCE
 ){
 "use strict";
+
+// 语句相关
+void function(){
+
+this.ECMAScriptStatement = ECMAScriptStatement = function(Statement){
+	/**
+	 * ECMAScript 语句
+	 * @param {Statements} statements - 该语句将要所处的语句块
+	 */
+	function ECMAScriptStatement(statements){
+		Statement.call(this, statements);
+	};
+	ECMAScriptStatement = new Rexjs(ECMAScriptStatement, Statement);
+
+	return ECMAScriptStatement;
+}(
+	Rexjs.Statement
+);
+
+this.ECMAScriptStatements = ECMAScriptStatements = function(Statements, ECMAScriptStatement){
+	/**
+	 * ECMAScript 语句块
+	 */
+	function ECMAScriptStatements(){
+		Statements.call(this);
+	};
+	ECMAScriptStatements = new Rexjs(ECMAScriptStatements, Statements);
+
+	ECMAScriptStatements.props({
+		/**
+		 * 初始化语句
+		 */
+		initStatement: function(){
+			return new ECMAScriptStatement(this);
+		}
+	});
+
+	return ECMAScriptStatements;
+}(
+	Rexjs.Statements,
+	this.ECMAScriptStatement
+);
+
+}.call(
+	this
+);
+
 
 // 公用的表达式
 void function(){
@@ -264,8 +311,6 @@ this.LiteralTag = function(){
 		 * @param {Statements} statements - 当前语句块
 		 */
 		visitor: function(parser, context, statement){
-			// 当前语句不再允许赋值运算
-			statement.blacklist |= BLACKLIST_ASSGINMENT;
 			// 设置表达式
 			statement.expression = new Expression(context);
 		}
@@ -1035,9 +1080,9 @@ this.UnaryStatement = function(){
 	 * @param {Statements} statements - 该语句将要所处的语句块
 	 */
 	function UnaryStatement(statements){
-		Statement.call(this, statements);
+		ECMAScriptStatement.call(this, statements);
 	};
-	UnaryStatement = new Rexjs(UnaryStatement, Statement);
+	UnaryStatement = new Rexjs(UnaryStatement, ECMAScriptStatement);
 	
 	UnaryStatement.props({
 		/**
@@ -1488,9 +1533,9 @@ this.BinaryStatement = function(){
 	 * @param {Statements} statements - 该语句将要所处的语句块
 	 */
 	function BinaryStatement(statements){
-		Statement.call(this, statements);
+		ECMAScriptStatement.call(this, statements);
 	};
-	BinaryStatement = new Rexjs(BinaryStatement, Statement);
+	BinaryStatement = new Rexjs(BinaryStatement, ECMAScriptStatement);
 	
 	BinaryStatement.props({
 		/**
@@ -2310,9 +2355,9 @@ this.BracketAccessorStatement = function(){
 	 * @param {Statements} statements - 该语句将要所处的语句块
 	 */
 	function BracketAccessorStatement(statements){
-		Statement.call(this, statements);
+		ECMAScriptStatement.call(this, statements);
 	};
-	BracketAccessorStatement = new Rexjs(BracketAccessorStatement, Statement);
+	BracketAccessorStatement = new Rexjs(BracketAccessorStatement, ECMAScriptStatement);
 	
 	BracketAccessorStatement.props({
 		/**
@@ -2456,9 +2501,9 @@ this.CommaStatement = function(){
 	 * @param {Statements} statements - 该语句将要所处的语句块
 	 */
 	function CommaStatement(statements){
-		Statement.call(this, statements);
+		ECMAScriptStatement.call(this, statements);
 	};
-	CommaStatement = new Rexjs(CommaStatement, Statement);
+	CommaStatement = new Rexjs(CommaStatement, ECMAScriptStatement);
 	
 	CommaStatement.props({
 		/**
@@ -2548,9 +2593,9 @@ this.GroupingStatement = function(){
 	 * @param {Statements} statements - 该语句将要所处的语句块
 	 */
 	function GroupingStatement(statements){
-		Statement.call(this, statements);
+		ECMAScriptStatement.call(this, statements);
 	};
-	GroupingStatement = new Rexjs(GroupingStatement, Statement);
+	GroupingStatement = new Rexjs(GroupingStatement, ECMAScriptStatement);
 	
 	GroupingStatement.props({
 		/**
@@ -2687,12 +2732,12 @@ this.ArrayStatement = function(){
 	 * @param {Statements} statements - 该语句将要所处的语句块
 	 */
 	function ArrayStatement(statements){
-		Statement.call(this, statements);
+		ECMAScriptStatement.call(this, statements);
 
 		// 初始化表达式
 		this.expression = new EmptyExpression(null);
 	};
-	ArrayStatement = new Rexjs(ArrayStatement, Statement);
+	ArrayStatement = new Rexjs(ArrayStatement, ECMAScriptStatement);
 	
 	ArrayStatement.props({
 		/**
@@ -2893,9 +2938,9 @@ this.BlockStatement = function(){
 	 * @param {Statements} statements - 该语句将要所处的语句块
 	 */
 	function BlockStatement(statements){
-		Statement.call(this, statements);
+		ECMAScriptStatement.call(this, statements);
 	};
-	BlockStatement = new Rexjs(BlockStatement, Statement);
+	BlockStatement = new Rexjs(BlockStatement, ECMAScriptStatement);
 	
 	BlockStatement.props({
 		/**
@@ -2935,9 +2980,9 @@ this.BlockStatements = function(BlockStatement){
 	 * 语句块
 	 */
 	function BlockStatements(){
-		Statements.call(this);
+		ECMAScriptStatements.call(this);
 	};
-	BlockStatements = new Rexjs(BlockStatements, Statements);
+	BlockStatements = new Rexjs(BlockStatements, ECMAScriptStatements);
 	
 	BlockStatements.props({
 		/**
@@ -3081,7 +3126,7 @@ closeBlockTag = new this.CloseBlockTag();
 
 // 标记标签相关
 void function(){
-	
+
 this.LabelledExpression = function(){
 	/**
 	 * 标记表达式
@@ -3091,7 +3136,7 @@ this.LabelledExpression = function(){
 		Expression.call(this, context);
 	};
 	LabelledExpression = new Rexjs(LabelledExpression, Expression);
-	
+
 	LabelledExpression.props({
 		/**
 		 * 提取表达式文本内容
@@ -3117,9 +3162,9 @@ this.LabelledStatement = function(){
 	 * @param {Statements} statements - 该语句将要所处的语句块
 	 */
 	function LabelledStatement(statements){
-		Statement.call(this, statements);
+		ECMAScriptStatement.call(this, statements);
 	};
-	LabelledStatement = new Rexjs(LabelledStatement, Statement);
+	LabelledStatement = new Rexjs(LabelledStatement, ECMAScriptStatement);
 	
 	LabelledStatement.props({
 		/**
@@ -3161,31 +3206,6 @@ this.LabelTag = function(IdentifierTag){
 	this.IdentifierTag
 );
 
-this.LabelledIdentifierTag = function(LabelTag){
-	/**
-	 * 标记标识符标签
-	 * @param {Number} _type - 标签类型
-	 */
-	function LabelledIdentifierTag(_type){
-		LabelTag.call(this, _type);
-	};
-	LabelledIdentifierTag = new Rexjs(LabelledIdentifierTag, LabelTag);
-	
-	LabelledIdentifierTag.props({
-		/**
-		 * 获取此标签接下来所需匹配的标签列表
-		 * @param {TagsMap} tagsMap - 标签集合映射
-		 */
-		require: function(tagsMap){
-			return tagsMap.statementEndTags;
-		}
-	});
-	
-	return LabelledIdentifierTag;
-}(
-	this.LabelTag
-);
-
 this.LabelColonTag = function(ColonTag, LabelledExpression, LabelledStatement){
 	/**
 	 * 标记冒号标签
@@ -3213,7 +3233,7 @@ this.LabelColonTag = function(ColonTag, LabelledExpression, LabelledStatement){
 		 */
 		visitor: function(parser, context, statement, statements){
 			// 设置表达式
-			statement.expression = new LabelledExpression(statement.expression.context)
+			statement.expression = new LabelledExpression(statement.expression.context);
 			// 设置当前语句
 			statements.statement = new LabelledStatement(statements);
 		}
@@ -3245,28 +3265,16 @@ this.TerminatedFlowExpression = function(){
 	TerminatedFlowExpression = new Rexjs(TerminatedFlowExpression, Expression);
 	
 	TerminatedFlowExpression.props({
+		inBlock: false,
 		/**
 		 * 提取表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
 		 */
 		extractTo: function(contentBuilder){
-			var label = this.label;
-			
 			// 追加 break 关键字
 			contentBuilder.appendContext(this.context);
-			
-			// 如果是空表达式
-			if(
-				label instanceof EmptyExpression
-			){
-				// 返回
-				return;
-			}
-			
-			// 追加空格
-			contentBuilder.appendSpace();
 			// 提取 label
-			label.extractTo(contentBuilder);
+			this.label.extractTo(contentBuilder);
 		},
 		label: null
 	});
@@ -3280,11 +3288,11 @@ this.TerminatedFlowStatement = function(){
 	 * @param {Statements} statements - 该语句将要所处的语句块
 	 */
 	function TerminatedFlowStatement(statements){
-		Statement.call(this, statements);
+		ECMAScriptStatement.call(this, statements);
 		
 		this.expression = new EmptyExpression(null);
 	};
-	TerminatedFlowStatement = new Rexjs(TerminatedFlowStatement, Statement);
+	TerminatedFlowStatement = new Rexjs(TerminatedFlowStatement, ECMAScriptStatement);
 	
 	TerminatedFlowStatement.props({
 		/**
@@ -3292,11 +3300,33 @@ this.TerminatedFlowStatement = function(){
 		 * @param {SyntaxParser} parser - 语法解析器
 		 * @param {Context} context - 语法标签上下文
 		 */
-		try: function(parser, context){
-			// 表达式转正并设置 label
-			this.requestFormalize().label = this.expression;
-			// 进入 catch
-			return this.catch(parser, context);
+		catch: function(parser, context){
+			var expression = this.expression, terminatedFlowExpression = this.target.expression;
+
+			switch(
+				false
+			){
+				// 如果不是空表达式，说明是属于标记表达式
+				case expression instanceof EmptyExpression:
+					break;
+
+				// 如果存在语句块
+				case terminatedFlowExpression.blockStatement === null:
+					break;
+
+				// 默认
+				default:
+					// 报错
+					parser.error(
+						terminatedFlowExpression.context, "Illegal " + terminatedFlowExpression.context.content + " statement"
+					);
+					return;
+			}
+
+			// 跳出语句
+			this.out();
+			// 设置 label
+			terminatedFlowExpression.label = this.expression;
 		}
 	});
 	
@@ -3316,6 +3346,13 @@ this.TerminatedFlowTag = function(TerminatedFlowExpression, TerminatedFlowStatem
 	TerminatedFlowTag.props({
 		$class: CLASS_STATEMENT_BEGIN,
 		/**
+		 * 核对标签定义语句是否满足当前标签所出现的场景
+		 * @param {Statement} labelStatement - 标签定义语句
+		 */
+		checkLabelStatement: function(){
+			return true;
+		},
+		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
 		 */
@@ -3330,8 +3367,8 @@ this.TerminatedFlowTag = function(TerminatedFlowExpression, TerminatedFlowStatem
 		 * @param {Statements} statements - 当前语句块
 		 */
 		visitor: function(parser, context, statement, statements){
-			// 设置临时表达式
-			statement.$expression = new TerminatedFlowExpression(context);
+			// 设置表达式
+			statement.expression = new TerminatedFlowExpression(context);
 			// 设置当前语句
 			statements.statement = new TerminatedFlowStatement(statements);
 		}
@@ -3343,7 +3380,84 @@ this.TerminatedFlowTag = function(TerminatedFlowExpression, TerminatedFlowStatem
 	this.TerminatedFlowStatement
 );
 
-this.BreakTag = function(TerminatedFlowTag){
+this.LabelledIdentifierTag = function(LabelTag, LabelledStatement){
+	/**
+	 * 标记标识符标签
+	 * @param {Number} _type - 标签类型
+	 */
+	function LabelledIdentifierTag(_type){
+		LabelTag.call(this, _type);
+	};
+	LabelledIdentifierTag = new Rexjs(LabelledIdentifierTag, LabelTag);
+	
+	LabelledIdentifierTag.props({
+		/**
+		 * 获取此标签接下来所需匹配的标签列表
+		 * @param {TagsMap} tagsMap - 标签集合映射
+		 */
+		require: function(tagsMap){
+			return tagsMap.statementEndTags;
+		},
+		/**
+		 * 标签访问器
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 标签上下文
+		 * @param {Statement} statement - 当前语句
+		 * @param {Statements} statements - 当前语句块
+		 */
+		visitor: function(parser, context, statement){
+			var content = context.content, target = statement.target, terminatedFlowTag = target.expression.context.tag;
+
+			// 如果目标语句存在
+			while(
+				target
+			){
+				switch(
+					false
+				){
+					// 如果目标语句不是标记语句
+					case target instanceof LabelledStatement:
+						break;
+
+					// 如果标记名称不符合
+					case target.target.expression.context.content === content:
+						break;
+
+					// 如果中断流标签核对无效
+					case terminatedFlowTag.checkLabelStatement(labelledExpression):
+						break;
+
+					default:
+						// 添加空格
+						context.content = " " + context.content;
+						// 设置当前表达式
+						statement.expression = new Expression(context);
+						return;
+				}
+
+				target = target.target;
+			}
+
+			// 报错
+			parser.error(context, 'Undefined label "' + content + '"');
+		}
+	});
+	
+	return LabelledIdentifierTag;
+}(
+	this.LabelTag,
+	this.LabelledStatement
+);
+
+}.call(
+	this
+);
+
+
+// 中断流子类相关
+void function(TerminatedFlowTag){
+
+this.BreakTag = function(){
 	/**
 	 * break 标签
 	 * @param {Number} _type - 标签类型
@@ -3358,11 +3472,9 @@ this.BreakTag = function(TerminatedFlowTag){
 	});
 	
 	return BreakTag;
-}(
-	this.TerminatedFlowTag
-);
+}();
 
-this.ContinueTag = function(TerminatedFlowTag){
+this.ContinueTag = function(){
 	/**
 	 * continue 标签
 	 * @param {Number} _type - 标签类型
@@ -3373,16 +3485,18 @@ this.ContinueTag = function(TerminatedFlowTag){
 	ContinueTag = new Rexjs(ContinueTag, TerminatedFlowTag);
 	
 	ContinueTag.props({
+		checkLabelStatement: function(labelStatement){debugger
+			
+		},
 		regexp: /continue/
 	});
 	
 	return ContinueTag;
-}(
-	this.TerminatedFlowTag
-);
+}();
 
 }.call(
-	this
+	this,
+	this.TerminatedFlowTag
 );
 
 
@@ -3457,27 +3571,28 @@ this.IfConditionStatement = function(){
 	 * @param {Statements} statements - 该语句将要所处的语句块
 	 */
 	function IfConditionStatement(statements){
-		Statement.call(this, statements);
+		ECMAScriptStatement.call(this, statements);
 	};
-	IfConditionStatement = new Rexjs(IfConditionStatement, Statement);
+	IfConditionStatement = new Rexjs(IfConditionStatement, ECMAScriptStatement);
 	
 	IfConditionStatement.props({
-		blacklist: BLACKLIST_SEMICOLON,
 		/**
-		 * 尝试处理异常
+		 * 捕获处理异常
 		 * @param {SyntaxParser} parser - 语法解析器
 		 * @param {Context} context - 语法标签上下文
 		 */
-		try: function(parser, context){
-			// 跳出该语句
-			this.out()
-				// 设置条件表达式的 inner
-				.$expression
-				.condition
-				.inner = this.expression;
-			
-			// 如果是小括号，返回关闭条件语句标签，否则返回 null
-			return context.content === ")" ? closeIfConditionTag : null;
+		catch: function(parser, context){
+			// 如果是小括号
+			if(
+				context.content === ")"
+			){
+				// 跳出该语句并设置条件表达式的 inner
+				this.out().expression.condition.inner = this.expression;
+				return closeIfConditionTag;
+			}
+
+			// 报错
+			parser.error(context);
 		}
 	});
 	
@@ -3490,34 +3605,39 @@ this.IfBodyStatement = function(){
 	 * @param {Statements} statements - 该语句将要所处的语句块
 	 */
 	function IfBodyStatement(statements){
-		Statement.call(this, statements);
+		ECMAScriptStatement.call(this, statements);
 	};
-	IfBodyStatement = new Rexjs(IfBodyStatement, Statement);
+	IfBodyStatement = new Rexjs(IfBodyStatement, ECMAScriptStatement);
 	
 	IfBodyStatement.props({
 		/**
-		 * 尝试处理异常
+		 * 捕获处理异常
 		 * @param {SyntaxParser} parser - 语法解析器
 		 * @param {Context} context - 语法标签上下文
 		 */
-		try: function(parser, context){
+		catch: function(parser, context){
 			var expression = this.expression;
+
+			// 跳出语句并设置 ifBody
+			this.out().expression.ifBody = expression;
 			
-			// 如果是 else
-			if(
-				context.content === "else"
+			switch(
+				false
 			){
-				// 跳出该语句并设置 ifBody
-				this.out().$expression.ifBody = expression;
+				// 如果不是 else
+				case context.content === "else":
+					break;
 
-				// 如果表达式已经结束，返回 else 标签，否则返回 null
-				return (expression.state & STATE_STATEMENT_ENDABLE) === STATE_STATEMENT_ENDABLE ? elseTag : null;
+				// 如果表达式还没有结束
+				case (expression.state & STATE_STATEMENT_ENDABLE) === STATE_STATEMENT_ENDABLE:
+					// 默认
+					parser.error(context);
+					break;
+
+				default:
+					// 返回 else 标签
+					return elseTag;
 			}
-
-			// 临时表达式转正并设置 ifBody
-			this.requestFormalize().ifBody = expression;
-			// 返回 catch 的处理结果
-			return this.catch(parser, context);
 		}
 	});
 	
@@ -3530,21 +3650,19 @@ this.ElseBodyStatement = function(){
 	 * @param {Statements} statements - 该语句将要所处的语句块
 	 */
 	function ElseBodyStatement(statements){
-		Statement.call(this, statements);
+		ECMAScriptStatement.call(this, statements);
 	};
-	ElseBodyStatement = new Rexjs(ElseBodyStatement, Statement);
+	ElseBodyStatement = new Rexjs(ElseBodyStatement, ECMAScriptStatement);
 	
 	ElseBodyStatement.props({
 		/**
-		 * 尝试处理异常
+		 * 捕获处理异常
 		 * @param {SyntaxParser} parser - 语法解析器
 		 * @param {Context} context - 语法标签上下文
 		 */
-		try: function(parser, context){
-			// 临时表达式转正并设置 elseBody
-			this.requestFormalize().elseBody = this.expression;
-			// 返回 catch 处理结果
-			return this.catch(parser, context);
+		catch: function(parser, context){
+			// 跳出语句并设置 elseBody
+			this.out().expression.elseBody = this.expression;
 		}
 	});
 	
@@ -3578,8 +3696,8 @@ this.IfTag = function(IfExpression){
 		 * @param {Statements} statements - 当前语句块
 		 */
 		visitor: function(parser, context, statement){
-			// 设置临时表达式
-			statement.$expression = new IfExpression(context);
+			// 设置表达式
+			statement.expression = new IfExpression(context);
 		}
 	});
 	
@@ -3615,7 +3733,7 @@ this.OpenIfConditionTag = function(OpenParenTag, IfConditionStatement){
 		 */
 		visitor: function(parser, context, statement, statements){
 			// 设置 if 表达式的条件
-			statement.$expression.condition = new PartnerExpression(context);
+			statement.expression.condition = new PartnerExpression(context);
 			// 设置当前语句
 			statements.statement = new IfConditionStatement(statements);
 		}
@@ -3654,7 +3772,7 @@ this.CloseIfConditionTag = function(CloseParenTag, IfBodyStatement, IfBodyStatem
 		 */
 		visitor: function(parser, context, statement, statements){
 			// 设置 if 条件的 close
-			statement.$expression.condition.close = context;
+			statement.expression.condition.close = context;
 			// 设置当前语句 及 表达式主体语句
 			statements.statement = new IfBodyStatement(statements);
 		}
@@ -3695,7 +3813,7 @@ this.ElseTag = function(ElseExpression, ElseBodyStatement){
 		 */
 		visitor: function(parser, context, statement, statements){
 			// 设置 else 关键字上下文
-			statement.$expression.elseContext = context;
+			statement.expression.elseContext = context;
 			// 设置当前语句
 			statements.statement = new ElseBodyStatement(statements);
 		}
@@ -3768,11 +3886,11 @@ this.ReturnStatement = function(){
 	 * @param {Statements} statements - 该语句将要所处的语句块
 	 */
 	function ReturnStatement(statements){
-		Statement.call(this, statements);
+		ECMAScriptStatement.call(this, statements);
 		
 		this.expression = new EmptyExpression(null);
 	};
-	ReturnStatement = new Rexjs(ReturnStatement, Statement);
+	ReturnStatement = new Rexjs(ReturnStatement, ECMAScriptStatement);
 	
 	ReturnStatement.props({
 		/**
@@ -3877,9 +3995,9 @@ this.ThrowStatement = function(){
 	 * @param {Statements} statements - 该语句将要所处的语句块
 	 */
 	function ThrowStatement(statements){
-		Statement.call(this, statements);
+		ECMAScriptStatement.call(this, statements);
 	};
-	ThrowStatement = new Rexjs(ThrowStatement, Statement);
+	ThrowStatement = new Rexjs(ThrowStatement, ECMAScriptStatement);
 	
 	ThrowStatement.props({
 		/**
@@ -4006,11 +4124,11 @@ this.VarStatement = function(){
 	 * @param {Statements} statements - 该语句将要所处的语句块
 	 */
 	function VarStatement(statements){
-		Statement.call(this, statements);
+		ECMAScriptStatement.call(this, statements);
 
 		this.$expression = new ListExpression(",");
 	};
-	VarStatement = new Rexjs(VarStatement, Statement);
+	VarStatement = new Rexjs(VarStatement, ECMAScriptStatement);
 	
 	VarStatement.props({
 		/**
@@ -4035,9 +4153,9 @@ this.VarClauseStatement = function(){
 	 * @param {Statements} statements - 该语句将要所处的语句块
 	 */
 	function VarClauseStatement(statements){
-		Statement.call(this, statements);
+		ECMAScriptStatement.call(this, statements);
 	};
-	VarClauseStatement = new Rexjs(VarClauseStatement, Statement);
+	VarClauseStatement = new Rexjs(VarClauseStatement, ECMAScriptStatement);
 	
 	VarClauseStatement.props({
 		blacklist: BLACKLIST_COMMA,
@@ -4291,9 +4409,9 @@ this.ForConditionStatement = ForConditionStatement = function(){
 	 * @param {Statements} statements - 该语句将要所处的语句块
 	 */
 	function ForConditionStatement(statements){
-		Statement.call(this, statements);
+		ECMAScriptStatement.call(this, statements);
 	};
-	ForConditionStatement = new Rexjs(ForConditionStatement, Statement);
+	ForConditionStatement = new Rexjs(ForConditionStatement, ECMAScriptStatement);
 	
 	ForConditionStatement.props({
 		blacklist: BLACKLIST_SEMICOLON,
@@ -4421,9 +4539,9 @@ this.ForBodyStatement = function(){
 	 * @param {Statements} statements - 该语句将要所处的语句块
 	 */
 	function ForBodyStatement(statements){
-		Statement.call(this, statements);
+		ECMAScriptStatement.call(this, statements);
 	};
-	ForBodyStatement = new Rexjs(ForBodyStatement, Statement);
+	ForBodyStatement = new Rexjs(ForBodyStatement, ECMAScriptStatement);
 	
 	ForBodyStatement.props({
 		/**
@@ -4773,9 +4891,9 @@ this.TryStatement = function(){
 	 * @param {Statements} statements - 该语句将要所处的语句块
 	 */
 	function TryStatement(statements){
-		Statement.call(this, statements);
+		ECMAScriptStatement.call(this, statements);
 	};
-	TryStatement = new Rexjs(TryStatement, Statement);
+	TryStatement = new Rexjs(TryStatement, ECMAScriptStatement);
 	
 	TryStatement.props({
 		/**
@@ -4815,9 +4933,9 @@ this.CatchStatement = function(){
 	 * @param {Statements} statements - 该语句将要所处的语句块
 	 */
 	function CatchStatement(statements){
-		Statement.call(this, statements);
+		ECMAScriptStatement.call(this, statements);
 	};
-	CatchStatement = new Rexjs(CatchStatement, Statement);
+	CatchStatement = new Rexjs(CatchStatement, ECMAScriptStatement);
 	
 	CatchStatement.props({
 		/**
@@ -4849,9 +4967,9 @@ this.FinallyStatement = function(){
 	 * @param {Statements} statements - 该语句将要所处的语句块
 	 */
 	function FinallyStatement(statements){
-		Statement.call(this, statements);
+		ECMAScriptStatement.call(this, statements);
 	};
-	FinallyStatement = new Rexjs(FinallyStatement, Statement);
+	FinallyStatement = new Rexjs(FinallyStatement, ECMAScriptStatement);
 	
 	FinallyStatement.props({
 		/**
@@ -5228,9 +5346,9 @@ this.SwitchConditionStatement = function(){
 	 * @param {Statements} statements - 该语句将要所处的语句块
 	 */
 	function SwitchConditionStatement(statements){
-		Statement.call(this, statements);
+		ECMAScriptStatement.call(this, statements);
 	};
-	SwitchConditionStatement = new Rexjs(SwitchConditionStatement, Statement);
+	SwitchConditionStatement = new Rexjs(SwitchConditionStatement, ECMAScriptStatement);
 	
 	SwitchConditionStatement.props({
 		blacklist: BLACKLIST_SEMICOLON,
@@ -5260,9 +5378,9 @@ this.SwitchBodyStatements = function(){
 	 * switch 主体语句块
 	 */
 	function SwitchBodyStatements(){
-		Statements.call(this);
+		ECMAScriptStatements.call(this);
 	};
-	SwitchBodyStatements = new Rexjs(SwitchBodyStatements, Statements);
+	SwitchBodyStatements = new Rexjs(SwitchBodyStatements, ECMAScriptStatements);
 
 	SwitchBodyStatements.props({
 		hasDefault: false
@@ -5277,9 +5395,9 @@ this.CaseValueStatement = function(){
 	 * @param {Statements} statements - 该语句将要所处的语句块
 	 */
 	function CaseValueStatement(statements){
-		Statement.call(this, statements);
+		ECMAScriptStatement.call(this, statements);
 	};
-	CaseValueStatement = new Rexjs(CaseValueStatement, Statement);
+	CaseValueStatement = new Rexjs(CaseValueStatement, ECMAScriptStatement);
 	
 	CaseValueStatement.props({
 		/**
@@ -5305,11 +5423,11 @@ this.CaseBodyStatement = function(EmptyStatementExpression){
 	 * @param {Statements} statements - 该语句将要所处的语句块
 	 */
 	function CaseBodyStatement(statements){
-		Statement.call(this, statements);
+		ECMAScriptStatement.call(this, statements);
 
 		this.expression = new EmptyStatementExpression(null);
 	};
-	CaseBodyStatement = new Rexjs(CaseBodyStatement, Statement);
+	CaseBodyStatement = new Rexjs(CaseBodyStatement, ECMAScriptStatement);
 	
 	CaseBodyStatement.props({
 		/**
@@ -5378,9 +5496,9 @@ this.CaseBodyStatements = function(CaseBodyStatement){
 	 * case 语句块
 	 */
 	function CaseBodyStatements(){
-		Statements.call(this);
+		ECMAScriptStatements.call(this);
 	};
-	CaseBodyStatements = new Rexjs(CaseBodyStatements, Statements);
+	CaseBodyStatements = new Rexjs(CaseBodyStatements, ECMAScriptStatements);
 
 	CaseBodyStatements.props({
 		/**
@@ -5824,9 +5942,9 @@ this.WhileConditionStatement = function(){
 	 * @param {Statements} statements - 该语句将要所处的语句块
 	 */
 	function WhileConditionStatement(statements){
-		Statement.call(this, statements);
+		ECMAScriptStatement.call(this, statements);
 	};
-	WhileConditionStatement = new Rexjs(WhileConditionStatement, Statement);
+	WhileConditionStatement = new Rexjs(WhileConditionStatement, ECMAScriptStatement);
 	
 	WhileConditionStatement.props({
 		blacklist: BLACKLIST_SEMICOLON,
@@ -5857,9 +5975,9 @@ this.WhileBodyStatement = function(){
 	 * @param {Statements} statements - 该语句将要所处的语句块
 	 */
 	function WhileBodyStatement(statements){
-		Statement.call(this, statements);
+		ECMAScriptStatement.call(this, statements);
 	};
-	WhileBodyStatement = new Rexjs(WhileBodyStatement, Statement);
+	WhileBodyStatement = new Rexjs(WhileBodyStatement, ECMAScriptStatement);
 	
 	WhileBodyStatement.props({
 		/**
@@ -6063,9 +6181,9 @@ this.DoStatement = function(){
 	 * @param {Statements} statements - 该语句将要所处的语句块
 	 */
 	function DoStatement(statements){
-		Statement.call(this, statements);
+		ECMAScriptStatement.call(this, statements);
 	};
-	DoStatement = new Rexjs(DoStatement, Statement);
+	DoStatement = new Rexjs(DoStatement, ECMAScriptStatement);
 	
 	DoStatement.props({
 		/**
@@ -6108,9 +6226,9 @@ this.DoWhileConditionStatement = function(){
 	 * @param {Statements} statements - 该语句将要所处的语句块
 	 */
 	function DoWhileConditionStatement(statements){
-		Statement.call(this, statements);
+		ECMAScriptStatement.call(this, statements);
 	};
-	DoWhileConditionStatement = new Rexjs(DoWhileConditionStatement, Statement);
+	DoWhileConditionStatement = new Rexjs(DoWhileConditionStatement, ECMAScriptStatement);
 	
 	DoWhileConditionStatement.props({
 		blacklist: BLACKLIST_SEMICOLON,
@@ -7247,12 +7365,12 @@ this.WhileConditionTags = function(OpenWhileConditionTag){
 );
 
 
-// ECMAScript 相关标签列表
+// ECMAScript 解析器相关
 void function(SyntaxParser){
 
 this.ECMAScriptTagsMap = function(SyntaxTagsMap, tagsArray){
 	/**
-	 * ECMAScript 标签列表映射
+	 * ECMAScript 标签列表映射，初始化该类是个耗性能过程，建议作为单例使用
 	 */
 	function ECMAScriptTagsMap(){
 		SyntaxTagsMap.call(this);
@@ -7311,6 +7429,44 @@ this.ECMAScriptTagsMap = function(SyntaxTagsMap, tagsArray){
 		this.WhileConditionTags
 	]
 );
+
+this.ECMAScriptParser = function(ECMAScriptTagsMap, tagsMap, parse){
+	/**
+	 * ECMAScript 语法解析器
+	 */
+	function ECMAScriptParser(){
+		SyntaxParser.call(this);
+	};
+	ECMAScriptParser = new Rexjs(ECMAScriptParser, SyntaxParser);
+
+	ECMAScriptParser.props({
+		/**
+		 * 开始解析
+		 * @param {File} file - 文件信息
+		 */
+		parse: function(file){
+			parse.call(
+				this,
+				file,
+				/*
+					如果 tagsMap 没有初始化，则初始化，
+					在这里初始化的目的是为了：
+					1. 当不使用 ECMAScriptParser 时，不会耗性能
+					2. 就算多次使用 ECMAScriptParser，也不会多次初始化 ECMAScriptTagsMap
+				*/
+				tagsMap || tagsMap = new ECMAScriptTagsMap(),
+				new ECMAScriptStatements()
+			);
+		}
+	});
+
+	return ECMAScriptParser;
+}(
+	this.ECMAScriptTagsMap,
+	// tagsMap
+	null,
+	SyntaxParser.prototype.parse
+);
 	
 }.call(
 	this,
@@ -7325,8 +7481,10 @@ Rexjs.static(this);
 	Rexjs.EmptyExpression,
 	Rexjs.PartnerExpression,
 	Rexjs.LeftHandSideExpression,
-	Rexjs.Statement,
-	Rexjs.Statements,
+	// ECMAScriptStatement
+	null,
+	// ECMAScriptStatements
+	null,
 	Rexjs.SyntaxTag,
 	Rexjs.TagType,
 	Rexjs.TagClass.CLASS_STATEMENT_BEGIN,

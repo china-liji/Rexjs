@@ -761,8 +761,27 @@ this.TagType = function(TYPE_MATCHABLE, TYPE_UNEXPECTED, TYPE_MISTAKABLE){
 );
 
 
-// 语法标签相关
+// 语法相关
 void function(){
+
+this.Syntax = function(){
+	/**
+	 * 语法基类
+	 */
+	function Syntax(){};
+	Syntax = new Rexjs(Syntax);
+	
+	Syntax.props({
+		/**
+		 * 提取表达式文本内容
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 */
+		extractTo: function(contentBuilder){},
+		target: null
+	});
+	
+	return Syntax;
+}();
 
 this.SyntaxTag = function(TagClass, TagType){
 	/**
@@ -1491,29 +1510,10 @@ this.MappingBuilder = function(ContentBuilder, MappingPosition, Base64VLQ, JSON,
 );
 
 
-// 语法解析转换相关
-void function(SyntaxTag){
+// 语法解析相关
+void function(Syntax, SyntaxTag){
 
-this.Syntax = function(){
-	/**
-	 * 语法基类
-	 */
-	function Syntax(){};
-	Syntax = new Rexjs(Syntax);
-	
-	Syntax.props({
-		/**
-		 * 提取表达式文本内容
-		 * @param {ContentBuilder} contentBuilder - 内容生成器
-		 */
-		extractTo: function(contentBuilder){},
-		target: null
-	});
-	
-	return Syntax;
-}();
-
-this.Expression = function(Syntax, parseInt){
+this.Expression = function(parseInt){
 	/**
 	 * 表达式
 	 * @param {Context} context - 语法标签上下文
@@ -1552,11 +1552,10 @@ this.Expression = function(Syntax, parseInt){
 	
 	return Expression;
 }(
-	this.Syntax,
 	parseInt
 );
 
-this.Statement = function(Syntax, TYPE_MISTAKABLE, CLASS_STATEMENT, STATE_STATEMENT_ENDABLE){
+this.Statement = function(TYPE_MISTAKABLE, CLASS_STATEMENT, STATE_STATEMENT_ENDABLE){
 	/**
 	 * 语句
 	 * @param {Statements} statements - 该语句将要所处的语句块
@@ -1607,7 +1606,6 @@ this.Statement = function(Syntax, TYPE_MISTAKABLE, CLASS_STATEMENT, STATE_STATEM
 			// 恢复语句
 			this.statements.statement = target;
 
-			// 设置当前语句
 			return target;
 		},
 		statements: null,
@@ -1623,13 +1621,12 @@ this.Statement = function(Syntax, TYPE_MISTAKABLE, CLASS_STATEMENT, STATE_STATEM
 	
 	return Statement;
 }(
-	this.Syntax,
 	SyntaxTag.TYPE_MISTAKABLE,
 	SyntaxTag.CLASS_STATEMENT,
 	this.Expression.STATE_STATEMENT_ENDABLE
 );
 
-this.Statements = function(Syntax, Statement, STATE_STATEMENT_ENDED){
+this.Statements = function(Statement, STATE_STATEMENT_ENDED){
 	/**
 	 * 语句块
 	 */
@@ -1638,7 +1635,7 @@ this.Statements = function(Syntax, Statement, STATE_STATEMENT_ENDED){
 		
 		this.newStatement();
 	};
-	Statements = new Rexjs(Statements);
+	Statements = new Rexjs(Statements, Syntax);
 	
 	Statements.props({
 		/**
@@ -1701,13 +1698,13 @@ this.Statements = function(Syntax, Statement, STATE_STATEMENT_ENDED){
 	
 	return Statements;
 }(
-	this.Syntax,
 	this.Statement,
 	this.Expression.STATE_STATEMENT_ENDED
 );
 
 }.call(
 	this,
+	this.Syntax,
 	this.SyntaxTag
 );
 
@@ -1990,8 +1987,8 @@ this.SyntaxRegExp = function(RegExp, Infinity){
 			// 初始化
 			this.lastIndex = 0;
 			
-			while(
-				true
+			for(
+				;;
 			){
 				regexp = this.originalRegExp;
 				regexp.lastIndex = lastIndex = this.lastIndex;
@@ -2064,15 +2061,12 @@ this.SyntaxRegExp = function(RegExp, Infinity){
 // 语法树相关
 void function(STATE_STATEMENT_ENDABLE, getTagAfterTry){
 
-this.SyntaxParser = function(SyntaxRegExp, SyntaxError, Statement, Statements, Position, Context, ContentBuilder, toTryCatch){
+this.SyntaxParser = function(SyntaxRegExp, SyntaxError, Position, Context, ContentBuilder, toTryCatch){
 	/**
-	 * 语法树类，初始化语法树是个耗性能过程，建议作为单例使用
-	 * @param {SyntaxTagsMap} tagsMap - 标签列表映射
+	 * 语法解析器
 	 */
-	function SyntaxParser(tagsMap, _statements){
+	function SyntaxParser(){
 		this.regexp = new SyntaxRegExp();
-		this.tagsMap = tagsMap;
-		this.statements = _statements || new Statements();
 	};
 	SyntaxParser = new Rexjs(SyntaxParser);
 	
@@ -2082,11 +2076,15 @@ this.SyntaxParser = function(SyntaxRegExp, SyntaxError, Statement, Statements, P
 		 * @param {ContentBuilder} _contentBuilder - 内容生成器
 		 */
 		build: function(_contentBuilder){
-			var contentBuilder = _contentBuilder || new ContentBuilder();
+			var statements = this.statements, contentBuilder = _contentBuilder || new ContentBuilder();
 			
-			// 提取语法列表内容
-			this.statements.extractTo(contentBuilder);
-			// 生成完成，并返回
+			if(
+				statements
+			){
+				// 提取语法列表内容
+				statements.extractTo(contentBuilder);
+			}
+
 			return contentBuilder.complete();
 		},
 		content: "",
@@ -2112,26 +2110,27 @@ this.SyntaxParser = function(SyntaxRegExp, SyntaxError, Statement, Statements, P
 		/**
 		 * 开始解析
 		 * @param {File} file - 文件信息
+		 * @param {SyntaxTagsMap} tagsMap - 标签列表映射
+		 * @param {Statements} statements - 初始化的语句块
 		 */
-		parse: function(file){
-			var parser = this, tagsMap = this.tagsMap, tags = tagsMap.entranceTags, statements = this.statements, position = this.position = new Position(1, 1);
+		parse: function(file, tagsMap, statements){
+			var parser = this, tags = tagsMap.entranceTags, position = this.position = new Position(1, 1);
 
+			// 设置 tagsMap
+			this.tagsMap = tagsMap;
 			// 记录文件
 			this.file = file;
 			// 清空错误
 			this.details = null;
-			
-			// 清空语句块
-			statements.clear();
-			// 创建新语句
-			statements.newStatement();
+			// 初始化语句
+			this.statements = statements;
 			
 			// 执行表达式
 			this.regexp.exec(
 				tags.regexp,
 				file.source,
 				function(fragment, tagIndex){
-					var context, statements, tag = tags[tagIndex];
+					var context, tag = tags[tagIndex];
 					
 					// 初始化 context
 					context = new Context(
@@ -2182,8 +2181,6 @@ this.SyntaxParser = function(SyntaxRegExp, SyntaxError, Statement, Statements, P
 }(
 	this.SyntaxRegExp,
 	this.SyntaxError,
-	this.Statement,
-	this.Statements,
 	this.Position,
 	this.Context,
 	this.ContentBuilder,
@@ -2202,8 +2199,8 @@ this.SyntaxParser = function(SyntaxRegExp, SyntaxError, Statement, Statements, P
 			if(
 				mistakable ? tagClass.statement : true
 			){
-				while(
-					true
+				for(
+					;;
 				){
 					// 获取 catch 所返回的标签，如果没有，则取 finally 所返回的标签
 					var t = statement.catch(parser, context) || statement.finally(parser, context, false);

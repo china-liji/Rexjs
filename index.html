@@ -25,10 +25,7 @@
 				if(
 					this.status === 200 && this.readyState === 4
 				){
-					var parser = new Rexjs.SyntaxParser(
-						new Rexjs.ECMAScriptTagsMap(),
-						new Rexjs.Statements()
-					);
+					var parser = new Rexjs.ECMAScriptParser();
 					
 					var file = new Rexjs.File(filename, xhr.responseText);
 					
