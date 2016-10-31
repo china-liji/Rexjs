@@ -807,25 +807,6 @@ this.StatementEndTag = function(CLASS_STATEMENT_END, unexpected){
 // 行结束符标签
 void function(SpecialLineTerminatorTag, visitor){
 
-this.UnexpectedLineTerminatorTag = function(){
-	/**
-	 * 未捕获的行结束符标签
-	 * @param {Number} _type - 标签类型
-	 */
-	function UnexpectedLineTerminatorTag(_type){
-		SpecialLineTerminatorTag.call(this, _type);
-	};
-	UnexpectedLineTerminatorTag = new Rexjs(UnexpectedLineTerminatorTag, SpecialLineTerminatorTag);
-	
-	UnexpectedLineTerminatorTag.props({
-		$type: TYPE_UNEXPECTED,
-		order: 401,
-		regexp: /(?:\/\*(?:[^*]|\*(?!\/))*)?(?:\r|\n|\u2028|\u2029)/
-	});
-	
-	return UnexpectedLineTerminatorTag;
-}();
-
 this.ExpressionBreakTag = function(){
 	/**
 	 * 表达式行结束符标签
@@ -2951,24 +2932,23 @@ this.BlockStatement = function(){
 		catch: function(parser, context){
 			// 如果是关闭大括号
 			if(
-				context.content === "}"
+				context.content !== "}"
 			){
-				var statements = this.statements;
-
-				// 恢复语句块
-				(
-					parser.statements = statements.target
-				)
-				.statement
-				.expression
-				.inner = statements;
-
-				// 返回结束语句块标签
-				return closeBlockTag;
+				return;
 			}
-			
-			// 报错
-			parser.error(context);
+
+			var statements = this.statements;
+
+			// 恢复语句块
+			(
+				parser.statements = statements.target
+			)
+			.statement
+			.expression
+			.inner = statements;
+
+			// 返回结束语句块标签
+			return closeBlockTag;
 		}
 	});
 	
@@ -3838,7 +3818,7 @@ elseTag = new this.ElseTag();
 
 
 // return 语句相关 [todo]
-void function(SpecialLineTerminatorTag){
+void function(){
 
 this.ReturnExpression = function(){
 	/**
@@ -3951,8 +3931,7 @@ this.ReturnTag = function(ReturnExpression, ReturnStatement){
 );
 
 }.call(
-	this,
-	this.SpecialLineTerminatorTag
+	this
 );
 
 
@@ -4001,15 +3980,13 @@ this.ThrowStatement = function(){
 	
 	ThrowStatement.props({
 		/**
-		 * 尝试处理异常
+		 * 捕获处理异常
 		 * @param {SyntaxParser} parser - 语法解析器
 		 * @param {Context} context - 语法标签上下文
 		 */
-		try: function(parser, context){
-			// 临时表达式转正并设置 exception
-			this.requestFormalize().exception = this.expression;
-			// 返回 catch 的处理结果
-			return this.catch(parser, context);
+		catch: function(parser, context){
+			// 跳出语句并设置 exception
+			this.out().expression.exception = this.expression;
 		}
 	});
 	
@@ -4045,7 +4022,7 @@ this.ThrowTag = function(ThrowExpression, ThrowStatement){
 		 */
 		visitor: function(parser, context, statement, statements){
 			// 设置当前表达式为 throw 表达式
-			statement.$expression = new ThrowExpression(context);
+			statement.expression = new ThrowExpression(context);
 			// 设置当前语句为 throw 语句
 			statements.statement = new ThrowStatement(statements);
 		}
@@ -4055,6 +4032,37 @@ this.ThrowTag = function(ThrowExpression, ThrowStatement){
 }(
 	this.ThrowExpression,
 	this.ThrowStatement
+);
+
+this.IllegalLineTerminatorTag = function(SpecialLineTerminatorTag){
+	/**
+	 * 不合法的行结束符标签
+	 * @param {Number} _type - 标签类型
+	 */
+	function IllegalLineTerminatorTag(_type){
+		SpecialLineTerminatorTag.call(this, _type);
+	};
+	IllegalLineTerminatorTag = new Rexjs(IllegalLineTerminatorTag, SpecialLineTerminatorTag);
+	
+	IllegalLineTerminatorTag.props({
+		order: 401,
+		regexp: /(?:\/\*(?:[^*]|\*(?!\/))*)?[\r|\n|\u2028|\u2029]/,
+		/**
+		 * 标签访问器
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 标签上下文
+		 * @param {Statement} statement - 当前语句
+		 * @param {Statements} statements - 当前语句块
+		 */
+		visitor: function(parser, context){
+			// 报错
+			parser.error(context, "Illegal newline after throw");
+		}
+	});
+	
+	return IllegalLineTerminatorTag;
+}(
+	this.SpecialLineTerminatorTag
 );
 
 }.call(
@@ -7302,7 +7310,7 @@ this.TerminatedFlowContextTags = function(LabelledIdentifierTag){
 	this.LabelledIdentifierTag
 );
 
-this.ThrowContextTags = function(UnexpectedLineTerminatorTag){
+this.ThrowContextTags = function(IllegalLineTerminatorTag){
 	/**
 	 * throw 关键字上下文标签
 	 */
@@ -7310,14 +7318,14 @@ this.ThrowContextTags = function(UnexpectedLineTerminatorTag){
 		ExpressionTags.call(this, "throwContextTags");
 		
 		this.register(
-			new UnexpectedLineTerminatorTag()
+			new IllegalLineTerminatorTag()
 		);
 	};
 	ThrowContextTags = new Rexjs(ThrowContextTags, ExpressionTags);
 	
 	return ThrowContextTags;
 }(
-	this.UnexpectedLineTerminatorTag
+	this.IllegalLineTerminatorTag
 );
 
 this.VarContextTags = function(InitingVariableTag){
