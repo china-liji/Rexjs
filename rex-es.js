@@ -3251,7 +3251,7 @@ this.LabelColonTag = function(ColonTag, LabelledExpression, LabelledStatement){
 );
 
 
-// 中断流相关
+// 中断流相关 [todo]
 void function(){
 
 this.TerminatedFlowExpression = function(){
@@ -3837,7 +3837,7 @@ elseTag = new this.ElseTag();
 );
 
 
-// return 语句相关
+// return 语句相关 [todo]
 void function(SpecialLineTerminatorTag){
 
 this.ReturnExpression = function(){
@@ -7454,7 +7454,7 @@ this.ECMAScriptParser = function(ECMAScriptTagsMap, tagsMap, parse){
 					1. 当不使用 ECMAScriptParser 时，不会耗性能
 					2. 就算多次使用 ECMAScriptParser，也不会多次初始化 ECMAScriptTagsMap
 				*/
-				tagsMap || tagsMap = new ECMAScriptTagsMap(),
+				tagsMap || (tagsMap = new ECMAScriptTagsMap()),
 				new ECMAScriptStatements()
 			);
 		}
