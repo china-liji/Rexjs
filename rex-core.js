@@ -1606,7 +1606,8 @@ this.Statement = function(TYPE_MISTAKABLE, CLASS_STATEMENT, STATE_STATEMENT_ENDA
 			// 恢复语句
 			this.statements.statement = target;
 
-			return target;
+			// 返回目标语句的表达式
+			return target.expression;
 		},
 		statements: null,
 		/**

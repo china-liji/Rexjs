@@ -1074,7 +1074,7 @@ this.UnaryStatement = function(){
 		 */
 		finally: function(parser, context, afterTry){
 			// 跳出语句并设置 operand
-			this.out().expression.operand = this.expression;
+			this.out().operand = this.expression;
 		}
 	});
 	
@@ -1526,7 +1526,7 @@ this.BinaryStatement = function(){
 		 */
 		finally: function(parser, context){
 			// 跳出语句并添加表达式
-			this.out().expression.add(this.expression);
+			this.out().add(this.expression);
 		}
 	});
 	
@@ -2351,14 +2351,8 @@ this.BracketAccessorStatement = function(){
 			if(
 				context.content === "]"
 			){
-				// 跳出该语句
-				this.out()
-					.expression
-					.property
-					// 设置 inner
-					.inner = this.expression;
-				
-				// 返回结束中括号访问器标签
+				// 跳出该语句并// 设置 inner
+				this.out().property.inner = this.expression;
 				return closeBracketAccessorTag;
 			}
 			
@@ -2494,7 +2488,7 @@ this.CommaStatement = function(){
 		 */
 		catch: function(parser, context){
 			// 跳出语句并添加表达式
-			this.out().expression.add(this.expression);
+			this.out().add(this.expression);
 		}
 	});
 	
@@ -2534,7 +2528,7 @@ this.CommaTag = function(CommaExpression, CommaStatement){
 				statement instanceof CommaStatement
 			){
 				// 跳出语句并添加表达式
-				statement.out().expression.add(statement.expression);
+				statement.out().add(statement.expression);
 			}
 			else {
 				var expression = statement.expression;
@@ -2590,7 +2584,7 @@ this.GroupingStatement = function(){
 				context.content === ")"
 			){
 				// 跳出该语句并设置 inner
-				this.out().expression.inner = this.expression;
+				this.out().inner = this.expression;
 				// 返回关闭分组小括号标签
 				return closeGroupingTag;
 			}
@@ -2728,7 +2722,7 @@ this.ArrayStatement = function(){
 		 */
 		catch: function(parser, context){
 			// 跳出语句并添加表达式
-			this.out().expression.inner.add(this.expression);
+			this.out().inner.add(this.expression);
 
 			switch(
 				context.content
@@ -2759,7 +2753,7 @@ this.ArrayStatement = function(){
 			}
 
 			// 跳出语句并添加表达式
-			this.out().expression.inner.add(this.expression);
+			this.out().inner.add(this.expression);
 			// 返回标签
 			return arrayItemSparatorTag;
 		}
@@ -3154,7 +3148,7 @@ this.LabelledStatement = function(){
 		 */
 		catch: function(parser, context){
 			// 跳出语句并设置 statementExpression
-			this.out().expression.statementExpression = this.expression
+			this.out().statementExpression = this.expression
 		}
 	});
 	
@@ -3567,7 +3561,7 @@ this.IfConditionStatement = function(){
 				context.content === ")"
 			){
 				// 跳出该语句并设置条件表达式的 inner
-				this.out().expression.condition.inner = this.expression;
+				this.out().condition.inner = this.expression;
 				return closeIfConditionTag;
 			}
 
@@ -3599,7 +3593,7 @@ this.IfBodyStatement = function(){
 			var expression = this.expression;
 
 			// 跳出语句并设置 ifBody
-			this.out().expression.ifBody = expression;
+			this.out().ifBody = expression;
 			
 			switch(
 				false
@@ -3642,7 +3636,7 @@ this.ElseBodyStatement = function(){
 		 */
 		catch: function(parser, context){
 			// 跳出语句并设置 elseBody
-			this.out().expression.elseBody = this.expression;
+			this.out().elseBody = this.expression;
 		}
 	});
 	
@@ -3817,6 +3811,525 @@ elseTag = new this.ElseTag();
 );
 
 
+// while 语句相关
+void function(closeWhileConditionTag){
+
+this.WhileExpression = function(){
+	/**
+	 * while 表达式
+	 * @param {Context} context - 语法标签上下文
+	 */
+	function WhileExpression(context){
+		Expression.call(this, context);
+	};
+	WhileExpression = new Rexjs(WhileExpression, Expression);
+	
+	WhileExpression.props({
+		body: null,
+		condition: null,
+		/**
+		 * 提取表达式文本内容
+		 * @param {ContentBuilder} contentBuilder - 内容存储列表
+		 */
+		extractTo: function(contentBuilder){
+			// 提取 while 关键字
+			contentBuilder.appendContext(this.context);
+			
+			// 提取 while 条件
+			this.condition.extractTo(contentBuilder);
+			// 提取 while 主体语句
+			this.body.extractTo(contentBuilder);
+		}
+	});
+	
+	return WhileExpression;
+}();
+
+this.WhileConditionStatement = function(){
+	/**
+	 * while 条件语句
+	 * @param {Statements} statements - 该语句将要所处的语句块
+	 */
+	function WhileConditionStatement(statements){
+		ECMAScriptStatement.call(this, statements);
+	};
+	WhileConditionStatement = new Rexjs(WhileConditionStatement, ECMAScriptStatement);
+	
+	WhileConditionStatement.props({
+		/**
+		 * 捕获处理异常
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 语法标签上下文
+		 */
+		catch: function(parser, context){
+			if(
+				context.content === ")"
+			){
+				// 跳出该语句并设置条件表达式的 inner
+				this.out().condition.inner = this.expression;
+				return closeWhileConditionTag;
+			}
+
+			// 报错
+			parser.error(context);
+		}
+	});
+	
+	return WhileConditionStatement; 
+}();
+
+this.WhileBodyStatement = function(){
+	/**
+	 * while 主体语句
+	 * @param {Statements} statements - 该语句将要所处的语句块
+	 */
+	function WhileBodyStatement(statements){
+		ECMAScriptStatement.call(this, statements);
+	};
+	WhileBodyStatement = new Rexjs(WhileBodyStatement, ECMAScriptStatement);
+	
+	WhileBodyStatement.props({
+		/**
+		 * 捕获处理异常
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 语法标签上下文
+		 */
+		catch: function(parser, context){
+			// 跳出语句并设置 body
+			this.out().body = this.expression;
+		}
+	});
+	
+	return WhileBodyStatement;
+}();
+
+this.WhileTag = function(WhileExpression, WhileStatement){
+	/**
+	 * while 标签
+	 * @param {Number} _type - 标签类型
+	 */
+	function WhileTag(_type){
+		SyntaxTag.call(this, _type);
+	};
+	WhileTag = new Rexjs(WhileTag, SyntaxTag);
+	
+	WhileTag.props({
+		$class: CLASS_STATEMENT_BEGIN,
+		regexp: /while/,
+		/**
+		 * 获取此标签接下来所需匹配的标签列表
+		 * @param {TagsMap} tagsMap - 标签集合映射
+		 */
+		require: function(tagsMap){
+			return tagsMap.whileConditionTags;
+		},
+		/**
+		 * 标签访问器
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 标签上下文
+		 * @param {Statement} statement - 当前语句
+		 * @param {Statements} statements - 当前语句块
+		 */
+		visitor: function(parser, context, statement, statements){
+			// 设置当前表达式
+			statement.expression = new WhileExpression(context);
+		}
+	});
+	
+	return WhileTag;
+}(
+	this.WhileExpression,
+	this.WhileStatement
+);
+
+this.OpenWhileConditionTag = function(OpenParenTag, WhileConditionStatement){
+	/**
+	 * while 条件起始标签
+	 * @param {Number} _type - 标签类型
+	 */
+	function OpenWhileConditionTag(_type){
+		OpenParenTag.call(this, _type);
+	};
+	OpenWhileConditionTag = new Rexjs(OpenWhileConditionTag, OpenParenTag);
+	
+	OpenWhileConditionTag.props({
+		/**
+		 * 获取此标签接下来所需匹配的标签列表
+		 * @param {TagsMap} tagsMap - 标签集合映射
+		 */
+		require: function(tagsMap){
+			return tagsMap.expressionTags;
+		},
+		/**
+		 * 标签访问器
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 标签上下文
+		 * @param {Statement} statement - 当前语句
+		 * @param {Statements} statements - 当前语句块
+		 */
+		visitor: function(parser, context, statement, statements){
+			// 设置 while 表达式的条件
+			statement.expression.condition = new PartnerExpression(context);
+			// 设置当前语句
+			statements.statement = new WhileConditionStatement(statements);
+		}
+	});
+	
+	return OpenWhileConditionTag;
+}(
+	this.OpenParenTag,
+	this.WhileConditionStatement
+);
+
+this.CloseWhileConditionTag = function(CloseParenTag, WhileConditionStatement, WhileBodyStatement){
+	/**
+	 * while 条件结束标签
+	 * @param {Number} _type - 标签类型
+	 */
+	function CloseWhileConditionTag(_type){
+		CloseParenTag.call(this, _type);
+	};
+	CloseWhileConditionTag = new Rexjs(CloseWhileConditionTag, CloseParenTag);
+	
+	CloseWhileConditionTag.props({
+		/**
+		 * 获取此标签接下来所需匹配的标签列表
+		 * @param {TagsMap} tagsMap - 标签集合映射
+		 */
+		require: function(tagsMap){
+			return tagsMap.statementTags;
+		},
+		/**
+		 * 标签访问器
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 标签上下文
+		 * @param {Statement} statement - 当前语句
+		 * @param {Statements} statements - 当前语句块
+		 */
+		visitor: function(parser, context, statement, statements){
+			// 条件表达式结束
+			statement.expression.condition.close = context;
+			// 设置当前语句
+			statements.statement = new WhileBodyStatement(statements);
+		}
+	});
+	
+	return CloseWhileConditionTag;
+}(
+	this.CloseParenTag,
+	this.WhileConditionStatement,
+	this.WhileBodyStatement
+);
+
+closeWhileConditionTag = new this.CloseWhileConditionTag();
+
+}.call(
+	this,
+	// closeWhileConditionTag
+	null
+);
+
+
+// do while 语句相关
+void function(doWhileTag, closeDoWhileConditionTag){
+	
+this.DoExpression = function(){
+	/**
+	 * do 表达式
+	 * @param {Context} context - 语法标签上下文
+	 */
+	function DoExpression(context){
+		Expression.call(this, context);
+	};
+	DoExpression = new Rexjs(DoExpression, Expression);
+	
+	DoExpression.props({
+		condition: null,
+		body: null,
+		/**
+		 * 提取表达式文本内容
+		 * @param {ContentBuilder} contentBuilder - 内容存储列表
+		 */
+		extractTo: function(contentBuilder){
+			var body = this.body;
+			
+			contentBuilder.appendContext(this.context);
+			contentBuilder.appendSpace();
+			
+			body.extractTo(contentBuilder);
+			
+			// 判断 do while 主体表达式是否需要加分号
+			if(
+				(body.state & STATE_STATEMENT_ENDED) !== STATE_STATEMENT_ENDED
+			){
+				// 追加分号
+				contentBuilder.appendString(";");
+			}
+			
+			contentBuilder.appendContext(this.whileContext);
+			
+			this.condition.extractTo(contentBuilder);
+		},
+		/**
+		 * 获取状态
+		 */
+		get state(){
+			return STATE_STATEMENT_ENDED;
+		},
+		/**
+		 * 设置状态
+		 * @param {Number} state - 表达式状态
+		 */
+		set state(state){},
+		whileContext: null
+	});
+	
+	return DoExpression;
+}();
+
+this.DoStatement = function(){
+	/**
+	 * do 语句
+	 * @param {Statements} statements - 该语句将要所处的语句块
+	 */
+	function DoStatement(statements){
+		ECMAScriptStatement.call(this, statements);
+	};
+	DoStatement = new Rexjs(DoStatement, ECMAScriptStatement);
+	
+	DoStatement.props({
+		/**
+		 * 捕获处理异常
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 语法标签上下文
+		 */
+		catch: function(parser, context){
+			var expression = this.expression;
+			
+			switch(
+				false
+			){
+				// 如果不是 while 关键字
+				case context.content === "while":
+					break;
+				
+				// 如果表达式没有结束
+				case (expression.state & STATE_STATEMENT_ENDABLE) === STATE_STATEMENT_ENDABLE:
+					break;
+					
+				default:
+					// 跳出语句并设置 body
+					this.out().body = expression;
+					// 返回标签
+					return doWhileTag;
+			}
+
+			var tag = context.tag;
+
+			// 如果是语句结束标签
+			if(
+				tag.class.statementEnd
+			){
+				// 返回该标签
+				return tag;
+			}
+			
+			// 报错
+			parser.error(context);
+		}
+	});
+	
+	return DoStatement;
+}();
+
+this.DoWhileConditionStatement = function(){
+	/**
+	 * do while 条件语句
+	 * @param {Statements} statements - 该语句将要所处的语句块
+	 */
+	function DoWhileConditionStatement(statements){
+		ECMAScriptStatement.call(this, statements);
+	};
+	DoWhileConditionStatement = new Rexjs(DoWhileConditionStatement, ECMAScriptStatement);
+	
+	DoWhileConditionStatement.props({
+		/**
+		 * 捕获处理异常
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 语法标签上下文
+		 */
+		catch: function(parser, context){
+			// 如果是结束小括号
+			if(
+				context.content === ")"
+			){
+				// 跳出该语句并设置条件表达式的 inner
+				this.out().condition.inner = this.expression;
+				return closeDoWhileConditionTag;
+			}
+
+			// 报错
+			parser.error(context);
+		}
+	});
+	
+	return DoWhileConditionStatement;
+}();
+
+this.DoTag = function(DoExpression, DoStatement){
+	/**
+	 * do 关键字标签
+	 * @param {Number} _type - 标签类型
+	 */
+	function DoTag(_type){
+		SyntaxTag.call(this, _type);
+	};
+	DoTag = new Rexjs(DoTag, SyntaxTag);
+	
+	DoTag.props({
+		$class: CLASS_STATEMENT_BEGIN,
+		regexp: /do/,
+		/**
+		 * 获取此标签接下来所需匹配的标签列表
+		 * @param {TagsMap} tagsMap - 标签集合映射
+		 */
+		require: function(tagsMap){
+			return tagsMap.statementTags;
+		},
+		/**
+		 * 标签访问器
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 标签上下文
+		 * @param {Statement} statement - 当前语句
+		 * @param {Statements} statements - 当前语句块
+		 */
+		visitor: function(parser, context, statement, statements){
+			// 设置当前表达式
+			statement.expression = new DoExpression(context);
+			// 设置当前语句
+			statements.statement = new DoStatement(statements);
+		}
+	});
+	
+	return DoTag;
+}(
+	this.DoExpression,
+	this.DoStatement
+);
+
+this.DoWhileTag = function(WhileTag){
+	/**
+	 * do while 关键字标签
+	 * @param {Number} _type - 标签类型
+	 */
+	function DoWhileTag(_type){
+		WhileTag.call(this, _type);
+	};
+	DoWhileTag = new Rexjs(DoWhileTag, WhileTag);
+
+	DoWhileTag.props({
+		/**
+		 * 获取此标签接下来所需匹配的标签列表
+		 * @param {TagsMap} tagsMap - 标签集合映射
+		 */
+		require: function(tagsMap){
+			return tagsMap.doWhileConditionTags;
+		},
+		/**
+		 * 标签访问器
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 标签上下文
+		 * @param {Statement} statement - 当前语句
+		 * @param {Statements} statements - 当前语句块
+		 */
+		visitor: function(parser, context, statement, statements){
+			statement.expression.whileContext = context;
+		}
+	});
+	
+	return DoWhileTag;
+}(
+	this.WhileTag
+);
+
+this.OpenDoWhileConditionTag = function(OpenWhileConditionTag, DoWhileConditionStatement){
+	/**
+	 * do while 条件起始标签
+	 * @param {Number} _type - 标签类型
+	 */
+	function OpenDoWhileConditionTag(_type){
+		OpenWhileConditionTag.call(this, _type);
+	};
+	OpenDoWhileConditionTag = new Rexjs(OpenDoWhileConditionTag, OpenWhileConditionTag);
+
+	OpenDoWhileConditionTag.props({
+		/**
+		 * 标签访问器
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 标签上下文
+		 * @param {Statement} statement - 当前语句
+		 * @param {Statements} statements - 当前语句块
+		 */
+		visitor: function(parser, context, statement, statements){
+			// 设置 do while 表达式的条件
+			statement.expression.condition = new PartnerExpression(context);
+			// 设置当前语句
+			statements.statement = new DoWhileConditionStatement(statements);
+		}
+	});
+	
+	return OpenDoWhileConditionTag;
+}(
+	this.OpenWhileConditionTag,
+	this.DoWhileConditionStatement
+);
+
+this.CloseDoWhileConditionTag = function(CloseWhileConditionTag){
+	/**
+	 * do while 条件结束标签
+	 * @param {Number} _type - 标签类型
+	 */
+	function CloseDoWhileConditionTag(_type){
+		CloseWhileConditionTag.call(this, _type);
+	};
+	CloseDoWhileConditionTag = new Rexjs(CloseDoWhileConditionTag, CloseWhileConditionTag);
+
+	CloseDoWhileConditionTag.props({
+		/**
+		 * 获取此标签接下来所需匹配的标签列表
+		 * @param {TagsMap} tagsMap - 标签集合映射
+		 */
+		require: function(tagsMap){
+			return tagsMap.unexpectedTags;
+		},
+		/**
+		 * 标签访问器
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 标签上下文
+		 * @param {Statement} statement - 当前语句
+		 */
+		visitor: function(parser, context, statement){
+			statement.expression.condition.close = context;
+		}
+	});
+	
+	return CloseDoWhileConditionTag;
+}(
+	this.CloseWhileConditionTag
+);
+
+doWhileTag = new this.DoWhileTag();
+closeDoWhileConditionTag = new this.CloseDoWhileConditionTag();
+	
+}.call(
+	this,
+	// doWhileTag
+	null,
+	// closeDoWhileConditionTag
+	null
+);
+
+
 // return 语句相关 [todo]
 void function(){
 
@@ -3986,7 +4499,7 @@ this.ThrowStatement = function(){
 		 */
 		catch: function(parser, context){
 			// 跳出语句并设置 exception
-			this.out().expression.exception = this.expression;
+			this.out().exception = this.expression;
 		}
 	});
 	
@@ -5906,510 +6419,6 @@ caseDeclarationTag = new this.CaseDeclarationTag();
 	// defaultCaseTag
 	null,
 	// caseDeclarationTag
-	null
-);
-
-
-// while 语句相关
-void function(closeWhileConditionTag){
-
-this.WhileExpression = function(){
-	/**
-	 * while 表达式
-	 * @param {Context} context - 语法标签上下文
-	 */
-	function WhileExpression(context){
-		Expression.call(this, context);
-	};
-	WhileExpression = new Rexjs(WhileExpression, Expression);
-	
-	WhileExpression.props({
-		body: null,
-		condition: null,
-		/**
-		 * 提取表达式文本内容
-		 * @param {ContentBuilder} contentBuilder - 内容存储列表
-		 */
-		extractTo: function(contentBuilder){
-			// 提取 while 关键字
-			contentBuilder.appendContext(this.context);
-			
-			// 提取 while 条件
-			this.condition.extractTo(contentBuilder);
-			// 提取 while 主体语句
-			this.body.extractTo(contentBuilder);
-		}
-	});
-	
-	return WhileExpression;
-}();
-
-this.WhileConditionStatement = function(){
-	/**
-	 * while 条件语句
-	 * @param {Statements} statements - 该语句将要所处的语句块
-	 */
-	function WhileConditionStatement(statements){
-		ECMAScriptStatement.call(this, statements);
-	};
-	WhileConditionStatement = new Rexjs(WhileConditionStatement, ECMAScriptStatement);
-	
-	WhileConditionStatement.props({
-		blacklist: BLACKLIST_SEMICOLON,
-		/**
-		 * 尝试处理异常
-		 * @param {SyntaxParser} parser - 语法解析器
-		 * @param {Context} context - 语法标签上下文
-		 */
-		try: function(parser, context){
-			// 跳出该语句
-			this.out()
-				.$expression
-				.condition
-				// 设置条件表达式的 inner
-				.inner = this.expression;
-			
-			// 如果是小括号，返回关闭条件语句标签，否则返回 null
-			return context.content === ")" ? closeWhileConditionTag : null;
-		}
-	});
-	
-	return WhileConditionStatement; 
-}();
-
-this.WhileBodyStatement = function(){
-	/**
-	 * while 主体语句
-	 * @param {Statements} statements - 该语句将要所处的语句块
-	 */
-	function WhileBodyStatement(statements){
-		ECMAScriptStatement.call(this, statements);
-	};
-	WhileBodyStatement = new Rexjs(WhileBodyStatement, ECMAScriptStatement);
-	
-	WhileBodyStatement.props({
-		/**
-		 * 尝试处理异常
-		 * @param {SyntaxParser} parser - 语法解析器
-		 * @param {Context} context - 语法标签上下文
-		 */
-		try: function(parser, context){
-			// 临时表达式转正并设置 body
-			this.requestFormalize().body = this.expression;
-			// 返回 catch 的处理结果
-			return this.catch(parser, context);
-		}
-	});
-	
-	return WhileBodyStatement;
-}();
-
-this.WhileTag = function(WhileExpression, WhileStatement){
-	/**
-	 * while 标签
-	 * @param {Number} _type - 标签类型
-	 */
-	function WhileTag(_type){
-		SyntaxTag.call(this, _type);
-	};
-	WhileTag = new Rexjs(WhileTag, SyntaxTag);
-	
-	WhileTag.props({
-		$class: CLASS_STATEMENT_BEGIN,
-		regexp: /while/,
-		/**
-		 * 获取此标签接下来所需匹配的标签列表
-		 * @param {TagsMap} tagsMap - 标签集合映射
-		 */
-		require: function(tagsMap){
-			return tagsMap.whileConditionTags;
-		},
-		/**
-		 * 标签访问器
-		 * @param {SyntaxParser} parser - 语法解析器
-		 * @param {Context} context - 标签上下文
-		 * @param {Statement} statement - 当前语句
-		 * @param {Statements} statements - 当前语句块
-		 */
-		visitor: function(parser, context, statement, statements){
-			// 设置临时表达式
-			statement.$expression = new WhileExpression(context);
-		}
-	});
-	
-	return WhileTag;
-}(
-	this.WhileExpression,
-	this.WhileStatement
-);
-
-this.OpenWhileConditionTag = function(OpenParenTag, WhileConditionStatement){
-	/**
-	 * while 条件起始标签
-	 * @param {Number} _type - 标签类型
-	 */
-	function OpenWhileConditionTag(_type){
-		OpenParenTag.call(this, _type);
-	};
-	OpenWhileConditionTag = new Rexjs(OpenWhileConditionTag, OpenParenTag);
-	
-	OpenWhileConditionTag.props({
-		/**
-		 * 获取此标签接下来所需匹配的标签列表
-		 * @param {TagsMap} tagsMap - 标签集合映射
-		 */
-		require: function(tagsMap){
-			return tagsMap.expressionTags;
-		},
-		/**
-		 * 标签访问器
-		 * @param {SyntaxParser} parser - 语法解析器
-		 * @param {Context} context - 标签上下文
-		 * @param {Statement} statement - 当前语句
-		 * @param {Statements} statements - 当前语句块
-		 */
-		visitor: function(parser, context, statement, statements){
-			// 设置 while 表达式的条件
-			statement.$expression.condition = new PartnerExpression(context);
-			// 设置当前语句
-			statements.statement = new WhileConditionStatement(statements);
-		}
-	});
-	
-	return OpenWhileConditionTag;
-}(
-	this.OpenParenTag,
-	this.WhileConditionStatement
-);
-
-this.CloseWhileConditionTag = function(CloseParenTag, WhileConditionStatement, WhileBodyStatement){
-	/**
-	 * while 条件结束标签
-	 * @param {Number} _type - 标签类型
-	 */
-	function CloseWhileConditionTag(_type){
-		CloseParenTag.call(this, _type);
-	};
-	CloseWhileConditionTag = new Rexjs(CloseWhileConditionTag, CloseParenTag);
-	
-	CloseWhileConditionTag.props({
-		/**
-		 * 获取此标签接下来所需匹配的标签列表
-		 * @param {TagsMap} tagsMap - 标签集合映射
-		 */
-		require: function(tagsMap){
-			return tagsMap.statementTags;
-		},
-		/**
-		 * 标签访问器
-		 * @param {SyntaxParser} parser - 语法解析器
-		 * @param {Context} context - 标签上下文
-		 * @param {Statement} statement - 当前语句
-		 * @param {Statements} statements - 当前语句块
-		 */
-		visitor: function(parser, context, statement, statements){
-			// 条件表达式结束
-			statement.$expression.condition.close = context;
-			// 设置当前语句 及 表达式主体语句
-			statements.statement = new WhileBodyStatement(statements);
-		}
-	});
-	
-	return CloseWhileConditionTag;
-}(
-	this.CloseParenTag,
-	this.WhileConditionStatement,
-	this.WhileBodyStatement
-);
-
-closeWhileConditionTag = new this.CloseWhileConditionTag();
-
-}.call(
-	this,
-	// closeWhileConditionTag
-	null
-);
-
-
-// do while 语句相关
-void function(doWhileTag, closeDoWhileConditionTag){
-	
-this.DoExpression = function(){
-	/**
-	 * do 表达式
-	 * @param {Context} context - 语法标签上下文
-	 */
-	function DoExpression(context){
-		Expression.call(this, context);
-	};
-	DoExpression = new Rexjs(DoExpression, Expression);
-	
-	DoExpression.props({
-		condition: null,
-		body: null,
-		/**
-		 * 提取表达式文本内容
-		 * @param {ContentBuilder} contentBuilder - 内容存储列表
-		 */
-		extractTo: function(contentBuilder){
-			var body = this.body;
-			
-			contentBuilder.appendContext(this.context);
-			contentBuilder.appendSpace();
-			
-			body.extractTo(contentBuilder);
-			
-			// 判断 do while 主体表达式是否需要加分号
-			if(
-				(body.state & STATE_STATEMENT_ENDED) !== STATE_STATEMENT_ENDED
-			){
-				// 追加分号
-				contentBuilder.appendString(";");
-			}
-			
-			contentBuilder.appendContext(this.whileContext);
-			
-			this.condition.extractTo(contentBuilder);
-		},
-		/**
-		 * 获取状态
-		 */
-		get state(){
-			return STATE_STATEMENT_ENDED;
-		},
-		whileContext: null
-	});
-	
-	return DoExpression;
-}();
-
-this.DoStatement = function(){
-	/**
-	 * do 语句
-	 * @param {Statements} statements - 该语句将要所处的语句块
-	 */
-	function DoStatement(statements){
-		ECMAScriptStatement.call(this, statements);
-	};
-	DoStatement = new Rexjs(DoStatement, ECMAScriptStatement);
-	
-	DoStatement.props({
-		/**
-		 * 尝试处理异常
-		 * @param {SyntaxParser} parser - 语法解析器
-		 * @param {Context} context - 语法标签上下文
-		 */
-		try: function(parser, context){
-			var expression = this.expression;
-			
-			// 跳出语句并设置 body
-			this.out().$expression.body = expression;
-
-			switch(
-				false
-			){
-				// 如果不是 while 关键字
-				case context.content === "while":
-					break;
-				
-				// 如果表达式没有结束
-				case (expression.state & STATE_STATEMENT_ENDABLE) === STATE_STATEMENT_ENDABLE:
-					break;
-					
-				default:
-					return doWhileTag;
-			}
-			
-			// 如果是 while 关键字，返回 doWhileTag，否则返回 null
-			return null;
-		}
-	});
-	
-	return DoStatement;
-}();
-
-this.DoWhileConditionStatement = function(){
-	/**
-	 * do while 条件语句
-	 * @param {Statements} statements - 该语句将要所处的语句块
-	 */
-	function DoWhileConditionStatement(statements){
-		ECMAScriptStatement.call(this, statements);
-	};
-	DoWhileConditionStatement = new Rexjs(DoWhileConditionStatement, ECMAScriptStatement);
-	
-	DoWhileConditionStatement.props({
-		blacklist: BLACKLIST_SEMICOLON,
-		/**
-		 * 尝试处理异常
-		 * @param {SyntaxParser} parser - 语法解析器
-		 * @param {Context} context - 语法标签上下文
-		 */
-		try: function(parser, context){
-			// 跳出该语句
-			this.out()
-				.$expression
-				.condition
-				// 设置条件表达式的 inner
-				.inner = this.expression;
-				
-			return context.content === ")" ? closeDoWhileConditionTag : null;
-		}
-	});
-	
-	return DoWhileConditionStatement;
-}();
-
-this.DoTag = function(DoExpression, DoStatement){
-	/**
-	 * do 关键字标签
-	 * @param {Number} _type - 标签类型
-	 */
-	function DoTag(_type){
-		SyntaxTag.call(this, _type);
-	};
-	DoTag = new Rexjs(DoTag, SyntaxTag);
-	
-	DoTag.props({
-		$class: CLASS_STATEMENT_BEGIN,
-		regexp: /do/,
-		/**
-		 * 获取此标签接下来所需匹配的标签列表
-		 * @param {TagsMap} tagsMap - 标签集合映射
-		 */
-		require: function(tagsMap){
-			return tagsMap.statementTags;
-		},
-		/**
-		 * 标签访问器
-		 * @param {SyntaxParser} parser - 语法解析器
-		 * @param {Context} context - 标签上下文
-		 * @param {Statement} statement - 当前语句
-		 * @param {Statements} statements - 当前语句块
-		 */
-		visitor: function(parser, context, statement, statements){
-			// 设置临时表达式
-			statement.$expression = new DoExpression(context);
-			// 设置当前语句
-			statements.statement = new DoStatement(statements);
-		}
-	});
-	
-	return DoTag;
-}(
-	this.DoExpression,
-	this.DoStatement
-);
-
-this.DoWhileTag = function(WhileTag){
-	/**
-	 * do while 关键字标签
-	 * @param {Number} _type - 标签类型
-	 */
-	function DoWhileTag(_type){
-		WhileTag.call(this, _type);
-	};
-	DoWhileTag = new Rexjs(DoWhileTag, WhileTag);
-
-	DoWhileTag.props({
-		/**
-		 * 获取此标签接下来所需匹配的标签列表
-		 * @param {TagsMap} tagsMap - 标签集合映射
-		 */
-		require: function(tagsMap){
-			return tagsMap.doWhileConditionTags;
-		},
-		/**
-		 * 标签访问器
-		 * @param {SyntaxParser} parser - 语法解析器
-		 * @param {Context} context - 标签上下文
-		 * @param {Statement} statement - 当前语句
-		 * @param {Statements} statements - 当前语句块
-		 */
-		visitor: function(parser, context, statement, statements){
-			statement.$expression.whileContext = context;
-		}
-	});
-	
-	return DoWhileTag;
-}(
-	this.WhileTag
-);
-
-this.OpenDoWhileConditionTag = function(OpenWhileConditionTag, DoWhileConditionStatement){
-	/**
-	 * do while 条件起始标签
-	 * @param {Number} _type - 标签类型
-	 */
-	function OpenDoWhileConditionTag(_type){
-		OpenWhileConditionTag.call(this, _type);
-	};
-	OpenDoWhileConditionTag = new Rexjs(OpenDoWhileConditionTag, OpenWhileConditionTag);
-
-	OpenDoWhileConditionTag.props({
-		/**
-		 * 标签访问器
-		 * @param {SyntaxParser} parser - 语法解析器
-		 * @param {Context} context - 标签上下文
-		 * @param {Statement} statement - 当前语句
-		 * @param {Statements} statements - 当前语句块
-		 */
-		visitor: function(parser, context, statement, statements){
-			// 设置 do while 表达式的条件
-			statement.$expression.condition = new PartnerExpression(context);
-			// 设置当前语句
-			statements.statement = new DoWhileConditionStatement(statements);
-		}
-	});
-	
-	return OpenDoWhileConditionTag;
-}(
-	this.OpenWhileConditionTag,
-	this.DoWhileConditionStatement
-);
-
-this.CloseDoWhileConditionTag = function(CloseWhileConditionTag){
-	/**
-	 * do while 条件结束标签
-	 * @param {Number} _type - 标签类型
-	 */
-	function CloseDoWhileConditionTag(_type){
-		CloseWhileConditionTag.call(this, _type);
-	};
-	CloseDoWhileConditionTag = new Rexjs(CloseDoWhileConditionTag, CloseWhileConditionTag);
-
-	CloseDoWhileConditionTag.props({
-		/**
-		 * 获取此标签接下来所需匹配的标签列表
-		 * @param {TagsMap} tagsMap - 标签集合映射
-		 */
-		require: function(tagsMap){
-			return tagsMap.unexpectedTags;
-		},
-		/**
-		 * 标签访问器
-		 * @param {SyntaxParser} parser - 语法解析器
-		 * @param {Context} context - 标签上下文
-		 * @param {Statement} statement - 当前语句
-		 */
-		visitor: function(parser, context, statement){
-			statement.formalize().condition.close = context;
-		}
-	});
-	
-	return CloseDoWhileConditionTag;
-}(
-	this.CloseWhileConditionTag
-);
-
-doWhileTag = new this.DoWhileTag();
-closeDoWhileConditionTag = new this.CloseDoWhileConditionTag();
-	
-}.call(
-	this,
-	// doWhileTag
-	null,
-	// closeDoWhileConditionTag
 	null
 );
 
