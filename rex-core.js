@@ -1740,13 +1740,23 @@ this.ListExpression = function(){
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
 		 */
 		extractTo: function(contentBuilder){
+			var length = this.length;
+
+			// 如果长度为 0
+			if(
+				length === 0
+			){
+				return;
+			}
+
 			var join = this.join;
 
+			// 先提取第一项
 			this[0].extractTo(contentBuilder);
 
 			// 遍历项
 			for(
-				var i = 1, j = this.length;i < j;i++
+				var i = 1, j = length;i < j;i++
 			){
 				// 添加表达式连接符
 				contentBuilder.appendString(join);

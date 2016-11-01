@@ -65,7 +65,7 @@ test.false(
 	"变量名后面接其他二元操作符",
 	"var a / 3",
 	function(parser, err){
-		return err.context.tag instanceof Rexjs.OtherBinaryTag ? "" : "没有正确的捕获错误的二元操作符";
+		return err.context.tag instanceof Rexjs.BinaryTag ? "" : "没有正确的捕获错误的二元操作符";
 	}
 )
 
