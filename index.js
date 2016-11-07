@@ -1,1 +1,1 @@
-var b = 3
+if(true);

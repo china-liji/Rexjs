@@ -1787,31 +1787,11 @@ this.EmptyExpression = function(){
 		 * 提取文本内容，空函数，不做任何处理
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
 		 */
-		extractTo: function(contentBuilder){}
+		extractTo: function(){}
 	});
 	
 	return EmptyExpression;
 }();
-
-this.EmptyStatementExpression = function(EmptyExpression, STATE_STATEMENT_ENDED){
-	/**
-	 * 空语句表达式
-	 * @param {Context} context - 语法标签上下文
-	 */
-	function EmptyStatementExpression(context){
-		EmptyExpression.call(this, context);
-	};
-	EmptyStatementExpression = new Rexjs(EmptyStatementExpression, EmptyExpression);
-	
-	EmptyStatementExpression.props({
-		state: STATE_STATEMENT_ENDED
-	});
-	
-	return EmptyStatementExpression;
-}(
-	this.EmptyExpression,
-	this.EmptyExpression.STATE_STATEMENT_ENDED
-);
 
 this.PartnerExpression = function(end, endWith){
 	/**
@@ -2430,7 +2410,7 @@ this.SimpleTest = function(INNER_CONTENT_REGEXP, file, console, toArray, e, catc
 				){
 					// 获取解析结果
 					result = parser.build();
-					
+
 					// 执行代码
 					e(result);
 				}
@@ -2441,7 +2421,7 @@ this.SimpleTest = function(INNER_CONTENT_REGEXP, file, console, toArray, e, catc
 						description,
 						toArray(arguments, 3),
 						parser,
-						result
+						null
 					)
 				){
 					// 打印成功解析信息
@@ -2465,16 +2445,16 @@ this.SimpleTest = function(INNER_CONTENT_REGEXP, file, console, toArray, e, catc
 	Rexjs.toArray,
 	eval,
 	// catchErrors
-	function(description, callbacks, parser, result){
+	function(description, callbacks, parser, error){
 		var clean = true;
 		
 		// 遍历回调
 		callbacks.forEach(function(callback){
-			var error = callback(parser, result);
+			var err = callback(parser, error);
 			
 			// 如果返回了错误信息
 			if(
-				error
+				err
 			){
 				// 如果目前解析还是干净的，即还没有报错
 				if(
@@ -2486,7 +2466,7 @@ this.SimpleTest = function(INNER_CONTENT_REGEXP, file, console, toArray, e, catc
 				}
 				
 				// 输出错误
-				console.error("Callback Error: " + error);
+				console.error("Callback Error: " + err);
 			}
 		});
 		

@@ -31,7 +31,7 @@ test.true(
 
 test.false(
 	"错误的变量名 - 数字",
-	"var 1 = true",
+	"var a = 2, 1 = true",
 	function(parser, err){
 		return err.context.tag instanceof Rexjs.NumberTag ? "" : "没有正确的捕获数字标签";
 	}
