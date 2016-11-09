@@ -5,11 +5,24 @@ test.group("for 循环测试");
 test.true("最简单的 for 循环", "for(;;)break");
 test.true("仅带初始表达式的 for 循环", "for(i = 10;;)break");
 test.true("仅带条件表达式的 for 循环", "for(;i < 100;)break");
-test.true("仅带最终表达式的 for 循环", "for(;;i += 1)break");
+test.true("仅带末表达式的 for 循环", "for(;;i += 1)break");
 test.true("带声明的 for 循环", "for(var i;i < 100;i += 1){}");
 test.true("带的多个变量的声明 for 循环", "for(var i, j = 100;i < j;i += 1){}");
 test.true("最简单的 for in", "for(a in b);");
-test.true("带声明的 for in", "for(var a in b);")
+test.true("带声明的 for in", "for(var a in b);");
+console.warn("默认值的 for in, for of");
+// test.true("默认值的 for in", "for(var i = 100 in b);");
+// test.true("默认值的 for of", "for(var i = 100 of b);");
+test.true("最简单的 for of", "for(a of b);");
+test.true("带声明的 for of", "for(var a in b);");
+test.true("of 变量名", "var of");
+test.true("带 of 变量的 for 循环初始化语句", "for(of;;)break;");
+test.true("带 of 变量的 for 循环逻辑语句", "for(;of;)break;");
+test.true("带 of 变量的 for 循环末语句", "for(;;of)break;");
+test.true("带 of 变量的 for 循环", "for(of;of;of)break;");
+test.true("带 of 变量名的 for in", "for(of in of);");
+test.true("声明 of 声明变量名的 for in", "for(var of in a);");
+test.true("带 of 变量的 for of", "for(of of of);");
 
 test.true(
 	"带声明和运算的 for in",
@@ -44,10 +57,6 @@ test.true(
 	}
 );
 
-console.warn("默认值的 for in");
-// test.true("默认值的 for in", "for(var i = 100 in b);");
-// test.true("最简单的 for of", "for(var a of []);");
-
 test.true(
 	"复杂的测试",
 	SimpleTest.innerContentOf(function(){
@@ -69,8 +78,24 @@ test.true(
 			i += 200;
 		}
 
+		var of = [1,1,1,1,1,1]
+
+		for(
+			of of of
+		){
+			i += 1;
+		}
+
+		of = [2,3,4,5,6]
+
+		for(
+			var x = 0, y = of.length;x < y;x += 1, of
+		){
+			i += of[x]
+		}
+
 		if(
-			i !== 200
+			i !== 226
 		){
 			throw "运算结果有误";
 		}
@@ -111,10 +136,42 @@ test.false(
 );
 
 test.false(
-	"for 条件语句中带有其他语句",
-	"for(if);",
+	"for 条件初始化语句中带有其他语句",
+	"for(break);",
 	function(parser, err){
-		return err.context.tag instanceof Rexjs.IfTag ? "" : "没有捕获到其他语句";
+		return err.context.tag instanceof Rexjs.BreakTag ? "" : "没有捕获到其他语句";
+	}
+);
+
+test.false(
+	"for 条件逻辑语句中带有其他语句",
+	"for(;break;);",
+	function(parser, err){
+		return err.context.tag instanceof Rexjs.BreakTag ? "" : "没有捕获到其他语句";
+	}
+);
+
+test.false(
+	"for 条件末语句中带有其他语句",
+	"for(;;break);",
+	function(parser, err){
+		return err.context.tag instanceof Rexjs.BreakTag ? "" : "没有捕获到其他语句";
+	}
+);
+
+test.false(
+	"不正确的 for in 的条件表达式",
+	"for(a, b + 3 / 4 instanceof x in c);",
+	function(parser, err){
+		return err.context.tag instanceof Rexjs.InTag ? "" : "没有捕获到正确的 in 关键字";
+	}
+);
+
+test.false(
+	"不正确的 for of 的条件表达式",
+	"for(a, b + 3 / 4 instanceof x of c);",
+	function(parser, err){
+		return err.context.tag instanceof Rexjs.LabelTag ? "" : "没有捕获到正确的 of 变量名";
 	}
 );
 

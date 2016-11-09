@@ -1318,17 +1318,8 @@ this.Context = function(){
 this.ContentBuilder = function(){
 	/**
 	 * 内容生成器
-	 * @param {String} _statementJoin - 语句连接符
 	 */
-	function ContentBuilder(_statementJoin){
-		// 如果提供了语句连接符
-		if(
-			_statementJoin
-		){
-			// 记录
-			this.statementJoin = _statementJoin;
-		}
-	};
+	function ContentBuilder(){};
 	ContentBuilder = new Rexjs(ContentBuilder);
 	
 	ContentBuilder.props({
@@ -1375,10 +1366,9 @@ this.MappingBuilder = function(ContentBuilder, MappingPosition, Base64VLQ, JSON,
 	/**
 	 * 映射生成器
 	 * @param {File} file - 生成器相关文件
-	 * @param {String} _statementJoin - 语句连接符
 	 */
-	function MappingBuilder(file, _statementJoin){
-		ContentBuilder.call(this, _statementJoin);
+	function MappingBuilder(file){
+		ContentBuilder.call(this);
 		
 		this.file = file;
 		this.position = new MappingPosition();
@@ -1577,6 +1567,7 @@ this.Statement = function(TYPE_MISTAKABLE, CLASS_STATEMENT, STATE_STATEMENT_ENDA
 		catch: function(parser, context){
 			return null;
 		},
+		debug: false,
 		expression: null,
 		/**
 		 * 提取文本内容
@@ -1610,6 +1601,13 @@ this.Statement = function(TYPE_MISTAKABLE, CLASS_STATEMENT, STATE_STATEMENT_ENDA
 			return target.expression;
 		},
 		statements: null,
+		/**
+		 * 检查当前运行环境是否支持指定代码
+		 * @param {String} source - 源代码
+		 */
+		support: function(){
+			return true;
+		},
 		/**
 		 * 尝试处理异常
 		 * @param {SyntaxParser} parser - 语法解析器
