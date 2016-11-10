@@ -5730,7 +5730,7 @@ this.ReturnExpression = function(){
 
 			// 如果是空表达式
 			if(
-				value.empty
+				value instanceof EmptyExpression
 			){
 				// 返回
 				return;
@@ -5761,15 +5761,13 @@ this.ReturnStatement = function(){
 	
 	ReturnStatement.props({
 		/**
-		 * 尝试处理异常
+		 * 捕获处理异常
 		 * @param {SyntaxParser} parser - 语法解析器
 		 * @param {Context} context - 语法标签上下文
 		 */
-		try: function(parser, context){
-			// 临时表达式转正并设置 value
-			this.requestFormalize().value = this.expression;
-			// 返回 catch 处理结果
-			return this.catch(parser, context);
+		catch: function(parser, context){
+			// 跳出语句并设置 value
+			this.out().value = this.expression;
 		}
 	});
 	
@@ -5804,8 +5802,8 @@ this.ReturnTag = function(ReturnExpression, ReturnStatement){
 		 * @param {Statements} statements - 当前语句块
 		 */
 		visitor: function(parser, context, statement, statements){
-			// 设置临时表达式
-			statement.$expression = new ReturnExpression(context);
+			// 设置表达式
+			statement.expression = new ReturnExpression(context);
 			// 设置当前语句
 			statements.statement = new ReturnStatement(statements);
 		}
