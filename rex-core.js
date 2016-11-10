@@ -641,6 +641,340 @@ this.List = function(Array, Object, toArray){
 );
 
 
+// 文件相关
+void function(){
+
+this.File = function(){
+	/**
+	 * 文件信息
+	 * @param {String} filename - 文件名
+	 * @param {String} source - 源文件内容
+	 */
+	function File(filename, source){
+		this.filename = filename;
+		this.source = source;
+	};
+	File = new Rexjs(File);
+	
+	File.props({
+		filename: "",
+		source: ""
+	});
+	
+	return File;
+}();
+
+this.Base64VLQ = function(base64, parseInt){
+	/**
+	 * base64 VLQ 编码
+	 */
+	function Base64VLQ(){};
+	Base64VLQ = new Rexjs(Base64VLQ);
+	
+	Base64VLQ.static({
+		/**
+		 * 将指定数字进行 base64 VLQ 编码
+		 * @param {Number} num - 所需提供的数字
+		 */
+		encode: function(num){
+			// 将数字转化为二进制，并在后面加 0，表示正数
+			var result = "", binary = num.toString(2) + "0", length = binary.length;
+			
+			// 字符串从后往前逆序循环，当长度大于 5 时
+			while(
+				length > 5
+			){
+				// 拼接结果
+				result += base64[
+					// 转化为十进制
+					parseInt(
+						// 截取字符串，每段前面加 1，表示一个数字（num）的连续编码中
+						"1" + binary.substring(length - 5, length),
+						2
+					)
+				];
+				
+				// 长度减 5
+				length -= 5;
+			}
+			
+			// 拼接结果
+			result += base64[
+				// 转化为十进制
+				parseInt(
+					/*
+						截取最后一段字符串，前面“不”加 1，表示该数字（num）编码结束
+						原理：
+						1. 剩余长度不足 5 位，前面应该用 0 来补足 5 位数
+						2. 在最前面加上 0，表示该数字（num）编码结束
+						但是，在实际计算中，前面的 0，都可以忽略，所以代码中不会加入这段“原理性代码”。
+					*/
+					binary.substring(0, length),
+					2
+				)
+			];
+			
+			// 返回结果
+			return result;
+		}
+	});
+	
+	return Base64VLQ;
+}(
+	// base64
+	"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/".split(""),
+	parseInt
+);
+
+this.Position = function(){
+	/**
+	 * 标签在语法文件中所处的位置
+	 * @param {Number} line - 标签所处行数
+	 * @param {Number} column - 标签所处列数
+	 */
+	function Position(line, column){
+		this.line = line;
+		this.column = column;
+	};
+	Position = new Rexjs(Position);
+	
+	Position.props({
+		column: 1,
+		line: 1
+	});
+	
+	return Position;
+}();
+
+this.MappingPosition = function(Position){
+	/**
+	 * 映射生成器中所记录的位置
+	 */
+	function MappingPosition(){
+		Position.call(this, 0, 0);
+	};
+	MappingPosition = new Rexjs(MappingPosition, Position);
+	
+	MappingPosition.props({
+		emptyGeneratedLine: true,
+		generatedLineOffset: 0,
+		generatedColumnOffset: 0
+	});
+	
+	return MappingPosition;
+}(
+	this.Position
+);
+
+this.Context = function(){
+	/**
+	 * 标签在语法文件中所匹配的上下文
+	 * @param {SyntaxTag} tag - 相关的标签
+	 * @param {String} content - 标签内容
+	 * @param {Position} position - 标签在语法文件中所处的位置
+	 */
+	function Context(tag, content, position){
+		this.tag = tag;
+		this.fragment = this.content = content;
+		this.position = position;
+	};
+	Context = new Rexjs(Context);
+	
+	Context.props({
+		content: "",
+		fragment: "",
+		position: 0,
+		tag: null
+	});
+	
+	return Context;
+}();
+
+this.ContentBuilder = function(){
+	/**
+	 * 内容生成器
+	 */
+	function ContentBuilder(){};
+	ContentBuilder = new Rexjs(ContentBuilder);
+	
+	ContentBuilder.props({
+		/**
+		 * 追加内容上下文，同时会更新 source map
+		 * @param {String} content - 数据内容
+		 */
+		appendContext: function(context){
+			// 添加字符串
+			this.appendString(context.content);
+		},
+		/**
+		 * 追加空格
+		 */
+		appendSpace: function(){
+			this.appendString(" ");
+		},
+		/**
+		 * 追加内容
+		 * @param {String} content - 数据内容
+		 */
+		appendString: function(content){
+			this.result += content;
+		},
+		/**
+		 * 完成生成，返回结果
+		 */
+		complete: function(){
+			return this.result;
+		},
+		/**
+		 * 追加新行
+		 */
+		newline: function(){
+			this.appendString("\n");
+		},
+		result: ""
+	});
+	
+	return ContentBuilder;
+}();
+
+this.MappingBuilder = function(ContentBuilder, MappingPosition, Base64VLQ, JSON, complete, initialize, newline, btoa){
+	/**
+	 * 映射生成器
+	 * @param {File} file - 生成器相关文件
+	 */
+	function MappingBuilder(file){
+		ContentBuilder.call(this);
+		
+		this.file = file;
+		this.position = new MappingPosition();
+	};
+	MappingBuilder = new Rexjs(MappingBuilder, ContentBuilder);
+	
+	MappingBuilder.static({
+		supported: !!btoa
+	});
+	
+	MappingBuilder.props({
+		/**
+		 * 追加内容上下文，同时会更新 source map
+		 * @param {String} content - 数据内容
+		 */
+		appendContext: function(context){
+			var contextPosition = context.position, builderPosition = this.position,
+			
+				line = contextPosition.line - 1, column = contextPosition.column,
+			
+				gcOffset = this.result.length, dc = line === builderPosition.line ? column - builderPosition.column : column;
+
+			// 如果是空行
+			if(
+				builderPosition.emptyGeneratedLine
+			){
+				builderPosition.emptyGeneratedLine = false;
+			}
+			else {
+				// 添加逗号
+				this.mappings += ",";
+			}
+			
+			// 拼接 mappings
+			this.mappings +=
+				Base64VLQ.encode(gcOffset - builderPosition.generatedColumnOffset) +
+				"A" +
+				Base64VLQ.encode(line - builderPosition.line) +
+				Base64VLQ.encode(dc);
+			
+			// 记录源码的行
+			builderPosition.line = line;
+			// 记录源码的列
+			builderPosition.column = dc;
+			// 记录生成后的列
+			builderPosition.generatedColumnOffset = gcOffset;
+			
+			// 追加源码字符串
+			this.appendString(context.content);
+		},
+		/**
+		 * 追加 mappings 内容
+		 */
+		appendMappings: function(){
+			var filename = this.file.filename;
+			
+			// 追加新行
+			this.newline();
+			// 追加 sourceURL
+			this.appendString("//# sourceURL=http://rexjs.org/" + filename);
+			
+			// 如果 btoa 存在，则添加 mappingURL，否则不支持 btao 的环境，应该也不会支持 source map
+			if(
+				btoa
+			){
+				// 追加新行
+				this.newline();
+				// 追加 mappingURL 头部
+				this.appendString("//# sourceMappingURL=data:application/json;base64,");
+				
+				// 追加 mappingURL 主体
+				this.appendString(
+					btoa(
+						JSON.stringify({
+							sources: [ filename ],
+							names: [],
+							mappings: this.mappings
+						})
+					)
+				);
+			}
+		},
+		/**
+		 * 完成生成，返回结果
+		 */
+		complete: function(){
+			// 追加 mapping
+			this.appendMappings();
+			
+			// 返回结果
+			return complete.call(this);
+		},
+		file: null,
+		mappings: "",
+		/**
+		 * 追加新行
+		 */
+		newline: function(){
+			var position = this.position;
+			
+			// 追加换行符
+			newline.call(this);
+			
+			// 给 mappings 添加分号，表示新行的开始
+			this.mappings += ";";
+			
+			// 设置 generatedLineOffset 和 generatedColumnOffset
+			position.generatedLineOffset = position.generatedColumnOffset = this.result.length;
+			// 空的一行
+			position.emptyGeneratedLine = true;
+		},
+		position: null
+	});
+	
+	return MappingBuilder;
+}(
+	this.ContentBuilder,
+	this.MappingPosition,
+	this.Base64VLQ,
+	JSON,
+	this.ContentBuilder.prototype.complete,
+	this.ContentBuilder.prototype.initialize,
+	this.ContentBuilder.prototype.newline,
+	typeof btoa === "undefined" ? null : btoa
+);
+
+}.call(
+	this
+);
+
+
 // 标签数据相关
 void function(){
 
@@ -666,7 +1000,7 @@ this.TagData = function(){
 );
 
 
-// 子类标签数据相关
+// 标签数据子类相关
 void function(TagData, parseInt){
 
 this.TagClass = function(CLASS_NONE, CLASS_STATEMENT, CLASS_STATEMENT_BEGIN, CLASS_EXPRESSION, CLASS_EXPRESSION_CONTEXT, CLASS_STATEMENT_END){
@@ -764,25 +1098,6 @@ this.TagType = function(TYPE_MATCHABLE, TYPE_UNEXPECTED, TYPE_MISTAKABLE){
 // 语法相关
 void function(){
 
-this.Syntax = function(){
-	/**
-	 * 语法基类
-	 */
-	function Syntax(){};
-	Syntax = new Rexjs(Syntax);
-	
-	Syntax.props({
-		/**
-		 * 提取表达式文本内容
-		 * @param {ContentBuilder} contentBuilder - 内容生成器
-		 */
-		extractTo: function(contentBuilder){},
-		target: null
-	});
-	
-	return Syntax;
-}();
-
 this.SyntaxTag = function(TagClass, TagType){
 	/**
 	 * 语法标签
@@ -824,6 +1139,249 @@ this.SyntaxTag = function(TagClass, TagType){
 }(
 	this.TagClass,
 	this.TagType
+);
+
+this.SyntaxElement = function(){
+	/**
+	 * 语法元素
+	 */
+	function SyntaxElement(){};
+	SyntaxElement = new Rexjs(SyntaxElement);
+	
+	SyntaxElement.props({
+		/**
+		 * 提取表达式文本内容
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 */
+		extractTo: function(contentBuilder){},
+		target: null
+	});
+	
+	return SyntaxElement;
+}();
+
+this.SyntaxConfigItem = function(){
+	/**
+	 * 语法配置项
+	 * @param {String} key - 配置项的键
+	 * @param {Boolean} value - 配置项的值
+	 */
+	function SyntaxConfigItem(key, value){
+		this.key = key;
+		this.value = value;
+	};
+	SyntaxConfigItem = new Rexjs(SyntaxConfigItem);
+
+	SyntaxConfigItem.props({
+		key: "",
+		value: true
+	});
+
+	return SyntaxConfigItem;
+}();
+
+this.SyntaxConfig = function(SyntaxConfigItem){
+	/**
+	 * 语法配置，用于管理是否编译指定表达式
+	 */
+	function SyntaxConfig(){
+		// 遍历所有参数
+		forEach(
+			arguments,
+			function(item){
+				// 如果是 SyntaxConfigItem 的实例
+				if(
+					item instanceof SyntaxConfigItem
+				){
+					// 记录配置
+					this[item.key] = item.value;
+					return;
+				}
+
+				// 记录配置
+				this[item] = true;
+			},
+			this,
+			true
+		);
+	};
+	SyntaxConfig = new Rexjs(SyntaxConfig);
+
+	return SyntaxConfig;
+}(
+	this.SyntaxConfigItem
+);
+
+this.SyntaxError = function(MappingBuilder, e){
+	/**
+	 * 抛出语法错误信息
+	 * @param {File} file - 具有语法错误的文件
+	 * @param {Context} context - 出错处的上下文
+	 * @param {String} _description - 错误描述
+	 * @param {Boolean} _reference - 是否是引用错误
+	 */
+	function SyntaxError(file, context, _description, _reference){
+		var fragment = context.fragment, position = context.position;
+
+		// 如果支持 MappingBuilder
+		if(
+			MappingBuilder.supported
+		){
+			// 生成源文件 map
+			e(
+				new MappingBuilder(file).complete()
+			);
+		}
+
+		// 如果是引用错误
+		if(
+			_reference
+		){
+			this.reference = true;
+		}
+
+		// 如果提供了错误描述
+		if(
+			_description
+		){
+			this.description = _description;
+		}
+		// 设置默认描述
+		else {
+			this.description = "Unexpected " + context.tag.throw + (fragment ? " " + fragment : "");
+		}
+		
+		this.file = file;
+		this.context = context;
+	};
+	SyntaxError = new Rexjs(SyntaxError);
+	
+	SyntaxError.props({
+		context: null,
+		description: "",
+		/**
+		 * 获悉错误消息
+		 */
+		get message(){
+			var position = this.context.position;
+
+			return (this.reference ? "Reference" : "SyntaxElement") + "Error: " + this.description + " @ " + this.file.filename + ":" + position.line + ":" + position.column;
+		},
+		file: null,
+		reference: false,
+		/**
+		 * 转字符串
+		 */
+		toString: function(){
+			return this.message;
+		}
+	});
+
+	return SyntaxError;
+}(
+	this.MappingBuilder,
+	// e
+	eval
+);
+
+this.SyntaxRegExp = function(RegExp, Infinity){
+	/**
+	 * 语法正则表达式类，用于语法树匹配
+	 */
+	function SyntaxRegExp(){};
+	SyntaxRegExp = new Rexjs(SyntaxRegExp);
+
+	SyntaxRegExp.props({
+		/**
+		 * 中断正则表达式的匹配
+		 */
+		break: function(){
+			this.lastIndex = Infinity;
+		},
+		/**
+		 * 重新编辑表达式
+		 * @param {RegExp} regexp - 新的表达式
+		 */
+		compile: function(regexp){
+			this.originalRegExp = regexp;
+		},
+		/**
+		 * 执行正则表达式进行匹配
+		 * @param {RegExp} regexp - 初始化的表达式
+		 * @param {String} source - 需要匹配的源代码内容字符串
+		 * @param {Function} regexpCallback - 正则表达式匹配出来的回调函数
+		 */
+		exec: function(regexp, source, callback){
+			var result, fragment = "", diff = 0, index = -1, lastIndex = this.lastIndex;
+
+			// 编译表达式
+			this.compile(regexp);
+			
+			// 初始化
+			this.lastIndex = 0;
+			
+			for(
+				;;
+			){
+				regexp = this.originalRegExp;
+				regexp.lastIndex = lastIndex = this.lastIndex;
+				result = regexp.exec(source);
+
+				// 如果没匹配到结果
+				if(
+					result === null
+				){
+					// 跳出循环
+					break;
+				}
+				
+				diff = result.index - lastIndex;
+				
+				// 存在中间未捕获的内容
+				if(
+					diff === 0
+				){
+					fragment = result[0];
+					index = result.lastIndexOf("") - 1;
+				}
+				else {
+					// 取第一个字符
+					fragment = source[lastIndex];
+					index = -1;
+				}
+
+				// 进行回调
+				callback.call(this, fragment, index);
+
+				// 计算 lastIndex
+				this.lastIndex += fragment.length;
+			}
+
+			// 如果成立，说明已经没有未处理的代码
+			if(
+				this.lastIndex >= source.length
+			){
+				return;
+			}
+			
+			// 剩余子字符串处理
+			fragment = source.substring(this.lastIndex);
+			index = -1;
+			
+			// 进行回调
+			callback.call(this, fragment, index);
+
+			// 计算 lastIndex
+			this.lastIndex += fragment.length;
+		},
+		lastIndex: 0,
+		originalRegExp: /(?:)/
+	});
+
+	return SyntaxRegExp;
+}(
+	RegExp,
+	Infinity
 );
 
 }.call(
@@ -1166,354 +1724,20 @@ this.SyntaxTagsMap = function(){
 );
 
 
-// 文件相关
-void function(){
-
-this.File = function(){
-	/**
-	 * 文件信息
-	 * @param {String} filename - 文件名
-	 * @param {String} source - 源文件内容
-	 */
-	function File(filename, source){
-		this.filename = filename;
-		this.source = source;
-	};
-	File = new Rexjs(File);
-	
-	File.props({
-		filename: "",
-		source: ""
-	});
-	
-	return File;
-}();
-
-this.Base64VLQ = function(base64, parseInt){
-	/**
-	 * base64 VLQ 编码
-	 */
-	function Base64VLQ(){};
-	Base64VLQ = new Rexjs(Base64VLQ);
-	
-	Base64VLQ.static({
-		/**
-		 * 将指定数字进行 base64 VLQ 编码
-		 * @param {Number} num - 所需提供的数字
-		 */
-		encode: function(num){
-			// 将数字转化为二进制，并在后面加 0，表示正数
-			var result = "", binary = num.toString(2) + "0", length = binary.length;
-			
-			// 字符串从后往前逆序循环，当长度大于 5 时
-			while(
-				length > 5
-			){
-				// 拼接结果
-				result += base64[
-					// 转化为十进制
-					parseInt(
-						// 截取字符串，每段前面加 1，表示一个数字（num）的连续编码中
-						"1" + binary.substring(length - 5, length),
-						2
-					)
-				];
-				
-				// 长度减 5
-				length -= 5;
-			}
-			
-			// 拼接结果
-			result += base64[
-				// 转化为十进制
-				parseInt(
-					/*
-						截取最后一段字符串，前面“不”加 1，表示该数字（num）编码结束
-						原理：
-						1. 剩余长度不足 5 位，前面应该用 0 来补足 5 位数
-						2. 在最前面加上 0，表示该数字（num）编码结束
-						但是，在实际计算中，前面的 0，都可以忽略，所以代码中不会加入这段“原理性代码”。
-					*/
-					binary.substring(0, length),
-					2
-				)
-			];
-			
-			// 返回结果
-			return result;
-		}
-	});
-	
-	return Base64VLQ;
-}(
-	// base64
-	"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/".split(""),
-	parseInt
-);
-
-this.Position = function(){
-	/**
-	 * 标签在语法文件中所处的位置
-	 * @param {Number} line - 标签所处行数
-	 * @param {Number} column - 标签所处列数
-	 */
-	function Position(line, column){
-		this.line = line;
-		this.column = column;
-	};
-	Position = new Rexjs(Position);
-	
-	Position.props({
-		column: 1,
-		line: 1
-	});
-	
-	return Position;
-}();
-
-this.MappingPosition = function(Position){
-	/**
-	 * 映射生成器中所记录的位置
-	 */
-	function MappingPosition(){
-		Position.call(this, 0, 0);
-	};
-	MappingPosition = new Rexjs(MappingPosition, Position);
-	
-	MappingPosition.props({
-		emptyGeneratedLine: true,
-		generatedLineOffset: 0,
-		generatedColumnOffset: 0
-	});
-	
-	return MappingPosition;
-}(
-	this.Position
-);
-
-this.Context = function(){
-	/**
-	 * 标签在语法文件中所匹配的上下文
-	 * @param {SyntaxTag} tag - 相关的标签
-	 * @param {String} content - 标签内容
-	 * @param {Position} position - 标签在语法文件中所处的位置
-	 */
-	function Context(tag, content, position){
-		this.tag = tag;
-		this.fragment = this.content = content;
-		this.position = position;
-	};
-	Context = new Rexjs(Context);
-	
-	Context.props({
-		content: "",
-		fragment: "",
-		position: 0,
-		tag: null
-	});
-	
-	return Context;
-}();
-
-this.ContentBuilder = function(){
-	/**
-	 * 内容生成器
-	 */
-	function ContentBuilder(){};
-	ContentBuilder = new Rexjs(ContentBuilder);
-	
-	ContentBuilder.props({
-		/**
-		 * 追加内容上下文，同时会更新 source map
-		 * @param {String} content - 数据内容
-		 */
-		appendContext: function(context){
-			// 添加字符串
-			this.appendString(context.content);
-		},
-		/**
-		 * 追加空格
-		 */
-		appendSpace: function(){
-			this.appendString(" ");
-		},
-		/**
-		 * 追加内容
-		 * @param {String} content - 数据内容
-		 */
-		appendString: function(content){
-			this.result += content;
-		},
-		/**
-		 * 完成生成，返回结果
-		 */
-		complete: function(){
-			return this.result;
-		},
-		/**
-		 * 追加新行
-		 */
-		newline: function(){
-			this.appendString("\n");
-		},
-		result: ""
-	});
-	
-	return ContentBuilder;
-}();
-
-this.MappingBuilder = function(ContentBuilder, MappingPosition, Base64VLQ, JSON, complete, initialize, newline, btoa){
-	/**
-	 * 映射生成器
-	 * @param {File} file - 生成器相关文件
-	 */
-	function MappingBuilder(file){
-		ContentBuilder.call(this);
-		
-		this.file = file;
-		this.position = new MappingPosition();
-	};
-	MappingBuilder = new Rexjs(MappingBuilder, ContentBuilder);
-	
-	MappingBuilder.static({
-		supported: !!btoa
-	});
-	
-	MappingBuilder.props({
-		/**
-		 * 追加内容上下文，同时会更新 source map
-		 * @param {String} content - 数据内容
-		 */
-		appendContext: function(context){
-			var contextPosition = context.position, builderPosition = this.position,
-			
-				line = contextPosition.line - 1, column = contextPosition.column,
-			
-				gcOffset = this.result.length, dc = line === builderPosition.line ? column - builderPosition.column : column;
-
-			// 如果是空行
-			if(
-				builderPosition.emptyGeneratedLine
-			){
-				builderPosition.emptyGeneratedLine = false;
-			}
-			else {
-				// 添加逗号
-				this.mappings += ",";
-			}
-			
-			// 拼接 mappings
-			this.mappings +=
-				Base64VLQ.encode(gcOffset - builderPosition.generatedColumnOffset) +
-				"A" +
-				Base64VLQ.encode(line - builderPosition.line) +
-				Base64VLQ.encode(dc);
-			
-			// 记录源码的行
-			builderPosition.line = line;
-			// 记录源码的列
-			builderPosition.column = dc;
-			// 记录生成后的列
-			builderPosition.generatedColumnOffset = gcOffset;
-			
-			// 追加源码字符串
-			this.appendString(context.content);
-		},
-		/**
-		 * 追加 mappings 内容
-		 */
-		appendMappings: function(){
-			var filename = this.file.filename;
-			
-			// 追加新行
-			this.newline();
-			// 追加 sourceURL
-			this.appendString("//# sourceURL=http://rexjs.org/" + filename);
-			
-			// 如果 btoa 存在，则添加 mappingURL，否则不支持 btao 的环境，应该也不会支持 source map
-			if(
-				btoa
-			){
-				// 追加新行
-				this.newline();
-				// 追加 mappingURL 头部
-				this.appendString("//# sourceMappingURL=data:application/json;base64,");
-				
-				// 追加 mappingURL 主体
-				this.appendString(
-					btoa(
-						JSON.stringify({
-							sources: [ filename ],
-							names: [],
-							mappings: this.mappings
-						})
-					)
-				);
-			}
-		},
-		/**
-		 * 完成生成，返回结果
-		 */
-		complete: function(){
-			// 追加 mapping
-			this.appendMappings();
-			
-			// 返回结果
-			return complete.call(this);
-		},
-		file: null,
-		mappings: "",
-		/**
-		 * 追加新行
-		 */
-		newline: function(){
-			var position = this.position;
-			
-			// 追加换行符
-			newline.call(this);
-			
-			// 给 mappings 添加分号，表示新行的开始
-			this.mappings += ";";
-			
-			// 设置 generatedLineOffset 和 generatedColumnOffset
-			position.generatedLineOffset = position.generatedColumnOffset = this.result.length;
-			// 空的一行
-			position.emptyGeneratedLine = true;
-		},
-		position: null
-	});
-	
-	return MappingBuilder;
-}(
-	this.ContentBuilder,
-	this.MappingPosition,
-	this.Base64VLQ,
-	JSON,
-	this.ContentBuilder.prototype.complete,
-	this.ContentBuilder.prototype.initialize,
-	this.ContentBuilder.prototype.newline,
-	typeof btoa === "undefined" ? null : btoa
-);
-
-}.call(
-	this
-);
-
-
 // 语法解析相关
-void function(Syntax, SyntaxTag){
+void function(SyntaxElement, SyntaxTag){
 
-this.Expression = function(parseInt){
+this.Expression = function(SyntaxConfig, parseInt){
 	/**
 	 * 表达式
 	 * @param {Context} context - 语法标签上下文
 	 */
 	function Expression(context){
-		Syntax.call(this);
+		SyntaxElement.call(this);
 		
 		this.context = context;
 	};
-	Expression = new Rexjs(Expression, Syntax);
+	Expression = new Rexjs(Expression, SyntaxElement);
 	
 	Expression.static({
 		// 无状态
@@ -1525,7 +1749,8 @@ this.Expression = function(parseInt){
 		// 语句结束状态，当进行语句连接时，应该在两语句之间加语句连接符（如分号等）
 		STATE_STATEMENT_END: parseInt(1110, 2),
 		// 语句已结束状态，当进行语句连接时，不需要再加语句连接符（如分号等）
-		STATE_STATEMENT_ENDED: parseInt(11110, 2)
+		STATE_STATEMENT_ENDED: parseInt(11110, 2),
+		config: new SyntaxConfig()
 	});
 	
 	Expression.props({
@@ -1542,6 +1767,7 @@ this.Expression = function(parseInt){
 	
 	return Expression;
 }(
+	this.SyntaxConfig,
 	parseInt
 );
 
@@ -1551,12 +1777,12 @@ this.Statement = function(TYPE_MISTAKABLE, CLASS_STATEMENT, STATE_STATEMENT_ENDA
 	 * @param {Statements} statements - 该语句将要所处的语句块
 	 */
 	function Statement(statements){
-		Syntax.call(this);
+		SyntaxElement.call(this);
 		
 		this.target = statements.statement;
 		this.statements = statements;
 	};
-	Statement = new Rexjs(Statement, Syntax);
+	Statement = new Rexjs(Statement, SyntaxElement);
 	
 	Statement.props({
 		/**
@@ -1567,7 +1793,6 @@ this.Statement = function(TYPE_MISTAKABLE, CLASS_STATEMENT, STATE_STATEMENT_ENDA
 		catch: function(parser, context){
 			return null;
 		},
-		debug: false,
 		expression: null,
 		/**
 		 * 提取文本内容
@@ -1602,13 +1827,6 @@ this.Statement = function(TYPE_MISTAKABLE, CLASS_STATEMENT, STATE_STATEMENT_ENDA
 		},
 		statements: null,
 		/**
-		 * 检查当前运行环境是否支持指定代码
-		 * @param {String} source - 源代码
-		 */
-		support: function(){
-			return true;
-		},
-		/**
 		 * 尝试处理异常
 		 * @param {SyntaxParser} parser - 语法解析器
 		 * @param {Context} context - 语法标签上下文
@@ -1630,11 +1848,11 @@ this.Statements = function(Statement, STATE_STATEMENT_ENDED){
 	 * 语句块
 	 */
 	function Statements(){
-		Syntax.call(this);
+		SyntaxElement.call(this);
 		
 		this.newStatement();
 	};
-	Statements = new Rexjs(Statements, Syntax);
+	Statements = new Rexjs(Statements, SyntaxElement);
 	
 	Statements.props({
 		/**
@@ -1703,7 +1921,7 @@ this.Statements = function(Statement, STATE_STATEMENT_ENDED){
 
 }.call(
 	this,
-	this.Syntax,
+	this.SyntaxElement,
 	this.SyntaxTag
 );
 
@@ -1862,188 +2080,6 @@ this.LeftHandSideExpression = function(){
 }.call(
 	this,
 	this.Expression
-);
-
-
-// 语法树辅助相关
-void function(DOUBLE_CHAR_REGEXP){
-
-this.SyntaxError = function(MappingBuilder, e){
-	/**
-	 * 抛出语法错误信息
-	 * @param {File} file - 具有语法错误的文件
-	 * @param {Context} context - 出错处的上下文
-	 * @param {String} _description - 错误描述
-	 * @param {Boolean} _reference - 是否是引用错误
-	 */
-	function SyntaxError(file, context, _description, _reference){
-		var fragment = context.fragment, position = context.position;
-
-		// 如果支持 MappingBuilder
-		if(
-			MappingBuilder.supported
-		){
-			// 生成源文件 map
-			e(
-				new MappingBuilder(file).complete()
-			);
-		}
-
-		// 如果是引用错误
-		if(
-			_reference
-		){
-			this.reference = true;
-		}
-
-		// 如果提供了错误描述
-		if(
-			_description
-		){
-			this.description = _description;
-		}
-		// 设置默认描述
-		else {
-			this.description = "Unexpected " + context.tag.throw + (fragment ? " " + fragment : "");
-		}
-		
-		this.file = file;
-		this.context = context;
-	};
-	SyntaxError = new Rexjs(SyntaxError);
-	
-	SyntaxError.props({
-		context: null,
-		description: "",
-		/**
-		 * 获悉错误消息
-		 */
-		get message(){
-			var position = this.context.position;
-
-			return (this.reference ? "Reference" : "Syntax") + "Error: " + this.description + " @ " + this.file.filename + ":" + position.line + ":" + position.column;
-		},
-		file: null,
-		reference: false,
-		/**
-		 * 转字符串
-		 */
-		toString: function(){
-			return this.message;
-		}
-	});
-
-	return SyntaxError;
-}(
-	this.MappingBuilder,
-	// e
-	eval
-);
-
-this.SyntaxRegExp = function(RegExp, Infinity){
-	/**
-	 * 语法正则表达式类，用于语法树匹配
-	 */
-	function SyntaxRegExp(){};
-	SyntaxRegExp = new Rexjs(SyntaxRegExp);
-
-	SyntaxRegExp.props({
-		/**
-		 * 中断正则表达式的匹配
-		 */
-		break: function(){
-			this.lastIndex = Infinity;
-		},
-		/**
-		 * 重新编辑表达式
-		 * @param {RegExp} regexp - 新的表达式
-		 */
-		compile: function(regexp){
-			this.originalRegExp = regexp;
-		},
-		/**
-		 * 执行正则表达式进行匹配
-		 * @param {RegExp} regexp - 初始化的表达式
-		 * @param {String} source - 需要匹配的源代码内容字符串
-		 * @param {Function} regexpCallback - 正则表达式匹配出来的回调函数
-		 */
-		exec: function(regexp, source, callback){
-			var result, fragment = "", diff = 0, index = -1, lastIndex = this.lastIndex;
-
-			// 编译表达式
-			this.compile(regexp);
-			
-			// 初始化
-			this.lastIndex = 0;
-			
-			for(
-				;;
-			){
-				regexp = this.originalRegExp;
-				regexp.lastIndex = lastIndex = this.lastIndex;
-				result = regexp.exec(source);
-
-				// 如果没匹配到结果
-				if(
-					result === null
-				){
-					// 跳出循环
-					break;
-				}
-				
-				diff = result.index - lastIndex;
-				
-				// 存在中间未捕获的内容
-				if(
-					diff === 0
-				){
-					fragment = result[0];
-					index = result.lastIndexOf("") - 1;
-				}
-				else {
-					// 取第一个字符
-					fragment = source[lastIndex];
-					index = -1;
-				}
-
-				// 进行回调
-				callback.call(this, fragment, index);
-
-				// 计算 lastIndex
-				this.lastIndex += fragment.length;
-			}
-
-			// 如果成立，说明已经没有未处理的代码
-			if(
-				this.lastIndex >= source.length
-			){
-				return;
-			}
-			
-			// 剩余子字符串处理
-			fragment = source.substring(this.lastIndex);
-			index = -1;
-			
-			// 进行回调
-			callback.call(this, fragment, index);
-
-			// 计算 lastIndex
-			this.lastIndex += fragment.length;
-		},
-		lastIndex: 0,
-		originalRegExp: /(?:)/
-	});
-
-	return SyntaxRegExp;
-}(
-	RegExp,
-	Infinity
-);
-
-}.call(
-	this,
-	// DOUBLE_CHAR_REGEXP
-	/[^\x00-\xff]+/g
 );
 
 

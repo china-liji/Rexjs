@@ -4,14 +4,6 @@
 
 ~ 每个语句必须安全才能离开，即 statements.statement = new Statement();
 
-~ 不确定性及不完整的表达式，不应该先设置到 statement.expression 属性上，应该先设置到临时表达式 statement.$expression 属性上，
-  待该不完整的表达式完整之后，再设置到 statement.expression 属性上
-
-~ Statement.try 与 Statement.catch 的区别
-   try 的诞生，是为了在子类中，不需要重写 catch，因为重写 catch 后，需要调用父类，每个地方都要使用 catch.call(this)，
-   而分离出 try 方法，可以直接在 try 中调用 this.catch，而 try 本身被重写，则不应该使用 try.call(this) 调用父类的 try 方法，
-   所以，目的就是为了避免以上所述，实质是一样的。
-
 ~ 设置 parser.statements 后，必须还原
 
 ~ 当一个 statements 的 length 不变（即没有新语句），而被多次设置 statements.statement，

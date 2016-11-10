@@ -4,6 +4,8 @@ new function(
 	Expression, ListExpression, EmptyExpression, PartnerExpression, LeftHandSideExpression,
 	// 语句相关
 	ECMAScriptStatement, ECMAScriptStatements,
+	// 语法配置相关
+	SyntaxConfig,
 	// 标签相关类
 	SyntaxTag, TagType,
 	// 标签分类相关
@@ -212,7 +214,7 @@ this.Generator = function(Iterator){
 // 语句相关
 void function(){
 
-this.ECMAScriptStatement = ECMAScriptStatement = function(Statement, Function){
+this.ECMAScriptStatement = ECMAScriptStatement = function(Statement){
 	/**
 	 * ECMAScript 语句
 	 * @param {Statements} statements - 该语句将要所处的语句块
@@ -222,26 +224,9 @@ this.ECMAScriptStatement = ECMAScriptStatement = function(Statement, Function){
 	};
 	ECMAScriptStatement = new Rexjs(ECMAScriptStatement, Statement);
 
-	ECMAScriptStatement.static({
-		/**
-		 * 检查浏览器是否支持指定代码
-		 * @param {String} source - 源代码
-		 */
-		support: function(source){
-			try {
-				new Function(source);
-				return !this.debug;
-			}
-			catch(e){
-				return false;
-			}
-		}
-	});
-
 	return ECMAScriptStatement;
 }(
-	Rexjs.Statement,
-	Function
+	Rexjs.Statement
 );
 
 this.ECMAScriptStatements = ECMAScriptStatements = function(Statements, ECMAScriptStatement){
@@ -4933,7 +4918,7 @@ closeDoWhileConditionTag = new this.CloseDoWhileConditionTag();
 // for 语句相关
 void function(VarExpression, AssignableExpression, CommaStatement, BinaryKeywordTag, closeForConditionTag, fcicTag, forInTag, forOfTag, fcisTag, fclsTag){
 
-this.ForExpression = function(VariableTag, ContentBuilder, extractTo){
+this.ForExpression = function(VariableTag, ContentBuilder, config, compileOf){
 	/**
 	 * for 表达式
 	 * @param {Context} context - 语法标签上下文
@@ -4943,6 +4928,10 @@ this.ForExpression = function(VariableTag, ContentBuilder, extractTo){
 	};
 	ForExpression = new Rexjs(ForExpression, Expression);
 
+	ForExpression.static({
+		config: config
+	});
+
 	ForExpression.props({
 		body: null,
 		condition: null,
@@ -4950,55 +4939,33 @@ this.ForExpression = function(VariableTag, ContentBuilder, extractTo){
 		 * 提取表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
 		 */
-		extractTo:
-			// 根据浏览器是否支持 for of，以确定提取方式
-			ECMAScriptStatement.support("for(i of []);") ?
-				extractTo :
-				function(contentBuilder){
-					// 如果不是 of 标签
-					if(
-						this.iterator !== forOfTag
-					){
-						// 直接提取
-						extractTo.call(this, contentBuilder);
-						return;
-					}
+		extractTo: function(contentBuilder){
+			// 添加 for 关键字
+			contentBuilder.appendContext(this.context);
 
-					var condition = this.condition, inner = condition.inner, builder = new ContentBuilder(), generator = VariableTag.next();
+			// 如果是 of 标签而且需要编译 of
+			if(
+				this.iterator === forOfTag && config.of
+			){
+				// 编译 for of
+				compileOf(
+					this.condition,
+					this.body,
+					contentBuilder,
+					new ContentBuilder(),
+					VariableTag.next()
+				);
+				
+				// 回收变量名
+				VariableTag.back();
+				return;
+			}
 
-					// 追加 for 关键字
-					contentBuilder.appendContext(this.context);
-					// 追加 for 循环条件起始小括号
-					contentBuilder.appendContext(condition.open);
-					// 追加 for 循环初始化语句
-					contentBuilder.appendString("var " + generator + "=new Rexjs.Generator(");
-
-					// 追加生成器的对象
-					inner[1].extractTo(contentBuilder);
-
-					// 追加 for 循环的逻辑条件
-					contentBuilder.appendString(");!" + generator + ".iterator.closed;");
-					// 追加 for 循环条件结束小括号
-					contentBuilder.appendContext(condition.close);
-					// 追加语句块起始大括号，目的是让 let、const 发挥效果
-					contentBuilder.appendString("{");
-
-					// 将对象值的初始化表达式提取到新的内容生成器里，目的是防止文档位置（position）的错乱，导致 mappings 不可用 
-					inner[0].left.extractTo(builder);
-
-					// 追加对象值的初始化
-					contentBuilder.appendString(
-						builder.complete() + "=" + generator + ".next().value;"
-					);
-
-					// 提取主体
-					this.body.extractTo(contentBuilder);
-					// 追加语句块结束小括号
-					contentBuilder.appendString("}");
-
-					// 回收变量名
-					VariableTag.back();
-				},
+			// 提取条件
+			this.condition.extractTo(contentBuilder);
+			// 提取主体
+			this.body.extractTo(contentBuilder);
+		},
 		iterator: null
 	});
 	
@@ -5006,15 +4973,39 @@ this.ForExpression = function(VariableTag, ContentBuilder, extractTo){
 }(
 	this.VariableTag,
 	Rexjs.ContentBuilder,
-	// extractTo
-	function(contentBuilder){
-		// 添加 for 关键字
-		contentBuilder.appendContext(this.context);
-		
-		// 提取条件
-		this.condition.extractTo(contentBuilder);
+	// config
+	new SyntaxConfig("of"),
+	// compileOf
+	function(condition, body, contentBuilder, builder, generator){
+		var inner = condition.inner;
+
+		// 追加 for 循环条件起始小括号
+		contentBuilder.appendContext(condition.open);
+		// 追加 for 循环初始化语句
+		contentBuilder.appendString("var " + generator + "=new Rexjs.Generator(");
+
+		// 追加生成器的对象
+		inner[1].extractTo(contentBuilder);
+
+		// 追加 for 循环的逻辑条件
+		contentBuilder.appendString(");!" + generator + ".iterator.closed;");
+		// 追加 for 循环条件结束小括号
+		contentBuilder.appendContext(condition.close);
+		// 追加语句块起始大括号，目的是让 let、const 发挥效果
+		contentBuilder.appendString("{");
+
+		// 将对象值的初始化表达式提取到新的内容生成器里，目的是防止文档位置（position）的错乱，导致 mappings 不可用 
+		inner[0].left.extractTo(builder);
+
+		// 追加对象值的初始化
+		contentBuilder.appendString(
+			builder.complete() + "=" + generator + ".next().value;"
+		);
+
 		// 提取主体
-		this.body.extractTo(contentBuilder);
+		body.extractTo(contentBuilder);
+		// 追加语句块结束小括号
+		contentBuilder.appendString("}");
 	}
 );
 
@@ -8002,6 +7993,58 @@ this.WhileConditionTags = function(OpenWhileConditionTag){
 );
 
 
+// 语法配置相关
+void function(){
+
+this.ECMAScript6Config = function(forConfig){
+	/**
+	 * ECMAScript6 语法配置
+	 */
+	function ECMAScript6Config(){
+		SyntaxConfig.call(this);
+	};
+	ECMAScript6Config = new Rexjs(ECMAScript6Config, SyntaxConfig);
+
+	ECMAScript6Config.static({
+		/**
+		 * 获取是否应该编译 ECMAScript6 的所有表达式
+		 */
+		get all(){
+			return this.forOf;
+		},
+		/**
+		 * 设置是否应该编译 ECMAScript6 的所有表达式
+		 * @param {Boolean} value - 是否编译
+		 */
+		set all(value){
+			this.forOf = value;
+		},
+		/**
+		 * 获取 for of 表达式是否应该编译
+		 */
+		get forOf(){
+			return forConfig.of;
+		},
+		/**
+		 * 设置 for of 表达式是否应该编译
+		 * @param {Boolean} value - 是否编译
+		 */
+		set forOf(value){
+			forConfig.of = value;
+		}
+	});
+
+	return ECMAScript6Config;
+}(
+	// forConfig
+	this.ForExpression.config
+);
+
+}.call(
+	this
+);
+
+
 // ECMAScript 解析器相关
 void function(SyntaxParser){
 
@@ -8120,6 +8163,7 @@ Rexjs.static(this);
 	null,
 	// ECMAScriptStatements
 	null,
+	Rexjs.SyntaxConfig,
 	Rexjs.SyntaxTag,
 	Rexjs.TagType,
 	Rexjs.TagClass.CLASS_STATEMENT_BEGIN,

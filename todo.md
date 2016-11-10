@@ -6,7 +6,6 @@ const
 enum
 export
 extends
-for
 function
 import
 let
@@ -142,9 +141,24 @@ async
 
 	- 优先级较后
 
+压缩打包前的开发环境不需要引用 Rexjs 等相关文件 - 2016.11.10
+	- 利用 Electron 封装一个浏览器，使其内部加载 Rexjs（但不能影响当前运行环境）并利用 Rexjs 编译所有 js 文件，包括 new Function("try fn()");
+	- 这样，可以使代码不用每次写完都 watch 编译，尽量使得开发环境简单
+
 --------
 已完成功能
 --------
+for 语句 - 2016.11.10
+	- for 循环
+	- for in
+	- for of
+
+重构 - 2016.09.13 ~ 2016.11.05
+	- 移除临时表达式机制，即 statement.$expression
+	- 完善语句的 try、catch 机制，并增加 finally 机制
+	- 优化 SyntaxTag.prototype.type、SyntaxTag.prototype.class 两属性
+	- 其他语句、表达式的重构
+
 var 语句 - 2016.09.13
 	- 基本功能
 	- 测试代码
