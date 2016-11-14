@@ -6043,12 +6043,13 @@ this.TryStatement = function(){
 	
 	TryStatement.props({
 		/**
-		 * 尝试处理异常
+		 * 捕获处理异常
 		 * @param {SyntaxParser} parser - 语法解析器
 		 * @param {Context} context - 语法标签上下文
 		 */
-		try: function(parser, context){
-			this.out().$expression.tryBlock = this.expression;
+		catch: function(parser, context){
+			// 跳出语句并设置 tryBlock
+			this.out().tryBlock = this.expression;
 			
 			switch(
 				context.content
@@ -6085,22 +6086,20 @@ this.CatchStatement = function(){
 	
 	CatchStatement.props({
 		/**
-		 * 尝试处理异常
+		 * 捕获处理异常
 		 * @param {SyntaxParser} parser - 语法解析器
 		 * @param {Context} context - 语法标签上下文
 		 */
-		try: function(parser, context){
+		catch: function(parser, context){
+			// 跳出语句并设置 catchBlock
+			this.out().catchBlock = this.expression;
+
 			// 如果是 finally
 			if(
 				context.content === "finally"
 			){
-				this.out().$expression.catchBlock = this.expression;
 				return finallyTag;
 			}
-			
-			// 临时表达式转正
-			this.requestFormalize().catchBlock = this.expression;;
-			return this.catch(parser, context);
 		}
 	});
 	
@@ -6119,14 +6118,13 @@ this.FinallyStatement = function(){
 	
 	FinallyStatement.props({
 		/**
-		 * 尝试处理异常
+		 * 捕获处理异常
 		 * @param {SyntaxParser} parser - 语法解析器
 		 * @param {Context} context - 语法标签上下文
 		 */
-		try: function(parser, context){
-			// try 表达式结束
-			this.requestFormalize().finallyBlock = this.expression;
-			return this.catch(parser, context);
+		catch: function(parser, context){
+			// 跳出语句并设置 finallyBlock
+			this.out().finallyBlock = this.expression;
 		}
 	});
 	
@@ -6161,8 +6159,8 @@ this.TryTag = function(TryExpression, TryStatement){
 		 * @param {Statements} statements - 当前语句块
 		 */
 		visitor: function(parser, context, statement, statements){
-			// 设置临时表达式
-			statement.$expression = new TryExpression(context);
+			// 设置当前表达式
+			statement.expression = new TryExpression(context);
 			// 设置当前语句
 			statements.statement = new TryStatement(statements);
 		}
@@ -6202,9 +6200,9 @@ this.CatchTag = function(CatchStatement){
 		 */
 		visitor: function(parser, context, statement, statements){
 			// 设置 catch 关键字上下文
-			statement.$expression.catchContext = context;
+			statement.expression.catchContext = context;
 			// 设置当前语句
-			statements.statement = new CatchStatement(statements)
+			statements.statement = new CatchStatement(statements);
 		}
 	});
 	
@@ -6240,7 +6238,7 @@ this.OpenCatchedExceptionTag = function(OpenParenTag){
 		 */
 		visitor: function(parser, context, statement, statements){
 			// 设置 try catch 表达式的异常信息
-			statement.target.$expression.exception = new PartnerExpression(context);
+			statement.target.expression.exception = new PartnerExpression(context);
 		}
 	});
 	
@@ -6275,7 +6273,7 @@ this.ExceptionVariableTag = function(VariableTag){
 		 * @param {Statements} statements - 当前语句块
 		 */
 		visitor: function(parser, context, statement){
-			statement.target.$expression.exception.inner = new Expression(context);
+			statement.target.expression.exception.inner = new Expression(context);
 		}
 	});
 	
@@ -6310,7 +6308,7 @@ this.CloseCatchedExceptionTag = function(CloseParenTag){
 		 * @param {Statements} statements - 当前语句块
 		 */
 		visitor: function(parser, context, statement, statements){
-			statement.target.$expression.exception.close = context;
+			statement.target.expression.exception.close = context;
 		}
 	});
 	
@@ -6347,7 +6345,7 @@ this.FinallyTag = function(FinallyStatement){
 		 */
 		visitor: function(parser, context, statement, statements){
 			// 设置 finally 关键字上下文
-			statement.$expression.finallyContext = context;
+			statement.expression.finallyContext = context;
 			// 设置当前语句
 			statements.statement = new FinallyStatement(statements);
 		}

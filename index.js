@@ -1,1 +1,9 @@
-{return}
+try {
+
+}
+catch(e){
+
+}
+finally {
+	
+}
