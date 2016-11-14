@@ -214,7 +214,7 @@ this.Generator = function(Iterator){
 // 语句相关
 void function(){
 
-this.ECMAScriptStatement = ECMAScriptStatement = function(Statement){
+this.ECMAScriptStatement = ECMAScriptStatement = function(Statement, parseInt){
 	/**
 	 * ECMAScript 语句
 	 * @param {Statements} statements - 该语句将要所处的语句块
@@ -226,7 +226,8 @@ this.ECMAScriptStatement = ECMAScriptStatement = function(Statement){
 
 	return ECMAScriptStatement;
 }(
-	Rexjs.Statement
+	Rexjs.Statement,
+	parseInt
 );
 
 this.ECMAScriptStatements = ECMAScriptStatements = function(Statements, ECMAScriptStatement){
@@ -239,6 +240,7 @@ this.ECMAScriptStatements = ECMAScriptStatements = function(Statements, ECMAScri
 	ECMAScriptStatements = new Rexjs(ECMAScriptStatements, Statements);
 
 	ECMAScriptStatements.props({
+		closure: true,
 		/**
 		 * 初始化语句
 		 */
@@ -3295,6 +3297,7 @@ this.BlockStatements = function(BlockStatement){
 	BlockStatements = new Rexjs(BlockStatements, ECMAScriptStatements);
 	
 	BlockStatements.props({
+		closure: false,
 		/**
 		 * 初始化语句
 		 */
@@ -3561,7 +3564,7 @@ this.LabelColonTag = function(ColonTag, LabelledExpression, LabelledStatement){
 );
 
 
-// 中断流相关 [todo]
+// 中断流相关
 void function(){
 
 this.TerminatedFlowExpression = function(){
@@ -3575,18 +3578,29 @@ this.TerminatedFlowExpression = function(){
 	TerminatedFlowExpression = new Rexjs(TerminatedFlowExpression, Expression);
 	
 	TerminatedFlowExpression.props({
-		inBlock: false,
 		/**
 		 * 提取表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
 		 */
 		extractTo: function(contentBuilder){
-			// 追加 break 关键字
+			var object = this.object;
+
+			// 追加关键字
 			contentBuilder.appendContext(this.context);
-			// 提取 label
-			this.label.extractTo(contentBuilder);
+
+			// 如果是空表达式
+			if(
+				object instanceof EmptyExpression
+			){
+				return;
+			}
+
+			// 追加空格
+			contentBuilder.appendSpace();
+			// 提取对象
+			object.extractTo(contentBuilder);
 		},
-		label: null
+		object: null
 	});
 	
 	return TerminatedFlowExpression;
@@ -3599,11 +3613,9 @@ this.TerminatedFlowStatement = function(){
 	 */
 	function TerminatedFlowStatement(statements){
 		ECMAScriptStatement.call(this, statements);
-		
-		this.expression = new EmptyExpression(null);
 	};
 	TerminatedFlowStatement = new Rexjs(TerminatedFlowStatement, ECMAScriptStatement);
-	
+
 	TerminatedFlowStatement.props({
 		/**
 		 * 尝试处理异常
@@ -3611,32 +3623,8 @@ this.TerminatedFlowStatement = function(){
 		 * @param {Context} context - 语法标签上下文
 		 */
 		catch: function(parser, context){
-			var expression = this.expression, terminatedFlowExpression = this.target.expression;
-
-			switch(
-				false
-			){
-				// 如果不是空表达式，说明是属于标记表达式
-				case expression instanceof EmptyExpression:
-					break;
-
-				// 如果存在语句块
-				case terminatedFlowExpression.blockStatement === null:
-					break;
-
-				// 默认
-				default:
-					// 报错
-					parser.error(
-						terminatedFlowExpression.context, "Illegal " + terminatedFlowExpression.context.content + " statement"
-					);
-					return;
-			}
-
-			// 跳出语句
-			this.out();
-			// 设置 label
-			terminatedFlowExpression.label = this.expression;
+			// 跳出语句并设置 object
+			this.out().object = this.expression;
 		}
 	});
 	
@@ -3655,20 +3643,7 @@ this.TerminatedFlowTag = function(TerminatedFlowExpression, TerminatedFlowStatem
 	
 	TerminatedFlowTag.props({
 		$class: CLASS_STATEMENT_BEGIN,
-		/**
-		 * 核对标签定义语句是否满足当前标签所出现的场景
-		 * @param {Statement} labelStatement - 标签定义语句
-		 */
-		checkLabelStatement: function(){
-			return true;
-		},
-		/**
-		 * 获取此标签接下来所需匹配的标签列表
-		 * @param {TagsMap} tagsMap - 标签集合映射
-		 */
-		require: function(tagsMap){
-			return tagsMap.terminatedFlowContextTags;
-		},
+		flow: ECMAScriptStatement.FLOW_MAIN,
 		/**
 		 * 标签访问器
 		 * @param {SyntaxParser} parser - 语法解析器
@@ -3688,6 +3663,268 @@ this.TerminatedFlowTag = function(TerminatedFlowExpression, TerminatedFlowStatem
 }(
 	this.TerminatedFlowExpression,
 	this.TerminatedFlowStatement
+);
+
+}.call(
+	this
+);
+
+
+// 中断流标签子类相关
+void function(TerminatedFlowTag){
+
+this.ReturnTag = function(visitor){
+	/**
+	 * return 关键字标签
+	 * @param {Number} _type - 标签类型
+	 */
+	function ReturnTag(_type){
+		TerminatedFlowTag.call(this, _type);
+	};
+	ReturnTag = new Rexjs(ReturnTag, TerminatedFlowTag);
+	
+	ReturnTag.props({
+		$class: CLASS_STATEMENT_BEGIN,
+		flow: ECMAScriptStatement.FLOW_LINEAR,
+		regexp: /return/,
+		/**
+		 * 获取此标签接下来所需匹配的标签列表
+		 * @param {TagsMap} tagsMap - 标签集合映射
+		 */
+		require: function(tagsMap){
+			return tagsMap.returnContextTags;
+		},
+		/**
+		 * 标签访问器
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 标签上下文
+		 * @param {Statement} statement - 当前语句
+		 * @param {Statements} statements - 当前语句块
+		 */
+		visitor: function(parser, context, statement, statements){
+			var s = statements;
+
+			// 如果语句块存在
+			while(
+				s
+			){
+				// 如果语句块属于闭包，而且不是系统最外层闭包
+				if(
+					s.closure && s.target !== null
+				){
+					// 调用父类访问器
+					visitor.call(this, parser, context, statement, statements);
+
+					// 设置当前表达式为空表达式
+					statements.statement.expression = new EmptyExpression(null);
+					return;
+				}
+
+				s = s.target;
+			}
+
+			// 报错
+			parser.error(context, "Illegal return statement");
+		}
+	});
+	
+	return ReturnTag;
+}(
+	TerminatedFlowTag.prototype.visitor
+);
+
+this.ThrowTag = function(){
+	/**
+	 * throw 标签
+	 * @param {Number} _type - 标签类型
+	 */
+	function ThrowTag(_type){
+		TerminatedFlowTag.call(this, _type);
+	};
+	ThrowTag = new Rexjs(ThrowTag, TerminatedFlowTag);
+	
+	ThrowTag.props({
+		$class: CLASS_STATEMENT_BEGIN,
+		regexp: /throw/,
+		/**
+		 * 获取此标签接下来所需匹配的标签列表
+		 * @param {TagsMap} tagsMap - 标签集合映射
+		 */
+		require: function(tagsMap){
+			return tagsMap.throwContextTags;
+		}
+	});
+	
+	return ThrowTag;
+}();
+
+this.ThrowContextLineTerminatorTag = function(IllegalLineTerminatorTag){
+	/**
+	 * throw 关键字上下文的行结束符标签
+	 * @param {Number} _type - 标签类型
+	 */
+	function ThrowContextLineTerminatorTag(_type){
+		IllegalLineTerminatorTag.call(this, _type);
+	};
+	ThrowContextLineTerminatorTag = new Rexjs(ThrowContextLineTerminatorTag, IllegalLineTerminatorTag);
+
+	ThrowContextLineTerminatorTag.props({
+		/**
+		 * 标签访问器
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 标签上下文
+		 * @param {Statement} statement - 当前语句
+		 * @param {Statements} statements - 当前语句块
+		 */
+		visitor: function(parser, context){
+			// 报错
+			parser.error(context, "Illegal newline after throw");
+		}
+	});
+
+	return ThrowContextLineTerminatorTag;
+}(
+	this.IllegalLineTerminatorTag
+);
+
+}.call(
+	this,
+	this.TerminatedFlowTag
+);
+
+
+// 迭代中断流类相关
+void function(TerminatedFlowStatement){
+
+this.TerminatedBranchFlowStatement = function(catchMethod, withoutAnyFlow){
+	/**
+	 * 中断分支流语句
+	 * @param {Statements} statements - 该语句将要所处的语句块
+	 */
+	function TerminatedBranchFlowStatement(statements){
+		TerminatedFlowStatement.call(this, statements);
+		
+		this.expression = new EmptyExpression(null);
+	};
+	TerminatedBranchFlowStatement = new Rexjs(TerminatedBranchFlowStatement, TerminatedFlowStatement);
+
+	TerminatedBranchFlowStatement.props({
+		/**
+		 * 尝试处理异常
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 语法标签上下文
+		 */
+		catch: function(parser, context){
+			var expression = this.expression, terminatedFlowExpression = this.target.expression;
+
+			switch(
+				false
+			){
+				// 如果不是空表达式，说明是属于标记表达式，而标记表达式已经经过验证
+				case expression instanceof EmptyExpression:
+					break;
+
+				// 如果存在指定的流语句中
+				case withoutAnyFlow(this.target, this.statements, terminatedFlowExpression.context.tag.flow):
+					break;
+
+				// 默认
+				default:
+					// 报错
+					parser.error(
+						terminatedFlowExpression.context,
+						"Illegal " + terminatedFlowExpression.context.content + " statement"
+					);
+					return;
+			}
+
+			// 调用父类方法
+			catchMethod.call(this, parser, context);
+		}
+	});
+	
+	return TerminatedBranchFlowStatement;
+}(
+	TerminatedFlowStatement.prototype.catch,
+	// withoutAnyFlow
+	function(target, statements, flow){
+		// 如果语句块存在
+		while(
+			statements
+		){
+			// 如果目标语句存在
+			while(
+				target
+			){
+				// 如果流一致
+				if(
+					(target.flow & flow) === flow
+				){
+					return false;
+				}
+
+				target = target.target;
+			}
+
+			// 如果当前语句块属于闭包
+			if(
+				statements.closure
+			){
+				return true;
+			}
+
+			statements = statements.target;
+			target = statements.statement;
+		}
+	}
+);
+
+this.TerminatedBranchFlowTag = function(TerminatedFlowTag, TerminatedFlowExpression, TerminatedBranchFlowStatement){
+	/**
+	 * 中断分支流标签
+	 * @param {Number} _type - 标签类型
+	 */
+	function TerminatedBranchFlowTag(_type){
+		TerminatedFlowTag.call(this, _type);
+	};
+	TerminatedBranchFlowTag = new Rexjs(TerminatedBranchFlowTag, TerminatedFlowTag);
+	
+	TerminatedBranchFlowTag.props({
+		/**
+		 * 核对标记定义语句，是否满足当前中断流所对应的标记
+		 * @param {Statement} labelStatement - 标签定义语句
+		 */
+		checkFlowStatement: function(){
+			return true;
+		},
+		flow: ECMAScriptStatement.FLOW_BRANCH,
+		/**
+		 * 获取此标签接下来所需匹配的标签列表
+		 * @param {TagsMap} tagsMap - 标签集合映射
+		 */
+		require: function(tagsMap){
+			return tagsMap.terminatedBranchFlowContextTags;
+		},
+		/**
+		 * 标签访问器
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 标签上下文
+		 * @param {Statement} statement - 当前语句
+		 * @param {Statements} statements - 当前语句块
+		 */
+		visitor: function(parser, context, statement, statements){
+			// 设置表达式
+			statement.expression = new TerminatedFlowExpression(context);
+			// 设置当前语句
+			statements.statement = new TerminatedBranchFlowStatement(statements);
+		}
+	});
+	
+	return TerminatedBranchFlowTag;
+}(
+	this.TerminatedFlowTag,
+	this.TerminatedFlowExpression,
+	this.TerminatedBranchFlowStatement
 );
 
 this.LabelledIdentifierTag = function(LabelTag, LabelledStatement){
@@ -3715,37 +3952,51 @@ this.LabelledIdentifierTag = function(LabelTag, LabelledStatement){
 		 * @param {Statement} statement - 当前语句
 		 * @param {Statements} statements - 当前语句块
 		 */
-		visitor: function(parser, context, statement){
-			var content = context.content, target = statement.target, terminatedFlowTag = target.expression.context.tag;
+		visitor: function(parser, context, statement, statements){
+			var content = context.content, flowStatement = statement, target = statement.target, terminatedFlowTag = target.expression.context.tag;
 
-			// 如果目标语句存在
 			while(
-				target
+				statements
 			){
-				switch(
-					false
+				// 如果目标语句存在
+				while(
+					target
 				){
-					// 如果目标语句不是标记语句
-					case target instanceof LabelledStatement:
-						break;
+					switch(
+						false
+					){
+						// 如果目标语句不是标记语句
+						case target instanceof LabelledStatement:
+							break;
 
-					// 如果标记名称不符合
-					case target.target.expression.context.content === content:
-						break;
+						// 如果标记名称不符合
+						case target.target.expression.context.content === content:
+							break;
 
-					// 如果中断流标签核对无效
-					case terminatedFlowTag.checkLabelStatement(labelledExpression):
-						break;
+						// 如果流语句核对无效
+						case terminatedFlowTag.checkFlowStatement(flowStatement):
+							break;
 
-					default:
-						// 添加空格
-						context.content = " " + context.content;
-						// 设置当前表达式
-						statement.expression = new Expression(context);
-						return;
+						default:
+							// 设置当前表达式
+							statement.expression = new Expression(context);
+							return;
+					}
+
+					flowStatement = target;
+					target = target.target;
 				}
 
-				target = target.target;
+				// 如果当前语句块属于闭包
+				if(
+					statements.closure
+				){
+					break;
+				}
+
+				statements = statements.target;
+				flowStatement = target;
+				target = statements.statement;
 			}
 
 			// 报错
@@ -3760,12 +4011,13 @@ this.LabelledIdentifierTag = function(LabelTag, LabelledStatement){
 );
 
 }.call(
-	this
+	this,
+	this.TerminatedFlowStatement
 );
 
 
-// 中断流子类相关
-void function(TerminatedFlowTag){
+// 迭代中断流子类相关
+void function(TerminatedBranchFlowTag){
 
 this.BreakTag = function(){
 	/**
@@ -3773,9 +4025,9 @@ this.BreakTag = function(){
 	 * @param {Number} _type - 标签类型
 	 */
 	function BreakTag(_type){
-		TerminatedFlowTag.call(this, _type);
+		TerminatedBranchFlowTag.call(this, _type);
 	};
-	BreakTag = new Rexjs(BreakTag, TerminatedFlowTag);
+	BreakTag = new Rexjs(BreakTag, TerminatedBranchFlowTag);
 	
 	BreakTag.props({
 		regexp: /break/
@@ -3784,30 +4036,39 @@ this.BreakTag = function(){
 	return BreakTag;
 }();
 
-this.ContinueTag = function(){
+this.ContinueTag = function(FLOW_CIRCULAR){
 	/**
 	 * continue 标签
 	 * @param {Number} _type - 标签类型
 	 */
 	function ContinueTag(_type){
-		TerminatedFlowTag.call(this, _type);
+		TerminatedBranchFlowTag.call(this, _type);
 	};
-	ContinueTag = new Rexjs(ContinueTag, TerminatedFlowTag);
+	ContinueTag = new Rexjs(ContinueTag, TerminatedBranchFlowTag);
 	
 	ContinueTag.props({
-		checkLabelStatement: function(labelStatement){debugger
-			
+		/**
+		 * 核对标记语句，是否满足当前中断流所对应的标记
+		 * @param {Statement} flowStatement - 标签语句
+		 */
+		checkFlowStatement: function(flowStatement){
+			return (flowStatement.flow & FLOW_CIRCULAR) === FLOW_CIRCULAR;
 		},
+		flow: FLOW_CIRCULAR,
 		regexp: /continue/
 	});
 	
 	return ContinueTag;
-}();
+}(
+	// FLOW_CIRCULAR
+	ECMAScriptStatement.FLOW_CIRCULAR
+);
 
 }.call(
 	this,
-	this.TerminatedFlowTag
+	this.TerminatedBranchFlowTag
 );
+
 
 // var 语句相关
 void function(VariableTag, vdsTag){
@@ -4482,13 +4743,14 @@ this.WhileBodyStatement = function(){
 		catch: function(parser, context){
 			// 跳出语句并设置 body
 			this.out().body = this.expression;
-		}
+		},
+		flow: ECMAScriptStatement.FLOW_CIRCULAR
 	});
 	
 	return WhileBodyStatement;
 }();
 
-this.WhileTag = function(WhileExpression, WhileStatement){
+this.WhileTag = function(WhileExpression){
 	/**
 	 * while 标签
 	 * @param {Number} _type - 标签类型
@@ -4523,8 +4785,7 @@ this.WhileTag = function(WhileExpression, WhileStatement){
 	
 	return WhileTag;
 }(
-	this.WhileExpression,
-	this.WhileStatement
+	this.WhileExpression
 );
 
 this.OpenWhileConditionTag = function(OpenParenTag, WhileConditionStatement){
@@ -5355,7 +5616,8 @@ this.ForBodyStatement = function(){
 		catch: function(parser, context){
 			// 跳出语句并设置 body
 			this.out().body = this.expression;
-		}
+		},
+		flow: ECMAScriptStatement.FLOW_CIRCULAR
 	});
 	
 	return ForBodyStatement;
@@ -5701,255 +5963,6 @@ fclsTag = new this.FCLSTag();
 	null,
 	// fclsTag
 	null
-);
-
-
-// return 语句相关 [todo]
-void function(){
-
-this.ReturnExpression = function(){
-	/**
-	 * return 表达式
-	 * @param {Context} context - 标签上下文
-	 */
-	function ReturnExpression(context){
-		Expression.call(this, context);
-	};
-	ReturnExpression = new Rexjs(ReturnExpression, Expression);
-	
-	ReturnExpression.props({
-		/**
-		 * 提取表达式文本内容
-		 * @param {ContentBuilder} contentBuilder - 内容生成器
-		 */
-		extractTo: function(contentBuilder){
-			var value = this.value;
-			
-			// 追加 return 关键字
-			contentBuilder.appendContext(this.context);
-
-			// 如果是空表达式
-			if(
-				value instanceof EmptyExpression
-			){
-				// 返回
-				return;
-			}
-			
-			// 追加空格
-			contentBuilder.appendSpace();
-			// 提取返回值
-			value.extractTo(contentBuilder);
-		},
-		value: null
-	});
-	
-	return ReturnExpression;
-}();
-
-this.ReturnStatement = function(){
-	/**
-	 * return 语句
-	 * @param {Statements} statements - 该语句将要所处的语句块
-	 */
-	function ReturnStatement(statements){
-		ECMAScriptStatement.call(this, statements);
-		
-		this.expression = new EmptyExpression(null);
-	};
-	ReturnStatement = new Rexjs(ReturnStatement, ECMAScriptStatement);
-	
-	ReturnStatement.props({
-		/**
-		 * 捕获处理异常
-		 * @param {SyntaxParser} parser - 语法解析器
-		 * @param {Context} context - 语法标签上下文
-		 */
-		catch: function(parser, context){
-			// 跳出语句并设置 value
-			this.out().value = this.expression;
-		}
-	});
-	
-	return ReturnStatement;
-}();
-
-this.ReturnTag = function(ReturnExpression, ReturnStatement){
-	/**
-	 * return 关键字标签
-	 * @param {Number} _type - 标签类型
-	 */
-	function ReturnTag(_type){
-		SyntaxTag.call(this, _type);
-	};
-	ReturnTag = new Rexjs(ReturnTag, SyntaxTag);
-	
-	ReturnTag.props({
-		$class: CLASS_STATEMENT_BEGIN,
-		regexp: /return/,
-		/**
-		 * 获取此标签接下来所需匹配的标签列表
-		 * @param {TagsMap} tagsMap - 标签集合映射
-		 */
-		require: function(tagsMap){
-			return tagsMap.returnContextTags;
-		},
-		/**
-		 * 标签访问器
-		 * @param {SyntaxParser} parser - 语法解析器
-		 * @param {Context} context - 标签上下文
-		 * @param {Statement} statement - 当前语句
-		 * @param {Statements} statements - 当前语句块
-		 */
-		visitor: function(parser, context, statement, statements){
-			// 设置表达式
-			statement.expression = new ReturnExpression(context);
-			// 设置当前语句
-			statements.statement = new ReturnStatement(statements);
-		}
-	});
-	
-	return ReturnTag;
-}(
-	this.ReturnExpression,
-	this.ReturnStatement
-);
-
-}.call(
-	this
-);
-
-
-// throw 语句相关
-void function(){
-
-this.ThrowExpression = function(){
-	/**
-	 * throw 表达式
-	 * @param {Context} context - 标签上下文
-	 */
-	function ThrowExpression(context){
-		Expression.call(this, context);
-	};
-	ThrowExpression = new Rexjs(ThrowExpression, Expression);
-	
-	ThrowExpression.props({
-		exception: null,
-		/**
-		 * 提取表达式文本内容
-		 * @param {ContentBuilder} contentBuilder - 内容生成器
-		 */
-		extractTo: function(contentBuilder){
-			// 添加 throw 关键字
-			contentBuilder.appendContext(this.context);
-			// 添加空格
-			contentBuilder.appendSpace();
-			
-			// 提取异常
-			this.exception.extractTo(contentBuilder);
-		}
-	});
-	
-	return ThrowExpression;
-}();
-
-this.ThrowStatement = function(){
-	/**
-	 * throw 语句
-	 * @param {Statements} statements - 该语句将要所处的语句块
-	 */
-	function ThrowStatement(statements){
-		ECMAScriptStatement.call(this, statements);
-	};
-	ThrowStatement = new Rexjs(ThrowStatement, ECMAScriptStatement);
-	
-	ThrowStatement.props({
-		/**
-		 * 捕获处理异常
-		 * @param {SyntaxParser} parser - 语法解析器
-		 * @param {Context} context - 语法标签上下文
-		 */
-		catch: function(parser, context){
-			// 跳出语句并设置 exception
-			this.out().exception = this.expression;
-		}
-	});
-	
-	return ThrowStatement;
-}();
-
-this.ThrowTag = function(ThrowExpression, ThrowStatement){
-	/**
-	 * throw 标签
-	 * @param {Number} _type - 标签类型
-	 */
-	function ThrowTag(_type){
-		SyntaxTag.call(this, _type);
-	};
-	ThrowTag = new Rexjs(ThrowTag, SyntaxTag);
-	
-	ThrowTag.props({
-		$class: CLASS_STATEMENT_BEGIN,
-		regexp: /throw/,
-		/**
-		 * 获取此标签接下来所需匹配的标签列表
-		 * @param {TagsMap} tagsMap - 标签集合映射
-		 */
-		require: function(tagsMap){
-			return tagsMap.throwContextTags;
-		},
-		/**
-		 * 标签访问器
-		 * @param {SyntaxParser} parser - 语法解析器
-		 * @param {Context} context - 标签上下文
-		 * @param {Statement} statement - 当前语句
-		 * @param {Statements} statements - 当前语句块
-		 */
-		visitor: function(parser, context, statement, statements){
-			// 设置当前表达式为 throw 表达式
-			statement.expression = new ThrowExpression(context);
-			// 设置当前语句为 throw 语句
-			statements.statement = new ThrowStatement(statements);
-		}
-	});
-	
-	return ThrowTag;
-}(
-	this.ThrowExpression,
-	this.ThrowStatement
-);
-
-this.ThrowContextLineTerminatorTag = function(IllegalLineTerminatorTag){
-	/**
-	 * throw 关键字上下文的行结束符标签
-	 * @param {Number} _type - 标签类型
-	 */
-	function ThrowContextLineTerminatorTag(_type){
-		IllegalLineTerminatorTag.call(this, _type);
-	};
-	ThrowContextLineTerminatorTag = new Rexjs(ThrowContextLineTerminatorTag, IllegalLineTerminatorTag);
-
-	ThrowContextLineTerminatorTag.props({
-		/**
-		 * 标签访问器
-		 * @param {SyntaxParser} parser - 语法解析器
-		 * @param {Context} context - 标签上下文
-		 * @param {Statement} statement - 当前语句
-		 * @param {Statements} statements - 当前语句块
-		 */
-		visitor: function(parser, context){
-			// 报错
-			parser.error(context, "Illegal newline after throw");
-		}
-	});
-
-	return ThrowContextLineTerminatorTag;
-}(
-	this.IllegalLineTerminatorTag
-);
-
-}.call(
-	this
 );
 
 
@@ -7909,20 +7922,20 @@ this.SwitchConditionTags = function(OpenSwitchConditionTag){
 	this.OpenSwitchConditionTag
 );
 
-this.TerminatedFlowContextTags = function(LabelledIdentifierTag){
+this.TerminatedBranchFlowContextTags = function(LabelledIdentifierTag){
 	/**
-	 * 中断流上下文标签列表
+	 * 中断分支流上下文标签列表
 	 */
-	function TerminatedFlowContextTags(){
-		StatementEndTags.call(this, "terminatedFlowContextTags");
+	function TerminatedBranchFlowContextTags(){
+		StatementEndTags.call(this, "terminatedBranchFlowContextTags");
 		
 		this.register(
 			new LabelledIdentifierTag()
 		);
 	};
-	TerminatedFlowContextTags = new Rexjs(TerminatedFlowContextTags, StatementEndTags);
+	TerminatedBranchFlowContextTags = new Rexjs(TerminatedBranchFlowContextTags, StatementEndTags);
 	
-	return TerminatedFlowContextTags;
+	return TerminatedBranchFlowContextTags;
 }(
 	this.LabelledIdentifierTag
 );
@@ -8099,7 +8112,7 @@ this.ECMAScriptTagsMap = function(SyntaxTagsMap, tagsArray){
 		this.ReturnContextTags,
 		this.SwitchBlockTags,
 		this.SwitchConditionTags,
-		this.TerminatedFlowContextTags,
+		this.TerminatedBranchFlowContextTags,
 		this.ThrowContextTags,
 		this.VarContextTags,
 		this.WhileConditionTags

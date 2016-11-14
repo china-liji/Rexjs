@@ -1265,7 +1265,7 @@ this.SyntaxError = function(MappingBuilder, e){
 		get message(){
 			var position = this.context.position;
 
-			return (this.reference ? "Reference" : "SyntaxElement") + "Error: " + this.description + " @ " + this.file.filename + ":" + position.line + ":" + position.column;
+			return (this.reference ? "Reference" : "Syntax") + "Error: " + this.description + " @ " + this.file.filename + ":" + position.line + ":" + position.column;
 		},
 		file: null,
 		reference: false,
@@ -1783,6 +1783,13 @@ this.Statement = function(TYPE_MISTAKABLE, CLASS_STATEMENT, STATE_STATEMENT_ENDA
 		this.statements = statements;
 	};
 	Statement = new Rexjs(Statement, SyntaxElement);
+
+	Statement.static({
+		FLOW_INHERIT: parseInt(10, 2),
+		FLOW_BRANCH: parseInt(100, 2),
+		FLOW_LINEAR: parseInt(1100, 2),
+		FLOW_CIRCULAR: parseInt(10100, 2)
+	});
 	
 	Statement.props({
 		/**
@@ -1811,6 +1818,7 @@ this.Statement = function(TYPE_MISTAKABLE, CLASS_STATEMENT, STATE_STATEMENT_ENDA
 		finally: function(parser, context, afterTry){
 			return null;
 		},
+		flow: Statement.FLOW_INHERIT,
 		/**
 		 * 跳出该语句
 		 */
@@ -1906,7 +1914,6 @@ this.Statements = function(Statement, STATE_STATEMENT_ENDED){
 		newStatement: function(){
 			// 先清空当前语句
 			this.statement = null;
-			
 			return this.statement = this[this.length++] = this.initStatement();
 		},
 		splice: Array.prototype.splice,
