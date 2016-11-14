@@ -148,6 +148,14 @@ async
 --------
 已完成功能
 --------
+try、catch、finally 语句重构完成 - 2016.11.14
+
+中断流语句重构完成 - 2016.11.14
+	- break 语句
+	- continue 语句
+	- return 语句
+	- throw 语句
+
 for 语句 - 2016.11.10
 	- for 循环
 	- for in

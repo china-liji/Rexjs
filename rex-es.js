@@ -240,7 +240,6 @@ this.ECMAScriptStatements = ECMAScriptStatements = function(Statements, ECMAScri
 	ECMAScriptStatements = new Rexjs(ECMAScriptStatements, Statements);
 
 	ECMAScriptStatements.props({
-		closure: true,
 		/**
 		 * 初始化语句
 		 */
@@ -2909,6 +2908,164 @@ commaSiblingTag = new this.CommaSiblingTag();
 );
 
 
+// 函数调用小括号标签
+void function(closeCallTag){
+
+this.CallExpression = function(extractTo){
+	/**
+	 * 函数调用表达式
+	 * @param {Context} open - 起始标签上下文
+	 * @param {Expression} operand - 操作对象表达式
+	 */
+	function CallExpression(open, operand){
+		PartnerExpression.call(this, open);
+
+		this.operand = operand;
+	};
+	CallExpression = new Rexjs(CallExpression, PartnerExpression);
+
+	CallExpression.props({
+		/**
+		 * 提取文本内容，空函数，不做任何处理
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 */
+		extractTo: function(contentBuilder){
+			// 提取操作对象
+			this.operand.extractTo(contentBuilder);
+			// 调用父类方法
+			extractTo.call(this, contentBuilder);
+		},
+		operand: null
+	});
+
+	return CallExpression;
+}(
+	PartnerExpression.prototype.extractTo
+);
+
+this.CallStatement = function(){
+	/**
+	 * 函数调用语句
+	 * @param {Statements} statements - 该语句将要所处的语句块
+	 */
+	function CallStatement(statements){
+		ECMAScriptStatement.call(this, statements);
+
+		this.expression = new EmptyExpression();
+	};
+	CallStatement = new Rexjs(CallStatement, ECMAScriptStatement);
+	
+	CallStatement.props({
+		/**
+		 * 捕获处理异常
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 语法标签上下文
+		 */
+		catch: function(parser, context){
+			// 如果是关闭分组小括号
+			if(
+				context.content === ")"
+			){
+				// 跳出该语句并设置 inner
+				this.out().inner = this.expression;
+				// 返回关闭分组小括号标签
+				return closeCallTag;
+			}
+			
+			// 报错
+			parser.error(context);
+		}
+	});
+	
+	return CallStatement;
+}();
+
+this.OpenCallTag = function(OpenParenTag, CallExpression, CallStatement){
+	/**
+	 * 起始函数调用小括号标签
+	 * @param {Number} _type - 标签类型
+	 */
+	function OpenCallTag(_type){
+		OpenParenTag.call(this, _type);
+	};
+	OpenCallTag = new Rexjs(OpenCallTag, OpenParenTag);
+	
+	OpenCallTag.props({
+		$class: CLASS_EXPRESSION_CONTEXT,
+		/**
+		 * 获取此标签接下来所需匹配的标签列表
+		 * @param {TagsMap} tagsMap - 标签集合映射
+		 */
+		require: function(tagsMap){
+			return tagsMap.expressionTags;
+		},
+		/**
+		 * 标签访问器
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 标签上下文
+		 * @param {Statement} statement - 当前语句
+		 * @param {Statements} statements - 当前语句块
+		 */
+		visitor: function(parser, context, statement, statements){
+			// 设置当前表达式
+			statement.expression = new CallExpression(context, statement.expression);
+			// 设置当前语句
+			statements.statement = new CallStatement(statements);
+		}
+	});
+	
+	return OpenCallTag;
+}(
+	this.OpenParenTag,
+	this.CallExpression,
+	this.CallStatement
+);
+
+this.CloseCallTag = function(CloseParenTag){
+	/**
+	 * 结束函数调用小括号标签
+	 * @param {Number} _type - 标签类型
+	 */
+	function CloseCallTag(_type){
+		CloseParenTag.call(this, _type);
+	};
+	CloseCallTag = new Rexjs(CloseCallTag, CloseParenTag);
+	
+	CloseCallTag.props({
+		/**
+		 * 获取此标签接下来所需匹配的标签列表
+		 * @param {TagsMap} tagsMap - 标签集合映射
+		 */
+		require: function(tagsMap){
+			return tagsMap.expressionContextTags;
+		},
+		/**
+		 * 标签访问器
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 标签上下文
+		 * @param {Statement} statement - 当前语句
+		 * @param {Statements} statements - 当前语句块
+		 */
+		visitor: function(parser, context, statement, statements){
+			// 设置表达式的 close
+			statement.expression.close = context;
+		}
+	});
+	
+	return CloseCallTag;
+}(
+	this.CloseParenTag
+);
+
+closeCallTag = new this.CloseCallTag();
+
+}.call(
+	this,
+	// closeCallTag
+	null
+);
+
+
 // 分组小括号标签
 void function(closeGroupingTag){
 
@@ -2974,7 +3131,7 @@ this.OpenGroupingTag = function(OpenParenTag, GroupingStatement){
 		 * @param {Statements} statements - 当前语句块
 		 */
 		visitor: function(parser, context, statement, statements){
-			// 设置临时表达式
+			// 设置当前表达式
 			statement.expression = new PartnerExpression(context);
 			// 设置当前语句
 			statements.statement = new GroupingStatement(statements);
@@ -3226,10 +3383,10 @@ void function(closeBlockTag){
 this.BlockExpression = function(){
 	/**
 	 * 语句块表达式
-	 * @param {Context} context - 表达式上下文
+	 * @param {Context} open - 起始标签上下文
 	 */
-	function BlockExpression(context){
-		PartnerExpression.call(this, context);
+	function BlockExpression(open){
+		PartnerExpression.call(this, open);
 	};
 	BlockExpression = new Rexjs(BlockExpression, PartnerExpression);
 	
@@ -3297,7 +3454,7 @@ this.BlockStatements = function(BlockStatement){
 	BlockStatements = new Rexjs(BlockStatements, ECMAScriptStatements);
 	
 	BlockStatements.props({
-		closure: false,
+		scope: false,
 		/**
 		 * 初始化语句
 		 */
@@ -3708,9 +3865,9 @@ this.ReturnTag = function(visitor){
 			while(
 				s
 			){
-				// 如果语句块属于闭包，而且不是系统最外层闭包
+				// 如果语句块有自己的作用域，而且不是系统最外作用域
 				if(
-					s.closure && s.target !== null
+					s.scope && s.target !== null
 				){
 					// 调用父类访问器
 					visitor.call(this, parser, context, statement, statements);
@@ -3866,9 +4023,9 @@ this.TerminatedBranchFlowStatement = function(catchMethod, withoutAnyFlow){
 				target = target.target;
 			}
 
-			// 如果当前语句块属于闭包
+			// 如果当前语句有自己的作用域
 			if(
-				statements.closure
+				statements.scope
 			){
 				return true;
 			}
@@ -3987,9 +4144,9 @@ this.LabelledIdentifierTag = function(LabelTag, LabelledStatement){
 					target = target.target;
 				}
 
-				// 如果当前语句块属于闭包
+				// 如果当前语句块有自己的作用域
 				if(
-					statements.closure
+					statements.scope
 				){
 					break;
 				}
@@ -7291,7 +7448,7 @@ this.ExpressionTags = function(VariableTag){
 	this.VariableTag
 );
 
-this.ExpressionContextTags = function(StatementEndTag, ExpressionBreakTag, OpenBracketAccessorTag, BinaryTag, CommaTag){
+this.ExpressionContextTags = function(StatementEndTag, ExpressionBreakTag, OpenBracketAccessorTag, OpenCallTag, BinaryTag, CommaTag){
 	/**
 	 * 表达式上下文标签列表
 	 * @param {String} _id - 该标签列表的 id
@@ -7303,7 +7460,8 @@ this.ExpressionContextTags = function(StatementEndTag, ExpressionBreakTag, OpenB
 		this.register(
 			new StatementEndTag(),
 			new ExpressionBreakTag(),
-			new OpenBracketAccessorTag()
+			new OpenBracketAccessorTag(),
+			new OpenCallTag()
 		);
 	};
 	ExpressionContextTags = new Rexjs(ExpressionContextTags, ECMAScriptTags);
@@ -7345,6 +7503,7 @@ this.ExpressionContextTags = function(StatementEndTag, ExpressionBreakTag, OpenB
 	this.StatementEndTag,
 	this.ExpressionBreakTag,
 	this.OpenBracketAccessorTag,
+	this.OpenCallTag,
 	this.BinaryTag,
 	this.CommaTag
 );

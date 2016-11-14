@@ -1916,6 +1916,7 @@ this.Statements = function(Statement, STATE_STATEMENT_ENDED){
 			this.statement = null;
 			return this.statement = this[this.length++] = this.initStatement();
 		},
+		scope: true,
 		splice: Array.prototype.splice,
 		statement: null
 	});
