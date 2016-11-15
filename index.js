@@ -1,1 +1,1 @@
-a(1,2,3,4)
+switch(true){ case 1:case 2:case 3: }

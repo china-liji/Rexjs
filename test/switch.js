@@ -5,9 +5,10 @@ test.group("switch 语句");
 test.true("最简单的 switch 语句", "switch(true){}");
 test.true("无换行且连续的 switch 语句", "switch(true){}switch(true){}");
 test.true("switch case 语句", "switch(true){case 1:}");
-test.true("单语句 case", "switch(true){case 1:return window.a}");
-test.true("多语句 case", "switch(true){case 1:window.a;return window.a;}");
+test.true("单语句 case", "switch(true){case 1:break}");
+test.true("多语句 case", "switch(true){case 1:var a = 1;a = 100;break;}");
 test.true("连续的空 case 语句", "switch(true){ case 1:case 2:case 3: }");
+test.true("带 defualt 的 switch 语句", "switch(true){ case 1:case 2:case 3:default: }");
 test.true("赋值条件的 switch 语句", "switch(a += 3){}");
 test.true("赋值运算的 case 值", "switch(a += 3){ case a += 6: }");
 
