@@ -1473,18 +1473,9 @@ void function(SyntaxTag, RegExp, TYPE_MATCHABLE, TYPE_MISTAKABLE){
 this.SyntaxTags = function(List, sort, distinct){
 	/**
 	 * 语法标签列表
-	 * @param {String} _id - 该标签列表的 id
 	 */
-	function SyntaxTags(_id){
+	function SyntaxTags(){
 		List.call(this);
-		
-		// 如果指定了 id
-		if(
-			_id
-		){
-			// 设置 id
-			this.id = _id;
-		}
 	};
 	SyntaxTags = new Rexjs(SyntaxTags, List);
 

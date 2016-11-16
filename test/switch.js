@@ -8,7 +8,9 @@ test.true("switch case 语句", "switch(true){case 1:}");
 test.true("单语句 case", "switch(true){case 1:break}");
 test.true("多语句 case", "switch(true){case 1:var a = 1;a = 100;break;}");
 test.true("连续的空 case 语句", "switch(true){ case 1:case 2:case 3: }");
-test.true("带 defualt 的 switch 语句", "switch(true){ case 1:case 2:case 3:default: }");
+test.true("带 defualt 的 switch 语句", "switch(true){ default: }");
+test.true("带 case 与 defualt 的 switch 语句", "switch(true){ case 1:default:case 2: }");
+test.true("带换行的 case 与 defualt 的 switch 语句", "switch(true){ case 1:1\ndefault:break\ncase 2:;case 4: }");
 test.true("赋值条件的 switch 语句", "switch(a += 3){}");
 test.true("赋值运算的 case 值", "switch(a += 3){ case a += 6: }");
 
@@ -28,11 +30,24 @@ test.true(
 
 			case 0: {
 				a -= 100
+				
 				break
+			}
+
+			if(
+				a > 100
+			){
+				a = 10000
 			}
 
 			default:
 				throw "错误的测试"
+		}
+
+		if(
+			a !== 0
+		){
+			throw "计算结果错误";
 		}
 	}),
 	true
@@ -86,6 +101,14 @@ test.false(
 	"switch(true){ case if: }",
 	function(parser, err){
 		return err.context.tag instanceof Rexjs.IfTag ? "" : "没有正确的捕获 if 关键字";
+	}
+);
+
+test.false(
+	"缺少换行的 switch 语句",
+	"switch(true){ case 1:1 default: }",
+	function(parser, err){
+		return err.context.tag instanceof Rexjs.DefaultTag ? "" : "没有正确的捕获 default 关键字";
 	}
 );
 

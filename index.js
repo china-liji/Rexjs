@@ -1,1 +1,1 @@
-switch(true){ case 1:case 2:case 3: }
+switch(true){ case 1:1 default: }

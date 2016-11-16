@@ -6524,7 +6524,7 @@ finallyTag = new this.FinallyTag();
 
 
 // switch 语句相关
-void function(closeSwitchConditionTag, closeSwitchBodyTag, caseTag, defaultCaseTag, caseValueSeparatorTag){
+void function(closeSwitchConditionTag, caseTag, defaultCaseTag, caseValueSeparatorTag){
 
 this.SwitchExpression = function(){
 	/**
@@ -6552,6 +6552,7 @@ this.SwitchExpression = function(){
 			// 提取主体
 			this.body.extractTo(contentBuilder);
 		},
+		hasDefault: false,
 		/**
 		 * 获取状态
 		 */
@@ -6684,6 +6685,31 @@ this.SwitchConditionStatement = function(){
 	return SwitchConditionStatement; 
 }();
 
+this.SwitchBodyStatement = function(){
+	/**
+	 * switch 主体语句
+	 * @param {Statements} statements - 该语句将要所处的语句块
+	 */
+	function SwitchBodyStatement(statements){
+		ECMAScriptStatement.call(this, statements);
+	};
+	SwitchBodyStatement = new Rexjs(SwitchBodyStatement, ECMAScriptStatement);
+
+	SwitchBodyStatement.props({
+		/**
+		 * 捕获处理异常
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 语法标签上下文
+		 */
+		catch: function(parser, context){
+			// 跳出语句并设置 body
+			this.out().body = this.expression;
+		}
+	});
+
+	return SwitchBodyStatement;
+}();
+
 this.CaseValueStatement = function(){
 	/**
 	 * case 值语句
@@ -6719,7 +6745,24 @@ this.CaseValueStatement = function(){
 	return CaseValueStatement;
 }();
 
-this.CaseBodyStatement = function(){
+this.DefaultValueStatement = function(CaseValueStatement){
+	/**
+	 * default 值语句
+	 * @param {Statements} statements - 该语句将要所处的语句块
+	 */
+	function DefaultValueStatement(statements){
+		CaseValueStatement.call(this, statements);
+
+		this.expression = new EmptyExpression(null);
+	};
+	DefaultValueStatement = new Rexjs(DefaultValueStatement, CaseValueStatement);
+	
+	return DefaultValueStatement;
+}(
+	this.CaseValueStatement
+);
+
+this.CaseBodyStatement = function(isCase, isCloseBrace){
 	/**
 	 * case 语句
 	 * @param {Statements} statements - 该语句将要所处的语句块
@@ -6743,84 +6786,65 @@ this.CaseBodyStatement = function(){
 		 * @param {Context} context - 语法标签上下文
 		 */
 		catch: function(parser, context){
-			var tag;
-
 			switch(
 				context.content
 			){
 				// 如果是 case 关键字
 				case "case":
-					tag = caseTag;
-					break;
+					isCase(parser, this, context);
+					return caseTag;
 				
 				// 如果是 default 关键字
 				case "default":
-					tag = defaultCaseTag;
-					break;
+					isCase(parser, this, context);
+					return defaultCaseTag;
 
 				// 如果是结束大括号
 				case "}":
-					tag = closeSwitchBodyTag;
+					isCloseBrace(parser, this.statements);
 					break;
-
-				// 默认
-				default:
-					return null;
 			}
 
-			var statements = this.statements, targetStatements = statements.target;
-
-			// 设置 case 表达式的 statements
-			targetStatements.statement.expression.statements = statements;
-
-			// 如果不是结束小括号
-			if(
-				tag !== closeSwitchBodyTag
-			){
-				// 如果表达式不可以结束
-				if(
-					(this.expression.state & STATE_STATEMENT_ENDABLE) !== STATE_STATEMENT_ENDABLE
-				){
-					// 报错
-					parser.error(context);
-					return null;
-				}
-
-				// 恢复语句
-				parser.statements = targetStatements;
-
-				// 创建新语句
-				targetStatements.newStatement();
-			}
-			else {
-				// 恢复语句块
-				parser.statements = targetStatements.target;
-			}
-			
-			return tag;
+			return null
 		},
 		flow: ECMAScriptStatement.FLOW_LINEAR
 	});
 	
 	return CaseBodyStatement;
-}();
+}(
+	// isCase
+	function(parser, statement, context){
+		var statements = statement.statements, targetStatements = statements.target;
 
-this.SwitchBodyStatements = function(){
-	/**
-	 * switch 主体语句块
-	 */
-	function SwitchBodyStatements(){
-		ECMAScriptStatements.call(this);
-	};
-	SwitchBodyStatements = new Rexjs(SwitchBodyStatements, ECMAScriptStatements);
+		// 设置 case 表达式的 statements
+		targetStatements.statement.expression.statements = statements;
 
-	SwitchBodyStatements.props({
-		hasDefault: false,
-		scope: false
-	});
+		// 如果表达式可以结束
+		if(
+			(statement.expression.state & STATE_STATEMENT_ENDABLE) === STATE_STATEMENT_ENDABLE
+		){
+			// 恢复语句块
+			parser.statements = targetStatements;
 
-	return SwitchBodyStatements;
-}();
+			// 创建新语句
+			targetStatements.newStatement();
+			return;
+		}
+
+		// 报错
+		parser.error(context);
+	},
+	// isCloseBrace
+	function(parser, statements){
+		(
+			// 恢复语句块
+			parser.statements = statements.target
+		)
+		.statement
+		.expression
+		.statements = statements;
+	}
+);
 
 this.CaseBodyStatements = function(CaseBodyStatement){
 	/**
@@ -6923,7 +6947,7 @@ this.OpenSwitchConditionTag = function(OpenParenTag, SwitchConditionStatement){
 	this.SwitchConditionStatement
 );
 
-this.CloseSwitchConditionTag = function(CloseParenTag, WhileConditionStatement, WhileBodyStatement){
+this.CloseSwitchConditionTag = function(CloseParenTag, SwitchBodyStatement){
 	/**
 	 * switch 条件结束标签
 	 * @param {Number} _type - 标签类型
@@ -6951,24 +6975,25 @@ this.CloseSwitchConditionTag = function(CloseParenTag, WhileConditionStatement, 
 		visitor: function(parser, context, statement, statements){
 			// 条件表达式结束
 			statement.expression.condition.close = context;
+			// 设置当前语句
+			statements.statement = new SwitchBodyStatement(statements);
 		}
 	});
 	
 	return CloseSwitchConditionTag;
 }(
 	this.CloseParenTag,
-	this.WhileConditionStatement,
-	this.WhileBodyStatement
+	this.SwitchBodyStatement
 );
 
-this.OpenSwitchBodyTag = function(OpenBraceTag, SwitchBodyStatements){
+this.OpenSwitchBodyTag = function(OpenBlockTag){
 	/**
 	 * switch 主体起始标签
 	 */
 	function OpenSwitchBodyTag(_type){
-		OpenBraceTag.call(this, _type);
+		OpenBlockTag.call(this, _type);
 	};
-	OpenSwitchBodyTag = new Rexjs(OpenSwitchBodyTag, OpenBraceTag);
+	OpenSwitchBodyTag = new Rexjs(OpenSwitchBodyTag, OpenBlockTag);
 	
 	OpenSwitchBodyTag.props({
 		/**
@@ -6977,107 +7002,12 @@ this.OpenSwitchBodyTag = function(OpenBraceTag, SwitchBodyStatements){
 		 */
 		require: function(tagsMap){
 			return tagsMap.openSwitchBodyContextTags;
-		},
-		/**
-		 * 标签访问器
-		 * @param {SyntaxParser} parser - 语法解析器
-		 * @param {Context} context - 标签上下文
-		 * @param {Statement} statement - 当前语句
-		 * @param {Statements} statements - 当前语句块
-		 */
-		visitor: function(parser, context, statement, statements){
-			var bodyStatements = new SwitchBodyStatements();
-
-			// 设置子句表达式
-			(
-				statement.expression.body = new PartnerExpression(context)
-			)
-			// 设置 inner
-			.inner = bodyStatements;
-
-			// 记录当前语句块
-			bodyStatements.target = statements;
-			// 设置当前语句块
-			parser.statements = bodyStatements;
 		}
 	});
 	
 	return OpenSwitchBodyTag;
 }(
-	this.OpenBraceTag,
-	this.SwitchBodyStatements
-);
-
-this.CloseSwitchBodyTag = function(CloseBraceTag){
-	/**
-	 * switch 主体结束标签
-	 * @param {Number} _type - 标签类型
-	 */
-	function CloseSwitchBodyTag(_type){
-		CloseBraceTag.call(this, _type);
-	};
-	CloseSwitchBodyTag = new Rexjs(CloseSwitchBodyTag, CloseBraceTag);
-	
-	CloseSwitchBodyTag.props({
-		/**
-		 * 获取此标签接下来所需匹配的标签列表
-		 * @param {TagsMap} tagsMap - 标签集合映射
-		 */
-		require: function(tagsMap){
-			return tagsMap.unexpectedTags;
-		},
-		/**
-		 * 标签访问器
-		 * @param {SyntaxParser} parser - 语法解析器
-		 * @param {Context} context - 标签上下文
-		 * @param {Statement} statement - 当前语句
-		 * @param {Statements} statements - 当前语句块
-		 */
-		visitor: function(parser, context, statement, statements){
-			statement.expression.body.close = context;
-		}
-	});
-	
-	return CloseSwitchBodyTag;
-}(
-	this.CloseBraceTag
-);
-
-this.CloseEmptySwitchBodyTag = function(CloseSwitchBodyTag, visitor){
-	/**
-	 * switch 空的主体结束标签
-	 * @param {Number} _type - 标签类型
-	 */
-	function CloseEmptySwitchBodyTag(_type){
-		CloseSwitchBodyTag.call(this, _type);
-	};
-	CloseEmptySwitchBodyTag = new Rexjs(CloseEmptySwitchBodyTag, CloseSwitchBodyTag);
-	
-	CloseEmptySwitchBodyTag.props({
-		/**
-		 * 标签访问器
-		 * @param {SyntaxParser} parser - 语法解析器
-		 * @param {Context} context - 标签上下文
-		 * @param {Statement} statement - 当前语句
-		 * @param {Statements} statements - 当前语句块
-		 */
-		visitor: function(parser, context, statement, statements){
-			// 恢复语句块
-			statements = parser.statements = statements.target;
-			// 重新记录 statement
-			statement = statements.statement;
-
-			// 设置 inner
-			statement.expression.body.inner = new EmptyExpression(null);
-			
-			visitor.call(this, parser, context, statement, statements);
-		}
-	});
-	
-	return CloseEmptySwitchBodyTag;
-}(
-	this.CloseSwitchBodyTag,
-	this.CloseSwitchBodyTag.prototype.visitor
+	this.OpenBlockTag
 );
 
 this.CaseTag = function(CaseExpression, CaseValueStatement){
@@ -7120,7 +7050,7 @@ this.CaseTag = function(CaseExpression, CaseValueStatement){
 	this.CaseValueStatement
 );
 
-this.DefaultCaseTag = function(DefaultTag, DefaultCaseExpression){
+this.DefaultCaseTag = function(DefaultTag, DefaultCaseExpression, DefaultValueStatement){
 	/**
 	 * switch 语句中的 default 标签
 	 * @param {Number} _type - 标签类型
@@ -7136,7 +7066,7 @@ this.DefaultCaseTag = function(DefaultTag, DefaultCaseExpression){
 		 * @param {TagsMap} tagsMap - 标签集合映射
 		 */
 		require: function(tagMaps){
-			return tagMaps.caseValueSeparatorTags;
+			return tagMaps.unexpectedTags;
 		},
 		/**
 		 * 标签访问器
@@ -7146,9 +7076,11 @@ this.DefaultCaseTag = function(DefaultTag, DefaultCaseExpression){
 		 * @param {Statements} statements - 当前语句块
 		 */
 		visitor: function(parser, context, statement, statements){
+			var switchExpression = statements.target.statement.target.expression;
+
 			// 如果已经存在 default 表达式
 			if(
-				statements.hasDefault
+				switchExpression.hasDefault
 			){
 				// 报错
 				parser.error(context, "More than one default clause in switch statement");
@@ -7157,15 +7089,18 @@ this.DefaultCaseTag = function(DefaultTag, DefaultCaseExpression){
 
 			// 设置当前表达式
 			statement.expression = new DefaultCaseExpression(context);
+			// 设置当前语句
+			statements.statement = new DefaultValueStatement(statements);
 			// 设置 hasDefault
-			statements.hasDefault = true;
+			switchExpression.hasDefault = true;
 		}
 	});
 
 	return DefaultCaseTag;
 }(
 	this.DefaultTag,
-	this.DefaultCaseExpression
+	this.DefaultCaseExpression,
+	this.DefaultValueStatement
 );
 
 this.CaseValueSeparatorTag = function(ColonTag, CaseBodyStatements){
@@ -7213,7 +7148,6 @@ this.CaseValueSeparatorTag = function(ColonTag, CaseBodyStatements){
 );
 
 closeSwitchConditionTag = new this.CloseSwitchConditionTag();
-closeSwitchBodyTag = new this.CloseSwitchBodyTag();
 caseTag = new this.CaseTag();
 defaultCaseTag = new this.DefaultCaseTag();
 caseValueSeparatorTag = new this.CaseValueSeparatorTag();
@@ -7221,8 +7155,6 @@ caseValueSeparatorTag = new this.CaseValueSeparatorTag();
 }.call(
 	this,
 	// closeSwitchConditionTag
-	null,
-	// closeSwitchBodyTag
 	null,
 	// caseTag
 	null,
@@ -7300,10 +7232,9 @@ void function(SyntaxTag){
 this.ECMAScriptTags = function(DefaultTags, data){
 	/**
 	 * ECMAScript 标签列表
-	 * @param {String} _id - 该标签列表的 id
 	 */
-	function ECMAScriptTags(_id){
-		DefaultTags.call(this, _id);
+	function ECMAScriptTags(){
+		DefaultTags.call(this);
 		
 		// 遍历标签数据
 		data.forEach(
@@ -7441,10 +7372,9 @@ void function(ECMAScriptTags){
 this.ExpressionTags = function(VariableTag){
 	/**
 	 * 表达式标签列表
-	 * @param {String} _id - 该标签列表的 id
 	 */
-	function ExpressionTags(_id){
-		ECMAScriptTags.call(this, _id);
+	function ExpressionTags(){
+		ECMAScriptTags.call(this);
 		
 		this.register(
 			new VariableTag()
@@ -7479,10 +7409,9 @@ this.ExpressionTags = function(VariableTag){
 this.ExpressionContextTags = function(StatementEndTag, ExpressionBreakTag, OpenBracketAccessorTag, OpenCallTag, BinaryTag, CommaTag){
 	/**
 	 * 表达式上下文标签列表
-	 * @param {String} _id - 该标签列表的 id
 	 */
-	function ExpressionContextTags(_id){
-		ECMAScriptTags.call(this, _id);
+	function ExpressionContextTags(){
+		ECMAScriptTags.call(this);
 		
 		// 注册标签
 		this.register(
@@ -7539,10 +7468,9 @@ this.ExpressionContextTags = function(StatementEndTag, ExpressionBreakTag, OpenB
 this.StatementTags = function(){
 	/**
 	 * 语句标签列表
-	 * @param {String} _id - 该标签列表的 id
 	 */
-	function StatementTags(_id){
-		ECMAScriptTags.call(this, _id);
+	function StatementTags(){
+		ECMAScriptTags.call(this);
 	};
 	StatementTags = new Rexjs(StatementTags, ECMAScriptTags);
 	
@@ -7571,10 +7499,9 @@ this.StatementTags = function(){
 this.StatementEndTags = function(StatementEndTag, StatementBreakTag){
 	/**
 	 * 语句结束标签列表
-	 * @param {String} _id - 该标签列表的 id
 	 */
-	function StatementEndTags(_id){
-		ECMAScriptTags.call(this, _id);
+	function StatementEndTags(){
+		ECMAScriptTags.call(this);
 		
 		this.register(
 			new StatementEndTag(),
@@ -7623,35 +7550,21 @@ this.BlockTags = function(OpenBlockTag){
 	 * 语句块标签列表
 	 */
 	function BlockTags(){
-		ECMAScriptTags.call(this, "blockTags");
+		ECMAScriptTags.call(this);
 		
 		this.register(
 			new OpenBlockTag()
 		);
 	};
 	BlockTags = new Rexjs(BlockTags, ECMAScriptTags);
+
+	BlockTags.props({
+		id: "blockTags"
+	});
 	
 	return BlockTags;
 }(
 	this.OpenBlockTag
-);
-
-this.CaseValueSeparatorTags = function(CaseValueSeparatorTag){
-	/**
-	 * case 值的分隔符标签列表
-	 */
-	function CaseValueSeparatorTags(){
-		ECMAScriptTags.call(this, "caseValueSeparatorTags");
-
-		this.register(
-			new CaseValueSeparatorTag()
-		);
-	};
-	CaseValueSeparatorTags = new Rexjs(CaseValueSeparatorTags, ECMAScriptTags);
-
-	return CaseValueSeparatorTags;
-}(
-	this.CaseValueSeparatorTag
 );
 
 this.CatchedExceptionTags = function(OpenCatchedExceptionTag){
@@ -7659,7 +7572,7 @@ this.CatchedExceptionTags = function(OpenCatchedExceptionTag){
 	 * 被捕获的异常标签列表
 	 */
 	function CatchedExceptionTags(){
-		ECMAScriptTags.call(this, "catchedExceptionTags");
+		ECMAScriptTags.call(this);
 		
 		this.register(
 			new OpenCatchedExceptionTag()
@@ -7667,6 +7580,10 @@ this.CatchedExceptionTags = function(OpenCatchedExceptionTag){
 	};
 	CatchedExceptionTags = new Rexjs(CatchedExceptionTags, ECMAScriptTags);
 	
+	CatchedExceptionTags.props({
+		id: "catchedExceptionTags"
+	});
+
 	return CatchedExceptionTags;
 }(
 	this.OpenCatchedExceptionTag
@@ -7677,7 +7594,7 @@ this.CloseCatchedExceptionTags = function(CloseCatchedExceptionTag){
 	 * 被捕获的异常结束标签标签列表
 	 */
 	function CloseCatchedExceptionTags(){
-		ECMAScriptTags.call(this, "closeCatchedExceptionTags");
+		ECMAScriptTags.call(this);
 		
 		this.register(
 			new CloseCatchedExceptionTag()
@@ -7685,6 +7602,10 @@ this.CloseCatchedExceptionTags = function(CloseCatchedExceptionTag){
 	};
 	CloseCatchedExceptionTags = new Rexjs(CloseCatchedExceptionTags, ECMAScriptTags);
 	
+	CloseCatchedExceptionTags.props({
+		id: "closeCatchedExceptionTags"
+	});
+
 	return CloseCatchedExceptionTags;
 }(
 	this.CloseCatchedExceptionTag
@@ -7695,7 +7616,7 @@ this.CommentContextTags = function(LineTerminatorTag, CommentContentTag, CloseMu
 	 * 注释上下文标签列表
 	 */
 	function CommentContextTags(){
-		ECMAScriptTags.call(this, "commentContextTags");
+		ECMAScriptTags.call(this);
 		
 		this.register(
 			new LineTerminatorTag(),
@@ -7704,6 +7625,10 @@ this.CommentContextTags = function(LineTerminatorTag, CommentContentTag, CloseMu
 		);
 	};
 	CommentContextTags = new Rexjs(CommentContextTags, ECMAScriptTags);
+
+	CommentContextTags.props({
+		id: "commentContextTags"
+	});
 	
 	return CommentContextTags;
 }(
@@ -7717,7 +7642,7 @@ this.DoWhileConditionTags = function(OpenDoWhileConditionTag){
 	 * do while 条件标签列表
 	 */
 	function DoWhileConditionTags(){
-		ECMAScriptTags.call(this, "doWhileConditionTags");
+		ECMAScriptTags.call(this);
 		
 		this.register(
 			new OpenDoWhileConditionTag()
@@ -7725,6 +7650,10 @@ this.DoWhileConditionTags = function(OpenDoWhileConditionTag){
 	};
 	DoWhileConditionTags = new Rexjs(DoWhileConditionTags, ECMAScriptTags);
 	
+	DoWhileConditionTags.props({
+		id: "doWhileConditionTags"
+	});
+
 	return DoWhileConditionTags;
 }(
 	this.OpenDoWhileConditionTag
@@ -7732,7 +7661,7 @@ this.DoWhileConditionTags = function(OpenDoWhileConditionTag){
 
 this.DotContextTags = function(PropertyNameTag){
 	function DotContextTags(){
-		ECMAScriptTags.call(this, "dotContextTags");
+		ECMAScriptTags.call(this);
 		
 		this.register(
 			new PropertyNameTag()
@@ -7740,6 +7669,10 @@ this.DotContextTags = function(PropertyNameTag){
 	};
 	DotContextTags = new Rexjs(DotContextTags, ECMAScriptTags);
 	
+	DotContextTags.props({
+		id: "dotContextTags"
+	});
+
 	return DotContextTags;
 }(
 	this.PropertyNameTag
@@ -7750,13 +7683,17 @@ this.ExceptionVariableTags = function(ExceptionVariableTag){
 	 * catch 语句异常变量标签列表
 	 */
 	function ExceptionVariableTags(){
-		ECMAScriptTags.call(this, "exceptionVariableTags");
+		ECMAScriptTags.call(this);
 		
 		this.register(
 			new ExceptionVariableTag()
 		);
 	};
 	ExceptionVariableTags = new Rexjs(ExceptionVariableTags, ECMAScriptTags);
+
+	ExceptionVariableTags.props({
+		id: "exceptionVariableTags"
+	});
 	
 	return ExceptionVariableTags;
 }(
@@ -7768,7 +7705,7 @@ this.FileStartTags = function(FileStartTag){
 	 * 文件起始标签列表
 	 */
 	function FileStartTags(){
-		ECMAScriptTags.call(this, "fileStartTags");
+		ECMAScriptTags.call(this);
 		
 		this.register(
 			new FileStartTag()
@@ -7777,7 +7714,8 @@ this.FileStartTags = function(FileStartTag){
 	FileStartTags = new Rexjs(FileStartTags, ECMAScriptTags);
 	
 	FileStartTags.props({
-		entrance: true
+		entrance: true,
+		id: "fileStartTags"
 	});
 	
 	return FileStartTags;
@@ -7790,13 +7728,17 @@ this.ForConditionTags = function(OpenForConditionTag){
 	 * for 条件标签列表
 	 */
 	function ForConditionTags(){
-		ECMAScriptTags.call(this, "forConditionTags");
+		ECMAScriptTags.call(this);
 		
 		this.register(
 			new OpenForConditionTag()
 		);
 	};
 	ForConditionTags = new Rexjs(ForConditionTags, ECMAScriptTags);
+
+	ForConditionTags.props({
+		id: "forConditionTags"
+	});
 	
 	return ForConditionTags;
 }(
@@ -7808,7 +7750,7 @@ this.ForConditionContextTags = function(VarTag){
 	 * for 条件上下文标签列表
 	 */
 	function ForConditionTags(){
-		ExpressionTags.call(this, "forConditionContextTags");
+		ExpressionTags.call(this);
 	};
 	ForConditionTags = new Rexjs(ForConditionTags, ExpressionTags);
 
@@ -7827,7 +7769,8 @@ this.ForConditionContextTags = function(VarTag){
 			}
 			
 			return false;
-		}
+		},
+		id: "forConditionContextTags"
 	});
 	
 	return ForConditionTags;
@@ -7840,13 +7783,17 @@ this.IfConditionTags = function(OpenIfConditionTag){
 	 * if 条件标签列表
 	 */
 	function IfConditionTags(){
-		ECMAScriptTags.call(this, "ifConditionTags");
+		ECMAScriptTags.call(this);
 		
 		this.register(
 			new OpenIfConditionTag()
 		);
 	};
 	IfConditionTags = new Rexjs(IfConditionTags, ECMAScriptTags);
+
+	IfConditionTags.props({
+		id: "ifConditionTags"
+	});
 	
 	return IfConditionTags;
 }(
@@ -7858,7 +7805,7 @@ this.InitingVariableContextTags = function(BasicAssignmentTag, IllegalShorthandA
 	 * 正在初始化的变量上下文标签列表
 	 */
 	function InitingVariableContextTags(){
-		StatementEndTags.call(this, "initingVariableContextTags");
+		StatementEndTags.call(this);
 
 		this.register(
 			new IllegalShorthandAssignmentTag()
@@ -7881,7 +7828,8 @@ this.InitingVariableContextTags = function(BasicAssignmentTag, IllegalShorthandA
 			}
 			
 			return false;
-		}
+		},
+		id: "initingVariableContextTags"
 	})
 	
 	return InitingVariableContextTags;
@@ -7895,13 +7843,17 @@ this.LabelContextTags = function(LabelColonTag){
 	 * 标记标签上下文列表
 	 */
 	function LabelContextTags(){
-		ExpressionContextTags.call(this, "labelContextTags");
+		ExpressionContextTags.call(this);
 		
 		this.register(
 			new LabelColonTag()
 		);
 	};
 	LabelContextTags = new Rexjs(LabelContextTags, ExpressionContextTags);
+
+	LabelContextTags.props({
+		id: "labelContextTags"
+	});
 	
 	return LabelContextTags;
 }(
@@ -7913,7 +7865,7 @@ this.NegationContextTags = function(NegationSiblingTag, DecrementSiblingTag){
 	 * 正号上下文标签列表
 	 */
 	function NegationContextTags(){
-		ExpressionTags.call(this, "negationContextTags");
+		ExpressionTags.call(this);
 		
 		this.register(
 			new NegationSiblingTag(),
@@ -7921,6 +7873,10 @@ this.NegationContextTags = function(NegationSiblingTag, DecrementSiblingTag){
 		);
 	};
 	NegationContextTags = new Rexjs(NegationContextTags, ExpressionTags);
+
+	NegationContextTags.props({
+		id: "negationContextTags"
+	});
 	
 	return NegationContextTags;
 }(
@@ -7933,7 +7889,7 @@ this.NewContextTags = function(UnaryTag, NewTag, filter){
 	 * 语句块起始上下文标签列表
 	 */
 	function NewContextTags(){
-		ExpressionTags.call(this, "newContextTags");
+		ExpressionTags.call(this);
 	};
 	NewContextTags = new Rexjs(NewContextTags, ExpressionTags);
 	
@@ -7959,7 +7915,8 @@ this.NewContextTags = function(UnaryTag, NewTag, filter){
 			}
 			
 			return filter.call(this, tag);
-		}
+		},
+		id: "newContextTags"
 	});
 	
 	return NewContextTags;
@@ -7974,37 +7931,59 @@ this.OpenBlockContextTags = function(CloseEmptyBlockTag){
 	 * 语句块起始上下文标签列表
 	 */
 	function OpenBlockContextTags(){
-		StatementTags.call(this, "openBlockContextTags");
+		StatementTags.call(this);
 
 		this.register(
 			new CloseEmptyBlockTag()
 		);
 	};
 	OpenBlockContextTags = new Rexjs(OpenBlockContextTags, StatementTags);
+
+	OpenBlockContextTags.props({
+		id: "openBlockContextTags"
+	});
 	
 	return OpenBlockContextTags;
 }(
 	this.CloseEmptyBlockTag
 );
 
-this.OpenSwitchBodyContextTags = function(CloseEmptySwitchBodyTag, CaseTag, DefaultCaseTag){
+this.OpenSwitchBodyContextTags = function(OpenBlockContextTags, CaseTag, DefaultCaseTag){
 	/**
 	 * switch 语句块起始上下文标签列表
 	 */
 	function OpenSwitchBodyContextTags(){
-		ECMAScriptTags.call(this, "openSwitchBodyContextTags");
+		OpenBlockContextTags.call(this);
 		
 		this.register(
-			new CloseEmptySwitchBodyTag(),
 			new CaseTag(),
 			new DefaultCaseTag()
 		);
 	};
-	OpenSwitchBodyContextTags = new Rexjs(OpenSwitchBodyContextTags, ECMAScriptTags);
+	OpenSwitchBodyContextTags = new Rexjs(OpenSwitchBodyContextTags, OpenBlockContextTags);
+
+	OpenSwitchBodyContextTags.props({
+		/**
+		 * 标签过滤处理
+		 * @param {SyntaxTag} tag - 语法标签
+		 */
+		filter: function(tag){
+			// 如果是语句标签
+			if(
+				tag.class.statementBegin
+			){
+				// 设置为不可匹配
+				tag.type = new TagType(TYPE_UNEXPECTED);
+			}
+			
+			return false;
+		},
+		id: "openSwitchBodyContextTags"
+	});
 	
 	return OpenSwitchBodyContextTags;
 }(
-	this.CloseEmptySwitchBodyTag,
+	this.OpenBlockContextTags,
 	this.CaseTag,
 	this.DefaultCaseTag
 );
@@ -8014,7 +7993,7 @@ this.PlusContextTags = function(PlusSiblingTag, IncrementSiblingTag){
 	 * 正号上下文标签列表
 	 */
 	function PlusContextTags(){
-		ExpressionTags.call(this, "plusContextTags");
+		ExpressionTags.call(this);
 		
 		this.register(
 			new PlusSiblingTag(),
@@ -8022,6 +8001,10 @@ this.PlusContextTags = function(PlusSiblingTag, IncrementSiblingTag){
 		);
 	};
 	PlusContextTags = new Rexjs(PlusContextTags, ExpressionTags);
+
+	PlusContextTags.props({
+		id: "plusContextTags"
+	});
 	
 	return PlusContextTags;
 }(
@@ -8034,7 +8017,7 @@ this.ReturnContextTags = function(StatementEndTag, StatementBreakTag){
 	 * return 上下文标签列表
 	 */
 	function ReturnContextTags(){
-		ExpressionTags.call(this, "returnContextTags");
+		ExpressionTags.call(this);
 		
 		this.register(
 			new StatementEndTag(),
@@ -8042,6 +8025,10 @@ this.ReturnContextTags = function(StatementEndTag, StatementBreakTag){
 		);
 	};
 	ReturnContextTags = new Rexjs(ReturnContextTags, ExpressionTags);
+
+	ReturnContextTags.props({
+		id: "returnContextTags"
+	})
 	
 	return ReturnContextTags;
 }(
@@ -8054,13 +8041,17 @@ this.SwitchBlockTags = function(OpenSwitchBodyTag){
 	 * switch 语句块标签列表
 	 */
 	function SwitchBlockTags(){
-		ECMAScriptTags.call(this, "switchBlockTags");
+		ECMAScriptTags.call(this);
 		
 		this.register(
 			new OpenSwitchBodyTag()
 		);
 	};
 	SwitchBlockTags = new Rexjs(SwitchBlockTags, ECMAScriptTags);
+
+	SwitchBlockTags.props({
+		id: "switchBlockTags"
+	});
 	
 	return SwitchBlockTags;
 }(
@@ -8072,13 +8063,17 @@ this.SwitchConditionTags = function(OpenSwitchConditionTag){
 	 * switch 条件标签列表
 	 */
 	function SwitchConditionTags(){
-		ECMAScriptTags.call(this, "switchConditionTags");
+		ECMAScriptTags.call(this);
 		
 		this.register(
 			new OpenSwitchConditionTag()
 		);
 	};
 	SwitchConditionTags = new Rexjs(SwitchConditionTags, ECMAScriptTags);
+
+	SwitchConditionTags.props({
+		id: "switchConditionTags"
+	});
 	
 	return SwitchConditionTags;
 }(
@@ -8090,13 +8085,17 @@ this.TerminatedBranchFlowContextTags = function(LabelledIdentifierTag){
 	 * 中断分支流上下文标签列表
 	 */
 	function TerminatedBranchFlowContextTags(){
-		StatementEndTags.call(this, "terminatedBranchFlowContextTags");
+		StatementEndTags.call(this);
 		
 		this.register(
 			new LabelledIdentifierTag()
 		);
 	};
 	TerminatedBranchFlowContextTags = new Rexjs(TerminatedBranchFlowContextTags, StatementEndTags);
+
+	TerminatedBranchFlowContextTags.props({
+		id: "terminatedBranchFlowContextTags"
+	});
 	
 	return TerminatedBranchFlowContextTags;
 }(
@@ -8108,13 +8107,17 @@ this.ThrowContextTags = function(ThrowContextLineTerminatorTag){
 	 * throw 关键字上下文标签
 	 */
 	function ThrowContextTags(){
-		ExpressionTags.call(this, "throwContextTags");
+		ExpressionTags.call(this);
 		
 		this.register(
 			new ThrowContextLineTerminatorTag()
 		);
 	};
 	ThrowContextTags = new Rexjs(ThrowContextTags, ExpressionTags);
+
+	ThrowContextTags.props({
+		id: "throwContextTags"
+	});
 	
 	return ThrowContextTags;
 }(
@@ -8126,13 +8129,17 @@ this.VarContextTags = function(InitingVariableTag){
 	 * var 语句上下文标签列表
 	 */
 	function VarContextTags(){
-		ECMAScriptTags.call(this, "varContextTags");
+		ECMAScriptTags.call(this);
 		
 		this.register(
 			new InitingVariableTag()
 		);
 	};
 	VarContextTags = new Rexjs(VarContextTags, ECMAScriptTags);
+
+	VarContextTags.props({
+		id: "varContextTags"
+	});
 	
 	return VarContextTags;
 }(
@@ -8144,13 +8151,17 @@ this.WhileConditionTags = function(OpenWhileConditionTag){
 	 * while 条件标签列表
 	 */
 	function WhileConditionTags(){
-		ECMAScriptTags.call(this, "whileConditionTags");
+		ECMAScriptTags.call(this);
 		
 		this.register(
 			new OpenWhileConditionTag()
 		);
 	};
 	WhileConditionTags = new Rexjs(WhileConditionTags, ECMAScriptTags);
+
+	WhileConditionTags.props({
+		id: "whileConditionTags"
+	});
 	
 	return WhileConditionTags;
 }(
@@ -8253,7 +8264,6 @@ this.ECMAScriptTagsMap = function(SyntaxTagsMap, tagsArray){
 		this.UnexpectedTags,
 		// 其他标签列表
 		this.BlockTags,
-		this.CaseValueSeparatorTags,
 		this.CatchedExceptionTags,
 		this.CloseCatchedExceptionTags,
 		this.CommentContextTags,
