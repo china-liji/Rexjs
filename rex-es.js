@@ -1352,7 +1352,7 @@ this.UnaryStatement = function(){
 		 * @param {Context} context - 语法标签上下文
 		 * @param {Boolean} afterTry - 是否是在 try 之后执行的
 		 */
-		finally: function(parser, context, afterTry){
+		finally: function(){
 			// 跳出语句并设置 operand
 			this.out().operand = this.expression;
 		}
@@ -1401,15 +1401,7 @@ this.UnaryTag = function(UnaryExpression, UnaryStatement){
 	this.UnaryStatement
 );
 
-}.call(
-	this
-);
-
-
-// 特殊一元标签
-void function(UnaryTag, visitor){
-
-this.UnaryKeywordTag = function(){
+this.UnaryKeywordTag = function(UnaryTag){
 	/**
 	 * 一元关键字标签
 	 * @param {Number} _type - 标签类型
@@ -1421,37 +1413,80 @@ this.UnaryKeywordTag = function(){
 	
 	UnaryKeywordTag.props({
 		/**
-		 * 标签访问器
-		 * @param {SyntaxParser} parser - 语法解析器
-		 * @param {Context} context - 标签上下文
-		 * @param {Statement} statement - 当前语句
-		 * @param {Statements} statements - 当前语句块
+		 * 提取表达式文本内容
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 * @param {String} content - 标签内容
 		 */
-		visitor: function(parser, context, statement, statements){
-			// 关键字后面添加空格
-			context.content = context.fragment + " ";
-
-			visitor.call(this, parser, context, statement, statements);
+		extractTo: function(contentBuilder, content){
+			// 追加标签内容
+			contentBuilder.appendString(content);
+			// 追加空格
+			contentBuilder.appendSpace();
 		}
 	});
 	
 	return UnaryKeywordTag;
-}();
+}(
+	this.UnaryTag
+);
 
-this.UnarySiblingTag = function(){
+}.call(
+	this
+);
+
+
+// 一元赋值标签
+void function(UnaryStatement){
+
+this.UnaryAssignmentStatement = function(AssignableExpression, finallyMethod){
 	/**
-	 * 相邻的一元标签，即与前一个标签内容相重复的一元标签
-	 * 此标签的存在，就是为了减少判断前面是否还是同样内容的一元标签，
-	 * 因为解析时要加空格，不然会提取错误，如两个连续的正号(+)不加空格的话，会被当做递增(++)
+	 * 一元赋值语句
+	 * @param {Statements} statements - 该语句将要所处的语句块
+	 */
+	function UnaryAssignmentStatement(statements){
+		ECMAScriptStatement.call(this, statements);
+	};
+	UnaryAssignmentStatement = new Rexjs(UnaryAssignmentStatement, ECMAScriptStatement);
+	
+	UnaryAssignmentStatement.props({
+		/**
+		 * 最后的异常处理
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 语法标签上下文
+		 * @param {Boolean} afterTry - 是否是在 try 之后执行的
+		 */
+		finally: function(parser, context, afterTry){
+			// 如果当前表达式是赋值表达式
+			if(
+				this.expression instanceof AssignableExpression
+			){
+				// 调用父类方法
+				finallyMethod.call(this, parser, context, afterTry);
+				return;
+			}
+
+			// 报错
+			parser.error(this.target.expression.context, "Invalid left-hand side expression in prefix operation", true);
+		}
+	});
+	
+	return UnaryAssignmentStatement;
+}(
+	this.AssignableExpression,
+	UnaryStatement.prototype.finally
+);
+
+this.UnaryAssignmentTag = function(UnaryTag, UnaryExpression, UnaryAssignmentStatement){
+	/**
+	 * 一元赋值标签
 	 * @param {Number} _type - 标签类型
 	 */
-	function UnarySiblingTag(_type){
+	function UnaryAssignmentTag(_type){
 		UnaryTag.call(this, _type);
 	};
-	UnarySiblingTag = new Rexjs(UnarySiblingTag, UnaryTag);
-	
-	UnarySiblingTag.props({
-		order: 300,
+	UnaryAssignmentTag = new Rexjs(UnaryAssignmentTag, UnaryTag);
+
+	UnaryAssignmentTag.props({
 		/**
 		 * 标签访问器
 		 * @param {SyntaxParser} parser - 语法解析器
@@ -1460,25 +1495,28 @@ this.UnarySiblingTag = function(){
 		 * @param {Statements} statements - 当前语句块
 		 */
 		visitor: function(parser, context, statement, statements){
-			// 前面添加空格
-			context.content = " " + context.fragment;
-
-			visitor.call(this, parser, context, statement, statements);
+			// 设置临时表达式
+			statement.expression = new UnaryExpression(context);
+			// 设置当前语句
+			statements.statement = new UnaryAssignmentStatement(statements);
 		}
 	});
-	
-	return UnarySiblingTag;
-}();
+
+	return UnaryAssignmentTag;
+}(
+	this.UnaryTag,
+	this.UnaryExpression,
+	this.UnaryAssignmentStatement
+);
 
 }.call(
 	this,
-	this.UnaryTag,
-	this.UnaryTag.prototype.visitor
+	this.UnaryStatement
 );
 
 
 // 所有具体的一元标签
-void function(UnaryTag, UnaryKeywordTag, UnarySiblingTag){
+void function(UnaryTag, UnaryKeywordTag, UnaryAssignmentTag){
 
 this.DeleteTag = function(){
 	/**
@@ -1579,18 +1617,49 @@ this.PlusTag = function(){
 	return PlusTag;
 }();
 
-this.PlusSiblingTag = function(){
+this.PlusSiblingTag = function(PlusTag){
 	/**
 	 * 相邻的正号标签
 	 * @param {Number} _type - 标签类型
 	 */
 	function PlusSiblingTag(_type){
-		UnarySiblingTag.call(this, _type);
+		PlusTag.call(this, _type);
 	};
-	PlusSiblingTag = new Rexjs(PlusSiblingTag, UnarySiblingTag);
+	PlusSiblingTag = new Rexjs(PlusSiblingTag, PlusTag);
 	
 	PlusSiblingTag.props({
-		regexp: /\+/,
+		/**
+		 * 提取表达式文本内容
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 * @param {String} content - 标签内容
+		 */
+		extractTo: function(contentBuilder, content){
+			// 追加空格
+			contentBuilder.appendSpace();
+			// 追加标签内容
+			contentBuilder.appendString(content);
+		},
+		order: 300
+	});
+	
+	return PlusSiblingTag;
+}(
+	this.PlusTag
+);
+
+this.IncrementTag = function(PlusTag){
+	/**
+	 * 前置递增标签
+	 * @param {Number} _type - 标签类型
+	 */
+	function IncrementTag(_type){
+		UnaryAssignmentTag.call(this, _type);
+	};
+	IncrementTag = new Rexjs(IncrementTag, UnaryAssignmentTag);
+	
+	IncrementTag.props({
+		order: 301,
+		regexp: /\+\+/,
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
@@ -1600,47 +1669,39 @@ this.PlusSiblingTag = function(){
 		}
 	});
 	
-	return PlusSiblingTag;
-}();
-
-this.IncrementTag = function(PlusTag){
-	/**
-	 * 前置递增标签
-	 * @param {Number} _type - 标签类型
-	 */
-	function IncrementTag(_type){
-		PlusTag.call(this, _type);
-	};
-	IncrementTag = new Rexjs(IncrementTag, PlusTag);
-	
-	IncrementTag.props({
-		order: 301,
-		regexp: /\+\+/
-	});
-	
 	return IncrementTag;
 }(
 	this.PlusTag
 );
 
-this.IncrementSiblingTag = function(PlusSiblingTag){
+this.IncrementSiblingTag = function(IncrementTag){
 	/**
 	 * 相邻的前置递增标签
 	 * @param {Number} _type - 标签类型
 	 */
 	function IncrementSiblingTag(_type){
-		PlusSiblingTag.call(this, _type);
+		IncrementTag.call(this, _type);
 	};
-	IncrementSiblingTag = new Rexjs(IncrementSiblingTag, PlusSiblingTag);
+	IncrementSiblingTag = new Rexjs(IncrementSiblingTag, IncrementTag);
 	
 	IncrementSiblingTag.props({
-		order: 302,
-		regexp: /\+\+/
+		/**
+		 * 提取表达式文本内容
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 * @param {String} content - 标签内容
+		 */
+		extractTo: function(contentBuilder, content){
+			// 追加空格
+			contentBuilder.appendSpace();
+			// 追加标签内容
+			contentBuilder.appendString(content);
+		},
+		order: 302
 	});
 	
 	return IncrementSiblingTag;
 }(
-	this.PlusSiblingTag
+	this.IncrementTag
 );
 
 this.NegationTag = function(){
@@ -1667,18 +1728,38 @@ this.NegationTag = function(){
 	return NegationTag;
 }();
 
-this.NegationSiblingTag = function(){
+this.NegationSiblingTag = function(NegationTag){
 	/**
 	 * 重复的负号标签
 	 * @param {Number} _type - 标签类型
 	 */
 	function NegationSiblingTag(_type){
-		UnarySiblingTag.call(this, _type);
+		NegationTag.call(this, _type);
 	};
-	NegationSiblingTag = new Rexjs(NegationSiblingTag, UnarySiblingTag);
+	NegationSiblingTag = new Rexjs(NegationSiblingTag, NegationTag);
 	
 	NegationSiblingTag.props({
-		regexp: /-/,
+		order: 300
+	});
+	
+	return NegationSiblingTag;
+}(
+	this.NegationTag
+);
+
+this.DecrementTag = function(){
+	/**
+	 * 前置递减标签
+	 * @param {Number} _type - 标签类型
+	 */
+	function DecrementTag(_type){
+		UnaryAssignmentTag.call(this, _type);
+	};
+	DecrementTag = new Rexjs(DecrementTag, UnaryAssignmentTag);
+	
+	DecrementTag.props({
+		order: 301,
+		regexp: /--/,
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
@@ -1688,47 +1769,37 @@ this.NegationSiblingTag = function(){
 		}
 	});
 	
-	return NegationSiblingTag;
+	return DecrementTag;
 }();
 
-this.DecrementTag = function(NegationTag){
-	/**
-	 * 前置递减标签
-	 * @param {Number} _type - 标签类型
-	 */
-	function DecrementTag(_type){
-		NegationTag.call(this, _type);
-	};
-	DecrementTag = new Rexjs(DecrementTag, NegationTag);
-	
-	DecrementTag.props({
-		order: 301,
-		regexp: /--/
-	});
-	
-	return DecrementTag;
-}(
-	this.NegationTag
-);
-
-this.DecrementSiblingTag = function(NegationSiblingTag){
+this.DecrementSiblingTag = function(DecrementTag){
 	/**
 	 * 相邻的前置递减标签
 	 * @param {Number} _type - 标签类型
 	 */
 	function DecrementSiblingTag(_type){
-		NegationSiblingTag.call(this, _type);
+		DecrementTag.call(this, _type);
 	};
-	DecrementSiblingTag = new Rexjs(DecrementSiblingTag, NegationSiblingTag);
+	DecrementSiblingTag = new Rexjs(DecrementSiblingTag, DecrementTag);
 	
 	DecrementSiblingTag.props({
-		order: 302,
-		regexp: /--/
+		/**
+		 * 提取表达式文本内容
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 * @param {String} content - 标签内容
+		 */
+		extractTo: function(contentBuilder, content){
+			// 追加空格
+			contentBuilder.appendSpace();
+			// 追加标签内容
+			contentBuilder.appendString(content);
+		},
+		order: 302
 	});
 	
 	return DecrementSiblingTag;
 }(
-	this.NegationSiblingTag
+	this.DecrementTag
 );
 
 this.BitwiseNOTTag = function(){
@@ -1769,7 +1840,7 @@ this.LogicalNOTTag = function(){
 	this,
 	this.UnaryTag,
 	this.UnaryKeywordTag,
-	this.UnarySiblingTag
+	this.UnaryAssignmentTag
 );
 
 
@@ -1825,7 +1896,6 @@ this.BinaryTag = function(BinaryExpression, BinaryStatement){
 	
 	BinaryTag.props({
 		$class: CLASS_EXPRESSION_CONTEXT,
-		keyword: false,
 		precedence: 0,
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
@@ -1881,9 +1951,9 @@ this.BinaryTag = function(BinaryExpression, BinaryStatement){
 
 
 // 特殊的二元标签
-void function(BinaryTag, visitor){
+void function(BinaryTag){
 
-this.AssignmentTag = function(AssignableExpression, BinaryExpression){
+this.AssignmentTag = function(AssignableExpression, BinaryExpression, visitor){
 	/**
 	 * 二元赋值运算符标签
 	 * @param {Number} _type - 标签类型
@@ -1934,7 +2004,8 @@ this.AssignmentTag = function(AssignableExpression, BinaryExpression){
 	return AssignmentTag;
 }(
 	this.AssignableExpression,
-	this.BinaryExpression
+	this.BinaryExpression,
+	BinaryTag.prototype.visitor
 );
 
 this.BinaryKeywordTag = function(){
@@ -1949,18 +2020,17 @@ this.BinaryKeywordTag = function(){
 
 	BinaryKeywordTag.props({
 		/**
-		 * 标签访问器
-		 * @param {SyntaxParser} parser - 语法解析器
-		 * @param {Context} context - 标签上下文
-		 * @param {Statement} statement - 当前语句
-		 * @param {Statements} statements - 当前语句块
+		 * 提取表达式文本内容
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 * @param {String} content - 标签内容
 		 */
-		visitor: function(parser, context, statement, statements){
-			// 给关键字两端加上空格
-			context.content = " " + context.fragment + " ";
-
-			// 调用父类方法
-			visitor.call(this, parser, context, statement, statements);
+		extractTo: function(contentBuilder, content){
+			// 追加空格
+			contentBuilder.appendSpace();
+			// 追加标签内容
+			contentBuilder.appendString(content);
+			// 追加空格
+			contentBuilder.appendSpace();
 		}
 	});
 	
@@ -1969,8 +2039,7 @@ this.BinaryKeywordTag = function(){
 
 }.call(
 	this,
-	this.BinaryTag,
-	this.BinaryTag.prototype.visitor
+	this.BinaryTag
 );
 
 
@@ -7322,31 +7391,32 @@ this.ECMAScriptTags = function(DefaultTags, data){
 			type: TYPE_MISTAKABLE,
 			// 不需要按顺序
 			list: [
-				this.FileEndTag,
-				this.EmptyStatementTag,
-				this.PlusTag,
-				this.NegationTag,
-				this.IncrementTag,
 				this.BitwiseNOTTag,
-				this.LogicalNOTTag,
-				this.OpenArrayTag,
-				this.OpenBlockTag,
-				this.OpenGroupingTag,
-				this.LabelTag,
 				this.BooleanTag,
-				this.RegExpTag,
-				this.NumberTag,
-				this.StringTag,
 				this.BreakTag,
 				this.ContinueTag,
 				this.DebuggerTag,
+				this.DecrementTag,
 				this.DeleteTag,
 				this.DoTag,
+				this.EmptyStatementTag,
+				this.FileEndTag,
 				this.ForTag,
 				this.IfTag,
+				this.IncrementTag,
+				this.LabelTag,
+				this.LogicalNOTTag,
+				this.NegationTag,
 				this.NewTag,
 				this.NullTag,
+				this.NumberTag,
+				this.OpenArrayTag,
+				this.OpenBlockTag,
+				this.OpenGroupingTag,
+				this.PlusTag,
+				this.RegExpTag,
 				this.ReturnTag,
+				this.StringTag,
 				this.SwitchTag,
 				this.ThisTag,
 				this.ThrowTag,
@@ -7819,7 +7889,7 @@ this.InitingVariableContextTags = function(BasicAssignmentTag, IllegalShorthandA
 		 * @param {SyntaxTag} tag - 语法标签
 		 */
 		filter: function(tag){
-			// 如果是语句标签
+			// 如果是赋值标签
 			if(
 				tag instanceof BasicAssignmentTag
 			){

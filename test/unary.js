@@ -16,15 +16,51 @@ test.true("连续的负号", " - - - - - - - 2", true);
 test.true("加号后面跟正号", "3 + + + 2", true);
 test.true("减号后面跟负号", "3 - - - 2", true);
 test.true("前置递增", "++b");
+test.true("属性访问器的前置递增", "++window.a.b.c.d");
 test.true("带正号的前置递增", "+ ++b");
 test.true("前置递减", "--b");
+test.true("属性访问器的前置递减", "--window.a.b.c.d");
 test.true("带负号的前置递减", "- --b");
 
-test.false("不完整的一元表达式", "!");
-test.false("无空格且连续的正号", "+++++a");
-test.false("无空格且连续的负号", "-----a");
-test.false("new 后面接其他一元操作符字符", "new !b");
-test.false("一元操作符后面不能接赋值操作", "void b += 2");
+test.false(
+	"不完整的一元表达式",
+	"!",
+	function(parser, err){
+		return err.context.tag instanceof Rexjs.FileEndTag ? "" : "没有识别出文件结束";
+	}
+);
+
+test.false(
+	"++ 后面接不可赋值表达式",
+	"++ +a",
+	function(parser, err){
+		return err.context.tag instanceof Rexjs.IncrementTag ? "" : "没有识别出递增标签";
+	}
+);
+
+test.false(
+	"-- 后面接不可赋值表达式",
+	"-- +a",
+	function(parser, err){
+		return err.context.tag instanceof Rexjs.DecrementTag ? "" : "没有识别出递增标签";
+	}
+);
+
+test.false(
+	"new 后面接其他一元操作符字符",
+	"new !b",
+	function(parser, err){
+		return err.context.tag instanceof Rexjs.LogicalNOTTag ? "" : "没有识别出逻辑否定标签";
+	}
+);
+
+test.false(
+	"一元操作符后面不能接赋值操作",
+	"void b += 2",
+	function(parser, err){
+		return err.context.tag instanceof Rexjs.ShorthandAssignmentTag ? "" : "没有识别出简写赋值标签";
+	}
+);
 
 test.groupEnd();
 
