@@ -332,23 +332,6 @@ this.CloseParenTag = function(){
 	return CloseParenTag;
 }();
 
-this.ColonTag = function(){
-	/**
-	 * 冒号标签
-	 * @param {Number} _type - 标签类型
-	 */
-	function ColonTag(_type){
-		SyntaxTag.call(this, _type);
-	};
-	ColonTag = new Rexjs(ColonTag, SyntaxTag);
-
-	ColonTag.props({
-		regexp: /:/
-	});
-	
-	return ColonTag;
-}();
-
 this.CommentTag = function(){
 	/**
 	 * 注释标签
@@ -1435,88 +1418,8 @@ this.UnaryKeywordTag = function(UnaryTag){
 );
 
 
-// 一元赋值标签
-void function(UnaryStatement){
-
-this.UnaryAssignmentStatement = function(AssignableExpression, finallyMethod){
-	/**
-	 * 一元赋值语句
-	 * @param {Statements} statements - 该语句将要所处的语句块
-	 */
-	function UnaryAssignmentStatement(statements){
-		ECMAScriptStatement.call(this, statements);
-	};
-	UnaryAssignmentStatement = new Rexjs(UnaryAssignmentStatement, ECMAScriptStatement);
-	
-	UnaryAssignmentStatement.props({
-		/**
-		 * 最后的异常处理
-		 * @param {SyntaxParser} parser - 语法解析器
-		 * @param {Context} context - 语法标签上下文
-		 * @param {Boolean} afterTry - 是否是在 try 之后执行的
-		 */
-		finally: function(parser, context, afterTry){
-			// 如果当前表达式是赋值表达式
-			if(
-				this.expression instanceof AssignableExpression
-			){
-				// 调用父类方法
-				finallyMethod.call(this, parser, context, afterTry);
-				return;
-			}
-
-			// 报错
-			parser.error(this.target.expression.context, "Invalid left-hand side expression in prefix operation", true);
-		}
-	});
-	
-	return UnaryAssignmentStatement;
-}(
-	this.AssignableExpression,
-	UnaryStatement.prototype.finally
-);
-
-this.UnaryAssignmentTag = function(UnaryTag, UnaryExpression, UnaryAssignmentStatement){
-	/**
-	 * 一元赋值标签
-	 * @param {Number} _type - 标签类型
-	 */
-	function UnaryAssignmentTag(_type){
-		UnaryTag.call(this, _type);
-	};
-	UnaryAssignmentTag = new Rexjs(UnaryAssignmentTag, UnaryTag);
-
-	UnaryAssignmentTag.props({
-		/**
-		 * 标签访问器
-		 * @param {SyntaxParser} parser - 语法解析器
-		 * @param {Context} context - 标签上下文
-		 * @param {Statement} statement - 当前语句
-		 * @param {Statements} statements - 当前语句块
-		 */
-		visitor: function(parser, context, statement, statements){
-			// 设置临时表达式
-			statement.expression = new UnaryExpression(context);
-			// 设置当前语句
-			statements.statement = new UnaryAssignmentStatement(statements);
-		}
-	});
-
-	return UnaryAssignmentTag;
-}(
-	this.UnaryTag,
-	this.UnaryExpression,
-	this.UnaryAssignmentStatement
-);
-
-}.call(
-	this,
-	this.UnaryStatement
-);
-
-
-// 所有具体的一元标签
-void function(UnaryTag, UnaryKeywordTag, UnaryAssignmentTag){
+// 非赋值一元标签
+void function(UnaryTag, UnaryKeywordTag){
 
 this.DeleteTag = function(){
 	/**
@@ -1647,63 +1550,6 @@ this.PlusSiblingTag = function(PlusTag){
 	this.PlusTag
 );
 
-this.IncrementTag = function(PlusTag){
-	/**
-	 * 前置递增标签
-	 * @param {Number} _type - 标签类型
-	 */
-	function IncrementTag(_type){
-		UnaryAssignmentTag.call(this, _type);
-	};
-	IncrementTag = new Rexjs(IncrementTag, UnaryAssignmentTag);
-	
-	IncrementTag.props({
-		order: 301,
-		regexp: /\+\+/,
-		/**
-		 * 获取此标签接下来所需匹配的标签列表
-		 * @param {TagsMap} tagsMap - 标签集合映射
-		 */
-		require: function(tagsMap){
-			return tagsMap.plusContextTags;
-		}
-	});
-	
-	return IncrementTag;
-}(
-	this.PlusTag
-);
-
-this.IncrementSiblingTag = function(IncrementTag){
-	/**
-	 * 相邻的前置递增标签
-	 * @param {Number} _type - 标签类型
-	 */
-	function IncrementSiblingTag(_type){
-		IncrementTag.call(this, _type);
-	};
-	IncrementSiblingTag = new Rexjs(IncrementSiblingTag, IncrementTag);
-	
-	IncrementSiblingTag.props({
-		/**
-		 * 提取表达式文本内容
-		 * @param {ContentBuilder} contentBuilder - 内容生成器
-		 * @param {String} content - 标签内容
-		 */
-		extractTo: function(contentBuilder, content){
-			// 追加空格
-			contentBuilder.appendSpace();
-			// 追加标签内容
-			contentBuilder.appendString(content);
-		},
-		order: 302
-	});
-	
-	return IncrementSiblingTag;
-}(
-	this.IncrementTag
-);
-
 this.NegationTag = function(){
 	/**
 	 * 负号标签
@@ -1747,6 +1593,243 @@ this.NegationSiblingTag = function(NegationTag){
 	this.NegationTag
 );
 
+this.BitwiseNOTTag = function(){
+	/**
+	 * 二进制否定标签
+	 * @param {Number} _type - 标签类型
+	 */
+	function BitwiseNOTTag(_type){
+		UnaryTag.call(this, _type);
+	};
+	BitwiseNOTTag = new Rexjs(BitwiseNOTTag, UnaryTag);
+	
+	BitwiseNOTTag.props({
+		regexp: /~/
+	});
+	
+	return BitwiseNOTTag;
+}();
+
+this.LogicalNOTTag = function(){
+	/**
+	 * 逻辑否定标签
+	 * @param {Number} _type - 标签类型
+	 */
+	function LogicalNOTTag(_type){
+		UnaryTag.call(this, _type);
+	};
+	LogicalNOTTag = new Rexjs(LogicalNOTTag, UnaryTag);
+	
+	LogicalNOTTag.props({
+		regexp: /!/
+	});
+	
+	return LogicalNOTTag;
+}();
+	
+}.call(
+	this,
+	this.UnaryTag,
+	this.UnaryKeywordTag
+);
+
+
+// 一元赋值标签
+void function(UnaryStatement){
+
+this.UnaryAssignmentStatement = function(AssignableExpression, finallyMethod){
+	/**
+	 * 一元赋值语句
+	 * @param {Statements} statements - 该语句将要所处的语句块
+	 */
+	function UnaryAssignmentStatement(statements){
+		ECMAScriptStatement.call(this, statements);
+	};
+	UnaryAssignmentStatement = new Rexjs(UnaryAssignmentStatement, ECMAScriptStatement);
+	
+	UnaryAssignmentStatement.props({
+		order: 301,
+		/**
+		 * 最后的异常处理
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 语法标签上下文
+		 * @param {Boolean} afterTry - 是否是在 try 之后执行的
+		 */
+		finally: function(parser, context, afterTry){
+			// 如果当前表达式是赋值表达式
+			if(
+				this.expression instanceof AssignableExpression
+			){
+				// 调用父类方法
+				finallyMethod.call(this, parser, context, afterTry);
+				return;
+			}
+
+			// 报错
+			parser.error(this.target.expression.context, "Invalid left-hand side expression in prefix operation", true);
+		}
+	});
+	
+	return UnaryAssignmentStatement;
+}(
+	this.AssignableExpression,
+	UnaryStatement.prototype.finally
+);
+
+this.UnaryAssignmentTag = function(UnaryTag, UnaryExpression, UnaryAssignmentStatement){
+	/**
+	 * 一元赋值标签
+	 * @param {Number} _type - 标签类型
+	 */
+	function UnaryAssignmentTag(_type){
+		UnaryTag.call(this, _type);
+	};
+	UnaryAssignmentTag = new Rexjs(UnaryAssignmentTag, UnaryTag);
+
+	UnaryAssignmentTag.props({
+		/**
+		 * 标签访问器
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 标签上下文
+		 * @param {Statement} statement - 当前语句
+		 * @param {Statements} statements - 当前语句块
+		 */
+		visitor: function(parser, context, statement, statements){
+			// 设置临时表达式
+			statement.expression = new UnaryExpression(context);
+			// 设置当前语句
+			statements.statement = new UnaryAssignmentStatement(statements);
+		}
+	});
+
+	return UnaryAssignmentTag;
+}(
+	this.UnaryTag,
+	this.UnaryExpression,
+	this.UnaryAssignmentStatement
+);
+
+this.PostfixUnaryAssignmentTag = function(UnaryAssignmentTag){
+	/**
+	 * 后置一元赋值标签
+	 * @param {Number} _type - 标签类型
+	 */
+	function PostfixUnaryAssignmentTag(_type){
+		UnaryAssignmentTag.call(this, _type);
+	};
+	PostfixUnaryAssignmentTag = new Rexjs(PostfixUnaryAssignmentTag, UnaryAssignmentTag);
+
+	PostfixUnaryAssignmentTag.props({
+		$class: CLASS_EXPRESSION_CONTEXT,
+		/**
+		 * 获取此标签接下来所需匹配的标签列表
+		 * @param {TagsMap} tagsMap - 标签集合映射
+		 */
+		require: function(tagsMap){
+			return tagsMap.expressionContextTags;
+		},
+		/**
+		 * 标签访问器
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 标签上下文
+		 * @param {Statement} statement - 当前语句
+		 * @param {Statements} statements - 当前语句块
+		 */
+		visitor: function(parser, context, statement, statements){
+			parser.error(context);
+			return;
+			// 设置临时表达式
+			statement.expression = new UnaryExpression(context);
+			// 设置当前语句
+			statements.statement = new UnaryAssignmentStatement(statements);
+		}
+	});
+
+	return PostfixUnaryAssignmentTag;
+}(
+	this.UnaryAssignmentTag
+);
+
+}.call(
+	this,
+	this.UnaryStatement
+);
+
+
+// 一元赋值标签
+void function(UnaryAssignmentTag, PostfixUnaryAssignmentTag){
+
+this.IncrementTag = function(){
+	/**
+	 * 前置递增标签
+	 * @param {Number} _type - 标签类型
+	 */
+	function IncrementTag(_type){
+		UnaryAssignmentTag.call(this, _type);
+	};
+	IncrementTag = new Rexjs(IncrementTag, UnaryAssignmentTag);
+	
+	IncrementTag.props({
+		regexp: /\+\+/,
+		/**
+		 * 获取此标签接下来所需匹配的标签列表
+		 * @param {TagsMap} tagsMap - 标签集合映射
+		 */
+		require: function(tagsMap){
+			return tagsMap.plusContextTags;
+		}
+	});
+	
+	return IncrementTag;
+}();
+
+this.IncrementSiblingTag = function(IncrementTag){
+	/**
+	 * 相邻的前置递增标签
+	 * @param {Number} _type - 标签类型
+	 */
+	function IncrementSiblingTag(_type){
+		IncrementTag.call(this, _type);
+	};
+	IncrementSiblingTag = new Rexjs(IncrementSiblingTag, IncrementTag);
+	
+	IncrementSiblingTag.props({
+		/**
+		 * 提取表达式文本内容
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 * @param {String} content - 标签内容
+		 */
+		extractTo: function(contentBuilder, content){
+			// 追加空格
+			contentBuilder.appendSpace();
+			// 追加标签内容
+			contentBuilder.appendString(content);
+		},
+		order: 302
+	});
+	
+	return IncrementSiblingTag;
+}(
+	this.IncrementTag
+);
+
+this.PostfixIncrementTag = function(){
+	/**
+	 * 后置递增标签
+	 * @param {Number} _type - 标签类型
+	 */
+	function PostfixIncrementTag(_type){
+		PostfixUnaryAssignmentTag.call(this, _type);
+	};
+	PostfixIncrementTag = new Rexjs(PostfixIncrementTag, PostfixUnaryAssignmentTag);
+	
+	PostfixIncrementTag.props({
+		regexp: /\+\+/
+	});
+	
+	return PostfixIncrementTag;
+}();
+
 this.DecrementTag = function(){
 	/**
 	 * 前置递减标签
@@ -1758,7 +1841,6 @@ this.DecrementTag = function(){
 	DecrementTag = new Rexjs(DecrementTag, UnaryAssignmentTag);
 	
 	DecrementTag.props({
-		order: 301,
 		regexp: /--/,
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
@@ -1802,45 +1884,10 @@ this.DecrementSiblingTag = function(DecrementTag){
 	this.DecrementTag
 );
 
-this.BitwiseNOTTag = function(){
-	/**
-	 * 二进制否定标签
-	 * @param {Number} _type - 标签类型
-	 */
-	function BitwiseNOTTag(_type){
-		UnaryTag.call(this, _type);
-	};
-	BitwiseNOTTag = new Rexjs(BitwiseNOTTag, UnaryTag);
-	
-	BitwiseNOTTag.props({
-		regexp: /~/
-	});
-	
-	return BitwiseNOTTag;
-}();
-
-this.LogicalNOTTag = function(){
-	/**
-	 * 逻辑否定标签
-	 * @param {Number} _type - 标签类型
-	 */
-	function LogicalNOTTag(_type){
-		UnaryTag.call(this, _type);
-	};
-	LogicalNOTTag = new Rexjs(LogicalNOTTag, UnaryTag);
-	
-	LogicalNOTTag.props({
-		regexp: /!/
-	});
-	
-	return LogicalNOTTag;
-}();
-	
 }.call(
 	this,
-	this.UnaryTag,
-	this.UnaryKeywordTag,
-	this.UnaryAssignmentTag
+	this.UnaryAssignmentTag,
+	this.PostfixUnaryAssignmentTag
 );
 
 
@@ -2563,6 +2610,226 @@ this.RemainderTag = function(){
 	this.BinaryTag,
 	this.AssignmentTag,
 	this.BinaryKeywordTag
+);
+
+
+// 三元表达式相关
+void function(colonTag){
+
+this.TernaryExpression = function(){
+	/**
+	 * 三元表达式
+	 * @param {Context} context - 语法标签上下文
+	 */
+	function TernaryExpression(context){
+		Expression.call(this, context);
+	};
+	TernaryExpression = new Rexjs(TernaryExpression, Expression);
+
+	TernaryExpression.props({
+		condition: null,
+		/**
+		 * 提取表达式文本内容
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 */
+		extractTo: function(contentBuilder){
+			// 提取条件表达式
+			this.condition.extractTo(contentBuilder);
+			// 追加问号上下文
+			contentBuilder.appendContext(this.context);
+			// 提取成立条件表达式
+			this.positive.extractTo(contentBuilder);
+			// 追加冒号上下文
+			contentBuilder.appendContext(this.colonContext);
+			// 提取否定条件表达式
+			this.negative.extractTo(contentBuilder);
+		},
+		negative: null,
+		positive: null
+	});
+
+	return TernaryExpression;
+}();
+
+this.PositiveStatement = function(){
+	/**
+	 * 三元表达式的肯定条件语句
+	 * @param {Statements} statements - 该语句将要所处的语句块
+	 */
+	function PositiveStatement(statements){
+		ECMAScriptStatement.call(this, statements);
+	};
+	PositiveStatement = new Rexjs(PositiveStatement, ECMAScriptStatement);
+
+	PositiveStatement.props({
+		/**
+		 * 捕获处理异常
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 语法标签上下文
+		 */
+		catch: function(parser, context){
+			// 如果不是冒号
+			if(
+				context.content !== ":"
+			){
+				// 报错
+				parser.error(context);
+				return null;
+			}
+
+			// 跳出语句并设置 positive
+			this.out().positive = this;
+			return colonTag;
+		},
+		/**
+		 * 尝试处理异常
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 语法标签上下文
+		 */
+		try: function(parser, context){
+			// 如果是逗号
+			if(
+				context.content === ","
+			){
+				// 报错
+				parser.error(context);
+			}
+		}
+	});
+
+	return PositiveStatement;
+}();
+
+this.NegativeStatement = function(){
+	/**
+	 * 三元表达式的否定条件语句
+	 * @param {Statements} statements - 该语句将要所处的语句块
+	 */
+	function NegativeStatement(statements){
+		ECMAScriptStatement.call(this, statements);
+	};
+	NegativeStatement = new Rexjs(NegativeStatement, ECMAScriptStatement);
+
+	NegativeStatement.props({
+		/**
+		 * 捕获处理异常
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 语法标签上下文
+		 */
+		catch: function(parser, context){
+			// 跳出语句并设置 negative
+			this.out().negative = this;
+		},
+		/**
+		 * 尝试处理异常
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 语法标签上下文
+		 */
+		try: function(parser, context){
+			// 如果是逗号
+			if(
+				context.content === ","
+			){
+				// 跳出语句并设置 negative
+				this.out().negative = this;
+			}
+		}
+	});
+
+	return NegativeStatement;
+}();
+
+this.QuestionTag = function(TernaryExpression, PositiveStatement){
+	/**
+	 * 三元运算符“问号”标签
+	 * @param {Number} _type - 标签类型
+	 */
+	function QuestionTag(_type){
+		SyntaxTag.call(this, _type);
+	};
+	QuestionTag = new Rexjs(QuestionTag, SyntaxTag);
+
+	QuestionTag.props({
+		$class: CLASS_EXPRESSION_CONTEXT,
+		regexp: /\?/,
+		/**
+		 * 获取此标签接下来所需匹配的标签列表
+		 * @param {TagsMap} tagsMap - 标签集合映射
+		 */
+		require: function(tagsMap){
+			return tagsMap.expressionTags;
+		},
+		/**
+		 * 标签访问器
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 标签上下文
+		 * @param {Statement} statement - 当前语句
+		 * @param {Statements} statements - 当前语句块
+		 */
+		visitor: function(parser, context, statement, statements){
+			// 初始化三元表达式
+			var ternaryExpression = new TernaryExpression(context);
+
+			// 设置三元表达式的条件
+			ternaryExpression.condition = statement.expression;
+			// 设置当前表达式
+			statement.expression = ternaryExpression;
+			// 设置当前语句
+			statements.statement = new PositiveStatement(statements);
+		}
+	});
+
+	return QuestionTag;
+}(
+	this.TernaryExpression,
+	this.PositiveStatement
+);
+
+this.ColonTag = function(NegativeStatement){
+	/**
+	 * 冒号标签
+	 * @param {Number} _type - 标签类型
+	 */
+	function ColonTag(_type){
+		SyntaxTag.call(this, _type);
+	};
+	ColonTag = new Rexjs(ColonTag, SyntaxTag);
+
+	ColonTag.props({
+		regexp: /:/,
+		/**
+		 * 获取此标签接下来所需匹配的标签列表
+		 * @param {TagsMap} tagsMap - 标签集合映射
+		 */
+		require: function(tagsMap){
+			return tagsMap.expressionTags;
+		},
+		/**
+		 * 标签访问器
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 标签上下文
+		 * @param {Statement} statement - 当前语句
+		 * @param {Statements} statements - 当前语句块
+		 */
+		visitor: function(parser, context, statement, statements){
+			// 设置冒号上下文
+			statement.expression.colonContext = context;
+			// 设置当前语句
+			statements.statement = new NegativeStatement(statements);
+		}
+	});
+	
+	return ColonTag;
+}(
+	this.NegativeStatement
+);
+
+colonTag = new this.ColonTag();
+
+}.call(
+	this,
+	// colonTag
+	null
 );
 
 
@@ -6888,7 +7155,7 @@ this.CaseBodyStatement = function(isCase, isCloseBrace){
 		// 设置 case 表达式的 statements
 		targetStatements.statement.expression.statements = statements;
 
-		// 如果表达式可以结束
+		// 如果语句可以结束
 		if(
 			(statement.expression.state & STATE_STATEMENT_ENDABLE) === STATE_STATEMENT_ENDABLE
 		){
@@ -7383,6 +7650,7 @@ this.ECMAScriptTags = function(DefaultTags, data){
 				this.DotAccessorTag,
 				this.ElseTag,
 				this.FinallyTag,
+				this.QuestionTag,
 				this.SpreadTag
 			])
 		},
@@ -7476,7 +7744,7 @@ this.ExpressionTags = function(VariableTag){
 	this.VariableTag
 );
 
-this.ExpressionContextTags = function(StatementEndTag, ExpressionBreakTag, OpenBracketAccessorTag, OpenCallTag, BinaryTag, CommaTag){
+this.ExpressionContextTags = function(BinaryTag, CommaTag, ExpressionBreakTag, OpenBracketAccessorTag, OpenCallTag, PostfixIncrementTag, QuestionTag, StatementEndTag){
 	/**
 	 * 表达式上下文标签列表
 	 */
@@ -7485,10 +7753,11 @@ this.ExpressionContextTags = function(StatementEndTag, ExpressionBreakTag, OpenB
 		
 		// 注册标签
 		this.register(
-			new StatementEndTag(),
 			new ExpressionBreakTag(),
 			new OpenBracketAccessorTag(),
-			new OpenCallTag()
+			new OpenCallTag(),
+			new PostfixIncrementTag(),
+			new StatementEndTag()
 		);
 	};
 	ExpressionContextTags = new Rexjs(ExpressionContextTags, ECMAScriptTags);
@@ -7512,6 +7781,8 @@ this.ExpressionContextTags = function(StatementEndTag, ExpressionBreakTag, OpenB
 					case tag instanceof BinaryTag:
 					// 如果是逗号标签
 					case tag instanceof CommaTag:
+					// 如果是问号标签
+					case tag instanceof QuestionTag:
 						type = TYPE_MISTAKABLE;
 						break;
 				}
@@ -7527,12 +7798,14 @@ this.ExpressionContextTags = function(StatementEndTag, ExpressionBreakTag, OpenB
 	
 	return ExpressionContextTags;
 }(
-	this.StatementEndTag,
+	this.BinaryTag,
+	this.CommaTag,
 	this.ExpressionBreakTag,
 	this.OpenBracketAccessorTag,
 	this.OpenCallTag,
-	this.BinaryTag,
-	this.CommaTag
+	this.PostfixIncrementTag,
+	this.QuestionTag,
+	this.StatementEndTag
 );
 
 this.StatementTags = function(){
