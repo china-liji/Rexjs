@@ -7576,6 +7576,23 @@ this.SpreadTag = function(){
 	return SpreadTag;
 }();
 
+this.BackslashTag = function(){
+	/**
+	 * 反斜杠标签
+	 * @param {Number} _type - 标签类型
+	 */
+	function BackslashTag(_type){
+		SyntaxTag.call(this, _type);
+	};
+	BackslashTag = new Rexjs(BackslashTag, SyntaxTag);
+
+	BackslashTag.props({
+		regexp: /\\/
+	});
+
+	return BackslashTag;
+}();
+
 }.call(
 	this
 );
@@ -7689,6 +7706,7 @@ this.ECMAScriptTags = function(DefaultTags, data){
 			]
 			// 这个数组可以不按顺序
 			.concat([
+				this.BackslashTag,
 				this.CaseTag,
 				this.CatchTag,
 				this.ColonTag,
