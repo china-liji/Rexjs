@@ -279,7 +279,7 @@ this.AssignableExpression = function(){
 
 
 // 基础标签
-void function(){
+void function(RegExp){
 
 this.CloseBraceTag = function(){
 	/**
@@ -383,7 +383,7 @@ this.DefaultTag = function(){
 	return DefaultTag;
 }();
 
-this.IdentifierTag = function(AssignableExpression, RegExp, keywords){
+this.IdentifierTag = function(AssignableExpression, keywords, compileRegExpBy){
 	/**
 	 * 标识符标签
 	 * @param {Number} _type - 标签类型
@@ -393,14 +393,29 @@ this.IdentifierTag = function(AssignableExpression, RegExp, keywords){
 	};
 	IdentifierTag = new Rexjs(IdentifierTag, SyntaxTag);
 	
+	IdentifierTag.static({
+		/**
+		 * 获取所有关键字
+		 */
+		get keywords(){
+			return keywords;
+		},
+		/**
+		 * 设置所有关键字，并根据关键字重新编译该类的正则表达式
+		 * @param {String} value - 所有关键字，以 "|" 分隔
+		 */
+		set keywords(value){
+			// 记录值
+			keywords = value;
+			// 设置原型链 regexp 属性
+			this.prototype.regexp = compileRegExpBy(keywords);
+		}
+	});
+
 	IdentifierTag.props({
 		$class: CLASS_EXPRESSION,
 		order: 200,
-		regexp: new RegExp(
-			"(?:(?:" + keywords + ")|(?!" + keywords + "))"
-			+
-			IDENTIFIER_REGEXP_SOURCE
-		),
+		regexp: compileRegExpBy(keywords),
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
@@ -409,7 +424,7 @@ this.IdentifierTag = function(AssignableExpression, RegExp, keywords){
 		require: function(tagMaps){
 			return tagMaps.expressionContextTags;
 		},
-		name: "identifier",
+		throw: "identifier",
 		/**
 		 * 标签访问器
 		 * @param {SyntaxParser} parser - 语法解析器
@@ -422,11 +437,10 @@ this.IdentifierTag = function(AssignableExpression, RegExp, keywords){
 			statement.expression = new AssignableExpression(context);
 		}
 	});
-	
+
 	return IdentifierTag;
 }(
 	this.AssignableExpression,
-	RegExp,
 	// keywords
 	[
 		"break", "case", "catch", "class", "const", "continue",
@@ -437,7 +451,15 @@ this.IdentifierTag = function(AssignableExpression, RegExp, keywords){
 	]
 	.join(
 		"|"
-	)
+	),
+	// compileRegExpBy
+	function(keywords){
+		return new RegExp(
+			"(?:(?:" + keywords + ")|(?!" + keywords + "))"
+			+
+			IDENTIFIER_REGEXP_SOURCE
+		);
+	}
 );
 
 this.LiteralTag = function(){
@@ -564,7 +586,8 @@ this.SpecialLineTerminatorTag = function(LineTerminatorTag){
 );
 
 }.call(
-	this
+	this,
+	RegExp
 );
 
 
@@ -3730,6 +3753,398 @@ arrayItemSparatorTag = new this.ArrayItemSparatorTag();
 );
 
 
+// 对象相关
+void function(IdentifierTag, objectItemSeparatorTag, closeObjectTag){
+
+this.ObjectItemExpression = function(){
+	/**
+	 * 对象项表达式
+	 * @param {Expression} name - 对象名称表达式
+	 */
+	function ObjectItemExpression(name){
+		Expression.call(this, null);
+
+		this.name = name;
+	};
+	ObjectItemExpression = new Rexjs(ObjectItemExpression, Expression);
+
+	ObjectItemExpression.props({
+		/**
+		 * 提取表达式文本内容
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 */
+		extractTo: function(contentBuilder){
+			// 提取对象名称
+			this.name.extractTo(contentBuilder);
+			// 追加冒号分隔符
+			contentBuilder.appendString(":");
+			// 提取对象值
+			this.value.extractTo(contentBuilder);
+		},
+		name: null,
+		value: null
+	});
+
+	return ObjectItemExpression;
+}();
+
+this.ObjectStatement = function(){
+	/**
+	 * 对象语句
+	 * @param {Statements} statements - 该语句将要所处的语句块
+	 */
+	function ObjectStatement(statements){
+		ECMAScriptStatement.call(this, statements);
+	};
+	ObjectStatement = new Rexjs(ObjectStatement, ECMAScriptStatement);
+
+	ObjectStatement.props({
+		/**
+		 * 捕获处理异常
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 语法标签上下文
+		 */
+		catch: function(parser, context){
+			// 如果不是结束大括号
+			if(
+				context.content !== "}"
+			){
+				// 报错
+				parser.error(context);
+				return null;
+			}
+
+			// 跳出语句并添加表达式
+			this.out().inner.add(this.expression);
+			return closeObjectTag;
+		},
+		/**
+		 * 尝试处理异常
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 语法标签上下文
+		 */
+		try: function(parser, context){
+			// 如果不是逗号
+			if(
+				context.content !== ","
+			){
+				// 报错
+				parser.error(context);
+				return null;
+			}
+
+			// 添加表达式
+			this.target.expression.inner.add(this.expression);
+			return objectItemSeparatorTag;
+		}
+	});
+
+	return ObjectStatement;
+}();
+
+this.ObjectValueStatement = function(){
+	/**
+	 * 对象值语句
+	 * @param {Statements} statements - 该语句将要所处的语句块
+	 */
+	function ObjectValueStatement(statements){
+		ECMAScriptStatement.call(this, statements);
+	};
+	ObjectValueStatement = new Rexjs(ObjectValueStatement, ECMAScriptStatement);
+
+	ObjectValueStatement.props({
+		/**
+		 * 捕获处理异常
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 语法标签上下文
+		 */
+		catch: function(parser, context){
+			// 跳出语句并设置 value
+			this.out().value = this.expression;
+		},
+		try: function(parser, context){
+			// 如果是逗号
+			if(
+				context.content === ","
+			){
+				// 跳出语句并设置 value
+				this.out().value = this.expression;
+			}
+		}
+	});
+
+	return ObjectValueStatement;
+}();
+
+this.OpenObjectTag = function(OpenBraceTag, ObjectExpression, ObjectStatement){
+	/**
+	 * 起始对象标签
+	 * @param {Number} _type - 标签类型
+	 */
+	function OpenObjectTag(_type){
+		OpenBraceTag.call(this, _type);
+	};
+	OpenObjectTag = new Rexjs(OpenObjectTag, OpenBraceTag);
+
+	OpenObjectTag.props({
+		$class: CLASS_EXPRESSION,
+		/**
+		 * 获取此标签接下来所需匹配的标签列表
+		 * @param {TagsMap} tagsMap - 标签集合映射
+		 */
+		require: function(tagsMap){
+			return tagsMap.objectNameTags;
+		},
+		/**
+		 * 标签访问器
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 标签上下文
+		 * @param {Statement} statement - 当前语句
+		 * @param {Statements} statements - 当前语句块
+		 */
+		visitor: function(parser, context, statement, statements){
+			(
+				// 设置当前表达式
+				statement.expression = new PartnerExpression(context)
+			)
+			// 设置 inner
+			.inner = new ListExpression(",");
+
+			// 设置当前语句
+			statements.statement = new ObjectStatement(statements);
+		}
+	});
+
+	return OpenObjectTag;
+}(
+	this.OpenBraceTag,
+	this.ObjectExpression,
+	this.ObjectStatement
+);
+
+this.ObjectIdentifierNameTag = function(){
+	/**
+	 * 起始对象标签
+	 * @param {Number} _type - 标签类型
+	 */
+	function ObjectIdentifierNameTag(_type){
+		IdentifierTag.call(this, _type);
+	};
+	ObjectIdentifierNameTag = new Rexjs(ObjectIdentifierNameTag, IdentifierTag);
+
+	ObjectIdentifierNameTag.props({
+		/**
+		 * 标签访问器
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 标签上下文
+		 * @param {Statement} statement - 当前语句
+		 * @param {Statements} statements - 当前语句块
+		 */
+		visitor: function(parser, context, statement, statements){debugger
+			(
+				statement.expression = new ObjectItemExpression()
+			)
+			.name = new Expression(context);
+		}
+	});
+
+	return ObjectIdentifierNameTag;
+}();
+
+this.ObjectPropertyNameTag = function(ObjectItemExpression, ObjectValueStatement, RegExp){
+	/**
+	 * 对象属性名标签
+	 * @param {Number} _type - 标签类型
+	 */
+	function ObjectPropertyNameTag(_type){
+		SyntaxTag.call(this, _type);
+	};
+	ObjectPropertyNameTag = new Rexjs(ObjectPropertyNameTag, SyntaxTag);
+
+	ObjectPropertyNameTag.props({
+		regexp: new RegExp(IdentifierTag.keywords),
+		/**
+		 * 获取此标签接下来所需匹配的标签列表
+		 * @param {TagsMap} tagsMap - 标签集合映射
+		 */
+		require: function(tagsMap){
+			return tagsMap.objectNameSeparatorTags;
+		},
+		/**
+		 * 标签访问器
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 标签上下文
+		 * @param {Statement} statement - 当前语句
+		 * @param {Statements} statements - 当前语句块
+		 */
+		visitor: function(parser, context, statement, statements){
+			// 设置当前表达式
+			statement.expression = new ObjectItemExpression(
+				new Expression(context)
+			);
+
+			// 设置当前语句
+			statements.statement = new ObjectValueStatement(statements);
+		}
+	});
+
+	return ObjectPropertyNameTag;
+}(
+	this.ObjectItemExpression,
+	this.ObjectValueStatement,
+	RegExp
+);
+
+this.ObjectNameSeparatorTag = function(ColonTag){
+	/**
+	 * 对象名称的分隔符标签
+	 * @param {Number} _type - 标签类型
+	 */
+	function ObjectNameSeparatorTag(_type){
+		ColonTag.call(this, _type);
+	};
+	ObjectNameSeparatorTag = new Rexjs(ObjectNameSeparatorTag, ColonTag);
+
+	ObjectNameSeparatorTag.props({
+		/**
+		 * 获取此标签接下来所需匹配的标签列表
+		 * @param {TagsMap} tagsMap - 标签集合映射
+		 */
+		require: function(tagsMap){
+			return tagsMap.expressionTags;
+		},
+		/**
+		 * 标签访问器
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 标签上下文
+		 * @param {Statement} statement - 当前语句
+		 * @param {Statements} statements - 当前语句块
+		 */
+		visitor: function(){}
+	});
+
+	return ObjectNameSeparatorTag;
+}(
+	this.ColonTag
+);
+
+this.ObjectItemSeparatorTag = function(CommaTag, ObjectItemStatement){
+	/**
+	 * 对象项的分隔符标签
+	 * @param {Number} _type - 标签类型
+	 */
+	function ObjectItemSeparatorTag(_type){
+		CommaTag.call(this, _type);
+	};
+	ObjectItemSeparatorTag = new Rexjs(ObjectItemSeparatorTag, CommaTag);
+
+	ObjectItemSeparatorTag.props({
+		/**
+		 * 获取此标签接下来所需匹配的标签列表
+		 * @param {TagsMap} tagsMap - 标签集合映射
+		 */
+		require: function(tagsMap){
+			return tagsMap.objectNameTags;
+		},
+		/**
+		 * 标签访问器
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 标签上下文
+		 * @param {Statement} statement - 当前语句
+		 * @param {Statements} statements - 当前语句块
+		 */
+		visitor: function(parser, context, statement, statements){
+			// 清空表达式
+			statement.expression = null;
+		}
+	});
+
+	return ObjectItemSeparatorTag;
+}(
+	this.CommaTag,
+	this.ObjectItemStatement
+);
+
+this.CloseObjectTag = function(CloseBraceTag){
+	/**
+	 * 结束对象标签
+	 * @param {Number} _type - 标签类型
+	 */
+	function CloseObjectTag(_type){
+		CloseBraceTag.call(this, _type);
+	};
+	CloseObjectTag = new Rexjs(CloseObjectTag, CloseBraceTag);
+
+	CloseObjectTag.props({
+		/**
+		 * 获取此标签接下来所需匹配的标签列表
+		 * @param {TagsMap} tagsMap - 标签集合映射
+		 */
+		require: function(tagsMap){
+			return tagsMap.expressionContextTags;
+		},
+		/**
+		 * 标签访问器
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 标签上下文
+		 * @param {Statement} statement - 当前语句
+		 * @param {Statements} statements - 当前语句块
+		 */
+		visitor: function(parser, context, statement, statements){
+			// 设置 close
+			statement.expression.close = context;
+		}
+	});
+
+	return CloseObjectTag;
+}(
+	this.CloseBraceTag
+);
+
+this.CloseEmptyObjectTag = function(CloseObjectTag){
+	/**
+	 * 结束对象标签
+	 * @param {Number} _type - 标签类型
+	 */
+	function CloseEmptyObjectTag(_type){
+		CloseObjectTag.call(this, _type);
+	};
+	CloseEmptyObjectTag = new Rexjs(CloseEmptyObjectTag, CloseObjectTag);
+
+	CloseEmptyObjectTag.props({
+		/**
+		 * 标签访问器
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 标签上下文
+		 * @param {Statement} statement - 当前语句
+		 * @param {Statements} statements - 当前语句块
+		 */
+		visitor: function(parser, context, statement, statements){
+			// 设置当前表达式
+			statement.expression = new EmptyExpression(null);
+			// 跳出语句并设置 close
+			statement.out().close = context;
+		}
+	});
+
+	return CloseEmptyObjectTag;
+}(
+	this.CloseObjectTag
+);
+
+objectItemSeparatorTag = new this.ObjectItemSeparatorTag();
+closeObjectTag = new this.CloseObjectTag();
+
+}.call(
+	this,
+	this.IdentifierTag,
+	// objectItemSeparatorTag
+	null,
+	// closeObjectTag
+	null
+);
+
+
 // 语句块相关
 void function(closeBlockTag){
 
@@ -3824,6 +4239,7 @@ this.BlockStatements = function(BlockStatement){
 this.OpenBlockTag = function(OpenBraceTag, BlockStatements, BlockExpression){
 	/**
 	 * 起始语句块标签
+	 * @param {Number} _type - 标签类型
 	 */
 	function OpenBlockTag(_type){
 		OpenBraceTag.call(this, _type);
@@ -7804,7 +8220,7 @@ this.ECMAScriptTags = function(DefaultTags, data){
 // 基类标签列表相关
 void function(ECMAScriptTags, OnlyStatementEndTags){
 
-this.ExpressionTags = function(VariableTag){
+this.ExpressionTags = function(VariableTag, OpenObjectTag){
 	/**
 	 * 表达式标签列表
 	 */
@@ -7812,7 +8228,8 @@ this.ExpressionTags = function(VariableTag){
 		ECMAScriptTags.call(this);
 		
 		this.register(
-			new VariableTag()
+			new VariableTag(),
+			new OpenObjectTag()
 		);
 	};
 	ExpressionTags = new Rexjs(ExpressionTags, ECMAScriptTags);
@@ -7838,7 +8255,8 @@ this.ExpressionTags = function(VariableTag){
 	
 	return ExpressionTags;
 }(
-	this.VariableTag
+	this.VariableTag,
+	this.OpenObjectTag
 );
 
 this.ExpressionContextTags = function(BinaryTag, CommaTag, ExpressionBreakTag, OpenBracketAccessorTag, OpenCallTag, PostfixIncrementTag, QuestionTag){
@@ -8362,6 +8780,54 @@ this.NewContextTags = function(UnaryTag, NewTag, filter){
 	this.ExpressionTags.prototype.filter
 );
 
+this.ObjectNameSeparatorTags = function(ObjectNameSeparatorTag){
+	/**
+	 * 对象名称分隔符标签列表
+	 */
+	function ObjectNameSeparatorTags(){
+		ECMAScriptTags.call(this);
+
+		this.register(
+			new ObjectNameSeparatorTag()
+		);
+	};
+	ObjectNameSeparatorTags = new Rexjs(ObjectNameSeparatorTags, ECMAScriptTags);
+
+	ObjectNameSeparatorTags.props({
+		id: "objectNameSeparatorTags"
+	});
+
+	return ObjectNameSeparatorTags;
+}(
+	this.ObjectNameSeparatorTag
+);
+
+this.ObjectNameTags = function(CloseEmptyObjectTag, ObjectIdentifierNameTag, ObjectPropertyNameTag){
+	/**
+	 * 对象名称标签列表
+	 */
+	function ObjectNameTags(){
+		ECMAScriptTags.call(this);
+
+		this.register(
+			new CloseEmptyObjectTag(),
+			new ObjectIdentifierNameTag(),
+			new ObjectPropertyNameTag()
+		);
+	};
+	ObjectNameTags = new Rexjs(ObjectNameTags, ECMAScriptTags);
+
+	ObjectNameTags.props({
+		id: "objectNameTags"
+	});
+
+	return ObjectNameTags;
+}(
+	this.CloseEmptyObjectTag,
+	this.ObjectIdentifierNameTag,
+	this.ObjectPropertyNameTag
+);
+
 this.OpenBlockContextTags = function(CloseEmptyBlockTag){
 	/**
 	 * 语句块起始上下文标签列表
@@ -8712,6 +9178,8 @@ this.ECMAScriptTagsMap = function(SyntaxTagsMap, tagsArray){
 		this.LabelContextTags,
 		this.NegationContextTags,
 		this.NewContextTags,
+		this.ObjectNameSeparatorTags,
+		this.ObjectNameTags,
 		this.OpenBlockContextTags,
 		this.OpenSwitchBodyContextTags,
 		this.PlusContextTags,
