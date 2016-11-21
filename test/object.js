@@ -3,6 +3,9 @@ void function(SimpleTest, test){
 test.group("对象测试");
 
 test.true("空对象", "!{}");
+test.true("单个标识符属性名", "!{ a: 1 }");
+test.true("多个标识符属性名", "!{ a: 1, b: 2, c: 3 }");
+test.true("多个标识符属性名并带有一一对应的逗号", "!{ a: 1, b: 2, c: 3, }");
 test.true("单个关键字属性名", "!{ var: 1 }");
 test.true("多个关键字属性名", "!{ var: 1, switch: 2 + 3 / 4 * (7), throw: 99 }");
 test.true("多个关键字属性名并带有一一对应的逗号", "!{ var: 1, switch: 2 + 3 / 4 * (7), throw: 99, }");

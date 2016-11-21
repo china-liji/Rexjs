@@ -3922,9 +3922,9 @@ this.OpenObjectTag = function(OpenBraceTag, ObjectExpression, ObjectStatement){
 	this.ObjectStatement
 );
 
-this.ObjectIdentifierNameTag = function(){
+this.ObjectIdentifierNameTag = function(ObjectItemExpression, ObjectValueStatement){
 	/**
-	 * 起始对象标签
+	 * 对象标识符属性名称标签
 	 * @param {Number} _type - 标签类型
 	 */
 	function ObjectIdentifierNameTag(_type){
@@ -3934,22 +3934,35 @@ this.ObjectIdentifierNameTag = function(){
 
 	ObjectIdentifierNameTag.props({
 		/**
+		 * 获取此标签接下来所需匹配的标签列表
+		 * @param {TagsMap} tagsMap - 标签集合映射
+		 */
+		require: function(tagsMap){
+			return tagsMap.objectIdentifierNameContextTags;
+		},
+		/**
 		 * 标签访问器
 		 * @param {SyntaxParser} parser - 语法解析器
 		 * @param {Context} context - 标签上下文
 		 * @param {Statement} statement - 当前语句
 		 * @param {Statements} statements - 当前语句块
 		 */
-		visitor: function(parser, context, statement, statements){debugger
-			(
-				statement.expression = new ObjectItemExpression()
-			)
-			.name = new Expression(context);
+		visitor: function(parser, context, statement, statements){
+			// 设置当前表达式
+			statement.expression = new ObjectItemExpression(
+				new Expression(context)
+			);
+
+			// 设置当前语句
+			statements.statement = new ObjectValueStatement(statements);
 		}
 	});
 
 	return ObjectIdentifierNameTag;
-}();
+}(
+	this.ObjectItemExpression,
+	this.ObjectValueStatement
+);
 
 this.ObjectPropertyNameTag = function(ObjectItemExpression, ObjectValueStatement, RegExp){
 	/**
@@ -8802,6 +8815,28 @@ this.ObjectNameSeparatorTags = function(ObjectNameSeparatorTag){
 	this.ObjectNameSeparatorTag
 );
 
+this.ObjectIdentifierNameContextTags = function(ObjectNameSeparatorTags){
+	/**
+	 * 对象标识符名称上下文标签列表
+	 */
+	function ObjectIdentifierNameContextTags(){
+		ObjectNameSeparatorTags.call(this);
+
+		this.register(
+
+		);
+	};
+	ObjectIdentifierNameContextTags = new Rexjs(ObjectIdentifierNameContextTags, ObjectNameSeparatorTags);
+
+	ObjectIdentifierNameContextTags.props({
+		id: "objectIdentifierNameContextTags"
+	});
+
+	return ObjectIdentifierNameContextTags;
+}(
+	this.ObjectNameSeparatorTags
+);
+
 this.ObjectNameTags = function(CloseEmptyObjectTag, ObjectIdentifierNameTag, ObjectPropertyNameTag){
 	/**
 	 * 对象名称标签列表
@@ -9178,6 +9213,7 @@ this.ECMAScriptTagsMap = function(SyntaxTagsMap, tagsArray){
 		this.LabelContextTags,
 		this.NegationContextTags,
 		this.NewContextTags,
+		this.ObjectIdentifierNameContextTags,
 		this.ObjectNameSeparatorTags,
 		this.ObjectNameTags,
 		this.OpenBlockContextTags,
