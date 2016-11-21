@@ -11,7 +11,6 @@ import
 let
 static
 super
-with
 yield
 new.target
 super.xx
@@ -144,6 +143,8 @@ async
 --------
 已完成功能 ↓
 --------
+with 关键字标签 - 2016.11.21
+
 反斜杠转义符 - 2016.11.21
 
 三元运算符 - 2016.11.19

@@ -7523,6 +7523,23 @@ caseValueSeparatorTag = new this.CaseValueSeparatorTag();
 // 其他单标签
 void function(){
 
+this.BackslashTag = function(){
+	/**
+	 * 反斜杠标签
+	 * @param {Number} _type - 标签类型
+	 */
+	function BackslashTag(_type){
+		SyntaxTag.call(this, _type);
+	};
+	BackslashTag = new Rexjs(BackslashTag, SyntaxTag);
+
+	BackslashTag.props({
+		regexp: /\\/
+	});
+
+	return BackslashTag;
+}();
+
 this.DebuggerTag = function(){
 	/**
 	 * debugger 标签
@@ -7576,21 +7593,33 @@ this.SpreadTag = function(){
 	return SpreadTag;
 }();
 
-this.BackslashTag = function(){
+this.WithTag = function(){
 	/**
-	 * 反斜杠标签
+	 * with 关键字标签
 	 * @param {Number} _type - 标签类型
 	 */
-	function BackslashTag(_type){
+	function WithTag(_type){
 		SyntaxTag.call(this, _type);
 	};
-	BackslashTag = new Rexjs(BackslashTag, SyntaxTag);
-
-	BackslashTag.props({
-		regexp: /\\/
+	WithTag = new Rexjs(WithTag, SyntaxTag);
+	
+	WithTag.props({
+		$class: CLASS_STATEMENT_BEGIN,
+		regexp: /with/,
+		/**
+		 * 标签访问器
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 标签上下文
+		 * @param {Statement} statement - 当前语句
+		 * @param {Statements} statements - 当前语句块
+		 */
+		visitor: function(parser, context){
+			// 报错
+			parser.error(context, "The code may not include a with statement");
+		}
 	});
-
-	return BackslashTag;
+	
+	return WithTag;
 }();
 
 }.call(
@@ -7760,7 +7789,8 @@ this.ECMAScriptTags = function(DefaultTags, data){
 				this.TypeofTag,
 				this.VarTag,
 				this.VoidTag,
-				this.WhileTag
+				this.WhileTag,
+				this.WithTag
 			]
 		}
 	]
