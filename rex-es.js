@@ -3788,6 +3788,58 @@ this.ObjectItemExpression = function(){
 	return ObjectItemExpression;
 }();
 
+this.ObjectIdentifierItemExpression = function(ObjectItemExpression, config, extractTo){
+	/**
+	 * 对象标识符项表达式
+	 * @param {Expression} name - 对象名称表达式
+	 */
+	function ObjectIdentifierItemExpression(name){
+		ObjectItemExpression.call(this, name);
+	};
+	ObjectIdentifierItemExpression = new Rexjs(ObjectIdentifierItemExpression, ObjectItemExpression);
+
+	ObjectIdentifierItemExpression.static({
+		config: config
+	});
+
+	ObjectIdentifierItemExpression.props({
+		/**
+		 * 提取表达式文本内容
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 */
+		extractTo: function(contentBuilder){
+			// 如果对象值是空表达式，说明是简写属性
+			if(
+				this.value instanceof EmptyExpression
+			){
+				// 提取对象名称
+				this.name.extractTo(contentBuilder);
+
+				// 如果需要解析简写属性名
+				if(
+					config.shorthandProperty
+				){
+					// 追加冒号分隔符
+					contentBuilder.appendString(":");
+					// 追加对象名称文本
+					contentBuilder.appendString(this.name.context.content);
+				}
+				return;
+			}
+
+			// 调用父类方法
+			extractTo.call(this, contentBuilder);
+		}
+	});
+
+	return ObjectIdentifierItemExpression;
+}(
+	this.ObjectItemExpression,
+	// config
+	new SyntaxConfig("shorthandProperty"),
+	this.ObjectItemExpression.prototype.extractTo
+);
+
 this.ObjectStatement = function(){
 	/**
 	 * 对象语句
@@ -3922,7 +3974,7 @@ this.OpenObjectTag = function(OpenBraceTag, ObjectExpression, ObjectStatement){
 	this.ObjectStatement
 );
 
-this.ObjectIdentifierNameTag = function(ObjectItemExpression, ObjectValueStatement){
+this.ObjectIdentifierNameTag = function(ObjectIdentifierItemExpression, ObjectValueStatement){
 	/**
 	 * 对象标识符属性名称标签
 	 * @param {Number} _type - 标签类型
@@ -3949,18 +4001,22 @@ this.ObjectIdentifierNameTag = function(ObjectItemExpression, ObjectValueStateme
 		 */
 		visitor: function(parser, context, statement, statements){
 			// 设置当前表达式
-			statement.expression = new ObjectItemExpression(
+			statement.expression = new ObjectIdentifierItemExpression(
 				new Expression(context)
 			);
 
 			// 设置当前语句
-			statements.statement = new ObjectValueStatement(statements);
+			(
+				statements.statement = new ObjectValueStatement(statements)
+			)
+			// 设置语句的表达式
+			.expression = new EmptyExpression(null);
 		}
 	});
 
 	return ObjectIdentifierNameTag;
 }(
-	this.ObjectItemExpression,
+	this.ObjectIdentifierItemExpression,
 	this.ObjectValueStatement
 );
 
@@ -4076,6 +4132,47 @@ this.ObjectItemSeparatorTag = function(CommaTag, ObjectItemStatement){
 }(
 	this.CommaTag,
 	this.ObjectItemStatement
+);
+
+this.ShorthandItemSeparatorTag = function(ObjectItemSeparatorTag, visitor){
+	/**
+	 * 对象简写项的分隔符标签
+	 * @param {Number} _type - 标签类型
+	 */
+	function ShorthandItemSeparatorTag(_type){
+		ObjectItemSeparatorTag.call(this, _type)
+	};
+	ShorthandItemSeparatorTag = new Rexjs(ShorthandItemSeparatorTag, ObjectItemSeparatorTag);
+
+	ShorthandItemSeparatorTag.props({
+		/**
+		 * 标签访问器
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 标签上下文
+		 * @param {Statement} statement - 当前语句
+		 * @param {Statements} statements - 当前语句块
+		 */
+		visitor: function(parser, context, statement, statements){
+			// 跳出语句并设置 value
+			statement.out().value = statement.expression;
+
+			// 重新获取当前语句
+			statement = statements.statement;
+
+			// 添加表达式
+			statement.target.expression.inner.add(
+				statement.expression
+			);
+
+			// 调用父类方法
+			visitor.call(this, parser, context, statement, statements);
+		}
+	});
+
+	return ShorthandItemSeparatorTag;
+}(
+	this.ObjectItemSeparatorTag,
+	this.ObjectItemSeparatorTag.prototype.visitor
 );
 
 this.CloseObjectTag = function(CloseBraceTag){
@@ -8815,7 +8912,7 @@ this.ObjectNameSeparatorTags = function(ObjectNameSeparatorTag){
 	this.ObjectNameSeparatorTag
 );
 
-this.ObjectIdentifierNameContextTags = function(ObjectNameSeparatorTags){
+this.ObjectIdentifierNameContextTags = function(ObjectNameSeparatorTags, ShorthandItemSeparatorTag){
 	/**
 	 * 对象标识符名称上下文标签列表
 	 */
@@ -8823,7 +8920,7 @@ this.ObjectIdentifierNameContextTags = function(ObjectNameSeparatorTags){
 		ObjectNameSeparatorTags.call(this);
 
 		this.register(
-
+			new ShorthandItemSeparatorTag()
 		);
 	};
 	ObjectIdentifierNameContextTags = new Rexjs(ObjectIdentifierNameContextTags, ObjectNameSeparatorTags);
@@ -8834,7 +8931,8 @@ this.ObjectIdentifierNameContextTags = function(ObjectNameSeparatorTags){
 
 	return ObjectIdentifierNameContextTags;
 }(
-	this.ObjectNameSeparatorTags
+	this.ObjectNameSeparatorTags,
+	this.ShorthandItemSeparatorTag
 );
 
 this.ObjectNameTags = function(CloseEmptyObjectTag, ObjectIdentifierNameTag, ObjectPropertyNameTag){
@@ -9116,7 +9214,7 @@ this.WhileConditionTags = function(OpenWhileConditionTag){
 // 语法配置相关
 void function(){
 
-this.ECMAScript6Config = function(forConfig){
+this.ECMAScript6Config = function(forConfig, objectIdentifierItemConfig){
 	/**
 	 * ECMAScript6 语法配置
 	 */
@@ -9130,7 +9228,7 @@ this.ECMAScript6Config = function(forConfig){
 		 * 获取是否应该编译 ECMAScript6 的所有表达式
 		 */
 		get all(){
-			return this.forOf;
+			return this.forOf && this.shorthandProperty;
 		},
 		/**
 		 * 设置是否应该编译 ECMAScript6 的所有表达式
@@ -9138,6 +9236,7 @@ this.ECMAScript6Config = function(forConfig){
 		 */
 		set all(value){
 			this.forOf = value;
+			this.shorthandProperty = value;
 		},
 		/**
 		 * 获取 for of 表达式是否应该编译
@@ -9151,13 +9250,28 @@ this.ECMAScript6Config = function(forConfig){
 		 */
 		set forOf(value){
 			forConfig.of = value;
+		},
+		/**
+		 * 获取对象简写名称是否应该编译
+		 */
+		get shorthandProperty(){
+			return objectIdentifierItemConfig.shorthandProperty;
+		},
+		/**
+		 * 设置对象简写名称是否应该编译
+		 * @param {Boolean} value - 是否编译
+		 */
+		set shorthandProperty(value){
+			objectIdentifierItemConfig.shorthandProperty = value;
 		}
 	});
 
 	return ECMAScript6Config;
 }(
 	// forConfig
-	this.ForExpression.config
+	this.ForExpression.config,
+	// objectIdentifierItemConfig
+	this.ObjectIdentifierItemExpression.config
 );
 
 }.call(
