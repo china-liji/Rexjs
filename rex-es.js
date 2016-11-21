@@ -938,10 +938,9 @@ this.EmptyStatementTag = function(){
 this.StatementEndTag = function(CLASS_STATEMENT_END, tagType, unexpected){
 	/**
 	 * 语句结束标签
-	 * @param {Number} _type - 标签类型
 	 */
-	function StatementEndTag(_type){
-		SemicolonTag.call(this, _type);
+	function StatementEndTag(){
+		SemicolonTag.call(this);
 	};
 	StatementEndTag = new Rexjs(StatementEndTag, SemicolonTag);
 	
@@ -949,7 +948,6 @@ this.StatementEndTag = function(CLASS_STATEMENT_END, tagType, unexpected){
 		$class: CLASS_STATEMENT_END,
 		// 防止与 EmptyStatementTag 冲突
 		order: 100,
-		regexp: /;|$/,
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
@@ -986,6 +984,25 @@ this.StatementEndTag = function(CLASS_STATEMENT_END, tagType, unexpected){
 	// tagType
 	new TagType(TYPE_MISTAKABLE),
 	SemicolonTag.prototype.unexpected
+);
+
+this.LastStatementEndTag = function(StatementEndTag){
+	/**
+	 * 最后一个语句结束符标签
+	 */
+	function LastStatementEndTag(){
+		StatementEndTag.call(this);
+	};
+	LastStatementEndTag = new Rexjs(LastStatementEndTag, StatementEndTag);
+
+	LastStatementEndTag.props({
+		regexp: /$/,
+		throw: "end of input"
+	});
+
+	return LastStatementEndTag;
+}(
+	this.StatementEndTag
 );
 
 }.call(
@@ -1028,35 +1045,6 @@ this.IllegalLineTerminatorTag = function(SpecialLineTerminatorTag){
 	this.SpecialLineTerminatorTag
 );
 
-this.ExpressionBreakTag = function(){
-	/**
-	 * 表达式行结束符标签
-	 * @param {Number} _type - 标签类型
-	 */
-	function ExpressionBreakTag(_type){
-		SpecialLineTerminatorTag.call(this, _type);
-	};
-	ExpressionBreakTag = new Rexjs(ExpressionBreakTag, SpecialLineTerminatorTag);
-	
-	ExpressionBreakTag.props({
-		/**
-		 * 标签访问器
-		 * @param {SyntaxParser} parser - 语法解析器
-		 * @param {Context} context - 标签上下文
-		 * @param {Statement} statement - 当前语句
-		 * @param {Statements} statements - 当前语句块
-		 */
-		visitor: function(parser, context, statement, statements){
-			// 设置状态
-			statement.expression.state |= STATE_STATEMENT_ENDABLE;
-			
-			visitor.call(this, parser, context, statement, statements);
-		}
-	});
-	
-	return ExpressionBreakTag;
-}();
-
 this.StatementBreakTag = function(){
 	/**
 	 * 语句行结束符标签
@@ -1091,6 +1079,37 @@ this.StatementBreakTag = function(){
 	});
 	
 	return StatementBreakTag;
+}();
+
+this.ExpressionBreakTag = function(){
+	/**
+	 * 表达式行结束符标签
+	 * @param {Number} _type - 标签类型
+	 */
+	function ExpressionBreakTag(_type){
+		SpecialLineTerminatorTag.call(this, _type);
+	};
+	ExpressionBreakTag = new Rexjs(ExpressionBreakTag, SpecialLineTerminatorTag);
+	
+	ExpressionBreakTag.props({
+		// 防止与 StatementBreakTag 冲突
+		order: 100,
+		/**
+		 * 标签访问器
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 标签上下文
+		 * @param {Statement} statement - 当前语句
+		 * @param {Statements} statements - 当前语句块
+		 */
+		visitor: function(parser, context, statement, statements){
+			// 设置状态
+			statement.expression.state |= STATE_STATEMENT_ENDABLE;
+			
+			visitor.call(this, parser, context, statement, statements);
+		}
+	});
+	
+	return ExpressionBreakTag;
 }();
 
 }.call(
@@ -7562,8 +7581,39 @@ this.SpreadTag = function(){
 );
 
 
-// 基类标签列表
-void function(SyntaxTag){
+// 辅助性的标签列表相关
+void function(SyntaxTags){
+
+this.OnlyStatementEndTags = function(LastStatementEndTag, StatementBreakTag, StatementEndTag){
+	/**
+	 * 只有语句结束符的标签列表
+	 */
+	function OnlyStatementEndTags(){
+		SyntaxTags.call(this);
+
+		this.register(
+			new LastStatementEndTag(),
+			new StatementBreakTag(),
+			new StatementEndTag()
+		);
+	};
+	OnlyStatementEndTags = new Rexjs(OnlyStatementEndTags, SyntaxTags);
+
+	return OnlyStatementEndTags;
+}(
+	this.LastStatementEndTag,
+	this.StatementBreakTag,
+	this.StatementEndTag
+);
+
+}.call(
+	this,
+	Rexjs.SyntaxTags
+);
+
+
+// ECMAScript 标签列表相关
+void function(){
 
 this.ECMAScriptTags = function(DefaultTags, data){
 	/**
@@ -7699,13 +7749,12 @@ this.ECMAScriptTags = function(DefaultTags, data){
 );
 	
 }.call(
-	this,
-	Rexjs.SyntaxTag
+	this
 );
 
 
-// 基类标签列表
-void function(ECMAScriptTags){
+// 基类标签列表相关
+void function(ECMAScriptTags, OnlyStatementEndTags){
 
 this.ExpressionTags = function(VariableTag){
 	/**
@@ -7744,7 +7793,7 @@ this.ExpressionTags = function(VariableTag){
 	this.VariableTag
 );
 
-this.ExpressionContextTags = function(BinaryTag, CommaTag, ExpressionBreakTag, OpenBracketAccessorTag, OpenCallTag, PostfixIncrementTag, QuestionTag, StatementEndTag){
+this.ExpressionContextTags = function(BinaryTag, CommaTag, ExpressionBreakTag, OpenBracketAccessorTag, OpenCallTag, PostfixIncrementTag, QuestionTag){
 	/**
 	 * 表达式上下文标签列表
 	 */
@@ -7754,10 +7803,10 @@ this.ExpressionContextTags = function(BinaryTag, CommaTag, ExpressionBreakTag, O
 		// 注册标签
 		this.register(
 			new ExpressionBreakTag(),
+			new OnlyStatementEndTags(),
 			new OpenBracketAccessorTag(),
 			new OpenCallTag(),
-			new PostfixIncrementTag(),
-			new StatementEndTag()
+			new PostfixIncrementTag()
 		);
 	};
 	ExpressionContextTags = new Rexjs(ExpressionContextTags, ECMAScriptTags);
@@ -7804,8 +7853,7 @@ this.ExpressionContextTags = function(BinaryTag, CommaTag, ExpressionBreakTag, O
 	this.OpenBracketAccessorTag,
 	this.OpenCallTag,
 	this.PostfixIncrementTag,
-	this.QuestionTag,
-	this.StatementEndTag
+	this.QuestionTag
 );
 
 this.StatementTags = function(){
@@ -7839,7 +7887,7 @@ this.StatementTags = function(){
 	return StatementTags;
 }();
 
-this.StatementEndTags = function(StatementEndTag, StatementBreakTag){
+this.StatementEndTags = function(){
 	/**
 	 * 语句结束标签列表
 	 */
@@ -7847,8 +7895,7 @@ this.StatementEndTags = function(StatementEndTag, StatementBreakTag){
 		ECMAScriptTags.call(this);
 		
 		this.register(
-			new StatementEndTag(),
-			new StatementBreakTag()
+			new OnlyStatementEndTags()
 		);
 	};
 	StatementEndTags = new Rexjs(StatementEndTags, ECMAScriptTags);
@@ -7858,10 +7905,7 @@ this.StatementEndTags = function(StatementEndTag, StatementBreakTag){
 	});
 	
 	return StatementEndTags;
-}(
-	this.StatementEndTag,
-	this.StatementBreakTag
-);
+}();
 
 this.UnexpectedTags = function(){
 	/**
@@ -7881,7 +7925,8 @@ this.UnexpectedTags = function(){
 
 }.call(
 	this,
-	this.ECMAScriptTags
+	this.ECMAScriptTags,
+	this.OnlyStatementEndTags
 );
 
 
@@ -8355,7 +8400,7 @@ this.PlusContextTags = function(PlusSiblingTag, IncrementSiblingTag){
 	this.IncrementSiblingTag
 );
 
-this.ReturnContextTags = function(StatementEndTag, StatementBreakTag){
+this.ReturnContextTags = function(OnlyStatementEndTags){
 	/**
 	 * return 上下文标签列表
 	 */
@@ -8363,8 +8408,7 @@ this.ReturnContextTags = function(StatementEndTag, StatementBreakTag){
 		ExpressionTags.call(this);
 		
 		this.register(
-			new StatementEndTag(),
-			new StatementBreakTag()
+			new OnlyStatementEndTags()
 		);
 	};
 	ReturnContextTags = new Rexjs(ReturnContextTags, ExpressionTags);
@@ -8375,8 +8419,7 @@ this.ReturnContextTags = function(StatementEndTag, StatementBreakTag){
 	
 	return ReturnContextTags;
 }(
-	this.StatementEndTag,
-	this.StatementBreakTag
+	this.OnlyStatementEndTags
 );
 
 this.SwitchBlockTags = function(OpenSwitchBodyTag){

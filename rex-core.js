@@ -1525,21 +1525,30 @@ this.SyntaxTags = function(List, sort, distinct){
 		},
 		regexp: /[^\S\s]/g,
 		/**
-		 * 添加语法标签，与 push 方法不同的是，register 会进过过滤器，而 push 不会
+		 * 注册添加语法标签，与 push 方法不同的是，register 会进过过滤器，而 push 不会
 		 */
 		register: function(_rest){
 			forEach(
 				arguments,
-				function(tag){
+				function(obj){
+					// 如果对象也是一个标签列表
+					if(
+						obj instanceof SyntaxTags
+					){
+						// 再次调用注册方法
+						this.register.apply(this, obj);
+						return;
+					}
+
 					// 检查是否应该过滤该标签
 					if(
-						this.filter(tag)
+						this.filter(obj)
 					){
 						return;
 					}
 					
 					// 添加标签
-					this.push(tag);
+					this.push(obj);
 				},
 				this,
 				true
