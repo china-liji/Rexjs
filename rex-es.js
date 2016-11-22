@@ -4064,6 +4064,50 @@ this.ObjectPropertyNameTag = function(ObjectItemExpression, ObjectValueStatement
 	RegExp
 );
 
+this.ObjectStringNameTag = function(StringTag, require, visitor){
+	/**
+	 * 对象字符串属性名标签
+	 * @param {Number} _type - 标签类型
+	 */
+	function ObjectStringNameTag(_type){
+		StringTag.call(this, _type);
+	};
+	ObjectStringNameTag = new Rexjs(ObjectStringNameTag, StringTag);
+
+	ObjectStringNameTag.props({
+		require: require,
+		visitor: visitor
+	});
+
+	return ObjectStringNameTag;
+}(
+	this.StringTag,
+	this.ObjectPropertyNameTag.prototype.require,
+	this.ObjectPropertyNameTag.prototype.visitor
+);
+
+this.ObjectNumberNameTag = function(NumberTag, require, visitor){
+	/**
+	 * 对象数字属性名标签
+	 * @param {Number} _type - 标签类型
+	 */
+	function ObjectNumberNameTag(_type){
+		NumberTag.call(this, _type);
+	};
+	ObjectNumberNameTag = new Rexjs(ObjectNumberNameTag, NumberTag);
+
+	ObjectNumberNameTag.props({
+		require: require,
+		visitor: visitor
+	});
+
+	return ObjectNumberNameTag;
+}(
+	this.NumberTag,
+	this.ObjectPropertyNameTag.prototype.require,
+	this.ObjectPropertyNameTag.prototype.visitor
+);
+
 this.ObjectNameSeparatorTag = function(ColonTag){
 	/**
 	 * 对象名称的分隔符标签
@@ -8935,7 +8979,7 @@ this.ObjectIdentifierNameContextTags = function(ObjectNameSeparatorTags, Shortha
 	this.ShorthandItemSeparatorTag
 );
 
-this.ObjectNameTags = function(CloseEmptyObjectTag, ObjectIdentifierNameTag, ObjectPropertyNameTag){
+this.ObjectNameTags = function(CloseEmptyObjectTag, ObjectIdentifierNameTag, ObjectNumberNameTag, ObjectPropertyNameTag, ObjectStringNameTag){
 	/**
 	 * 对象名称标签列表
 	 */
@@ -8945,7 +8989,9 @@ this.ObjectNameTags = function(CloseEmptyObjectTag, ObjectIdentifierNameTag, Obj
 		this.register(
 			new CloseEmptyObjectTag(),
 			new ObjectIdentifierNameTag(),
-			new ObjectPropertyNameTag()
+			new ObjectNumberNameTag(),
+			new ObjectPropertyNameTag(),
+			new ObjectStringNameTag()
 		);
 	};
 	ObjectNameTags = new Rexjs(ObjectNameTags, ECMAScriptTags);
@@ -8958,7 +9004,9 @@ this.ObjectNameTags = function(CloseEmptyObjectTag, ObjectIdentifierNameTag, Obj
 }(
 	this.CloseEmptyObjectTag,
 	this.ObjectIdentifierNameTag,
-	this.ObjectPropertyNameTag
+	this.ObjectNumberNameTag,
+	this.ObjectPropertyNameTag,
+	this.ObjectStringNameTag
 );
 
 this.OpenBlockContextTags = function(CloseEmptyBlockTag){
