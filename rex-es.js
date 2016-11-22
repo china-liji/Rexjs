@@ -3754,7 +3754,7 @@ arrayItemSparatorTag = new this.ArrayItemSparatorTag();
 
 
 // 对象相关
-void function(IdentifierTag, objectItemSeparatorTag, closeObjectTag){
+void function(IdentifierTag, objectItemSeparatorTag, closeObjectTag, closeObjectComputedNameTag){
 
 this.ObjectItemExpression = function(){
 	/**
@@ -3769,6 +3769,7 @@ this.ObjectItemExpression = function(){
 	ObjectItemExpression = new Rexjs(ObjectItemExpression, Expression);
 
 	ObjectItemExpression.props({
+		computed: false,
 		/**
 		 * 提取表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
@@ -3840,6 +3841,37 @@ this.ObjectIdentifierItemExpression = function(ObjectItemExpression, config, ext
 	this.ObjectItemExpression.prototype.extractTo
 );
 
+this.ObjectExpression = function(config){
+	/**
+	 * 对象表达式
+	 * @param {Context} open - 起始标签上下文
+	 */
+	function ObjectExpression(open){
+		PartnerExpression.call(this, open);
+	};
+	ObjectExpression = new Rexjs(ObjectExpression, PartnerExpression);
+
+	ObjectExpression.static({
+		config: config
+	});
+
+	ObjectExpression.props({
+		/**
+		 * 提取表达式文本内容
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 */
+		// extractTo: function(contentBuilder){debugger
+			
+		// },
+		useCreate: false
+	});
+
+	return ObjectExpression;
+}(
+	// config
+	new SyntaxConfig("computedName")
+);
+
 this.ObjectStatement = function(){
 	/**
 	 * 对象语句
@@ -3892,6 +3924,41 @@ this.ObjectStatement = function(){
 	});
 
 	return ObjectStatement;
+}();
+
+this.ObjectComputedNameStatement = function(){
+	/**
+	 * 对象计算式语句
+	 * @param {Statements} statements - 该语句将要所处的语句块
+	 */
+	function ObjectComputedNameStatement(statements){
+		ECMAScriptStatement.call(this, statements);
+	};
+	ObjectComputedNameStatement = new Rexjs(ObjectComputedNameStatement, ECMAScriptStatement);
+
+	ObjectComputedNameStatement.props({
+		/**
+		 * 捕获处理异常
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 语法标签上下文
+		 */
+		catch: function(parser, context){
+			// 如果不是结束中括号
+			if(
+				context.content !== "]"
+			){
+				// 报错
+				parser.error(context);
+				return null;
+			}
+
+			// 跳出语句并设置 inner
+			this.out().name.inner = this.expression;
+			return closeObjectComputedNameTag;
+		}
+	})
+
+	return ObjectComputedNameStatement;
 }();
 
 this.ObjectValueStatement = function(){
@@ -3957,7 +4024,7 @@ this.OpenObjectTag = function(OpenBraceTag, ObjectExpression, ObjectStatement){
 		visitor: function(parser, context, statement, statements){
 			(
 				// 设置当前表达式
-				statement.expression = new PartnerExpression(context)
+				statement.expression = new ObjectExpression(context)
 			)
 			// 设置 inner
 			.inner = new ListExpression(",");
@@ -4106,6 +4173,93 @@ this.ObjectNumberNameTag = function(NumberTag, require, visitor){
 	this.NumberTag,
 	this.ObjectPropertyNameTag.prototype.require,
 	this.ObjectPropertyNameTag.prototype.visitor
+);
+
+this.OpenObjectComputedNameTag = function(OpenBracketTag, ObjectItemExpression, ObjectComputedNameStatement){
+	/**
+	 * 起始对象计算式属性名标签
+	 * @param {Number} _type - 标签类型
+	 */
+	function OpenObjectComputedNameTag(_type){
+		OpenBracketTag.call(this, _type);
+	};
+	OpenObjectComputedNameTag = new Rexjs(OpenObjectComputedNameTag, OpenBracketTag);
+
+	OpenObjectComputedNameTag.props({
+		/**
+		 * 获取此标签接下来所需匹配的标签列表
+		 * @param {TagsMap} tagsMap - 标签集合映射
+		 */
+		require: function(tagsMap){
+			return tagsMap.expressionTags;
+		},
+		/**
+		 * 标签访问器
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 标签上下文
+		 * @param {Statement} statement - 当前语句
+		 * @param {Statements} statements - 当前语句块
+		 */
+		visitor: function(parser, context, statement, statements){
+			(
+				// 设置当前表达式
+				statement.expression = new ObjectItemExpression(
+					new PartnerExpression(context)
+				)
+			)
+			// 设置表达式 computed 属性
+			.computed = true;
+
+			// 设置对象表达式的 useCreate 属性
+			statement.target.expression.useCreate = true;
+			// 设置当前属性
+			statements.statement = new ObjectComputedNameStatement(statements);
+		}
+	});
+
+	return OpenObjectComputedNameTag;
+}(
+	this.OpenBracketTag,
+	this.ObjectItemExpression,
+	this.ObjectComputedNameStatement
+);
+
+this.CloseObjectComputedNameTag = function(CloseBracketTag, ObjectValueStatement){
+	/**
+	 * 结束对象计算式属性名标签
+	 * @param {Number} _type - 标签类型
+	 */
+	function CloseObjectComputedNameTag(_type){
+		CloseBracketTag.call(this, _type);
+	};
+	CloseObjectComputedNameTag = new Rexjs(CloseObjectComputedNameTag, CloseBracketTag);
+
+	CloseObjectComputedNameTag.props({
+		/**
+		 * 获取此标签接下来所需匹配的标签列表
+		 * @param {TagsMap} tagsMap - 标签集合映射
+		 */
+		require: function(tagsMap){
+			return tagsMap.objectNameSeparatorTags;
+		},
+		/**
+		 * 标签访问器
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 标签上下文
+		 * @param {Statement} statement - 当前语句
+		 * @param {Statements} statements - 当前语句块
+		 */
+		visitor: function(parser, context, statement, statements){
+			statement.expression.name.close = context;
+
+			statements.statement = new ObjectValueStatement(statements);
+		}
+	});
+
+	return CloseObjectComputedNameTag;
+}(
+	this.CloseBracketTag,
+	this.ObjectValueStatement
 );
 
 this.ObjectNameSeparatorTag = function(ColonTag){
@@ -4288,6 +4442,7 @@ this.CloseEmptyObjectTag = function(CloseObjectTag){
 
 objectItemSeparatorTag = new this.ObjectItemSeparatorTag();
 closeObjectTag = new this.CloseObjectTag();
+closeObjectComputedNameTag = new this.CloseObjectComputedNameTag();
 
 }.call(
 	this,
@@ -4295,6 +4450,8 @@ closeObjectTag = new this.CloseObjectTag();
 	// objectItemSeparatorTag
 	null,
 	// closeObjectTag
+	null,
+	// closeObjectComputedNameTag
 	null
 );
 
@@ -8979,7 +9136,7 @@ this.ObjectIdentifierNameContextTags = function(ObjectNameSeparatorTags, Shortha
 	this.ShorthandItemSeparatorTag
 );
 
-this.ObjectNameTags = function(CloseEmptyObjectTag, ObjectIdentifierNameTag, ObjectNumberNameTag, ObjectPropertyNameTag, ObjectStringNameTag){
+this.ObjectNameTags = function(CloseEmptyObjectTag, ObjectIdentifierNameTag, ObjectNumberNameTag, ObjectPropertyNameTag, ObjectStringNameTag, OpenObjectComputedNameTag){
 	/**
 	 * 对象名称标签列表
 	 */
@@ -8991,7 +9148,8 @@ this.ObjectNameTags = function(CloseEmptyObjectTag, ObjectIdentifierNameTag, Obj
 			new ObjectIdentifierNameTag(),
 			new ObjectNumberNameTag(),
 			new ObjectPropertyNameTag(),
-			new ObjectStringNameTag()
+			new ObjectStringNameTag(),
+			new OpenObjectComputedNameTag()
 		);
 	};
 	ObjectNameTags = new Rexjs(ObjectNameTags, ECMAScriptTags);
@@ -9006,7 +9164,8 @@ this.ObjectNameTags = function(CloseEmptyObjectTag, ObjectIdentifierNameTag, Obj
 	this.ObjectIdentifierNameTag,
 	this.ObjectNumberNameTag,
 	this.ObjectPropertyNameTag,
-	this.ObjectStringNameTag
+	this.ObjectStringNameTag,
+	this.OpenObjectComputedNameTag
 );
 
 this.OpenBlockContextTags = function(CloseEmptyBlockTag){
