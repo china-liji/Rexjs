@@ -1084,17 +1084,7 @@ this.SyntaxError = function(MappingBuilder, e){
 			this.reference = true;
 		}
 
-		// 如果提供了错误描述
-		if(
-			_description
-		){
-			this.description = _description;
-		}
-		// 设置默认描述
-		else {
-			this.description = "Unexpected " + context.tag.throw + (content ? " " + content : "");
-		}
-		
+		this.description = _description || "Unexpected " + context.tag.throw + (content ? " " + content : "");
 		this.file = file;
 		this.context = context;
 	};
@@ -1261,7 +1251,7 @@ this.TagData = function(){
 // 标签数据子类相关
 void function(TagData, parseInt){
 
-this.TagClass = function(CLASS_NONE, CLASS_STATEMENT, CLASS_STATEMENT_BEGIN, CLASS_EXPRESSION, CLASS_EXPRESSION_CONTEXT, CLASS_STATEMENT_END){
+this.TagClass = function(CLASS_NONE, CLASS_STATEMENT, CLASS_STATEMENT_BEGIN, CLASS_STATEMENT_END, CLASS_EXPRESSION, CLASS_EXPRESSION_CONTEXT){
 	/**
 	 * 标签类别
 	 * @param {Number} value - 标签类别
@@ -1302,15 +1292,15 @@ this.TagClass = function(CLASS_NONE, CLASS_STATEMENT, CLASS_STATEMENT_BEGIN, CLA
 	parseInt(10, 2),
 	// CLASS_STATEMENT_BEGIN
 	parseInt(110, 2),
-	// CLASS_EXPRESSION
-	parseInt(1110, 2),
-	// CLASS_EXPRESSION_CONTEXT
-	parseInt(10000, 2),
 	// CLASS_STATEMENT_END
-	parseInt(10010, 2)
+	parseInt(1010, 2),
+	// CLASS_EXPRESSION
+	parseInt(10110, 2),
+	// CLASS_EXPRESSION_CONTEXT
+	parseInt(100000, 2)
 );
 
-this.TagType = function(TYPE_MATCHABLE, TYPE_UNEXPECTED, TYPE_MISTAKABLE){
+this.TagType = function(TYPE_MATCHABLE, TYPE_UNEXPECTED, TYPE_MISTAKABLE, TYPE_ILLEGAL){
 	/**
 	 * 标签类型
 	 * @param {Number} value - 标签类型
@@ -1318,6 +1308,7 @@ this.TagType = function(TYPE_MATCHABLE, TYPE_UNEXPECTED, TYPE_MISTAKABLE){
 	function TagType(value){
 		TagData.call(this, value);
 
+		this.illegal = (value & TYPE_ILLEGAL) === TYPE_ILLEGAL;
 		this.matchable = (value & TYPE_MATCHABLE) === TYPE_MATCHABLE;
 		this.mistakable = (value & TYPE_MISTAKABLE) === TYPE_MISTAKABLE;
 		this.unexpected = (value & TYPE_UNEXPECTED) === TYPE_UNEXPECTED;
@@ -1325,13 +1316,15 @@ this.TagType = function(TYPE_MATCHABLE, TYPE_UNEXPECTED, TYPE_MISTAKABLE){
 	TagType = new Rexjs(TagType);
 
 	TagType.static({
+		TYPE_ILLEGAL: TYPE_ILLEGAL,
 		TYPE_MATCHABLE: TYPE_MATCHABLE,
-		TYPE_UNEXPECTED: TYPE_UNEXPECTED,
-		TYPE_MISTAKABLE: TYPE_MISTAKABLE
+		TYPE_MISTAKABLE: TYPE_MISTAKABLE,
+		TYPE_UNEXPECTED: TYPE_UNEXPECTED
 	});
 
 	TagType.props({
-		matchable: true,
+		illegal: false,
+		matchable: false,
 		mistakable: false,
 		unexpected: false
 	});
@@ -1343,7 +1336,9 @@ this.TagType = function(TYPE_MATCHABLE, TYPE_UNEXPECTED, TYPE_MISTAKABLE){
 	// TYPE_UNEXPECTED
 	parseInt(100, 2),
 	// TYPE_MISTAKABLE
-	parseInt(1100, 2)
+	parseInt(1100, 2),
+	// TYPE_ILLEGAL
+	parseInt(10100, 2)
 );
 
 this.SyntaxTag = function(SyntaxElement, TagClass, TagType){
@@ -1409,15 +1404,14 @@ this.SyntaxTag = function(SyntaxElement, TagClass, TagType){
 
 
 // 子类标签相关
-void function(SyntaxTag){
+void function(SyntaxTag, TagType){
 
 this.WhitespaceTag = function(){
 	/**
 	 * 空白字符标签
-	 * @param {Number} _type - 标签类型
 	 */
-	function WhitespaceTag(_type){
-		SyntaxTag.call(this, _type);
+	function WhitespaceTag(){
+		SyntaxTag.call(this);
 	};
 	WhitespaceTag = new Rexjs(WhitespaceTag, SyntaxTag);
 	
@@ -1431,10 +1425,9 @@ this.WhitespaceTag = function(){
 this.LineTerminatorTag = function(WhitespaceTag){
 	/**
 	 * 行结束符标签
-	 * @param {Number} _type - 标签类型
 	 */
-	function LineTerminatorTag(_type){
-		WhitespaceTag.call(this, _type);
+	function LineTerminatorTag(){
+		WhitespaceTag.call(this);
 	};
 	LineTerminatorTag = new Rexjs(LineTerminatorTag, WhitespaceTag);
 	
@@ -1460,36 +1453,34 @@ this.LineTerminatorTag = function(WhitespaceTag){
 	this.WhitespaceTag
 );
 
-this.IllegalTag = function(TYPE_UNEXPECTED){
+this.IllegalTag = function(){
 	/**
 	 * 非法的标签，一般指定的是两次匹配字符串之间的非法内容
-	 * @param {Number} _type - 标签类型
 	 */
-	function IllegalTag(_type){
-		SyntaxTag.call(this, _type);
+	function IllegalTag(){
+		SyntaxTag.call(this);
 	};
 	IllegalTag = new Rexjs(IllegalTag, SyntaxTag);
 	
 	IllegalTag.props({
-		$type: TYPE_UNEXPECTED,
+		$type: TagType.TYPE_ILLEGAL,
 		throw: "token ILLEGAL"
 	});
 	
 	return IllegalTag;
-}(
-	this.TagType.TYPE_UNEXPECTED
-);
+}();
 
 }.call(
 	this,
-	this.SyntaxTag
+	this.SyntaxTag,
+	this.TagType
 );
 
 
 // 标签列表相关
-void function(SyntaxTag, RegExp, TYPE_MATCHABLE, TYPE_MISTAKABLE){
+void function(SyntaxTag, RegExp){
 
-this.SyntaxTags = function(List, sort, distinct){
+this.SyntaxTags = function(List, getSortedValue, distinct){
 	/**
 	 * 语法标签列表
 	 */
@@ -1512,8 +1503,17 @@ this.SyntaxTags = function(List, sort, distinct){
 		 * 将所有标签准备就绪，即排序和初始化正则表达式，ps：这是个耗性能的方法
 		 */
 		ready: function(){
-			// 排序标签
-			sort(this);
+			var copy = this.slice(0);
+		
+			// 对标签进行排序
+			this.sort(function(tag1, tag2){
+				return (
+					getSortedValue(copy, tag1, tag2, "matchable", true) ||
+					getSortedValue(copy, tag1, tag2, "mistakable", true) ||
+					getSortedValue(copy, tag1, tag2, "illegal", false) ||
+					getSortedValue(copy, tag1, tag2, "unexpected", false, true)
+				);
+			});
 			
 			// 初始化正则表达式
 			this.regexp = new RegExp(
@@ -1559,77 +1559,62 @@ this.SyntaxTags = function(List, sort, distinct){
 	return SyntaxTags;
 }(
 	this.List,
-	// sort
-	function(tags){
-		var copy = tags.slice(0);
-		
-		// 对标签进行排序
-		tags.sort(function(tag1, tag2){
-			var type1 = tag1.type, type2 = tag2.type;
+	// getSortedValue
+	function(copy, tag1, tag2, property, value, _bothNot){
+		var type1 = tag1.type, type2 = tag2.type;
 
-			// 如果 tag1 是可捕获的
-			if(
-				type1.matchable
-			){
-				// 如果 tag2 不可以捕获的
+		switch(
+			value
+		){
+			// 如果第一个类型属性值为 value
+			case type1[property]:
+				// 如果第二个类型属性值不为 value
 				if(
-					!type2.matchable
+					!type2[property]
 				){
-					// 将 tag1 插入到 tag2 前面
+					// 将第一个标签插入到第二个标签前面
 					return -1;
 				}
-			}
-			// 如果 tag2 是可以捕获的，而 tag1 不可捕获
-			else if(
-				type2.matchable
-			){
-				// 将 tag2 插入到 tag1 前面
+
+				// 两个类型属性值都是 value
+				break;
+
+			// 如果第二个类型属性值为 value，而第一个类型属性值不为 value
+			case type2[property]:
+				// 将第二个标签插入到第一个标签前面
 				return 1;
-			}
-			// 如果 tag1、tag2 都不是可捕获的
-			else {
-				// 如果 tag1 是可能被误解的
+
+			// 两个类型属性值都不为 value
+			default:
+				// 如果在都不为 value 的情况下，还需要继续对比
 				if(
-					type1.mistakable
+					_bothNot
 				){
-					// 如果 tag2 不是可能被误解的
-					if(
-						!type2.mistakable
-					){
-						// 将 tag1 插入到 tag2 前面
-						return -1;
-					}
+					break;
 				}
-				// 如果 tag2 是可能被误解的，而 tag1 不是
-				else if(
-					type2.mistakable
-				){
-					// 将 tag2 插入到 tag1 前面
-					return 1;
-				}
-			}
 
-			// 进入这里，要不两个都是可捕获，要不两个都是可误解的
+				// 进行下一个属性的比较
+				return 0;
+		}
 
-			// 如果 tag1 的排序更大
-			if(
-				tag1.order - tag2.order > 0
-			){
-				// 将 tag1 插入到 tag2 前面
-				return -1;
-			}
-			
-			// 如果 tag2 的排序更大
-			if(
-				tag1.order - tag2.order < 0
-			){
-				// 将 tag2 插入到 tag1 前面
-				return 1;
-			}
-			
-			// 默认，即，order 相同，则不改变排序。ps：不能使用 0，0 会使 tag1 排到 tag2 前面
-			return copy.indexOf(tag1) - copy.indexOf(tag2);
-		});
+		// 如果 tag1 的排序更大
+		if(
+			tag1.order - tag2.order > 0
+		){
+			// 将 tag1 插入到 tag2 前面
+			return -1;
+		}
+		
+		// 如果 tag2 的排序更大
+		if(
+			tag1.order - tag2.order < 0
+		){
+			// 将 tag2 插入到 tag1 前面
+			return 1;
+		}
+		
+		// 默认，即，order 相同，则不改变排序。ps：在某些浏览器的 sort 中，不能使用 0，0 会使 tag1 排到 tag2 前面
+		return copy.indexOf(tag1) - copy.indexOf(tag2);
 	},
 	// distinct
 	function(tags){
@@ -1737,9 +1722,7 @@ this.SyntaxTagsMap = function(){
 }.call(
 	this,
 	this.SyntaxTag,
-	RegExp,
-	this.SyntaxTag.TYPE_MATCHABLE,
-	this.SyntaxTag.TYPE_MISTAKABLE
+	RegExp
 );
 
 
@@ -1790,7 +1773,7 @@ this.Expression = function(SyntaxConfig, parseInt){
 	parseInt
 );
 
-this.Statement = function(TYPE_MISTAKABLE, CLASS_STATEMENT, STATE_STATEMENT_ENDABLE){
+this.Statement = function(){
 	/**
 	 * 语句
 	 * @param {Statements} statements - 该语句将要所处的语句块
@@ -1865,11 +1848,7 @@ this.Statement = function(TYPE_MISTAKABLE, CLASS_STATEMENT, STATE_STATEMENT_ENDA
 	});
 	
 	return Statement;
-}(
-	SyntaxTag.TYPE_MISTAKABLE,
-	SyntaxTag.CLASS_STATEMENT,
-	this.Expression.STATE_STATEMENT_ENDABLE
-);
+}();
 
 this.Statements = function(Statement, STATE_STATEMENT_ENDED){
 	/**
@@ -2247,11 +2226,11 @@ this.SyntaxParser = function(SyntaxRegExp, SyntaxError, Position, Context, Conte
 		if(
 			statement.expression
 		){
-			var mistakable = tag.type.mistakable, tagClass = tag.class;
+			var tagClass = tag.class, tagType = tag.type, mistakable = tagType.mistakable;
 
-			// 如果标签不是可能被误解的
 			if(
-				mistakable ? tagClass.statement : true
+				// 如果标签是可能被误解的而且是语句标签 或 标签是合法的非误解标签
+				mistakable ? tagClass.statement : !tagType.illegal
 			){
 				for(
 					;;

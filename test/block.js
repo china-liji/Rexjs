@@ -34,6 +34,70 @@ test.true(
 	true
 );
 
+test.false(
+	"语句块内的不完整属性访问器",
+	"{ a. }",
+	function(parser, err){
+		return err.context.tag instanceof Rexjs.CloseBraceTag ? "" : "没有识别出结束大括号";
+	}
+);
+
+test.false(
+	"语句块内的不完整 if 语句",
+	"{ if }",
+	function(parser, err){
+		return err.context.tag instanceof Rexjs.CloseBraceTag ? "" : "没有识别出结束大括号";
+	}
+);
+
+test.false(
+	"语句块内的不完整 try 语句",
+	"{ try }",
+	function(parser, err){
+		return err.context.tag instanceof Rexjs.CloseBraceTag ? "" : "没有识别出结束大括号";
+	}
+);
+
+test.false(
+	"语句块内的不完整 do while 语句",
+	"{ do;while }",
+	function(parser, err){
+		return err.context.tag instanceof Rexjs.CloseBraceTag ? "" : "没有识别出结束大括号";
+	}
+);
+
+test.false(
+	"语句块内的不完整函数声明语句",
+	"{ function a }",
+	function(parser, err){
+		return err.context.tag instanceof Rexjs.CloseBraceTag ? "" : "没有识别出结束大括号";
+	}
+);
+
+test.false(
+	"语句块内的不完整 var 语句",
+	"{ var }",
+	function(parser, err){
+		return err.context.tag instanceof Rexjs.CloseBraceTag ? "" : "没有识别出结束大括号";
+	}
+);
+
+test.false(
+	"语句块内的不完整 while 语句",
+	"{ while }",
+	function(parser, err){
+		return err.context.tag instanceof Rexjs.CloseBraceTag ? "" : "没有识别出结束大括号";
+	}
+);
+
+test.false(
+	"语句块内的不完整 switch 语句",
+	"{ switch }",
+	function(parser, err){
+		return err.context.tag instanceof Rexjs.CloseBraceTag ? "" : "没有识别出结束大括号";
+	}
+);
+
 test.groupEnd();
 
 }(
