@@ -1881,7 +1881,7 @@ this.Statements = function(Statement, STATE_STATEMENT_ENDED){
 
 			// 遍历所有语句
 			for(
-				var i = 0, j = this.length;i < j;i++
+				var i = this.min, j = this.length;i < j;i++
 			){
 				var statement = this[i];
 
@@ -1907,6 +1907,7 @@ this.Statements = function(Statement, STATE_STATEMENT_ENDED){
 		},
 		join: ";",
 		length: 0,
+		min: 0,
 		/**
 		 * 创建新语句
 		 */
@@ -1962,13 +1963,14 @@ this.ListExpression = function(){
 		/**
 		 * 提取表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 * @param {ContentBuilder} _anotherBuilder - 另一个内容生成器，一般用于副内容的生成或记录
 		 */
-		extractTo: function(contentBuilder){
-			var length = this.length;
+		extractTo: function(contentBuilder, _anotherBuilder){
+			var min = this.min, length = this.length;
 
-			// 如果长度为 0
+			// 如果长度小于等于最小索引值
 			if(
-				length === 0
+				length <= min
 			){
 				return;
 			}
@@ -1976,21 +1978,22 @@ this.ListExpression = function(){
 			var join = this.join;
 
 			// 先提取第一项
-			this[0].extractTo(contentBuilder);
+			this[min].extractTo(contentBuilder, _anotherBuilder);
 
 			// 遍历项
 			for(
-				var i = 1, j = length;i < j;i++
+				var i = min + 1, j = length;i < j;i++
 			){
 				// 添加表达式连接符
 				contentBuilder.appendString(join);
 
 				// 提取项表达式
-				this[i].extractTo(contentBuilder);
+				this[i].extractTo(contentBuilder, _anotherBuilder);
 			}
 		},
 		join: "",
-		length: 0
+		length: 0,
+		min: 0
 	});
 	
 	return ListExpression;
@@ -2034,13 +2037,14 @@ this.PartnerExpression = function(end, endWith){
 		/**
 		 * 提取文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 * @param {ContentBuilder} _anotherBuilder - 另一个内容生成器，一般用于副内容的生成或记录
 		 */
-		extractTo: function(contentBuilder){
+		extractTo: function(contentBuilder, _anotherBuilder){
 			// 追加起始标签内容
 			contentBuilder.appendContext(this.open);
 			
 			// 追加中间内容
-			this.inner.extractTo(contentBuilder);
+			this.inner.extractTo(contentBuilder, _anotherBuilder);
 			
 			// 追加结束标签内容
 			contentBuilder.appendContext(this.close);

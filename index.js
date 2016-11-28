@@ -1,4 +1,7 @@
-{ switch }
+function name(a = 1, b = 5, c, d = 100, ...e){
+	"use strict"
+	var a = 1;
+}
 
 /*var a = 1
 
