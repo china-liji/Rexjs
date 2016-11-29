@@ -21,8 +21,8 @@
   而且这两方法可能会被多次嵌套、迭代调用，所以不提供，而 visitor 方法只会单次执行一次，所以 visitor 提供了这 2 个参数。
 
 ~ ECMAScript 解析器中，
-   1. 用标签确定语句结束时，require 方法中需返回 tagsMap.unexpectedTags（当结束标签"具有"分号性质）
-       或 tagsMap.statementEndTags（当结束标签"不具有"分号性质），目的是让所有语句都进入 try、catch，
+   1. 用标签确定语句结束时，require 方法中需返回 tagsMap.unexpectedTags（当表达式"具有"分号性质）
+       或 tagsMap.statementEndTags（当表达式"不具有"分号性质），目的是让所有语句都进入 try、catch，
 	   达到通知每个语句结束，毕竟 ECMAScript 没要求语句必须以分号结束，也防止没有分号但有换行符的情况被错误解析。
    2. ECMAScript 解析器中，所有用标签确定语句开始时，require 方法中需返回 tagsMap.statements，
        而不是 tagsMap.unexpectedTags 或 tagsMap.statementEndTags，

@@ -1,7 +1,4 @@
-function name(a = 1, b = 5, c, d = 100, ...e){
-	"use strict"
-	var a = 1;
-}
+function a(){}
 
 /*var a = 1
 

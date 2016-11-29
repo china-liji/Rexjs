@@ -32,6 +32,14 @@ test.true(
 );
 
 test.false(
+	"缺少函数名的函数声明",
+	"function (){}",
+	function(parser, err){
+		return err.context.tag instanceof Rexjs.OpenGroupingTag ? "" : "没有识别出小括号";
+	}
+);
+
+test.false(
 	"省略参数出现在非最后位置",
 	"function a(a, ...b, c){}",
 	function(parser, err){

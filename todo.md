@@ -143,6 +143,16 @@ async
 --------
 已完成功能 ↓
 --------
+函数表达式解析完成 - 2016.11.29
+	- 基本解析
+	- 省略参数
+	- 默认参数
+
+解析机制完善 - 2016.11.29
+	- 增加 DefaultExpression
+	- 设置所有可为空的匹配组语句的表达式为 new DefaultExpression()
+	- 移除所有类似 CloseEmptyBlockTag、CloseEmptyCallTag 标签
+
 函数声明解析完成 - 2016.11.28
 	- 基本解析
 	- 省略参数

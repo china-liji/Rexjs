@@ -1504,7 +1504,7 @@ this.SyntaxTags = function(List, getSortedValue, distinct){
 		 */
 		ready: function(){
 			var copy = this.slice(0);
-		
+
 			// 对标签进行排序
 			this.sort(function(tag1, tag2){
 				return (
@@ -1570,7 +1570,7 @@ this.SyntaxTags = function(List, getSortedValue, distinct){
 			case type1[property]:
 				// 如果第二个类型属性值不为 value
 				if(
-					!type2[property]
+					type2[property] !== value
 				){
 					// 将第一个标签插入到第二个标签前面
 					return -1;
@@ -2019,6 +2019,35 @@ this.EmptyExpression = function(){
 	
 	return EmptyExpression;
 }();
+
+this.DefaultExpression = function(EmptyExpression, STATE_STATEMENT_ENDED){
+	/**
+	 * 默认空表达式，一般用于语句的默认表达式
+	 */
+	function DefaultExpression(){
+		EmptyExpression.call(this, null);
+	};
+	DefaultExpression = new Rexjs(DefaultExpression, EmptyExpression);
+
+	DefaultExpression.props({
+		/**
+		 * 获取表达式状态
+		 */
+		get state(){
+			return STATE_STATEMENT_ENDED;
+		},
+		/**
+		 * 设置表达式状态
+		 * @param {Number} value - 表达式状态
+		 */
+		set state(value){}
+	});
+
+	return DefaultExpression;
+}(
+	this.EmptyExpression,
+	this.EmptyExpression.STATE_STATEMENT_ENDED
+);
 
 this.PartnerExpression = function(end, endWith){
 	/**
