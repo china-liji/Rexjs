@@ -73,7 +73,7 @@ test.false(
 		return err.context.tag instanceof Rexjs.DotAccessorTag ? "" : "没有识别出多余的点标签";
 	},
 	function(parser, err){
-		return err.context.position.column === 10 ? "" : "没有正确的识别出出错位置";
+		return err.context.position.column === 9 ? "" : "没有正确的识别出出错位置";
 	}
 );
 

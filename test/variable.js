@@ -3,6 +3,7 @@ void function(test){
 test.group("变量测试");
 
 test.true("字母变量", "abc");
+test.true("带关键字的变量", "var1;function中文;while$;for_;in1$;with2中文;");
 test.true("字母与数字变量", "a123");
 test.true("下划线变量", "_");
 test.true("$变量", "$");

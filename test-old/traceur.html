@@ -3,15 +3,36 @@
 	<head></head>
 	<body>
 		<script type="module" src="profile.js">
-			a:b:c:if(1){}
+			var a = 1
+
+!{
+	a,
+	b: 2,
+	var: 3,
+	c,
+	for: 4,
+	d: 5,
+	"123": 123,
+	456: 456,
+	[a += 789]: 789,
+	[a += 222]: 789,
+	.99: 100,
+	[a += 333]: 789,
+	fn(a = 1, b = 2, ...c){
+
+	}
+}
+
 		</script>
 		
 		<!-- 加载Traceur编译器 -->
 		<script src="traceur.js" type="text/javascript"></script>
 		<!-- 打开实验选项，否则有些特性可能编译不成功 -->
 		<script>
-			new traceur.WebPageTranscoder(document.location.href).run();
-			//traceur.options.experimental = true;
+			var t = new traceur.WebPageTranscoder(document.location.href);
+			
+			t.traceurOptions_.sourceMaps = true
+			t.run();
 		</script>
 	</body>
 </html>

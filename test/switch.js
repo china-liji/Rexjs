@@ -86,7 +86,7 @@ test.false(
 		return err.context.tag instanceof Rexjs.DefaultCaseTag ? "" : "没有正确捕获 default 关键字";
 	},
 	function(parser, err){
-		return err.context.position.column === 29 ? "" : "没有正确的捕获到 default 关键字的位置";
+		return err.context.position.column === 28 ? "" : "没有正确的捕获到 default 关键字的位置";
 	}
 );
 

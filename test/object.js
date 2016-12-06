@@ -18,34 +18,126 @@ test.true("多个字符串属性名并带有一一对应的逗号", "!{ 'a': 1, 
 test.true("单个数字属性名", "!{ 1: 1 }");
 test.true("多个数字属性名", "!{ 1: 1, 2.22333: 2, 3: 3, 1e+1: 5, 0x1234567890abcdef: 6, .14e+1: 7, 0b10: 8 }");
 test.true("多个字符串属性名并带有一一对应的逗号", "!{ 1: 1, 2: 2, 3: 3, }");
-test.true("所有情况属性名并存", "!{ a, b: 2, var: 3, c, for: 4, d: 5, 'e': 6, if: 7, 8: 8, 9.333: 9 }");
+test.true("单个简写方法", "!{ a(){} }");
+test.true("多个简写方法", "!{ a(){}, b(){} }");
+test.true("多个简写方法并带有一一对应的逗号", "!{ a(){}, b(){}, c(){} }");
+test.true("单个计算式属性", "!{ [1 + 2]: 1 }");
+test.true("多个计算式属性", "!{ [1 + 2]: 1, [2 + 3]: function(){} }");
+test.true("多个计算式属性并带有一一对应的逗号", "!{ [1 + 2]: 1, [2 + 3]: function(){}, [4 + 5 / 6..valueOf()]: 100 }");
+test.true("单个计算式方法", "!{ [1 + 2](){} }");
+test.true("多个计算式方法", "!{ [1 + 2](){}, [2 + 3](){} }");
+test.true("多个计算式方法并带有一一对应的逗号", "!{ [1 + 2](){}, [2 + 3](){}, [4 + 5 / 6..valueOf()](){} }");
+test.true("单个访问器", "!{ get a(){} }");
+test.true("多个访问器", "!{ get a(){}, set a(value){} }");
+test.true("多个访问器并带有一一对应的逗号", "!{ get a(){}, set a(value){}, get b(){}, }");
+test.true("其他形式的访问器", "!{ get ''(){}, get 8(){}, set [1 + 2 + 3](v){}, set var(v){}, get 1(){} }");
+test.true("访问器作为属性名", "!{ get : 1 }");
+test.true("访问器作为简写属性名", "!{ set : 1 }");
+test.true("访问器作为简写函数名", "!{ set(){} }");
+test.true("带访问器属性名的访问器", "!{ set set(a){} }");
+test.true("所有情况属性名并存", "!{ a, b: 2, var: 3, c, for: 4, d: 5, 'e': 6, if: 7, 8: 8, 9.333: 9, get ''(){}, set [1 + 2 + 3](v){}, set var(v){}, get 1(){}, }");
 
-// test.true(
-// 	"复杂的测试",
-// 	SimpleTest.innerContentOf(function(){
-// 		var a = 1;
+test.true(
+	"复杂的测试",
+	SimpleTest.innerContentOf(function(){
+		var a, get, set, e = "e", f = "f", h, i
 
-// 		a += parseInt(10, 2);
-// 		a += parseInt(110, 2);
+		var obj = {
+			.1: 0.1,
+			"string": "stirng",
+			a,
+			b: 1,
+			c(){
 
-// 		a += (1,2,3,3,4, parseInt(parseInt(10000, 2), 2));
+			},
+			d(x, y = 100, ...z){
+				return x + y + z[1]
+			},
+			[(e + "").toString()]: e,
+			[f](){
 
-// 		if(
-// 			a !== 10
-// 		){
-// 			throw "错误的运算结果";
-// 		}
-// 	}),
-// 	true
-// );
+			},
+			["g"](x, y = 100, ...z){
+				return x + y + z[1]
+			},
+			get,
+			set,
+			get: "get",
+			set: "set",
+			get h(){
+				return h
+			},
+			set h(value){
+				h = value + 1
+			},
+			get ["i"](){
+				return i
+			},
+			set ["i"](value = 88){
+				i = value + 2
+			},
+		}
 
-// test.false(
-// 	"函数调用表达式内带其他语句",
-// 	"a(break)",
-// 	function(parser, err){
-// 		return err.context.tag instanceof Rexjs.BreakTag ? "" : "没有识别出 break 关键字";
-// 	}
-// );
+		var names = [
+			"0.1",
+			"string",
+			"a",
+			"b",
+			"c",
+			"d",
+			"e",
+			"f",
+			"g",
+			"h",
+			"i",
+			"get",
+			"set"
+		]
+
+		if(
+			Object.getOwnPropertyNames(obj).sort().join("") !== names.sort().join("")
+		){
+			throw "没有正确解析出对象的每一个项"
+		}
+
+		if(
+			obj.d(1, void 0, 2, 3) !== 104
+		){
+			throw "d方法运算结果有误"
+		}
+
+		if(
+			obj.g(1, void 0, 2, 3) !== 104
+		){
+			throw "g方法运算结果有误"
+		}
+
+		obj.h = 999
+
+		if(
+			obj.h !== 1000
+		){
+			throw "h值获取错误:" + h
+		}
+
+		obj.i = void 0
+
+		if(
+			obj.i !== 90
+		){
+			throw "i值获取错误:" + i
+		}
+	}),
+	true
+);
+
+test.false(
+	"函数调用表达式内带其他语句",
+	"a(break)",
+	function(parser, err){
+		return err.context.tag instanceof Rexjs.BreakTag ? "" : "没有识别出 break 关键字";
+	}
+);
 
 test.false(
 	"非法属性名",
@@ -100,6 +192,65 @@ test.false(
 	"!{ 'abc' }",
 	function(parser, err){
 		return err.context.tag instanceof Rexjs.CloseBraceTag ? "" : "没有识别出结束大括号";
+	}
+);
+
+test.false(
+	"简写方法后面接其他非法字符",
+	"!{ a(){}() }",
+	function(parser, err){
+		return err.context.tag instanceof Rexjs.OpenParenTag ? "" : "没有识别出非法字符";
+	}
+);
+
+test.false(
+	"计算式属性名后面接其他非法字符",
+	"!{ [1] + 1: 1 }",
+	function(parser, err){
+		return err.context.tag instanceof Rexjs.PlusTag ? "" : "没有识别出非法字符";
+	}
+);
+
+test.false(
+	"访问器缺少函数参数及主体",
+	"!{ get var, }",
+	function(parser, err){
+		return err.context.tag instanceof Rexjs.CommaTag ? "" : "没有识别出非法字符";
+	}
+);
+
+test.false(
+	"访问器后面接冒号",
+	"!{ get var(){}: 1 }",
+	function(parser, err){
+		return err.context.tag instanceof Rexjs.ColonTag ? "" : "没有识别出非法字符";
+	}
+);
+
+test.false(
+	"带参数的获取器",
+	"!{ get var(a){} }",
+	function(parser, err){
+		return err.context.tag instanceof Rexjs.IdentifierTag ? "" : "没有识别出访问器参数";
+	}
+);
+
+test.false(
+	"缺少参数的设置器",
+	"!{ set var(){} }",
+	function(parser, err){
+		return err.context.tag instanceof Rexjs.OpenArgumentsTag ? "" : "没有识别出访问器参数个数";
+	}
+);
+
+test.false(
+	"带多个参数的设置器",
+	"!{ set var(a, b){} }",
+	function(parser, err){
+		return err.context.tag instanceof Rexjs.IdentifierTag ? "" : "没有识别出访问器多个参数";
+	},
+	function(parser, err){
+		return err.context.content === "b" ? "" : "没有正确识别出参数名";
 	}
 );
 

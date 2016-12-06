@@ -44,7 +44,7 @@ test.false(
 		return err.context.tag instanceof Rexjs.CommaTag ? "" : "没有捕获逗号";
 	},
 	function(parser, err){
-		return err.context.position.column === 7 ? "" : "没有正确的捕获逗号的位置"
+		return err.context.position.column === 6 ? "" : "没有正确的捕获逗号的位置"
 	}
 );
 

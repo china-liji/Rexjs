@@ -1,4 +1,4 @@
-void function(test){
+void function(SimpleTest, test){
 
 test.group("函数测试");
 
@@ -52,6 +52,22 @@ test.true(
 	}
 );
 
+test.true(
+	"复杂的测试",
+	SimpleTest.innerContentOf(function(){
+		function fn(a = 1, b, c = 3, ...d){
+			return a + b + c + d[1]
+		}
+
+		if(
+			fn(2, 4, void 0, 6, 7) !== 16
+		){
+			throw "计算结果错误"
+		}
+	}),
+	true
+);
+
 test.false(
 	"缺少函数名的函数声明",
 	"function (){}",
@@ -87,5 +103,6 @@ test.false(
 test.groupEnd();
 
 }(
+	Rexjs.SimpleTest,
 	test
 );

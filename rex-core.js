@@ -667,8 +667,8 @@ this.File = function(){
 this.Position = function(){
 	/**
 	 * 标签在语法文件中所处的位置
-	 * @param {Number} line - 标签所处行数
-	 * @param {Number} column - 标签所处列数
+	 * @param {Number} line - 标签所处行数索引值
+	 * @param {Number} column - 标签所处列数索引值
 	 */
 	function Position(line, column){
 		this.line = line;
@@ -677,8 +677,8 @@ this.Position = function(){
 	Position = new Rexjs(Position);
 	
 	Position.props({
-		column: 1,
-		line: 1
+		column: 0,
+		line: 0
 	});
 	
 	return Position;
@@ -869,10 +869,8 @@ this.MappingBuilder = function(MappingPosition, Base64VLQ, JSON, appendContext, 
 		appendContext: function(context){
 			var contextPosition = context.position, builderPosition = this.position,
 			
-				line = contextPosition.line - 1, column = contextPosition.column,
-			
-				gcOffset = this.result.length, dc = line === builderPosition.line ? column - builderPosition.column : column;
-
+				line = contextPosition.line, column = contextPosition.column, gcOffset = this.result.length;
+				
 			// 如果是空行
 			if(
 				builderPosition.emptyGeneratedLine
@@ -889,12 +887,12 @@ this.MappingBuilder = function(MappingPosition, Base64VLQ, JSON, appendContext, 
 				Base64VLQ.encode(gcOffset - builderPosition.generatedColumnOffset) +
 				"A" +
 				Base64VLQ.encode(line - builderPosition.line) +
-				Base64VLQ.encode(dc);
+				Base64VLQ.encode(line === builderPosition.line ? column - builderPosition.column : column);
 			
 			// 记录源码的行
 			builderPosition.line = line;
 			// 记录源码的列
-			builderPosition.column = dc;
+			builderPosition.column = column;
 			// 记录生成后的列
 			builderPosition.generatedColumnOffset = gcOffset;
 			
@@ -1099,7 +1097,7 @@ this.SyntaxError = function(MappingBuilder, e){
 		get message(){
 			var position = this.context.position;
 
-			return (this.reference ? "Reference" : "Syntax") + "Error: " + this.description + " @ " + this.file.filename + ":" + position.line + ":" + position.column;
+			return (this.reference ? "Reference" : "Syntax") + "Error: " + this.description + " @ " + this.file.filename + ":" + (position.line + 1) + ":" + (position.column + 1);
 		},
 		file: null,
 		reference: false,
@@ -1444,7 +1442,7 @@ this.LineTerminatorTag = function(WhitespaceTag){
 			var position = parser.position;
 			
 			position.line += 1;
-			position.column = 1;
+			position.column = 0;
 		}
 	});
 	
@@ -2020,7 +2018,7 @@ this.EmptyExpression = function(){
 	return EmptyExpression;
 }();
 
-this.DefaultExpression = function(EmptyExpression, STATE_STATEMENT_ENDED){
+this.DefaultExpression = function(EmptyExpression, STATE_NONE){
 	/**
 	 * 默认空表达式，一般用于语句的默认表达式
 	 */
@@ -2034,7 +2032,7 @@ this.DefaultExpression = function(EmptyExpression, STATE_STATEMENT_ENDED){
 		 * 获取表达式状态
 		 */
 		get state(){
-			return STATE_STATEMENT_ENDED;
+			return STATE_NONE;
 		},
 		/**
 		 * 设置表达式状态
@@ -2046,7 +2044,7 @@ this.DefaultExpression = function(EmptyExpression, STATE_STATEMENT_ENDED){
 	return DefaultExpression;
 }(
 	this.EmptyExpression,
-	this.EmptyExpression.STATE_STATEMENT_ENDED
+	this.EmptyExpression.STATE_NONE
 );
 
 this.PartnerExpression = function(end, endWith){
@@ -2180,7 +2178,7 @@ this.SyntaxParser = function(SyntaxRegExp, SyntaxError, Position, Context, Conte
 		 * @param {Statements} statements - 初始化的语句块
 		 */
 		parse: function(file, tagsMap, statements){
-			var parser = this, tags = tagsMap.entranceTags, position = this.position = new Position(1, 1);
+			var parser = this, tags = tagsMap.entranceTags, position = this.position = new Position(0, 0);
 
 			// 设置 tagsMap
 			this.tagsMap = tagsMap;
