@@ -6,21 +6,44 @@ test.true("空的数组", "[]");
 test.true("单项数组", "[1];[true];[!true];['string'];[a += 5 + !false - 0];")
 test.true("多项数组", "[1, true, !true, 2 + 3, 'string', a += 5 + !false - 0]");
 test.true("最简单的空项数组", "[,]");
-test.true("全空项数组", "[,,,,,,,,,,,,,,,]");
 test.true("带空项的数组", "[1, true,, !true, 2 + 3,, 'string',, a += 5 + !false - 0]");
 test.true("小括号内的数组", "([1,2,,3])");
 test.true("连续的赋值运算符", "[a + 5, a += 5, , , a + 6, , a -= 100]");
 
 test.true(
+	"全空项数组",
+	"[,,,]",
+	false,
+	function(parser){
+		return parser.statements[1].expression.inner.length === 4 ? "" : "数组解析错误，长度不对";
+	}
+);
+
+test.true(
 	"运算结果测试",
 	SimpleTest.innerContentOf(function(){
-		a = 100
-		a = [1, true,, !true, 2 + 3,, 'string',, a += 5 - !false - 0]
+		var a = [,,,]
+
+		if(
+			a.length !== 3
+		){
+			throw "空项数组长度不等于3：" + a.length
+		}
+
+		a = [1,2,3,]
+
+		if(
+			a.length !== 3
+		){
+			throw "最后一项数组带逗号，但数组长度不等于3：" + a.length
+		}
+
+		a = [1, true,, !true, 2 + 3,, 'string',, 100 + 5 - !false - 0]
 		
 		if(
 			a.length !== 9
 		){
-			throw "错误的数组长度"
+			throw "数组长度不等于9：" + a.length
 		}
 		
 		if(

@@ -11,6 +11,26 @@ test.true(
 	SimpleTest.innerContentOf(function(){
 		a = 1
 
+		for(var i of [1]){
+			for(
+				var i of [1,2,3]
+			){
+
+			}
+		}
+		
+		if(
+			$Rexjs_0 instanceof Rexjs.Generator === false
+		){
+			throw "临时变量名值1错误"
+		}
+
+		if(
+			$Rexjs_1 instanceof Rexjs.Generator === false
+		){
+			throw "临时变量名值2错误"
+		}
+
 		{
 			a = 10
 		

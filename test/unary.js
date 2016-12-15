@@ -22,6 +22,21 @@ test.true("前置递减", "--b");
 test.true("属性访问器的前置递减", "--window.a.b.c.d");
 test.true("带负号的前置递减", "- --b");
 
+test.true(
+	"验证 new 一元表达式",
+	"new window.a() + b",
+	false,
+	function(parser){
+		return parser.statements[1].expression instanceof Rexjs.BinaryExpression ? "" : "没有识别出最外层的二元表达式";
+	},
+	function(parser){
+		return parser.statements[1].expression[0].left instanceof Rexjs.CallExpression ? "" : "没有识别出函数啊用的正确位置";
+	},
+	function(parser){
+		return parser.statements[1].expression[0].left.operand instanceof Rexjs.UnaryExpression ? "" : "没有正确识别出 new 一元操作符关键字";
+	}
+)
+
 test.false(
 	"不完整的一元表达式",
 	"!",

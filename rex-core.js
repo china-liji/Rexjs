@@ -113,37 +113,10 @@ new function(Function, prototype, propertyIsEnumerable, hasOwnProperty, isProtot
 "use strict";
 
 this.hasOwnProperty = hasOwnProperty;
-
 this.isPrototypeOf = isPrototypeOf;
-
 this.propertyIsEnumerable = propertyIsEnumerable;
 
-this.assign = function(){
-	/**
-	 * 给该类的属性赋值
-	 * @param {Object} props - 包含一个或多个属性的键值对
-	 */
-	return function(props){
-		// 遍历属性
-		for(
-			var name in props
-		){
-			var val = props[name];
-
-			// 如果值是 undefined
-			if(
-				val === void 0
-			){
-				continue;
-			}
-
-			// 设置属性
-			this[name] = val;
-		}
-	};
-}();
-
-this.constructor = function(constructor, assign, call, apply, bind, toString, getOwnPrototype, defineProperties){
+this.constructor = function(constructor, call, apply, bind, toString, getOwnPrototype, defineProperties){
 	defineProperties(
 		definePrototype(
 			// 兼容 ： IE9、IE10、Android
@@ -151,7 +124,6 @@ this.constructor = function(constructor, assign, call, apply, bind, toString, ge
 		),
 		{
 			apply: apply,
-			assign: assign,
 			bind: bind,
 			call: call,
 			getOwnPrototype: getOwnPrototype,
@@ -181,7 +153,6 @@ this.constructor = function(constructor, assign, call, apply, bind, toString, ge
 	return constructor;
 }(
 	prototype.constructor,
-	this.assign,
 	Function.prototype.call,
 	Function.prototype.apply,
 	Function.prototype.bind,
@@ -516,24 +487,16 @@ this.List = function(Array, Object, toArray){
 
 	List.props({
 		/**
-		 * 交替性取出集合索引值所符合的项
-		 * @param {Number} num - 取模运算值
-		 * @param {Number} _remainder - 余数
+		 * 合并另外一个数组，并返回合并后的新数组
+		 * @param {Array} list - 另一个集合
 		 */
-		alternate: function(num, _remainder){
-			var list = [];
-
-			_remainder = _remainder || 0;
-
-			this.forEach(function(item, i){
-				if(
-					i % num === _remainder
-				){
-					list.push(item);
-				}
-			});
-			
-			return list;
+		concat: function(array){
+			return toArray(
+					this
+				)
+				.concat(
+					toArray(array)
+				);
 		},
 		/**
 		 * 清空整个集合
@@ -546,11 +509,7 @@ this.List = function(Array, Object, toArray){
 		 * @param {List, Array} list - 另一个集合
 		 */
 		combine: function(list){
-			this.push
-				.apply(
-				this,
-				toArray(list)
-			);
+			this.push.apply(this, list);
 		},
 		/**
 		 * 对列表进行去重
@@ -572,19 +531,7 @@ this.List = function(Array, Object, toArray){
 					this
 				);
 		},
-		/**
-		 * 返回集合中偶数项集合
-		 */
-		even: function(){
-			return this.alternate(2);
-		},
-		length: 0,
-		/**
-		 * 返回集合中奇数项集合
-		 */
-		odd: function(){
-			return this.alternate(2, 1);
-		}
+		length: 0
 	});
 
 	Object
@@ -614,26 +561,152 @@ this.List = function(Array, Object, toArray){
 			Array.prototype
 		);
 
-	List.props({
-		/**
-		 * 合并另外一个数组，并返回合并后的新数组
-		 * @param {Array} list - 另一个集合
-		 */
-		concat: function(array){
-			return toArray(
-					this
-				)
-				.concat(
-					toArray(array)
-				);
-		}
-	});
-
 	return List;
 }(
 	Array,
 	Object,
 	Rexjs.toArray
+);
+
+}.call(
+	this
+);
+
+
+// 变量名集合相关
+void function(){
+
+this.VariableIndex = function(){
+	/**
+	 * 变量索引，用于生产临时变量使用
+	 */
+	function VariableIndex(){};
+	VariableIndex = new Rexjs(VariableIndex);
+
+	VariableIndex.props({
+		/**
+		 * 值加 1
+		 */
+		increase: function(){
+			this.value++;
+		},
+		value: 0
+	});
+
+	return VariableIndex;
+}();
+
+this.VariableCollection = function(){
+	/**
+	 * 变量名收集器
+	 */
+	function VariableCollection(){};
+	VariableCollection = new Rexjs(VariableCollection);
+
+	VariableCollection.props({
+		/**
+		 * 搜集变量名
+		 * @param {String} variable - 变量名
+		 */
+		collect: function(variable){
+			this[this.length++] = variable;
+		},
+		/**
+		 * 判断该集合内是否包含指定变量名
+		 * @param {String} variable - 指定的变量名
+		 */
+		contain: function(variable){
+			for(
+				var i = 0, j = this.length;i < j;i++
+			){
+				// 如果变量名相同
+				if(
+					this[i] === variable
+				){
+					return true;
+				}
+			}
+
+			return false;
+		},
+		length: 0,
+		/**
+		 * 转化为字符串
+		 * @param {String} before - 变量之前的字符串
+		 * @param {String} join - 变量连接字符串
+		 * @param {String} after - 变量之后的字符串
+		 */
+		toString: function(before, join, after){
+			var length = this.length;
+
+			// 如果有效长度是 0
+			if(
+				length === 0
+			){
+				return "";
+			}
+
+			var result = before + this[0];
+
+			for(
+				var i = 1;i < length;i++
+			){
+				// 拼接连接符
+				result += join;
+				// 拼接变量名
+				result += this[i];
+			}
+
+			return result + after;
+		}
+	});
+
+	return VariableCollection;
+}();
+
+this.VariableCollections = function(PREFIX){
+	/**
+	 * 变量名收集器集合
+	 * @param {VariableIndex} index - 变量名索引
+	 */
+	function VariableCollections(index){
+		this.index = index;
+	};
+	VariableCollections = new Rexjs(VariableCollections);
+
+	VariableCollections.static({
+		/**
+		 * 获取临时变量名前缀
+		 */
+		get prefix(){
+			return PREFIX;
+		},
+		/**
+		 * 设置临时变量名前缀
+		 * @param {String} value - 需要设置的变量名前缀
+		 */
+		set prefix(value){
+			PREFIX = value;
+		}
+	});
+
+	VariableCollections.props({
+		/**
+		 * 生成一个变量名
+		 */
+		generate: function(){
+			var index = this.index, variable = PREFIX + index.value;
+
+			index.increase();
+			return variable;
+		},
+		index: 0
+	});
+
+	return VariableCollections;
+}(
+	// PREFIX
+	"$Rexjs_"
 );
 
 }.call(
@@ -688,7 +761,7 @@ this.Context = function(){
 	/**
 	 * 标签在语法文件中所匹配的上下文
 	 * @param {SyntaxTag} tag - 相关的标签
-	 * @param {String} content - 标签内容
+	 * @param {String} content - 标签所匹配到的代码内容
 	 * @param {Position} position - 标签在语法文件中所处的位置
 	 */
 	function Context(tag, content, position){
@@ -699,6 +772,7 @@ this.Context = function(){
 	Context = new Rexjs(Context);
 	
 	Context.props({
+		content: "",
 		content: "",
 		position: 0,
 		tag: null
@@ -717,7 +791,7 @@ this.ContentBuilder = function(){
 	ContentBuilder.props({
 		/**
 		 * 追加内容上下文，同时会更新 source map
-		 * @param {String} content - 数据内容
+		 * @param {Context} context - 标签内容上下文
 		 */
 		appendContext: function(context){
 			// 交给标签来处理内容
@@ -864,7 +938,7 @@ this.MappingBuilder = function(MappingPosition, Base64VLQ, JSON, appendContext, 
 	MappingBuilder.props({
 		/**
 		 * 追加内容上下文，同时会更新 source map
-		 * @param {String} content - 数据内容
+		 * @param {Context} context - 标签内容上下文
 		 */
 		appendContext: function(context){
 			var contextPosition = context.position, builderPosition = this.position,
@@ -1402,7 +1476,45 @@ this.SyntaxTag = function(SyntaxElement, TagClass, TagType){
 
 
 // 子类标签相关
-void function(SyntaxTag, TagType){
+void function(SyntaxTag){
+
+this.FilePositionTag = function(CLASS_STATEMENT_BEGIN){
+	/**
+	 * 文件位置标签
+	 * @param {Number} _type - 标签类型
+	 */
+	function FilePositionTag(_type){
+		SyntaxTag.call(this, _type);
+	};
+	FilePositionTag = new Rexjs(FilePositionTag, SyntaxTag);
+
+	FilePositionTag.props({
+		$class: CLASS_STATEMENT_BEGIN
+	});
+	
+	return FilePositionTag;
+}(
+	this.TagClass.CLASS_STATEMENT_BEGIN
+);
+
+this.IllegalTag = function(TYPE_ILLEGAL){
+	/**
+	 * 非法的标签，一般指定的是两次匹配字符串之间的非法内容
+	 */
+	function IllegalTag(){
+		SyntaxTag.call(this);
+	};
+	IllegalTag = new Rexjs(IllegalTag, SyntaxTag);
+	
+	IllegalTag.props({
+		$type: TYPE_ILLEGAL,
+		throw: "token ILLEGAL"
+	});
+	
+	return IllegalTag;
+}(
+	this.TagType.TYPE_ILLEGAL
+);
 
 this.WhitespaceTag = function(){
 	/**
@@ -1451,27 +1563,9 @@ this.LineTerminatorTag = function(WhitespaceTag){
 	this.WhitespaceTag
 );
 
-this.IllegalTag = function(){
-	/**
-	 * 非法的标签，一般指定的是两次匹配字符串之间的非法内容
-	 */
-	function IllegalTag(){
-		SyntaxTag.call(this);
-	};
-	IllegalTag = new Rexjs(IllegalTag, SyntaxTag);
-	
-	IllegalTag.props({
-		$type: TagType.TYPE_ILLEGAL,
-		throw: "token ILLEGAL"
-	});
-	
-	return IllegalTag;
-}();
-
 }.call(
 	this,
-	this.SyntaxTag,
-	this.TagType
+	this.SyntaxTag
 );
 
 
@@ -1852,9 +1946,10 @@ this.Statements = function(Statement, STATE_STATEMENT_ENDED){
 	/**
 	 * 语句块
 	 */
-	function Statements(){
+	function Statements(target){
 		SyntaxElement.call(this);
 		
+		// 初始化语句
 		this.newStatement();
 	};
 	Statements = new Rexjs(Statements, SyntaxElement);
@@ -1936,67 +2031,6 @@ this.Statements = function(Statement, STATE_STATEMENT_ENDED){
 // 其他表达式
 void function(Expression){
 
-this.ListExpression = function(){
-	/**
-	 * 列表表达式
-	 * @param {String} join - 表达式连接符
-	 */
-	function ListExpression(join){
-		Expression.call(this, null);
-
-		this.join = join;
-	};
-	ListExpression = new Rexjs(ListExpression, Expression);
-	
-	ListExpression.props({
-		/**
-		 * 添加表达式
-		 * @param {Expression} expression - 需要添加的表达式
-		 */
-		add: function(expression){
-			this[this.length] = expression;
-			
-			this.length++;
-		},
-		/**
-		 * 提取表达式文本内容
-		 * @param {ContentBuilder} contentBuilder - 内容生成器
-		 * @param {ContentBuilder} _anotherBuilder - 另一个内容生成器，一般用于副内容的生成或记录
-		 */
-		extractTo: function(contentBuilder, _anotherBuilder){
-			var min = this.min, length = this.length;
-
-			// 如果长度小于等于最小索引值
-			if(
-				length <= min
-			){
-				return;
-			}
-
-			var join = this.join;
-
-			// 先提取第一项
-			this[min].extractTo(contentBuilder, _anotherBuilder);
-
-			// 遍历项
-			for(
-				var i = min + 1, j = length;i < j;i++
-			){
-				// 添加表达式连接符
-				contentBuilder.appendString(join);
-
-				// 提取项表达式
-				this[i].extractTo(contentBuilder, _anotherBuilder);
-			}
-		},
-		join: "",
-		length: 0,
-		min: 0
-	});
-	
-	return ListExpression;
-}();
-
 this.EmptyExpression = function(){
 	/**
 	 * 空表达式
@@ -2047,6 +2081,112 @@ this.DefaultExpression = function(EmptyExpression, STATE_NONE){
 	this.EmptyExpression.STATE_NONE
 );
 
+this.ListExpression = function(DefaultExpression){
+	/**
+	 * 列表表达式
+	 * @param {String} join - 表达式连接符
+	 */
+	function ListExpression(join){
+		Expression.call(this, null);
+
+		this.join = join;
+	};
+	ListExpression = new Rexjs(ListExpression, Expression);
+	
+	ListExpression.props({
+		/**
+		 * 添加表达式
+		 * @param {Expression} expression - 需要添加的表达式
+		 */
+		add: function(expression){
+			this[this.length++] = expression;
+		},
+		/**
+		 * 提取表达式文本内容
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 * @param {ContentBuilder} _anotherBuilder - 另一个内容生成器，一般用于副内容的生成或记录
+		 */
+		extractTo: function(contentBuilder, _anotherBuilder){
+			var min = this.min, length = this.length;
+
+			// 如果长度小于等于最小索引值
+			if(
+				length <= min
+			){
+				return;
+			}
+
+			var join = this.join;
+
+			// 先提取第一项
+			this[min].extractTo(contentBuilder, _anotherBuilder);
+
+			// 遍历项
+			for(
+				var i = min + 1, j = length;i < j;i++
+			){
+				// 添加表达式连接符
+				contentBuilder.appendString(join);
+
+				// 提取项表达式
+				this[i].extractTo(contentBuilder, _anotherBuilder);
+			}
+		},
+		join: "",
+		length: 0,
+		min: 0,
+		/**
+		 * 设置表达式，与 add 不同，当 expession 为 DefaultExpression 实例时，会忽略该操作
+		 * @param {Expression} expression - 需要添加的表达式
+		 */
+		set: function(expression){
+			// 如果是默认表达式
+			if(
+				expression instanceof DefaultExpression
+			){
+				return;
+			}
+
+			// 添加表达式
+			this.add(expression);
+		}
+	});
+	
+	return ListExpression;
+}(
+	this.DefaultExpression
+);
+
+this.LeftHandSideExpression = function(){
+	/**
+	 * 左侧表达式
+	 * @param {Expression} left - 左侧表达式
+	 * @param {Context} context - 语法标签上下文
+	 */
+	function LeftHandSideExpression(left, context){
+		Expression.call(this, context);
+
+		this.left = left;
+	};
+	LeftHandSideExpression = new Rexjs(LeftHandSideExpression, Expression);
+
+	LeftHandSideExpression.props({
+		left: null,
+		/**
+		 * 提取文本内容
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 */
+		extractTo: function(contentBuilder){
+			// 提取左侧的表达式内容
+			this.left.extractTo(contentBuilder);
+			// 添加上下文内容
+			contentBuilder.appendContext(this.context);
+		}
+	});
+
+	return LeftHandSideExpression;
+}();
+
 this.PartnerExpression = function(end, endWith){
 	/**
 	 * 匹配组表达式
@@ -2086,35 +2226,54 @@ this.PartnerExpression = function(end, endWith){
 	Expression.prototype.endWith
 );
 
-this.LeftHandSideExpression = function(){
+this.FilePositionExpression = function(EmptyExpression){
 	/**
-	 * 左侧表达式
-	 * @param {Expression} left - 左侧表达式
+	 * 文件位置表达式
 	 * @param {Context} context - 语法标签上下文
 	 */
-	function LeftHandSideExpression(left, context){
-		Expression.call(this, context);
-
-		this.left = left;
+	function FilePositionExpression(context){
+		EmptyExpression.call(this, context);
 	};
-	LeftHandSideExpression = new Rexjs(LeftHandSideExpression, Expression);
-
-	LeftHandSideExpression.props({
-		left: null,
-		/**
-		 * 提取文本内容
-		 * @param {ContentBuilder} contentBuilder - 内容生成器
-		 */
-		extractTo: function(contentBuilder){
-			// 提取左侧的表达式内容
-			this.left.extractTo(contentBuilder);
-			// 添加上下文内容
-			contentBuilder.appendContext(this.context);
-		}
+	FilePositionExpression = new Rexjs(FilePositionExpression, EmptyExpression);
+	
+	FilePositionExpression.props({
+		state: EmptyExpression.STATE_STATEMENT_ENDED
 	});
+	
+	return FilePositionExpression;
+}(
+	this.EmptyExpression
+);
 
-	return LeftHandSideExpression;
-}();
+this.FileStartExpression = function(FilePositionExpression){
+	/**
+	 * 文件起始表达式
+	 * @param {Context} context - 语法标签上下文
+	 */
+	function FileStartExpression(context){
+		FilePositionExpression.call(this, context);
+	};
+	FileStartExpression = new Rexjs(FileStartExpression, FilePositionExpression);
+	
+	return FileStartExpression;
+}(
+	this.FilePositionExpression
+);
+
+this.FileEndExpression = function(FilePositionExpression){
+	/**
+	 * 文件结束表达式
+	 * @param {Context} context - 语法标签上下文
+	 */
+	function FileEndExpression(context){
+		FilePositionExpression.call(this, context);
+	};
+	FileEndExpression = new Rexjs(FileEndExpression, FilePositionExpression);
+	
+	return FileEndExpression;
+}(
+	this.FilePositionExpression
+);
 
 }.call(
 	this,
@@ -2140,18 +2299,11 @@ this.SyntaxParser = function(SyntaxRegExp, SyntaxError, Position, Context, Conte
 		 * @param {ContentBuilder} _contentBuilder - 内容生成器
 		 */
 		build: function(_contentBuilder){
-			var statements = this.statements, contentBuilder = _contentBuilder || new ContentBuilder();
+			var contentBuilder = _contentBuilder || new ContentBuilder();
 			
-			if(
-				statements
-			){
-				// 提取语法列表内容
-				statements.extractTo(contentBuilder);
-			}
-
+			this.statements.extractTo(contentBuilder);
 			return contentBuilder.complete();
 		},
-		content: "",
 		details: null,
 		/**
 		 * 报错
@@ -2236,7 +2388,6 @@ this.SyntaxParser = function(SyntaxRegExp, SyntaxError, Position, Context, Conte
 		},
 		position: null,
 		regexp: null,
-		rex: false,
 		statements: null,
 		tagsMap: null
 	});
@@ -2432,7 +2583,7 @@ this.SimpleTest = function(INNER_CONTENT_REGEXP, file, console, toArray, e, catc
 						description,
 						toArray(arguments, 2),
 						parser,
-						parser.details
+						parser.details || e
 					)
 				){
 					// 打印成功捕获信息
