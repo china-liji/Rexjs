@@ -4,16 +4,115 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <title>index.html</title>
 	<base href="../ "/>
+
+	<style>
+		* {
+			padding: 0;
+			margin: 0;
+			border: 0 none;
+			outline: 0 none;
+			box-sizing: border-box;
+		}
+
+		body {
+			color: #333;
+			font-size: 12px;
+			line-height: 1.5em;
+			padding: 0 16px;
+		}
+
+		input:checked ~ span > .log {
+			display: none;
+		}
+
+		q::before, q::after {
+			content: "";
+		}
+
+		div > span::after {
+			position: fixed;
+			color: red;
+			right: 0;
+			top: 0;
+			content: "总错误数：" counter(error);
+		}
+
+		.warn {
+			color: orange;
+		}
+
+		.error {
+			color: red;
+			counter-increment: error;
+		}
+
+		.group {
+			font-weight: bold;
+			font-size: 14px;
+			padding: 2px 0;
+		}
+	</style>
 </head>
 <body>
-	<div></div>
+	<div>
+		只显示警告和错误：
+		<input type="checkbox" />
+		<br />
+		<br />
+		<span></span>
+		<q></q>
+	</div>
 	<script src="rex-core.js"></script>
 	<script src="rex-helper.js"></script>
 	<script src="rex-es.js"></script>
 	
 	<script>
 		new function(){
+			var span = document.querySelector("span");
+			var checkbox = document.querySelector("input");
+
 			window.a = 0;
+			checkbox.checked = localStorage.getItem("hideLog") === "1";
+
+			checkbox.onchange = function(){
+				localStorage.setItem(
+					"hideLog",
+					checkbox.checked ? "1" : "0"
+				);
+			}
+
+			function append(info){
+				var q = document.createElement("q")
+
+				q.appendChild(
+					document.createTextNode(info)
+				);
+
+				q.appendChild(
+					document.createElement("br")
+				);
+
+				span.appendChild(q);
+				return q;
+			}
+
+			console.log = function(info){
+				append(info).className = "log";
+			};
+
+			console.warn = function(info){
+				append(info).className = "warn";
+			};
+
+			console.error = function(info){
+				append(info).className = "error";
+			};
+
+			console.group = function(name){
+				append(name).className = "group";
+			}
+
+			console.groupEnd = function(){}
 
 			window.test = new Rexjs.SimpleTest(
 				new Rexjs.ECMAScriptParser()
@@ -36,6 +135,7 @@
 	<script src="test/grouping.js"></script>
 	<script src="test/if.js"></script>
 	<script src="test/label.js"></script>
+	<script src="test/let.js"></script>
 	<script src="test/number.js"></script>
 	<script src="test/object.js"></script>
 	<script src="test/regexp.js"></script>

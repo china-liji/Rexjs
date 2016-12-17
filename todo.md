@@ -7,7 +7,6 @@ enum
 export
 extends
 import
-let
 static
 super
 yield
@@ -138,6 +137,12 @@ async
 --------
 已完成功能 ↓
 --------
+let 关键字 及 其他 - 2016.12.17
+	- let 关键字基本解析
+	- let 关键字测试代码
+	- MappingBuilder 优化
+	- 函数优化：函数名、参数名 与 let 的兼容问题
+
 拓展符 及 其他 - 2016.12.15
 	- 拓展符解析
 	- 拓展符测试代码

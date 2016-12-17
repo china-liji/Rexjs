@@ -1,7 +1,1 @@
-for(var i of []){
-			for(
-				var i of [1,2,3]
-			){
-
-			}
-		}
+var a;let x, y = 1, z = 100 + 99, a

@@ -908,9 +908,10 @@ this.MappingPosition = function(Position){
 	MappingPosition = new Rexjs(MappingPosition, Position);
 	
 	MappingPosition.props({
-		emptyGeneratedLine: true,
 		generatedLineOffset: 0,
-		generatedColumnOffset: 0
+		generatedLineDiff: 0,
+		generatedColumnOffset: 0,
+		generatedColumnDiff: 0
 	});
 	
 	return MappingPosition;
@@ -918,7 +919,7 @@ this.MappingPosition = function(Position){
 	this.Position
 );
 
-this.MappingBuilder = function(MappingPosition, Base64VLQ, JSON, appendContext, complete, initialize, newline, btoa){
+this.MappingBuilder = function(MappingPosition, Base64VLQ, JSON, appendContext, appendString, complete, merge, newline, btoa){
 	/**
 	 * 映射生成器
 	 * @param {File} file - 生成器相关文件
@@ -943,44 +944,65 @@ this.MappingBuilder = function(MappingPosition, Base64VLQ, JSON, appendContext, 
 		appendContext: function(context){
 			var contextPosition = context.position, builderPosition = this.position,
 			
-				line = contextPosition.line, column = contextPosition.column, gcOffset = this.result.length;
+				line = contextPosition.line, column = contextPosition.column,
 				
-			// 如果是空行
+				generatedColumnDiff = builderPosition.generatedColumnDiff;
+				
+			// 如果不是空行
 			if(
-				builderPosition.emptyGeneratedLine
+				builderPosition.generatedLineOffset !== builderPosition.generatedColumnOffset
 			){
-				builderPosition.emptyGeneratedLine = false;
-			}
-			else {
-				// 添加逗号
-				this.mappings += ",";
+				// 追加逗号
+				this.appendMappings(",");
 			}
 			
-			// 拼接 mappings
-			this.mappings +=
-				Base64VLQ.encode(gcOffset - builderPosition.generatedColumnOffset) +
+			// 追加映射当前信息
+			this.appendMappings(
+				Base64VLQ.encode(generatedColumnDiff) +
 				"A" +
 				Base64VLQ.encode(line - builderPosition.line) +
-				Base64VLQ.encode(line === builderPosition.line ? column - builderPosition.column : column);
+				Base64VLQ.encode(line === builderPosition.line ? column - builderPosition.column : column)
+			);
 			
 			// 记录源码的行
 			builderPosition.line = line;
 			// 记录源码的列
 			builderPosition.column = column;
-			// 记录生成后的列
-			builderPosition.generatedColumnOffset = gcOffset;
-			
+			// 记录列的偏移量
+			builderPosition.generatedColumnOffset += generatedColumnDiff;
+			// 清空列的差值
+			builderPosition.generatedColumnDiff = 0;
+
 			// 调用父类方法
 			appendContext.call(this, context);
 		},
 		/**
-		 * 追加 mappings 内容
+		 * 追加映射内容
+		 * @param {String} mappings - 映射内容
 		 */
-		appendMappings: function(){
+		appendMappings: function(content){
+			this.mappings += content;
+		},
+		/**
+		 * 追加内容
+		 * @param {String} content - 数据内容
+		 */
+		appendString: function(content){
+			// 计算生成的列差值
+			this.position.generatedColumnDiff += content.length;
+
+			// 调用父类方法
+			appendString.call(this, content);
+		},
+		/**
+		 * 完成生成，返回结果
+		 */
+		complete: function(){
 			var filename = this.file.filename;
 			
 			// 追加新行
 			this.newline();
+
 			// 追加 sourceURL
 			this.appendString("//# sourceURL=http://rexjs.org/" + filename);
 			
@@ -990,6 +1012,7 @@ this.MappingBuilder = function(MappingPosition, Base64VLQ, JSON, appendContext, 
 			){
 				// 追加新行
 				this.newline();
+
 				// 追加 mappingURL 头部
 				this.appendString("//# sourceMappingURL=data:application/json;base64,");
 				
@@ -1004,13 +1027,6 @@ this.MappingBuilder = function(MappingPosition, Base64VLQ, JSON, appendContext, 
 					)
 				);
 			}
-		},
-		/**
-		 * 完成生成，返回结果
-		 */
-		complete: function(){
-			// 追加 mapping
-			this.appendMappings();
 			
 			// 返回结果
 			return complete.call(this);
@@ -1023,16 +1039,15 @@ this.MappingBuilder = function(MappingPosition, Base64VLQ, JSON, appendContext, 
 		newline: function(){
 			var position = this.position;
 			
+			// 给 mappings 添加分号，表示新行的开始
+			this.appendMappings(";");
 			// 追加换行符
 			newline.call(this);
 			
-			// 给 mappings 添加分号，表示新行的开始
-			this.mappings += ";";
-			
-			// 设置 generatedLineOffset 和 generatedColumnOffset
-			position.generatedLineOffset = position.generatedColumnOffset = this.result.length;
-			// 空的一行
-			position.emptyGeneratedLine = true;
+			// 设置便宜量
+			position.generatedLineOffset = position.generatedColumnOffset += position.generatedColumnDiff;
+			// 清空差值
+			position.generatedLineDiff = position.generatedColumnDiff = 0;
 		},
 		position: null
 	});
@@ -1043,8 +1058,9 @@ this.MappingBuilder = function(MappingPosition, Base64VLQ, JSON, appendContext, 
 	this.Base64VLQ,
 	JSON,
 	ContentBuilder.prototype.appendContext,
+	ContentBuilder.prototype.appendString,
 	ContentBuilder.prototype.complete,
-	ContentBuilder.prototype.initialize,
+	ContentBuilder.prototype.merge,
 	ContentBuilder.prototype.newline,
 	typeof btoa === "undefined" ? null : btoa
 );
@@ -1965,6 +1981,7 @@ this.Statements = function(Statement, STATE_STATEMENT_ENDED){
 			// 清空列表
 			this.splice(0);
 		},
+		closure: true,
 		/**
 		 * 提取文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
@@ -2009,7 +2026,6 @@ this.Statements = function(Statement, STATE_STATEMENT_ENDED){
 			this.statement = null;
 			return this.statement = this[this.length++] = this.initStatement();
 		},
-		scope: true,
 		splice: Array.prototype.splice,
 		statement: null,
 		target: null

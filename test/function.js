@@ -128,6 +128,14 @@ test.false(
 	}
 );
 
+test.false(
+	"重复的参数名",
+	"function a(x, y, z, x){}",
+	function(parser, err){
+		return err.context.tag instanceof Rexjs.VariableDeclarationTag ? "" : "没有识别出重复的参数名";
+	}
+);
+
 test.groupEnd();
 
 }(
