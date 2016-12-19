@@ -1,1 +1,1 @@
-var a;let x, y = 1, z = 100 + 99, a
+const x = 1, y = 2, z = 3;z = 1000;

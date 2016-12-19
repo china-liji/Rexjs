@@ -37,6 +37,8 @@ test.true(
 	}
 )
 
+console.warn("var a = 1,\n b = a ++ b，这是个错误的语句");
+
 test.false(
 	"不完整的一元表达式",
 	"!",

@@ -28,6 +28,20 @@ test.false(
 );
 
 test.false(
+	"自己定义两个同名变量",
+	str = "let a, a",
+	function(parser, err){
+		return err.context.tag instanceof Rexjs.VariableDeclarationTag ? "" : "没有识别出重复定义的变量";
+	},
+	function(parser, err){
+		return err.context.content === "a" ? "" : "没有识别出 a 变量";
+	},
+	function(parser, err){
+		return err.context.position.column === str.length - 1 ? "" : "没有识别出变量 a 的位置";
+	}
+);
+
+test.false(
 	"变量名已经被 let 定义过",
 	str = "let x, y, z; var a = 100, z",
 	function(parser, err){

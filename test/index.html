@@ -29,12 +29,29 @@
 			content: "";
 		}
 
+		span, q {
+			display: block;
+		}
+
+		q {
+			white-space: pre;
+		}
+
 		div > span::after {
 			position: fixed;
 			color: red;
 			right: 0;
 			top: 0;
 			content: "总错误数：" counter(error);
+		}
+
+		.log {
+			counter-increment: log;
+		}
+
+		.log::before {
+			content: counter(log)".";
+			margin-right: 2px;
 		}
 
 		.warn {
@@ -44,6 +61,8 @@
 		.error {
 			color: red;
 			counter-increment: error;
+			padding-left: 1em;
+			text-indent: -1em;
 		}
 
 		.group {
@@ -60,96 +79,106 @@
 		<br />
 		<br />
 		<span></span>
-		<q></q>
 	</div>
-	<script src="rex-core.js"></script>
-	<script src="rex-helper.js"></script>
-	<script src="rex-es.js"></script>
-	
-	<script>
-		new function(){
-			var span = document.querySelector("span");
-			var checkbox = document.querySelector("input");
+	<footer>
+		<script src="rex-core.js"></script>
+		<script src="rex-helper.js"></script>
+		<script src="rex-es.js"></script>
+		
+		<script>
+			new function(){
+				var span = document.querySelector("span");
+				var checkbox = document.querySelector("input");
 
-			window.a = 0;
-			checkbox.checked = localStorage.getItem("hideLog") === "1";
+				window.a = 0;
+				checkbox.checked = localStorage.getItem("hideLog") === "1";
 
-			checkbox.onchange = function(){
-				localStorage.setItem(
-					"hideLog",
-					checkbox.checked ? "1" : "0"
+				checkbox.onchange = function(){
+					localStorage.setItem(
+						"hideLog",
+						checkbox.checked ? "1" : "0"
+					);
+				}
+
+				function append(info){
+					var q = document.createElement("q")
+
+					q.appendChild(
+						document.createTextNode(info)
+					);
+
+					span.appendChild(q);
+					return q;
+				}
+
+				console.log = function(info){
+					append(info).className = "log";
+				};
+
+				console.warn = function(info){
+					append(info).className = "warn";
+				};
+
+				console.error = function(info){
+					var el = append(info)
+
+					el.className = "error";
+					
+					el.appendChild(
+						document.createElement("br")
+					);
+
+					el.appendChild(
+						document.createTextNode(
+							new Error().stack
+						)
+					);
+				};
+
+				console.group = function(name){
+					append(name).className = "group";
+				}
+
+				console.groupEnd = function(){}
+
+				window.test = new Rexjs.SimpleTest(
+					new Rexjs.ECMAScriptParser()
 				);
-			}
-
-			function append(info){
-				var q = document.createElement("q")
-
-				q.appendChild(
-					document.createTextNode(info)
-				);
-
-				q.appendChild(
-					document.createElement("br")
-				);
-
-				span.appendChild(q);
-				return q;
-			}
-
-			console.log = function(info){
-				append(info).className = "log";
-			};
-
-			console.warn = function(info){
-				append(info).className = "warn";
-			};
-
-			console.error = function(info){
-				append(info).className = "error";
-			};
-
-			console.group = function(name){
-				append(name).className = "group";
-			}
-
-			console.groupEnd = function(){}
-
-			window.test = new Rexjs.SimpleTest(
-				new Rexjs.ECMAScriptParser()
-			);
-		}();
-	</script>
-	
-	<script src="test/array.js"></script>
-	<script src="test/binary.js"></script>
-	<script src="test/block.js"></script>
-	<script src="test/bracketAccessor.js"></script>
-	<script src="test/break.js"></script>
-	<script src="test/call.js"></script>
-	<script src="test/comma.js"></script>
-	<script src="test/continue.js"></script>
-	<script src="test/doWhile.js"></script>
-	<script src="test/dot.js"></script>
-	<script src="test/for.js"></script>
-	<script src="test/function.js"></script>
-	<script src="test/grouping.js"></script>
-	<script src="test/if.js"></script>
-	<script src="test/label.js"></script>
-	<script src="test/let.js"></script>
-	<script src="test/number.js"></script>
-	<script src="test/object.js"></script>
-	<script src="test/regexp.js"></script>
-	<script src="test/return.js"></script>
-	<script src="test/semicolon.js"></script>
-	<script src="test/spread.js"></script>
-	<script src="test/string.js"></script>
-	<script src="test/switch.js"></script>
-	<script src="test/ternary.js"></script>
-	<script src="test/throw.js"></script>
-	<script src="test/tryCatch.js"></script>
-	<script src="test/unary.js"></script>
-	<script src="test/var.js"></script>
-	<script src="test/variable.js"></script>
-	<script src="test/while.js"></script>
+			}();
+		</script>
+		
+		<script src="test/array.js"></script>
+		<script src="test/binary.js"></script>
+		<script src="test/block.js"></script>
+		<script src="test/bracketAccessor.js"></script>
+		<script src="test/break.js"></script>
+		<script src="test/call.js"></script>
+		<script src="test/comma.js"></script>
+		<script src="test/const.js"></script>
+		<script src="test/continue.js"></script>
+		<script src="test/doWhile.js"></script>
+		<script src="test/dot.js"></script>
+		<script src="test/for.js"></script>
+		<script src="test/function.js"></script>
+		<script src="test/grouping.js"></script>
+		<script src="test/if.js"></script>
+		<script src="test/label.js"></script>
+		<script src="test/let.js"></script>
+		<script src="test/number.js"></script>
+		<script src="test/object.js"></script>
+		<script src="test/regexp.js"></script>
+		<script src="test/return.js"></script>
+		<script src="test/semicolon.js"></script>
+		<script src="test/spread.js"></script>
+		<script src="test/string.js"></script>
+		<script src="test/switch.js"></script>
+		<script src="test/ternary.js"></script>
+		<script src="test/throw.js"></script>
+		<script src="test/tryCatch.js"></script>
+		<script src="test/unary.js"></script>
+		<script src="test/var.js"></script>
+		<script src="test/variable.js"></script>
+		<script src="test/while.js"></script>
+	</footer>
 </body>
 </html>

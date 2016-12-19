@@ -1919,15 +1919,6 @@ this.Statement = function(){
 			// 提取表达式内容
 			this.expression.extractTo(contentBuilder);
 		},
-		/**
-		 * 最后的异常处理
-		 * @param {SyntaxParser} parser - 语法解析器
-		 * @param {Context} context - 语法标签上下文
-		 * @param {Boolean} afterTry - 是否是在 try 之后执行的
-		 */
-		finally: function(parser, context, afterTry){
-			return null;
-		},
 		flow: Statement.FLOW_INHERIT,
 		/**
 		 * 跳出该语句
@@ -2433,8 +2424,8 @@ this.SyntaxParser = function(SyntaxRegExp, SyntaxError, Position, Context, Conte
 				for(
 					;;
 				){
-					// 获取 catch 所返回的标签，如果没有，则取 finally 所返回的标签
-					var t = statement.catch(parser, context) || statement.finally(parser, context, false);
+					// 获取 catch 所返回的标签
+					var t = statement.catch(parser, context);
 
 					// 如果标签存在
 					if(
@@ -2507,8 +2498,8 @@ this.SyntaxParser = function(SyntaxRegExp, SyntaxError, Position, Context, Conte
 				while(
 					statement
 				){
-					// 获取 try 所返回的标签，如果没有，则取 finally 所返回的标签
-					var t = statement.try(parser, context) || statement.finally(parser, context, true);
+					// 获取 try 所返回的标签
+					var t = statement.try(parser, context);
 
 					// 如果标签存在
 					if(
