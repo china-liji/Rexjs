@@ -3830,6 +3830,19 @@ this.SpreadTag = function(SpreadExpression, SpreadStatement, AccessorExpression)
 // 分组小括号标签
 void function(closeGroupingTag){
 
+this.GroupingExpression = function(){
+	/**
+	 * 分组小括号表达式
+	 * @param {Context} open - 起始标签上下文
+	 */
+	function GroupingExpression(open){
+		PartnerExpression.call(this, open);
+	};
+	GroupingExpression = new Rexjs(GroupingExpression, PartnerExpression);
+
+	return GroupingExpression;
+}();
+
 this.GroupingStatement = function(){
 	/**
 	 * 分组小括号语句
@@ -3866,7 +3879,7 @@ this.GroupingStatement = function(){
 	return GroupingStatement;
 }();
 
-this.OpenGroupingTag = function(OpenParenTag, GroupingStatement){
+this.OpenGroupingTag = function(OpenParenTag, GroupingExpression, GroupingStatement){
 	/**
 	 * 起始分组小括号标签
 	 * @param {Number} _type - 标签类型
@@ -3894,7 +3907,7 @@ this.OpenGroupingTag = function(OpenParenTag, GroupingStatement){
 		 */
 		visitor: function(parser, context, statement, statements){
 			// 设置当前表达式
-			statement.expression = new PartnerExpression(context);
+			statement.expression = new GroupingExpression(context);
 			// 设置当前语句
 			statements.statement = new GroupingStatement(statements);
 		}
@@ -3903,6 +3916,7 @@ this.OpenGroupingTag = function(OpenParenTag, GroupingStatement){
 	return OpenGroupingTag;
 }(
 	this.OpenParenTag,
+	this.GroupingExpression,
 	this.GroupingStatement
 );
 
@@ -5366,6 +5380,282 @@ closeFunctionDeclarationBodyTag = new this.CloseFunctionDeclarationBodyTag();
 	null,
 	// closeFunctionDeclarationBodyTag
 	null
+);
+
+
+// 箭头函数相关
+void function(FunctionExpression, ArgumentsExpression, OpenFunctionBodyTag){
+
+this.ArrowFunctionHeadExpression = function(){
+	/**
+	 * 箭头函数头部表达式
+	 */
+	function ArrowFunctionHeadExpression(){
+		Expression.call(this, null);
+	};
+	ArrowFunctionHeadExpression = new Rexjs(ArrowFunctionHeadExpression, Expression);
+
+	ArrowFunctionHeadExpression.props({
+		/**
+		 * 提取表达式文本内容
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 */
+		extractTo: function(contentBuilder){
+			contentBuilder.appendString("function");
+		}
+	});
+
+	return ArrowFunctionHeadExpression;
+}();
+
+this.ArrowFunctionExpression = function(head, extractTo){
+	/**
+	 * 箭头函数表达式
+	 * @param {Expression} args - 函数参数列表表达式
+	 */
+	function ArrowFunctionExpression(args){
+		FunctionExpression.call(this, head);
+
+		this.arguments = args;
+	};
+	ArrowFunctionExpression = new Rexjs(ArrowFunctionExpression, FunctionExpression);
+
+	ArrowFunctionExpression.props({
+		/**
+		 * 提取表达式文本内容
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 */
+		extractTo: function(contentBuilder){
+			contentBuilder.appendString("(");
+
+			extractTo.call(this, contentBuilder);
+
+			contentBuilder.appendString(".bind(this))");
+		}
+	});
+
+	return ArrowFunctionExpression;
+}(
+	// head
+	new this.ArrowFunctionHeadExpression(),
+	FunctionExpression.prototype.extractTo
+);
+
+this.SingleArgumentExpression = function(){
+	/**
+	 * 单参数表达式
+	 * @param {Context} open - 起始标签上下文
+	 */
+	function SingleArgumentExpression(context){
+		Expression.call(this, context);
+	};
+	SingleArgumentExpression = new Rexjs(SingleArgumentExpression, Expression);
+
+	SingleArgumentExpression.props({
+		/**
+		 * 提取文本内容
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 */
+		extractTo: function(contentBuilder){
+			// 追加参数起始小括号
+			contentBuilder.appendString("(");
+			// 提取参数名
+			contentBuilder.appendContext(this.context);
+			// 追加参数结束小括号
+			contentBuilder.appendString(")");
+		}
+	});
+
+	return SingleArgumentExpression;
+}();
+
+this.ArrowFunctionBodyExpression = function(){
+	/**
+	 * 箭头函数主体表达式
+	 * @param {Expression} ret - 函数主体返回值表达式
+	 */
+	function ArrowFunctionBodyExpression(ret){
+		Expression.call(this, null);
+
+		this.return = ret;
+	};
+	ArrowFunctionBodyExpression = new Rexjs(ArrowFunctionBodyExpression, Expression);
+
+	ArrowFunctionBodyExpression.props({
+		/**
+		 * 提取文本内容
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 */
+		extractTo: function(contentBuilder){
+			// 追加函数主体起始大括号与 return 关键字
+			contentBuilder.appendString("{return ");
+			// 提取函数主体返回值表达式
+			this.return.extractTo(contentBuilder);
+			// 追加 表达式结束分号 与 函数主体结束大括号
+			contentBuilder.appendString(";}");
+		},
+		return: null
+	});
+
+	return ArrowFunctionBodyExpression;
+}();
+
+this.ArrowFunctionStatement = function(ArrowFunctionBodyExpression){
+	/**
+	 * 箭头函数语句
+	 * @param {Statements} statements - 该语句将要所处的语句块
+	 */
+	function ArrowFunctionStatement(statements){
+		ECMAScriptStatement.call(this, statements);
+	};
+	ArrowFunctionStatement = new Rexjs(ArrowFunctionStatement, ECMAScriptStatement);
+
+	ArrowFunctionStatement.props({
+		expression: new DefaultExpression(),
+		/**
+		 * 捕获处理异常
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 语法标签上下文
+		 */
+		catch: function(parser, context){
+			// 跳出语句并设置 body
+			this.out().body = new ArrowFunctionBodyExpression(this.expression);
+		},
+		/**
+		 * 尝试处理异常
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 语法标签上下文
+		 */
+		try: function(parser, context){
+			// 如果是逗号
+			if(
+				context.content == ","
+			){
+				// 跳出语句并设置 body
+				this.out().body = new ArrowFunctionBodyExpression(this.expression);
+			}
+		}
+	});
+
+	return ArrowFunctionStatement;
+}(
+	this.ArrowFunctionBodyExpression
+);
+
+this.ArrowTag = function(ExpressionSeparatorTag, ArrowFunctionExpression, SingleArgumentExpression, AssignableExpression, AccessorExpression, GroupingExpression, ArrowFunctionStatement){
+	/**
+	 * 箭头标签
+	 * @param {Number} _type - 标签类型
+	 */
+	function ArrowTag(_type){
+		ExpressionSeparatorTag.call(this, _type);
+	};
+	ArrowTag = new Rexjs(ArrowTag, ExpressionSeparatorTag);
+
+	ArrowTag.props({
+		$class: CLASS_EXPRESSION_CONTEXT,
+		// 防止与“=”冲突
+		order: 301,
+		regexp: /=>/,
+		/**
+		 * 获取此标签接下来所需匹配的标签列表
+		 * @param {TagsMap} tagsMap - 标签集合映射
+		 */
+		require: function(tagsMap){
+			return tagsMap.arrowContextTags;
+		},
+		/**
+		 * 标签访问器
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 标签上下文
+		 * @param {Statement} statement - 当前语句
+		 * @param {Statements} statements - 当前语句块
+		 */
+		visitor: function(parser, context, statement, statements){
+			var expression = statement.expression;
+
+			if(
+				expression instanceof AssignableExpression
+			){
+				if(
+					expression instanceof AccessorExpression
+				){
+					parser.error(context);
+					return;
+				}
+
+				statement.expression = new ArrowFunctionExpression(
+					new SingleArgumentExpression(expression.context)
+				);
+			}
+			else if(
+				expression instanceof GroupingExpression
+			){
+				debugger
+			}
+			else {
+				parser.error(context);
+			}
+
+			if(
+				(expression.state & STATE_STATEMENT_ENDABLE) === STATE_STATEMENT_ENDABLE
+			){
+				parser.error(context, "Illegal newline before arrow");
+				return;
+			}
+
+			statements.statement = new ArrowFunctionStatement(statements);
+		}
+	});
+
+	return ArrowTag;
+}(
+	this.ExpressionSeparatorTag,
+	this.ArrowFunctionExpression,
+	this.SingleArgumentExpression,
+	this.AssignableExpression,
+	this.AccessorExpression,
+	this.GroupingExpression,
+	this.ArrowFunctionStatement
+);
+
+this.OpenArrowFunctionBodyTag = function(visitor){
+	/**
+	 * 起始对象标签
+	 * @param {Number} _type - 标签类型
+	 */
+	function OpenArrowFunctionBodyTag(_type){
+		OpenFunctionBodyTag.call(this, _type);
+	};
+	OpenArrowFunctionBodyTag = new Rexjs(OpenArrowFunctionBodyTag, OpenFunctionBodyTag);
+
+	OpenArrowFunctionBodyTag.props({
+		order: 100,
+		/**
+		 * 标签访问器
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 标签上下文
+		 * @param {Statement} statement - 当前语句
+		 * @param {Statements} statements - 当前语句块
+		 */
+		visitor: function(parser, context, statement, statements){
+			// 跳出当前语句
+			statement.out();
+			// 调用父类方法
+			visitor.call(this, parser, context, statements.statement, statements);
+		}
+	});
+
+	return OpenArrowFunctionBodyTag;
+}(
+	OpenFunctionBodyTag.prototype.visitor
+);
+
+}.call(
+	this,
+	this.FunctionExpression,
+	this.ArgumentsExpression,
+	this.OpenFunctionBodyTag
 );
 
 
@@ -10714,6 +11004,7 @@ this.ECMAScriptTags = function(DefaultTags, list){
 	Rexjs.DefaultTags,
 	// list
 	[
+		this.ArrowTag,
 		this.BasicAssignmentTag,
 		this.BitwiseANDTag,
 		this.BitwiseNOTTag,
@@ -11096,6 +11387,28 @@ this.ArgumentSeparatorContextTags = function(ArgumentNameTags, RestTag){
 }(
 	this.ArgumentNameTags,
 	this.RestTag
+);
+
+this.ArrowContextTags = function(OpenArrowFunctionBodyTag){
+	/**
+	 * 箭头上下文标签
+	 */
+	function ArrowContextTags(){
+		ExpressionTags.call(this);
+
+		this.register(
+			new OpenArrowFunctionBodyTag()
+		);
+	};
+	ArrowContextTags = new Rexjs(ArrowContextTags, ExpressionTags);
+
+	ArrowContextTags.props({
+		id: "arrowContextTags"
+	});
+
+	return ArrowContextTags;
+}(
+	this.OpenArrowFunctionBodyTag
 );
 
 this.BlockTags = function(OpenBlockTag){
@@ -12216,6 +12529,7 @@ this.ECMAScriptTagsMap = function(SyntaxTagsMap, tagsArray){
 		this.ArgumentNameContextTags,
 		this.ArgumentNameTags,
 		this.ArgumentSeparatorContextTags,
+		this.ArrowContextTags,
 		this.BlockTags,
 		this.CatchedExceptionTags,
 		this.CloseCatchedExceptionTags,
