@@ -2091,10 +2091,11 @@ this.DefaultExpression = function(EmptyExpression, STATE_NONE){
 this.ListExpression = function(DefaultExpression){
 	/**
 	 * 列表表达式
+	 * @param {Context} context - 语法标签上下文
 	 * @param {String} join - 表达式连接符
 	 */
-	function ListExpression(join){
-		Expression.call(this, null);
+	function ListExpression(context, join){
+		Expression.call(this, context);
 
 		this.join = join;
 	};
@@ -2677,40 +2678,21 @@ this.SimpleTest = function(INNER_CONTENT_REGEXP, file, console, toArray, e, catc
 	eval,
 	// catchErrors
 	function(description, callbacks, parser, error){
-		var clean = true;
-		
 		// 遍历回调
-		callbacks.forEach(function(callback){
+		return !callbacks.every(function(callback){
 			var err = callback(parser, error);
 			
 			// 如果返回了错误信息
 			if(
 				err
 			){
-				// 如果目前解析还是干净的，即还没有报错
-				if(
-					clean
-				){
-					// 启用控制台分组
-					console.group(description);
-					clean = false;
-				}
-				
 				// 输出错误
-				console.error("Callback Error: " + err);
+				console.error(description + " - Callback Error: " + err);
+				return false;
 			}
-		});
-		
-		// 如果已经报错，说明启用了控制台分组
-		if(
-			!clean
-		){
-			// 控制台分组结束
-			console.groupEnd(description);
+
 			return true;
-		}
-		
-		return false;
+		});
 	}
 );
 

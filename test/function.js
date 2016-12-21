@@ -108,7 +108,7 @@ test.false(
 	"省略参数出现在非最后位置",
 	"function a(a, ...b, c){}",
 	function(parser, err){
-		return err.context.tag instanceof Rexjs.CommaTag ? "" : "没有捕获逗号标签";
+		return err.context.tag instanceof Rexjs.RestTag ? "" : "没有捕获到省略参数拓展符";
 	}
 );
 
@@ -130,7 +130,7 @@ test.false(
 
 test.false(
 	"重复的参数名",
-	"function a(x, y, z, x){}",
+	"function a(x, y, z, ...x){}",
 	function(parser, err){
 		return err.context.tag instanceof Rexjs.VariableDeclarationTag ? "" : "没有识别出重复的参数名";
 	}

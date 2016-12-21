@@ -7,6 +7,7 @@ test.group("let 关键字测试");
 test.true("最简单的 let 语句", "let a");
 test.true("let 与 函数表达式共存", "var fn = function a(){};let a;");
 test.true("let 在函数参数名之前定义", "let x, y, z;var fn = function a(x, y, z){};");
+test.true("let 在函数参数名之后定义", "var fn = function a(x, y, z){};let x, y, z;");
 
 /*
  * 由于 let 继承 var， var 测过过的就不再测试
