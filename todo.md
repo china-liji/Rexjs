@@ -144,7 +144,7 @@ async
 	- 所有箭头函数功能
 	- 完整的箭头函数测试代码
 	- 表达式基类 Expression，新增 compileTo，用于编译表达式使用
-	- SyntaxError 的 context 参数改为 info，并支持 Expression 类的参数
+	- SyntaxError 的 context 参数改为 info，并支持 Expression 类型的参数
 	- ECMAScriptVariableCollections 类，新增 4 个初始化方法
 	- 优化 UnaryExpresion 与 BinaryExpression 判断分隔符的方式
 	- 新增 FunctionBodyExpression 表达式，用于解析默认值参数
