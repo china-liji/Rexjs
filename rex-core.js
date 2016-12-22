@@ -1144,68 +1144,6 @@ this.SyntaxConfig = function(SyntaxConfigItem){
 	this.SyntaxConfigItem
 );
 
-this.SyntaxError = function(MappingBuilder, e){
-	/**
-	 * 抛出语法错误信息
-	 * @param {File} file - 具有语法错误的文件
-	 * @param {Context} context - 出错处的上下文
-	 * @param {String} _description - 错误描述
-	 * @param {Boolean} _reference - 是否是引用错误
-	 */
-	function SyntaxError(file, context, _description, _reference){
-		var content = context.content, position = context.position;
-
-		// 如果支持 MappingBuilder
-		if(
-			MappingBuilder.supported
-		){
-			// 生成源文件 map
-			e(
-				new MappingBuilder(file).complete()
-			);
-		}
-
-		// 如果是引用错误
-		if(
-			_reference
-		){
-			this.reference = true;
-		}
-
-		this.description = _description || "Unexpected " + context.tag.throw + (content ? " " + content : "");
-		this.file = file;
-		this.context = context;
-	};
-	SyntaxError = new Rexjs(SyntaxError);
-	
-	SyntaxError.props({
-		context: null,
-		description: "",
-		/**
-		 * 获悉错误消息
-		 */
-		get message(){
-			var position = this.context.position;
-
-			return (this.reference ? "Reference" : "Syntax") + "Error: " + this.description + " @ " + this.file.filename + ":" + (position.line + 1) + ":" + (position.column + 1);
-		},
-		file: null,
-		reference: false,
-		/**
-		 * 转字符串
-		 */
-		toString: function(){
-			return this.message;
-		}
-	});
-
-	return SyntaxError;
-}(
-	this.MappingBuilder,
-	// e
-	eval
-);
-
 this.SyntaxRegExp = function(RegExp, Infinity){
 	/**
 	 * 语法正则表达式类，用于语法树匹配
@@ -1864,6 +1802,14 @@ this.Expression = function(SyntaxConfig, parseInt){
 	});
 	
 	Expression.props({
+		/**
+		 * 提取并编译表达式文本内容
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 * @param {ContentBuilder} _anotherBuilder - 另一个内容生成器，一般用于副内容的生成或记录
+		 */
+		compileTo: function(contentBuilder, _anotherBuilder){
+			this.extractTo(contentBuilder, _anotherBuilder);
+		},
 		context: null,
 		/**
 		 * 提取表达式文本内容
@@ -2289,8 +2235,116 @@ this.FileEndExpression = function(FilePositionExpression){
 );
 
 
-// 语法树相关
-void function(STATE_STATEMENT_ENDABLE, getTagAfterTry){
+// 语法解析相关
+void function(Expression, ListExpression, LeftHandSideExpression, STATE_STATEMENT_ENDABLE){
+
+this.SyntaxError = function(MappingBuilder, e, contextOf){
+	/**
+	 * 抛出语法错误信息
+	 * @param {File} file - 具有语法错误的文件
+	 * @param {Context, Expression} info - 出错信息
+	 * @param {String} _description - 错误描述
+	 * @param {Boolean} _reference - 是否是引用错误
+	 */
+	function SyntaxError(file, info, _description, _reference){
+		var context = contextOf(info), content = context.content, position = context.position;
+
+		// 如果支持 MappingBuilder
+		if(
+			MappingBuilder.supported
+		){
+			// 生成源文件 map
+			e(
+				new MappingBuilder(file).complete()
+			);
+		}
+
+		// 如果是引用错误
+		if(
+			_reference
+		){
+			this.reference = true;
+		}
+
+		this.description = _description || "Unexpected " + context.tag.throw + (content ? " " + content : "");
+		this.file = file;
+		this.context = context;
+	};
+	SyntaxError = new Rexjs(SyntaxError);
+	
+	SyntaxError.props({
+		context: null,
+		description: "",
+		/**
+		 * 获悉错误消息
+		 */
+		get message(){
+			var position = this.context.position;
+
+			return (this.reference ? "Reference" : "Syntax") + "Error: " + this.description + " @ " + this.file.filename + ":" + (position.line + 1) + ":" + (position.column + 1);
+		},
+		file: null,
+		reference: false,
+		/**
+		 * 转字符串
+		 */
+		toString: function(){
+			return this.message;
+		}
+	});
+
+	return SyntaxError;
+}(
+	this.MappingBuilder,
+	// e
+	eval,
+	// contextOf
+	function(info){
+		// 如果不是表达式
+		if(
+			!(info instanceof Expression)
+		){
+			// 认为是 context，直接返回
+			return info;
+		}
+
+		var expression = info;
+
+		for(
+			;;
+		){
+			// 如果是列表表达式
+			if(
+				info instanceof ListExpression
+			){
+				// 如果长度为 0
+				if(
+					info.length > 0
+				){
+					// 记录表达式
+					expression = info;
+					// 取第一项
+					info = info[0];
+					continue;
+				}
+			}
+			// 如果是左侧表达式
+			else if(
+				info instanceof LeftHandSideExpression
+			){
+				// 记录表达式
+				expression = info;
+				// 获取 left
+				info = info.left
+				continue;
+			}
+
+			break;
+		}
+
+		return expression.context;
+	}
+);
 
 this.SyntaxParser = function(SyntaxRegExp, SyntaxError, Position, Context, ContentBuilder, toTryCatch){
 	/**
@@ -2315,12 +2369,12 @@ this.SyntaxParser = function(SyntaxRegExp, SyntaxError, Position, Context, Conte
 		details: null,
 		/**
 		 * 报错
-		 * @param {Context} context - 错误信息上下文
+		 * @param {Context, Expression} info - 出错信息
 		 * @param {String} _description - 错误描述
 		 * @param {Boolean} _reference - 是否是引用错误
 		 */
-		error: function(context, _description, _reference){
-			var error = new SyntaxError(this.file, context, _description, _reference);
+		error: function(info, _description, _reference){
+			var error = new SyntaxError(this.file, info, _description, _reference);
 
 			// 中断匹配，结束解析
 			this.regexp.break();
@@ -2538,6 +2592,9 @@ this.SyntaxParser = function(SyntaxRegExp, SyntaxError, Position, Context, Conte
 
 }.call(
 	this,
+	this.Expression,
+	this.ListExpression,
+	this.LeftHandSideExpression,
 	this.Expression.STATE_STATEMENT_ENDABLE
 );
 

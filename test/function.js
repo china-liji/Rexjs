@@ -136,6 +136,62 @@ test.false(
 	}
 );
 
+test.false(
+	"数字参数",
+	"function fn(9){}",
+	function(parser, err){
+		return err.context.tag instanceof Rexjs.NumberTag ? "" : "没有识别出数字标签";
+	}
+);
+
+test.false(
+	"字符串参数",
+	"function fn(''){}",
+	function(parser, err){
+		return err.context.tag instanceof Rexjs.StringTag ? "" : "没有识别出字符串标签";
+	}
+);
+
+test.false(
+	"布尔参数",
+	"function fn(true){}",
+	function(parser, err){
+		return err.context.tag instanceof Rexjs.BooleanTag ? "" : "没有识别出布尔标签";
+	}
+);
+
+test.false(
+	"一元运算参数",
+	"function fn(!a){}",
+	function(parser, err){
+		return err.context.tag instanceof Rexjs.UnaryTag ? "" : "没有识别出一元运算符标签";
+	}
+);
+
+test.false(
+	"二元运算参数",
+	"function fn(a / 2){}",
+	function(parser, err){
+		return err.context.tag instanceof Rexjs.BinaryTag ? "" : "没有识别出二元运算符标签";
+	}
+);
+
+test.false(
+	"小括号内参数是以一元运算开始的二元运算",
+	"function fn(!a + 2){}",
+	function(parser, err){
+		return err.context.tag instanceof Rexjs.UnaryTag ? "" : "没有识别出一元运算符标签";
+	}
+);
+
+test.false(
+	"属性访问器参数",
+	"function fn(window.a){}",
+	function(parser, err){
+		return err.context.tag instanceof Rexjs.DotAccessorTag ? "" : "没有识别出点标签";
+	}
+);
+
 test.groupEnd();
 
 }(

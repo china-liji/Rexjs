@@ -140,6 +140,15 @@ async
 --------
 已完成功能 ↓
 --------
+箭头函数功能全部完成 及 其他 - 2016.12.22
+	- 所有箭头函数功能
+	- 完整的箭头函数测试代码
+	- 表达式基类 Expression，新增 compileTo，用于编译表达式使用
+	- SyntaxError 的 context 参数改为 info，并支持 Expression 类的参数
+	- ECMAScriptVariableCollections 类，新增 4 个初始化方法
+	- 优化 UnaryExpresion 与 BinaryExpression 判断分隔符的方式
+	- 新增 FunctionBodyExpression 表达式，用于解析默认值参数
+
 带小括号参数的箭头函数 及 其他 - 2016.12.21
 	- 完成基本功能，除了重复参数名没有验证
 	- 新增标识符表达式，用于区别两种不同的可赋值表达式，即 标识符表达式 与 属性访问表达式
