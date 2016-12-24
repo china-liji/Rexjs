@@ -140,6 +140,11 @@ async
 --------
 已完成功能 ↓
 --------
+为方便二次开发重构代码 - 2016.12.24
+	- 新增 ECMAScriptErrors 类，用于归类所有错误
+	- SyntaxTag 类，新增属性 binding，替代独立闭包内的标签变量（因为闭包内变量可拓展性差），用于指定 try、catch 的返回值
+	- 新增 ConditionalExpression 与 ConditionStatement，共用于 if、for、switch、while 等带条件的表达式
+
 箭头函数功能全部完成 及 其他 - 2016.12.22
 	- 所有箭头函数功能
 	- 完整的箭头函数测试代码

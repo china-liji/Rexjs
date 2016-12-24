@@ -1,1 +1,2 @@
-let a = c /= b += a=>{}
+const a 
+return

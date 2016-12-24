@@ -1383,6 +1383,12 @@ this.SyntaxTag = function(SyntaxElement, TagClass, TagType){
 	SyntaxTag.props({
 		$class: TagClass.CLASS_NONE,
 		$type: TagType.TYPE_MATCHABLE,
+		/**
+		 * 获取绑定的标签，该标签一般是用于语句的 try、catch 的返回值
+		 */
+		get binding(){
+			return null;
+		},
 		class: null,
 		/**
 		 * 提取表达式文本内容
@@ -2441,7 +2447,7 @@ this.SyntaxParser = function(SyntaxRegExp, SyntaxError, Position, Context, Conte
 					this.compile(
 						(
 							// 获取需要匹配的标签集合
-							tags = tag.require(tagsMap, tags)
+							tags = tag.require(tagsMap, tags, parser)
 						)
 						.regexp
 					);
