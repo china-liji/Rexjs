@@ -1,2 +1,1 @@
-const a 
-return
+a=>{ let b = 1; }

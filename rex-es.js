@@ -6153,7 +6153,7 @@ closeGroupingTag = new this.CloseGroupingTag();
 
 
 // 箭头函数相关
-void function(FunctionExpression, ArgumentsExpression, OpenFunctionBodyTag, config){
+void function(FunctionExpression, ArgumentsExpression, OpenFunctionBodyTag, CloseFunctionBodyTag, config, closeArrowFunctionBodyTag){
 
 this.ArrowFunctionExpression = function(){
 	/**
@@ -6438,7 +6438,7 @@ this.ArrowTag = function(ExpressionSeparatorTag, ArrowFunctionExpression, Single
 
 this.OpenArrowFunctionBodyTag = function(visitor){
 	/**
-	 * 起始对象标签
+	 * 起始箭头函数主体标签
 	 * @param {Number} _type - 标签类型
 	 */
 	function OpenArrowFunctionBodyTag(_type){
@@ -6447,6 +6447,12 @@ this.OpenArrowFunctionBodyTag = function(visitor){
 	OpenArrowFunctionBodyTag = new Rexjs(OpenArrowFunctionBodyTag, OpenFunctionBodyTag);
 
 	OpenArrowFunctionBodyTag.props({
+		/**
+		 * 获取绑定的标签，该标签一般是用于语句的 try、catch 的返回值
+		 */
+		get binding(){
+			return closeArrowFunctionBodyTag;
+		},
 		order: 100,
 		/**
 		 * 标签访问器
@@ -6468,12 +6474,56 @@ this.OpenArrowFunctionBodyTag = function(visitor){
 	OpenFunctionBodyTag.prototype.visitor
 );
 
+this.CloseArrowFunctionBodyTag = function(visitor){
+	/**
+	 * 结束箭头函数主体标签
+	 * @param {Number} _type - 标签类型
+	 */
+	function CloseArrowFunctionBodyTag(_type){
+		CloseFunctionBodyTag.call(this, _type);
+	};
+	CloseArrowFunctionBodyTag = new Rexjs(CloseArrowFunctionBodyTag, CloseFunctionBodyTag);
+
+	CloseArrowFunctionBodyTag.props({
+		/**
+		 * 获取此标签接下来所需匹配的标签列表
+		 * @param {TagsMap} tagsMap - 标签集合映射
+		 */
+		require: function(tagsMap){
+			return tagsMap.closeArrowFunctionBodyContextTags;
+		},
+		/**
+		 * 标签访问器
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 标签上下文
+		 * @param {Statement} statement - 当前语句
+		 * @param {Statements} statements - 当前语句块
+		 */
+		visitor: function(parser, context, statement, statements){
+			// 设置表达式状态
+			statement.expression.state = STATE_STATEMENT_ENDED;
+
+			// 调用父类方法
+			visitor.call(this, parser, context, statement, statements);
+		}
+	});
+
+	return CloseArrowFunctionBodyTag;
+}(
+	CloseFunctionBodyTag.prototype.visitor
+);
+
+closeArrowFunctionBodyTag = new this.CloseArrowFunctionBodyTag();
+
 }.call(
 	this,
 	this.FunctionExpression,
 	this.ArgumentsExpression,
 	this.OpenFunctionBodyTag,
-	this.FunctionExpression.config
+	this.CloseFunctionBodyTag,
+	this.FunctionExpression.config,
+	// closeArrowFunctionBodyTag
+	null
 );
 
 
@@ -12087,7 +12137,7 @@ this.IllegalTags = function(TYPE_ILLEGAL){
 
 
 // 其他标签列表
-void function(ECMAScriptTags, ExpressionTags, ExpressionContextTags, StatementTags, StatementEndTags, IllegalTags){
+void function(ECMAScriptTags, ExpressionTags, ExpressionContextTags, MistakableTags, StatementTags, StatementEndTags, IllegalTags){
 
 this.ArgumentNameContextTags = function(ArgumentAssignmentTag){
 	/**
@@ -12199,6 +12249,41 @@ this.CatchedExceptionTags = function(OpenCatchedExceptionTag){
 	return CatchedExceptionTags;
 }(
 	this.OpenCatchedExceptionTag
+);
+
+this.CloseArrowFunctionBodyContextTags = function(CommaTag, filter){
+	/**
+	 * 结束箭头函数主体上下文标签列表
+	 */
+	function CloseArrowFunctionBodyContextTags(){
+		MistakableTags.call(this);
+	};
+	CloseArrowFunctionBodyContextTags = new Rexjs(CloseArrowFunctionBodyContextTags, MistakableTags);
+	
+	CloseArrowFunctionBodyContextTags.props({
+		/**
+		 * 标签过滤处理
+		 * @param {SyntaxTag} tag - 语法标签
+		 */
+		filter: function(tag){
+			// 如果是逗号
+			if(
+				tag instanceof CommaTag
+			){
+				// 设置类型
+				tag.type = new TagType(TYPE_MISTAKABLE);
+				return false;
+			}
+
+			return filter.call(this, tag);
+		},
+		id: "closeArrowFunctionBodyContextTags"
+	});
+
+	return CloseArrowFunctionBodyContextTags;
+}(
+	this.CommaTag,
+	MistakableTags.prototype.filter
 );
 
 this.CloseCatchedExceptionTags = function(CloseCatchedExceptionTag){
@@ -13142,6 +13227,7 @@ this.WhileConditionTags = function(OpenWhileConditionTag){
 	this.ECMAScriptTags,
 	this.ExpressionTags,
 	this.ExpressionContextTags,
+	this.MistakableTags,
 	this.StatementTags,
 	this.StatementEndTags,
 	this.IllegalTags
@@ -13355,6 +13441,7 @@ this.ECMAScriptTagsMap = function(SyntaxTagsMap, tagsArray){
 		this.ArrowContextTags,
 		this.BlockTags,
 		this.CatchedExceptionTags,
+		this.CloseArrowFunctionBodyContextTags,
 		this.CloseCatchedExceptionTags,
 		this.ClosureVariableContextTags,
 		this.CommentContextTags,

@@ -10,6 +10,17 @@ test.true("空的小括号参数的箭头函数", "()=>{}");
 test.true("小括号参数的箭头函数", "(a)=>{}");
 test.true("带默认值与省略参数的箭头函数", "(a, b = 1, c, d = 2, ...e)=>{}");
 test.true("与赋值表达式共存的箭头函数", "let a = c /= b += a=>{}");
+test.true("带语句块的箭头函数与逗号", "() => {}, 2, 3");
+test.true("带语句块的箭头函数与三元运算符", "a ? ()=>{0} : ()=>{1}");
+
+test.true(
+	"没语句块的箭头函数与逗号",
+	"()=> 1, 2",
+	false,
+	function(parser){
+		return parser.statements[1].expression instanceof Rexjs.CommaExpression ? "" : "没有解析出逗号表达式";
+	}
+);
 
 test.true(
 	"复杂的测试",
@@ -187,6 +198,14 @@ test.false(
 	"a => 1{}",
 	function(parser, err){
 		return err.context.tag instanceof Rexjs.OpenBraceTag ? "" : "没有识别到起始大括号";
+	}
+);
+
+test.false(
+	"语句块的箭头函数后面接除逗号外的表达式上下文",
+	"() => {} / 2",
+	function(parser, err){
+		return err.context.content === "/" ? "" : "没有识别出除号";
 	}
 );
 
