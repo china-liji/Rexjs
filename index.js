@@ -1,1 +1,1 @@
-function fn(){ new.target }
+`123`

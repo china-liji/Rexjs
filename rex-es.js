@@ -5,7 +5,7 @@ new function(
 	// 表达式相关
 	Expression, ListExpression, EmptyExpression, DefaultExpression, PartnerExpression, LeftHandSideExpression,
 	// ECMAScript 相关
-	ECMAScriptErrors, ECMAScriptStatement,
+	ECMAScriptStatement, ECMAScriptErrors, ECMAScriptOrders,
 	// 语法配置相关
 	SyntaxConfig,
 	// 标签相关类
@@ -20,66 +20,6 @@ new function(
 	IDENTIFIER_REGEXP_SOURCE
 ){
 "use strict";
-
-
-// 错信信息相关
-void function(){
-
-this.ECMAScriptErrors = ECMAScriptErrors = function(REGEXP){
-	/**
-	 * 错误信息
-	 */
-	function ECMAScriptErrors(){};
-	ECMAScriptErrors = new Rexjs(ECMAScriptErrors);
-
-	ECMAScriptErrors.static({
-		ASSIGNMENT: "Invalid left-hand side in assignment",
-		CONST: "Assignment to constant variable",
-		DEFAULT_CLAUSE: "More than one default clause in switch statement",
-		DUPLICATE_PARAMETER_NAME: "Duplicate parameter name not allowed in this context",
-		FOR: "Invalid left-hand side in for-loop",
-		FOR_IN: "Invalid left-hand side in for-in loop: Must have a single binding",
-		GETTER: "Getter must not have any formal parameters",
-		ILLEGAL_STATEMENT: "Illegal ${1} statement",
-		LABEL: 'Undefined label "${1}"',
-		MISSING_INITIALIZER: "Missing initializer in const declaration",
-		NEWLINE: "Illegal newline",
-		NEWLINE_AFTER_THROW: "Illegal newline after throw",
-		NEWLINE_BEFORE_ARROW: "Illegal newline before arrow",
-		PREFIEX_OPERATION: "Invalid left-hand side expression in prefix operation",
-		REDECLARATION: 'Identifier "${1}" has already been declared',
-		REGEXP_FLAGS: "Invalid regular expression flags",
-		REST: "Rest parameter must be last formal parameter",
-		SETTER: "Setter must have exactly one formal parameter",
-		TARGET: "new.target expression is not allowed here",
-		TRY: "Missing catch or finally after try",
-		WITH: "The code may not include a with statement",
-		/**
-		 * 将错误信息模板里的参数进行替换，并返回结果
-		 * @param {String} type - 错误信息类型
-		 * @param {String} _args - 
-		 */
-		template: function(type){
-			var args = arguments;
-
-			return this[type].replace(
-				REGEXP,
-				function(result, index){
-					return args[index];
-				}
-			);
-		}
-	});
-
-	return ECMAScriptErrors;
-}(
-	// REGEXP
-	/\$\{(\d+)\}/g
-);
-
-}.call(
-	this
-);
 
 
 // 公用的表达式
@@ -331,6 +271,117 @@ this.GlobalStatements = function(ECMAScriptStatements, ECMAScriptVariableCollect
 );
 
 
+//ECMAScript 辅助类
+void function(){
+
+this.ECMAScriptErrors = ECMAScriptErrors = function(REGEXP){
+	/**
+	 * 错误信息
+	 */
+	function ECMAScriptErrors(){};
+	ECMAScriptErrors = new Rexjs(ECMAScriptErrors);
+
+	ECMAScriptErrors.static({
+		ASSIGNMENT: "Invalid left-hand side in assignment",
+		CONST: "Assignment to constant variable",
+		DEFAULT_CLAUSE: "More than one default clause in switch statement",
+		DUPLICATE_PARAMETER_NAME: "Duplicate parameter name not allowed in this context",
+		FOR: "Invalid left-hand side in for-loop",
+		FOR_IN: "Invalid left-hand side in for-in loop: Must have a single binding",
+		GETTER: "Getter must not have any formal parameters",
+		ILLEGAL_STATEMENT: "Illegal ${1} statement",
+		LABEL: 'Undefined label "${1}"',
+		MISSING_INITIALIZER: "Missing initializer in const declaration",
+		NEWLINE: "Illegal newline",
+		NEWLINE_AFTER_THROW: "Illegal newline after throw",
+		NEWLINE_BEFORE_ARROW: "Illegal newline before arrow",
+		PREFIEX_OPERATION: "Invalid left-hand side expression in prefix operation",
+		REDECLARATION: 'Identifier "${1}" has already been declared',
+		REGEXP_FLAGS: "Invalid regular expression flags",
+		REST: "Rest parameter must be last formal parameter",
+		SETTER: "Setter must have exactly one formal parameter",
+		TARGET: "new.target expression is not allowed here",
+		TRY: "Missing catch or finally after try",
+		WITH: "The code may not include a with statement",
+		/**
+		 * 将错误信息模板里的参数进行替换，并返回结果
+		 * @param {String} type - 错误信息类型
+		 * @param {String} _args - 
+		 */
+		template: function(type){
+			var args = arguments;
+
+			return this[type].replace(
+				REGEXP,
+				function(result, index){
+					return args[index];
+				}
+			);
+		}
+	});
+
+	return ECMAScriptErrors;
+}(
+	// REGEXP
+	/\$\{(\d+)\}/g
+);
+
+this.ECMAScriptOrders = ECMAScriptOrders = function(){
+	/**
+	 * 标签顺序
+	 */
+	function ECMAScriptOrders(){};
+	ECMAScriptOrders = new Rexjs(ECMAScriptOrders);
+
+	ECMAScriptOrders.static({
+		DOT_ACCESSOR: 100,
+		NUMBER: 100,
+		OPEN_ARROW_FUNCTION_BODY: 100,
+		OPEN_BRACKET_ACCESSOR: 100,
+		OPEN_CALL: 100,
+		SPECIAL_LINE_TERMINATOR: 100,
+		STATEMENT_END: 100,
+		EXPRESSION_BREAK: 101,
+		SPREAD: 101,
+		IDENTIFIER: 200,
+		PROPERTY_ACCESSOR: 201,
+		TARGET: 201,
+		VARIABLE: 201,
+		FUNCTION_VARIABLE: 202,
+		BINARY: 300,
+		NEGATION_SIBLING: 300,
+		PLUS_SIBLING: 300,
+		ARROW: 301,
+		GREATER_THAN_OR_EQUAL: 301,
+		LEFT_SHIFT: 301,
+		LESS_THAN_OR_EQUAL: 301,
+		LOGICAL_AND: 301,
+		LOGICAL_OR: 301,
+		RIGHT_SHIFT: 301,
+		DECREMENT_SIBLING: 302,
+		EQUALITY: 302,
+		INCREMENT_SIBLING: 302,
+		INEQUALITY: 302,
+		UNSIGNED_RIGHT_SHIFT: 302,
+		IDENTITY: 303,
+		NONIDENTITY: 303,
+		SHORTHAND_ASSIGNMENT: 303,
+		ILLEGAL_SHORTHAND_ASSIGNMENT: 304,
+		COMMENT: 400,
+		COMMENT_CONTENT: 401,
+		ILLEGAL_LINE_TERMINATOR: 401,
+		TEMPLATE_CONTENT: 500,
+		FILE_START: 600
+	});
+
+	return ECMAScriptOrders;
+}();
+
+}.call(
+	this
+);
+
+
 // 基类标签
 void function(RegExp){
 
@@ -396,7 +447,7 @@ this.CommentTag = function(){
 
 	CommentTag.props({
 		$type: TYPE_MATCHABLE,
-		order: 400
+		order: ECMAScriptOrders.COMMENT
 	});
 	
 	return CommentTag;
@@ -534,7 +585,7 @@ this.SpecialLineTerminatorTag = function(LineTerminatorTag){
 	SpecialLineTerminatorTag = new Rexjs(SpecialLineTerminatorTag, LineTerminatorTag);
 	
 	SpecialLineTerminatorTag.props({
-		order: 100
+		order: ECMAScriptOrders.SPECIAL_LINE_TERMINATOR
 	});
 	
 	return SpecialLineTerminatorTag;
@@ -634,7 +685,7 @@ this.FileStartTag = function(FileStartExpression){
 	FileStartTag = new Rexjs(FileStartTag, FilePositionTag);
 	
 	FileStartTag.props({
-		order: Infinity,
+		order: ECMAScriptOrders.FILE_START,
 		regexp: /^/,
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
@@ -753,7 +804,7 @@ this.CommentContentTag = function(){
 	
 	CommentContentTag.props({
 		// 防止与单行注释标签或多行注释起始标签冲突
-		order: 401,
+		order: ECMAScriptOrders.COMMENT_CONTENT,
 		regexp: /(?:[^*\r\n\u2028\u2029]|\*(?!\/))+/,
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
@@ -943,7 +994,7 @@ this.NumberTag = function(){
 	
 	NumberTag.props({
 		// 防止与 "." 匹配冲突
-		order: 100,
+		order: ECMAScriptOrders.NUMBER,
 		regexp: /0[bB][01]+|0[oO][0-7]+|0[xX][0-9a-fA-F]+|(?:\d*\.\d+|\d+\.?)(?:e[+-]?\d+)?/,
 		throw: "number"
 	});
@@ -1024,7 +1075,7 @@ this.IdentifierTag = function(IdentifierExpression, keywords, compileRegExpBy){
 
 	IdentifierTag.props({
 		$class: CLASS_EXPRESSION,
-		order: 200,
+		order: ECMAScriptOrders.IDENTIFIER,
 		regexp: compileRegExpBy(keywords),
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
@@ -1138,7 +1189,7 @@ this.VariableTag = function(IdentifierTag){
 			return false;
 		},
 		errorType: "CONST",
-		order: 201
+		order: ECMAScriptOrders.VARIABLE
 	});
 	
 	return VariableTag;
@@ -1267,7 +1318,7 @@ this.StatementEndTag = function(unexpected){
 		$class: CLASS_STATEMENT_END,
 		$type: TYPE_MISTAKABLE,
 		// 防止与 EmptyStatementTag 冲突
-		order: 100,
+		order: ECMAScriptOrders.STATEMENT_END,
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
@@ -1331,7 +1382,7 @@ this.IllegalLineTerminatorTag = function(SpecialLineTerminatorTag){
 	IllegalLineTerminatorTag = new Rexjs(IllegalLineTerminatorTag, SpecialLineTerminatorTag);
 	
 	IllegalLineTerminatorTag.props({
-		order: 401,
+		order: ECMAScriptOrders.ILLEGAL_LINE_TERMINATOR,
 		regexp: /(?:\/\*(?:[^*]|\*(?!\/))*)?[\r|\n|\u2028|\u2029]/,
 		/**
 		 * 标签访问器
@@ -1398,7 +1449,7 @@ this.ExpressionBreakTag = function(){
 	
 	ExpressionBreakTag.props({
 		// 防止与 StatementBreakTag 冲突
-		order: 101,
+		order: ECMAScriptOrders.EXPRESSION_BREAK,
 		/**
 		 * 标签访问器
 		 * @param {SyntaxParser} parser - 语法解析器
@@ -1476,7 +1527,7 @@ this.DotAccessorTag = function(AccessorExpression){
 	DotAccessorTag.props({
 		$class: CLASS_EXPRESSION_CONTEXT,
 		// 防止与数字冲突，如：3.14.15
-		order: 100,
+		order: ECMAScriptOrders.DOT_ACCESSOR,
 		regexp: /\./,
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
@@ -1627,7 +1678,7 @@ this.OpenBracketAccessorTag = function(OpenBracketTag, BracketAccessorExpression
 			return closeBracketAccessorTag;
 		},
 		// 防止与起始数组标签冲突
-		order: 100,
+		order: ECMAScriptOrders.OPEN_BRACKET_ACCESSOR,
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
@@ -2151,7 +2202,7 @@ this.PlusSiblingTag = function(PlusTag){
 			// 追加标签内容
 			contentBuilder.appendString(content);
 		},
-		order: 300
+		order: ECMAScriptOrders.PLUS_SIBLING
 	});
 	
 	return PlusSiblingTag;
@@ -2194,7 +2245,7 @@ this.NegationSiblingTag = function(NegationTag){
 	NegationSiblingTag = new Rexjs(NegationSiblingTag, NegationTag);
 	
 	NegationSiblingTag.props({
-		order: 300
+		order: ECMAScriptOrders.NEGATION_SIBLING
 	});
 	
 	return NegationSiblingTag;
@@ -2449,7 +2500,7 @@ this.IncrementSiblingTag = function(IncrementTag){
 			// 追加标签内容
 			contentBuilder.appendString(content);
 		},
-		order: 302
+		order: ECMAScriptOrders.INCREMENT_SIBLING
 	});
 	
 	return IncrementSiblingTag;
@@ -2520,7 +2571,7 @@ this.DecrementSiblingTag = function(DecrementTag){
 			// 追加标签内容
 			contentBuilder.appendString(content);
 		},
-		order: 302
+		order: ECMAScriptOrders.DECREMENT_SIBLING
 	});
 	
 	return DecrementSiblingTag;
@@ -2632,7 +2683,7 @@ this.BinaryTag = function(ExpressionSeparatorTag, BinaryExpression, BinaryStatem
 		isSeparator: function(context){
 			return context.tag instanceof ExpressionSeparatorTag;
 		},
-		order: 300,
+		order: ECMAScriptOrders.BINARY,
 		precedence: 0,
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
@@ -2844,7 +2895,7 @@ this.ShorthandAssignmentTag = function(){
 	
 	ShorthandAssignmentTag.props({
 		// 防止与其他二元运算符冲突
-		order: 303,
+		order: ECMAScriptOrders.SHORTHAND_ASSIGNMENT,
 		regexp: /\+=|-=|\*=|\/=|%=|<<=|>>=|>>>=|\&=|\|=|\^=/
 	});
 	
@@ -2862,7 +2913,7 @@ this.IllegalShorthandAssignmentTag = function(ShorthandAssignmentTag){
 	IllegalShorthandAssignmentTag = new Rexjs(IllegalShorthandAssignmentTag, ShorthandAssignmentTag);
 
 	IllegalShorthandAssignmentTag.props({
-		order: 304,
+		order: ECMAScriptOrders.ILLEGAL_SHORTHAND_ASSIGNMENT,
 		/**
 		 * 标签访问器
 		 * @param {SyntaxParser} parser - 语法解析器
@@ -2893,7 +2944,7 @@ this.LogicalORTag = function(){
 	
 	LogicalORTag.props({
 		// 防止与 "|" 冲突
-		order: 301,
+		order: ECMAScriptOrders.LOGICAL_OR,
 		precedence: 1,
 		regexp: /\|\|/
 	});
@@ -2913,7 +2964,7 @@ this.LogicalANDTag = function(){
 	
 	LogicalANDTag.props({
 		// 防止与 "&" 冲突
-		order: 301,
+		order: ECMAScriptOrders.LOGICAL_AND,
 		precedence: 2,
 		regexp: /\&\&/
 	});
@@ -2987,7 +3038,7 @@ this.IdentityTag = function(){
 	
 	IdentityTag.props({
 		// 防止与 "==" 或 "=" 冲突
-		order: 303,
+		order: ECMAScriptOrders.IDENTITY,
 		precedence: 6,
 		regexp: /===/
 	});
@@ -3007,7 +3058,7 @@ this.NonidentityTag = function(){
 	
 	NonidentityTag.props({
 		// 防止与 "!=" 冲突
-		order: 303,
+		order: ECMAScriptOrders.NONIDENTITY,
 		precedence: 6,
 		regexp: /!==/
 	});
@@ -3027,7 +3078,7 @@ this.EqualityTag = function(){
 	EqualityTag = new Rexjs(EqualityTag, BinaryTag);
 	
 	EqualityTag.props({
-		order: 302,
+		order: ECMAScriptOrders.EQUALITY,
 		precedence: 6,
 		regexp: /==/
 	});
@@ -3046,7 +3097,7 @@ this.InequalityTag = function(){
 	InequalityTag = new Rexjs(InequalityTag, BinaryTag);
 	
 	InequalityTag.props({
-		order: 302,
+		order: ECMAScriptOrders.INEQUALITY,
 		precedence: 6,
 		regexp: /!=/
 	});
@@ -3065,7 +3116,7 @@ this.LessThanOrEqualTag = function(){
 	LessThanOrEqualTag = new Rexjs(LessThanOrEqualTag, BinaryTag);
 
 	LessThanOrEqualTag.props({
-		order: 301,
+		order: ECMAScriptOrders.LESS_THAN_OR_EQUAL,
 		precedence: 7,
 		regexp: /<=/
 	});
@@ -3084,7 +3135,7 @@ this.GreaterThanOrEqualTag = function(){
 	GreaterThanOrEqualTag = new Rexjs(GreaterThanOrEqualTag, BinaryTag);
 	
 	GreaterThanOrEqualTag.props({
-		order: 301,
+		order: ECMAScriptOrders.GREATER_THAN_OR_EQUAL,
 		precedence: 7,
 		regexp: />=/
 	});
@@ -3175,7 +3226,7 @@ this.UnsignedRightShiftTag = function(){
 	UnsignedRightShiftTag = new Rexjs(UnsignedRightShiftTag, BinaryTag);
 	
 	UnsignedRightShiftTag.props({
-		order: 302,
+		order: ECMAScriptOrders.UNSIGNED_RIGHT_SHIFT,
 		precedence: 8,
 		regexp: />>>/
 	});
@@ -3194,7 +3245,7 @@ this.LeftShiftTag = function(){
 	LeftShiftTag = new Rexjs(LeftShiftTag, BinaryTag);
 	
 	LeftShiftTag.props({
-		order: 301,
+		order: ECMAScriptOrders.LEFT_SHIFT,
 		precedence: 8,
 		regexp: /<</
 	});
@@ -3213,7 +3264,7 @@ this.RightShiftTag = function(){
 	RightShiftTag = new Rexjs(RightShiftTag, BinaryTag);
 	
 	RightShiftTag.props({
-		order: 301,
+		order: ECMAScriptOrders.RIGHT_SHIFT,
 		precedence: 8,
 		regexp: />>/
 	});
@@ -3788,7 +3839,7 @@ this.OpenCallTag = function(OpenParenTag, CallExpression, CallStatement){
 			return closeCallTag;
 		},
 		// 防止与分组小括号冲突
-		order: 100,
+		order: ECMAScriptOrders.OPEN_CALL,
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
@@ -4014,7 +4065,7 @@ this.SpreadTag = function(SpreadExpression, SpreadStatement, AccessorExpression)
 	
 	SpreadTag.props({
 		// 防止与数字、点访问器冲突
-		order: 101,
+		order: ECMAScriptOrders.SPREAD,
 		regexp: /\.{3}/,
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
@@ -4747,7 +4798,7 @@ this.FunctionVariableTag = function(FunctionNameTag, visitor){
 	FunctionVariableTag = new Rexjs(FunctionVariableTag, FunctionNameTag);
 
 	FunctionVariableTag.props({
-		order: 202,
+		order: ECMAScriptOrders.FUNCTION_VARIABLE,
 		/**
 		 * 标签访问器
 		 * @param {SyntaxParser} parser - 语法解析器
@@ -5723,7 +5774,7 @@ this.TargetTag = function(SCOPE_CLOSURE, SCOPE_LAZY, visitor){
 	TargetTag = new Rexjs(TargetTag, PropertyNameTag);
 
 	TargetTag.props({
-		order: 201,
+		order: ECMAScriptOrders.TARGET,
 		regexp: /target/,
 		/**
 		 * 标签访问器
@@ -6516,7 +6567,7 @@ this.ArrowTag = function(ExpressionSeparatorTag, ArrowFunctionExpression, Single
 	ArrowTag.props({
 		$class: CLASS_EXPRESSION_CONTEXT,
 		// 防止与“=”冲突
-		order: 301,
+		order: ECMAScriptOrders.ARROW,
 		regexp: /=>/,
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
@@ -6600,7 +6651,7 @@ this.OpenArrowFunctionBodyTag = function(SCOPE_LAZY, visitor){
 		get binding(){
 			return closeArrowFunctionBodyTag;
 		},
-		order: 100,
+		order: ECMAScriptOrders.OPEN_ARROW_FUNCTION_BODY,
 		/**
 		 * 标签访问器
 		 * @param {SyntaxParser} parser - 语法解析器
@@ -7839,7 +7890,7 @@ this.PropertyAccessorTag = function(ObjectIdentifierNameTag, FunctionExpression,
 		errorType: "",
 		maxArgs: 0,
 		minArgs: 0,
-		order: 201,
+		order: ECMAScriptOrders.PROPERTY_ACCESSOR,
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
@@ -11932,6 +11983,83 @@ caseValueSeparatorTag = new this.CaseValueSeparatorTag();
 );
 
 
+// 模板相关
+void function(){
+
+this.TemplateExpression = function(){
+	/**
+	 * 模板表达式
+	 * @param {Context} open - 起始标签上下文
+	 */
+	function TemplateExpression(open){
+		PartnerExpression.call(this, open);
+	};
+	TemplateExpression = new Rexjs(TemplateExpression, PartnerExpression);
+
+	TemplateExpression.props({
+		extractTo: function(){
+
+		}
+	});
+
+	return TemplateExpression;
+}();
+
+this.OpenTemplateTag = function(TemplateExpression){
+	/**
+	 * 起始模板标签
+	 * @param {Number} _type - 标签类型
+	 */
+	function OpenTemplateTag(_type){
+		SyntaxTag.call(this, _type);
+	};
+	OpenTemplateTag = new Rexjs(OpenTemplateTag, SyntaxTag);
+
+	OpenTemplateTag.props({
+		$class: CLASS_EXPRESSION,
+		regexp: /`/,
+		/**
+		 * 标签访问器
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 标签上下文
+		 * @param {Statement} statement - 当前语句
+		 * @param {Statements} statements - 当前语句块
+		 */
+		visitor: function(parser, context, statement, statements){
+			statement.expression = new TemplateExpression(context);
+		}
+	});
+
+	return OpenTemplateTag;
+}(
+	this.TemplateExpression
+);
+
+this.TemplateContentTag = function(){
+	/**
+	 * 模板内容标签
+	 * @param {Number} _type - 标签类型
+	 */
+	function TemplateContentTag(_type){
+		SyntaxTag.call(this, _type);
+	};
+	TemplateContentTag = new Rexjs(TemplateContentTag, SyntaxTag);
+
+	TemplateContentTag.props({
+		order: ECMAScriptOrders.TEMPLATE_CONTENT,
+		regexp: /\\`|[^`]*(?=\$\{)/
+	});
+
+	return TemplateContentTag;
+}(
+
+);
+	
+}.call(
+	this
+);
+
+
 // 辅助性的标签列表相关
 void function(SyntaxTags){
 
@@ -12050,6 +12178,7 @@ this.ECMAScriptTags = function(DefaultTags, list){
 		this.OpenBlockTag,
 		this.OpenGroupingTag,
 		this.OpenMultiLineCommentTag,
+		this.OpenTemplateTag,
 		this.PlusTag,
 		this.QuestionTag,
 		this.RegExpTag,
@@ -13746,9 +13875,11 @@ Rexjs.static(this);
 	Rexjs.DefaultExpression,
 	Rexjs.PartnerExpression,
 	Rexjs.LeftHandSideExpression,
+	// ECMAScriptStatement
+	null,
 	// ECMAScriptErrors
 	null,
-	// ECMAScriptStatement
+	// ECMAScriptOrders
 	null,
 	Rexjs.SyntaxConfig,
 	Rexjs.SyntaxTag,
