@@ -51,6 +51,7 @@ this.ECMAScriptErrors = ECMAScriptErrors = function(REGEXP){
 		REGEXP_FLAGS: "Invalid regular expression flags",
 		REST: "Rest parameter must be last formal parameter",
 		SETTER: "Setter must have exactly one formal parameter",
+		TARGET: "new.target expression is not allowed here",
 		TRY: "Missing catch or finally after try",
 		WITH: "The code may not include a with statement",
 		/**
@@ -261,6 +262,10 @@ this.ECMAScriptStatements = function(ECMAScriptStatement, extractTo){
 		this.collections = collections;
 	};
 	ECMAScriptStatements = new Rexjs(ECMAScriptStatements, Statements);
+
+	ECMAScriptStatements.static({
+		scope: Statements.SCOPE_CLOSURE
+	});
 
 	ECMAScriptStatements.props({
 		collections: null,
@@ -1444,9 +1449,9 @@ this.AccessorExpression = function(AssignableExpression){
 			// 提取对象表达式
 			this.object.extractTo(contentBuilder);
 			
-			// 添加点
+			// 追加点
 			contentBuilder.appendContext(this.context);
-			// 添加属性
+			// 追加属性
 			contentBuilder.appendContext(this.property);
 		},
 		object: null,
@@ -4405,13 +4410,13 @@ this.BlockBodyStatements = function(ECMAScriptStatements, BlockBodyStatement){
 	BlockBodyStatements = new Rexjs(BlockBodyStatements, ECMAScriptStatements);
 	
 	BlockBodyStatements.props({
-		closure: false,
 		/**
 		 * 初始化语句
 		 */
 		initStatement: function(){
 			return new BlockBodyStatement(this);
-		}
+		},
+		scope: ECMAScriptStatements.SCOPE_BLOCK
 	});
 	
 	return BlockBodyStatements;
@@ -5474,7 +5479,7 @@ this.FunctionBodyStatements = function(BlockBodyStatements, ECMAScriptVariableCo
 	FunctionBodyStatements = new Rexjs(FunctionBodyStatements, BlockBodyStatements);
 	
 	FunctionBodyStatements.props({
-		closure: true
+		scope: BlockBodyStatements.SCOPE_CLOSURE
 	});
 	
 	return FunctionBodyStatements;
@@ -5633,7 +5638,149 @@ closeFunctionBodyTag = new this.CloseFunctionBodyTag();
 );
 
 
-// 分组小括号标签
+// new.target 表达式相关
+void function(ECMAScriptStatements, PropertyNameTag){
+
+this.TargetExpression = function(AccessorExpression){
+	/**
+	 * new.target 表达式
+	 * @param {Context} context - 语法标签上下文
+	 */
+	function TargetExpression(context){
+		AccessorExpression.call(this, context, null);
+	};
+	TargetExpression = new Rexjs(TargetExpression, AccessorExpression);
+
+	TargetExpression.props({
+		/**
+		 * 提取表达式文本内容
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 */
+		extractTo: function(contentBuilder){
+			// 追加 new 关键字
+			contentBuilder.appendString("new");
+			// 追加点
+			contentBuilder.appendContext(this.context);
+			// 追加属性
+			contentBuilder.appendContext(this.property);
+		}
+	});
+
+	return TargetExpression;
+}(
+	this.AccessorExpression
+);
+
+this.TargetAccessorTag = function(DotAccessorTag, TargetExpression){
+	/**
+	 * target 访问器标签
+	 * @param {Number} _type - 标签类型
+	 */
+	function TargetAccessorTag(_type){
+		DotAccessorTag.call(this, _type);
+	};
+	TargetAccessorTag = new Rexjs(TargetAccessorTag, DotAccessorTag);
+
+	TargetAccessorTag.props({
+		/**
+		 * 获取此标签接下来所需匹配的标签列表
+		 * @param {TagsMap} tagsMap - 标签集合映射
+		 */
+		require: function(tagsMap){
+			return tagsMap.targetAccessorContextTags;
+		},
+		/**
+		 * 标签访问器
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 标签上下文
+		 * @param {Statement} statement - 当前语句
+		 * @param {Statements} statements - 当前语句块
+		 */
+		visitor: function(parser, context, statement, statements){
+			(
+				// 设置当前语句为 target，目的是因为当前已经不属于一元操作语句
+				statements.statement = statement.target
+			)
+			// 设置当前语句的表达式
+			.expression = new TargetExpression(context);
+		}
+	});
+
+	return TargetAccessorTag;
+}(
+	this.DotAccessorTag,
+	this.TargetExpression
+);
+
+this.TargetTag = function(SCOPE_CLOSURE, SCOPE_LAZY, visitor){
+	/**
+	 * target 标签
+	 * @param {Number} _type - 标签类型
+	 */
+	function TargetTag(_type){
+		PropertyNameTag.call(this, _type);
+	};
+	TargetTag = new Rexjs(TargetTag, PropertyNameTag);
+
+	TargetTag.props({
+		order: 201,
+		regexp: /target/,
+		/**
+		 * 标签访问器
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 标签上下文
+		 * @param {Statement} statement - 当前语句
+		 * @param {Statements} statements - 当前语句块
+		 */
+		visitor: function(parser, context, statement, statements){
+			var s = statements;
+
+			doBlock:
+			do {
+				// 判断作用域类型
+				switch(
+					s.scope & SCOPE_LAZY
+				){
+					// 如果是惰性闭包
+					case SCOPE_LAZY:
+						break doBlock;
+
+					// 如果是普通闭包
+					case SCOPE_CLOSURE:
+						// 调用父类方法
+						visitor.call(this, parser, context, statement, statements);
+						return;
+
+					// 如果不是闭包
+					default:
+						s = s.target;
+						break;
+				}
+			}
+			while(
+				s
+			)
+
+			// 报错
+			parser.error(statement.expression.context, ECMAScriptErrors.TARGET);
+		}
+	});
+
+	return TargetTag;
+}(
+	ECMAScriptStatements.SCOPE_CLOSURE,
+	ECMAScriptStatements.SCOPE_LAZY,
+	PropertyNameTag.prototype.visitor
+);
+
+}.call(
+	this,
+	this.ECMAScriptStatements,
+	this.PropertyNameTag
+);
+
+
+// 分组小括号标签相关
 void function(IdentifierExpression, ArgumentExpression, DefaultArgumentExpression, RestArgumentExpression, groupingSeparatorTag, closeGroupingTag, collectTo){
 
 this.GroupingExpression = function(){
@@ -6436,7 +6583,7 @@ this.ArrowTag = function(ExpressionSeparatorTag, ArrowFunctionExpression, Single
 	this.ArrowContextStatement
 );
 
-this.OpenArrowFunctionBodyTag = function(visitor){
+this.OpenArrowFunctionBodyTag = function(SCOPE_LAZY, visitor){
 	/**
 	 * 起始箭头函数主体标签
 	 * @param {Number} _type - 标签类型
@@ -6466,11 +6613,15 @@ this.OpenArrowFunctionBodyTag = function(visitor){
 			statement.out();
 			// 调用父类方法
 			visitor.call(this, parser, context, statements.statement, statements);
+
+			// 将 FunctionBodyStatements 作用域设置为惰性闭包
+			parser.statements.scope = SCOPE_LAZY;
 		}
 	});
 
 	return OpenArrowFunctionBodyTag;
 }(
+	this.ECMAScriptStatements.SCOPE_LAZY,
 	OpenFunctionBodyTag.prototype.visitor
 );
 
@@ -8005,9 +8156,9 @@ this.TerminatedFlowTag = function(TerminatedFlowExpression, TerminatedFlowStatem
 
 
 // 中断流标签子类相关
-void function(TerminatedFlowTag){
+void function(TerminatedFlowTag, ECMAScriptStatements){
 
-this.ReturnTag = function(visitor){
+this.ReturnTag = function(SCOPE_CLOSURE, visitor){
 	/**
 	 * return 关键字标签
 	 * @param {Number} _type - 标签类型
@@ -8042,9 +8193,9 @@ this.ReturnTag = function(visitor){
 			while(
 				s
 			){
-				// 如果是闭包，而且不是系统最外层闭包
+				// 如果是闭包，而且不是全局系统最外层闭包
 				if(
-					s.closure && s.target !== null
+					(s.scope & SCOPE_CLOSURE) === SCOPE_CLOSURE
 				){
 					// 调用父类访问器
 					visitor.call(this, parser, context, statement, statements);
@@ -8067,6 +8218,7 @@ this.ReturnTag = function(visitor){
 	
 	return ReturnTag;
 }(
+	ECMAScriptStatements.SCOPE_CLOSURE,
 	TerminatedFlowTag.prototype.visitor
 );
 
@@ -8126,12 +8278,13 @@ this.ThrowContextLineTerminatorTag = function(IllegalLineTerminatorTag){
 
 }.call(
 	this,
-	this.TerminatedFlowTag
+	this.TerminatedFlowTag,
+	this.ECMAScriptStatements
 );
 
 
 // 迭代中断流类相关
-void function(TerminatedFlowStatement){
+void function(TerminatedFlowStatement, LabelledStatement, SCOPE_CLOSURE){
 
 this.TerminatedBranchFlowStatement = function(catchMethod, withoutAnyFlow){
 	/**
@@ -8162,7 +8315,7 @@ this.TerminatedBranchFlowStatement = function(catchMethod, withoutAnyFlow){
 					break;
 
 				// 如果存在指定的流语句中
-				case withoutAnyFlow(this.target, this.statements, terminatedFlowExpression.context.tag.flow):
+				case withoutAnyFlow(this.statements, terminatedFlowExpression.context.tag.flow):
 					break;
 
 				// 默认
@@ -8187,35 +8340,31 @@ this.TerminatedBranchFlowStatement = function(catchMethod, withoutAnyFlow){
 }(
 	TerminatedFlowStatement.prototype.catch,
 	// withoutAnyFlow
-	function(target, statements, flow){
-		// 如果语句块存在
+	function(statements, flow){
 		while(
 			statements
 		){
-			// 如果目标语句存在
+			var statement = statements.statement;
+
+			// 如果语句存在
 			while(
-				target
+				statement
 			){
 				// 如果流一致
 				if(
-					(target.flow & flow) === flow
+					(statement.flow & flow) === flow
 				){
 					return false;
 				}
 
-				target = target.target;
+				statement = statement.target;
 			}
 
-			// 如果是闭包
-			if(
-				statements.closure
-			){
-				return true;
-			}
-
-			statements = statements.target;
-			target = statements.statement;
+			// 如果是闭包，返回 null，中断循环，否则获取 target
+			statements = (statements.scope & SCOPE_CLOSURE) === SCOPE_CLOSURE ? null : statements.target;
 		}
+
+		return true;
 	}
 );
 
@@ -8267,7 +8416,7 @@ this.TerminatedBranchFlowTag = function(TerminatedFlowTag, TerminatedFlowExpress
 	this.TerminatedBranchFlowStatement
 );
 
-this.LabelledIdentifierTag = function(LabelTag, LabelledStatement){
+this.LabelledIdentifierTag = function(LabelTag, withoutAnyFlow){
 	/**
 	 * 标记标识符标签
 	 * @param {Number} _type - 标签类型
@@ -8293,69 +8442,76 @@ this.LabelledIdentifierTag = function(LabelTag, LabelledStatement){
 		 * @param {Statements} statements - 当前语句块
 		 */
 		visitor: function(parser, context, statement, statements){
-			var content = context.content, flowStatement = statement, target = statement.target, terminatedFlowTag = target.expression.context.tag;
-
-			while(
-				statements
+			// 如果没有存在指定的流语句中
+			if(
+				withoutAnyFlow(statements, statement.target.expression.context.tag, context.content)
 			){
-				// 如果目标语句存在
-				while(
-					target
-				){
-					switch(
-						false
-					){
-						// 如果目标语句不是标记语句
-						case target instanceof LabelledStatement:
-							break;
+				// 报错
+				parser.error(
+					context,
+					ECMAScriptErrors.template("LABEL", context.content)
+				);
 
-						// 如果标记名称不符合
-						case target.target.expression.context.content === content:
-							break;
-
-						// 如果流语句核对无效
-						case terminatedFlowTag.checkFlowStatement(flowStatement):
-							break;
-
-						default:
-							// 设置当前表达式
-							statement.expression = new Expression(context);
-							return;
-					}
-
-					flowStatement = target;
-					target = target.target;
-				}
-
-				// 如果是闭包
-				if(
-					statements.closure
-				){
-					break;
-				}
-
-				statements = statements.target;
-				flowStatement = target;
-				target = statements.statement;
+				return;
 			}
 
-			// 报错
-			parser.error(
-				context,
-				ECMAScriptErrors.template("LABEL", content)
-			);
+			// 设置当前表达式
+			statement.expression = new Expression(context);
 		}
 	});
 	
 	return LabelledIdentifierTag;
 }(
 	this.LabelTag,
-	this.LabelledStatement
+	// withoutAnyFlow
+	function(statements, terminatedFlowTag, content){
+		// 如果语句块存在
+		while(
+			statements
+		){
+			var statement = statements.statement;
+
+			// 如果目标语句存在
+			while(
+				statement
+			){
+				var target = statement.target;
+
+				switch(
+					false
+				){
+					// 如果目标语句不是标记语句
+					case statement instanceof LabelledStatement:
+						break;
+
+					// 如果标记名称不符合
+					case target.expression.context.content === content:
+						break;
+
+					// 如果流语句核对无效
+					case terminatedFlowTag.checkFlowStatement(statement):
+						break;
+
+					default:
+						return false;
+				}
+
+				statement = target;
+			}
+
+			// 如果是闭包，则获取 target，否则等于 null，中断循环
+			statements = (statements.scope & SCOPE_CLOSURE) === SCOPE_CLOSURE ? null : statements.target;
+		}
+
+		return true;
+	}
 );
 
 }.call(
 	this,
-	this.TerminatedFlowStatement
+	this.TerminatedFlowStatement,
+	this.LabelledStatement,
+	this.ECMAScriptStatements.SCOPE_CLOSURE
 );
 
 
@@ -12728,12 +12884,16 @@ this.NegationContextTags = function(NegationSiblingTag, DecrementSiblingTag){
 	this.DecrementSiblingTag
 );
 
-this.NewContextTags = function(UnaryTag, NewTag, filter){
+this.NewContextTags = function(UnaryTag, NewTag, TargetAccessorTag, filter){
 	/**
 	 * 语句块起始上下文标签列表
 	 */
 	function NewContextTags(){
 		ExpressionTags.call(this);
+
+		this.register(
+			new TargetAccessorTag()
+		);
 	};
 	NewContextTags = new Rexjs(NewContextTags, ExpressionTags);
 	
@@ -12767,6 +12927,7 @@ this.NewContextTags = function(UnaryTag, NewTag, filter){
 }(
 	this.UnaryTag,
 	this.NewTag,
+	this.TargetAccessorTag,
 	this.ExpressionTags.prototype.filter
 );
 
@@ -13116,6 +13277,28 @@ this.SwitchConditionTags = function(OpenSwitchConditionTag){
 	return SwitchConditionTags;
 }(
 	this.OpenSwitchConditionTag
+);
+
+this.TargetAccessorContextTags = function(TargetTag){
+	/**
+	 * new.target 属性访问器上下文标签列表
+	 */
+	function TargetAccessorContextTags(){
+		IllegalTags.call(this);
+
+		this.register(
+			new TargetTag()
+		);
+	};
+	TargetAccessorContextTags = new Rexjs(TargetAccessorContextTags, IllegalTags);
+
+	TargetAccessorContextTags.props({
+		id: "targetAccessorContextTags"
+	});
+
+	return TargetAccessorContextTags;
+}(
+	this.TargetTag
 );
 
 this.TerminatedBranchFlowContextTags = function(LabelledIdentifierTag){
@@ -13474,6 +13657,7 @@ this.ECMAScriptTagsMap = function(SyntaxTagsMap, tagsArray){
 		this.ReturnContextTags,
 		this.SwitchBlockTags,
 		this.SwitchConditionTags,
+		this.TargetAccessorContextTags,
 		this.TerminatedBranchFlowContextTags,
 		this.ThrowContextTags,
 		this.UnexpectedTags,

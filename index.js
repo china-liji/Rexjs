@@ -1,1 +1,1 @@
-a=>{ let b = 1; }
+function fn(){ new.target }

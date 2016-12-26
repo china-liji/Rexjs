@@ -23,6 +23,14 @@ test.false(
 	}
 );
 
+test.false(
+	"跨闭包的标记",
+	"a:{function fn(){ { break a } }}",
+	function(parser, err){
+		return err.context.tag instanceof Rexjs.LabelledIdentifierTag ? "" : "没有识别出标记标识符";
+	}
+);
+
 test.groupEnd();
 
 }(

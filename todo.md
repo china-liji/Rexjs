@@ -8,7 +8,6 @@ import
 static
 super
 yield
-new.target
 super.xx
 fn`te${}`
 **
@@ -140,6 +139,12 @@ async
 --------
 已完成功能 ↓
 --------
+new.target 表达式完成 及 其他 - 2016.12.26
+	- 基本功能解析（只解析，但不编译，因为运行时环境上下文很难确定）
+	- 测试代码
+	- 将 Statements.prototype.closure 属性修改成 scope，并进行细分
+	- 根据 Statements.prototype.scope 对中断流进行部分重构
+
 修复箭头表达式 bug - 2016.12.25
 	- 带语句块的箭头表达式，后面只能接逗号或语句结束
 	- 完善修复该 bug 之后的测试文件

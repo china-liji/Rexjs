@@ -1294,11 +1294,17 @@ this.TagClass = function(CLASS_NONE, CLASS_STATEMENT, CLASS_STATEMENT_BEGIN, CLA
 	TagClass = new Rexjs(TagClass, TagData);
 
 	TagClass.static({
+		// 无标签分类
 		CLASS_NONE: CLASS_NONE,
+		// 表达式标签类别
 		CLASS_EXPRESSION: CLASS_EXPRESSION,
+		// 表达式上下文标签类别
 		CLASS_EXPRESSION_CONTEXT: CLASS_EXPRESSION_CONTEXT,
+		// 语句标签类别
 		CLASS_STATEMENT: CLASS_STATEMENT,
+		// 语句起始标签类别
 		CLASS_STATEMENT_BEGIN: CLASS_STATEMENT_BEGIN,
+		// 语句结束标签类别
 		CLASS_STATEMENT_END: CLASS_STATEMENT_END
 	});
 
@@ -1342,9 +1348,13 @@ this.TagType = function(TYPE_MATCHABLE, TYPE_UNEXPECTED, TYPE_MISTAKABLE, TYPE_I
 	TagType = new Rexjs(TagType);
 
 	TagType.static({
+		// 非法标签类型
 		TYPE_ILLEGAL: TYPE_ILLEGAL,
+		// 可匹配的标签类型
 		TYPE_MATCHABLE: TYPE_MATCHABLE,
+		// 可能会无解的标签类型
 		TYPE_MISTAKABLE: TYPE_MISTAKABLE,
+		// 未捕获的标签类型
 		TYPE_UNEXPECTED: TYPE_UNEXPECTED
 	});
 
@@ -1901,7 +1911,7 @@ this.Statement = function(){
 	return Statement;
 }();
 
-this.Statements = function(Statement, STATE_STATEMENT_ENDED){
+this.Statements = function(Statement, STATE_STATEMENT_ENDED, parseInt){
 	/**
 	 * 语句块
 	 */
@@ -1912,6 +1922,17 @@ this.Statements = function(Statement, STATE_STATEMENT_ENDED){
 		this.newStatement();
 	};
 	Statements = new Rexjs(Statements, SyntaxElement);
+
+	Statements.static({
+		// 全局作用域
+		SCOPE_GLOBAL: parseInt(10, 2),
+		// 块级作用域
+		SCOPE_BLOCK: parseInt(100, 2),
+		// 闭包作用域
+		SCOPE_CLOSURE: parseInt(1000, 2),
+		// 惰性闭包作用域，一般用于特殊的闭包处理使用
+		SCOPE_LAZY: parseInt(11000, 2)
+	});
 	
 	Statements.props({
 		/**
@@ -1924,7 +1945,6 @@ this.Statements = function(Statement, STATE_STATEMENT_ENDED){
 			// 清空列表
 			this.splice(0);
 		},
-		closure: true,
 		/**
 		 * 提取文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
@@ -1969,6 +1989,7 @@ this.Statements = function(Statement, STATE_STATEMENT_ENDED){
 			this.statement = null;
 			return this.statement = this[this.length++] = this.initStatement();
 		},
+		scope: Statements.SCOPE_GLOBAL,
 		splice: Array.prototype.splice,
 		statement: null,
 		target: null
@@ -1977,7 +1998,8 @@ this.Statements = function(Statement, STATE_STATEMENT_ENDED){
 	return Statements;
 }(
 	this.Statement,
-	this.Expression.STATE_STATEMENT_ENDED
+	this.Expression.STATE_STATEMENT_ENDED,
+	parseInt
 );
 
 }.call(
