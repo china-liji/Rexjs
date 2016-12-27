@@ -283,6 +283,7 @@ this.ECMAScriptErrors = ECMAScriptErrors = function(REGEXP){
 
 	ECMAScriptErrors.static({
 		ASSIGNMENT: "Invalid left-hand side in assignment",
+		CALL: "missing ) after argument list",
 		CONST: "Assignment to constant variable",
 		DEFAULT_CLAUSE: "More than one default clause in switch statement",
 		DUPLICATE_PARAMETER_NAME: "Duplicate parameter name not allowed in this context",
@@ -301,6 +302,7 @@ this.ECMAScriptErrors = ECMAScriptErrors = function(REGEXP){
 		REST: "Rest parameter must be last formal parameter",
 		SETTER: "Setter must have exactly one formal parameter",
 		TARGET: "new.target expression is not allowed here",
+		TEMPLATE: "Unterminated template literal",
 		TRY: "Missing catch or finally after try",
 		WITH: "The code may not include a with statement",
 		/**
@@ -371,6 +373,7 @@ this.ECMAScriptOrders = ECMAScriptOrders = function(){
 		COMMENT_CONTENT: 401,
 		ILLEGAL_LINE_TERMINATOR: 401,
 		TEMPLATE_CONTENT: 500,
+		TEMPLATE_SPECIAL_CONTENT: 501,
 		FILE_START: 600
 	});
 
@@ -2589,7 +2592,7 @@ this.DecrementSiblingTag = function(DecrementTag){
 // 二元标签基类
 void function(){
 
-this.BinaryExpression = function(add){
+this.BinaryExpression = function(){
 	/**
 	 * 二元表达式
 	 * @param {Context} context - 语法标签上下文
@@ -2601,18 +2604,6 @@ this.BinaryExpression = function(add){
 
 	BinaryExpression.props({
 		/**
-		 * 添加表达式
-		 * @param {Expression} expression - 需要添加的表达式
-		 */
-		add: function(expression){
-			// 调用父类方法
-			add.call(this, expression);
-
-			// 设置最近添加的表达式
-			this.latest = expression;
-		},
-		latest: null,
-		/**
 		 * 用指定表达式替换最近添加的表达式
 		 * @param {Expression} expression - 指定的表达式
 		 */
@@ -2622,9 +2613,7 @@ this.BinaryExpression = function(add){
 	});
 
 	return BinaryExpression;
-}(
-	ListExpression.prototype.add
-);
+}();
 
 this.BinaryStatement = function(){
 	/**
@@ -3782,7 +3771,7 @@ this.CallStatement = function(){
 				context.content !== ")"
 			){
 				// 报错
-				parser.error(context);
+				parser.error(context, ECMAScriptErrors.CALL);
 				return null;
 			}
 			
@@ -5573,7 +5562,7 @@ this.FunctionBodyOuterStatement = function(){
 	return FunctionBodyOuterStatement;
 }();
 
-this.OpenFunctionBodyTag = function(OpenBlockTag, FunctionBodyExpression, FunctionBodyStatements, FunctionBodyOuterStatement, collectArgumentNames){
+this.OpenFunctionBodyTag = function(OpenBlockTag, FunctionBodyExpression, FunctionBodyStatements, FunctionBodyOuterStatement, forEach){
 	/**
 	 * 起始函数主体标签
 	 * @param {Number} _type - 标签类型
@@ -5605,12 +5594,13 @@ this.OpenFunctionBodyTag = function(OpenBlockTag, FunctionBodyExpression, Functi
 		 * @param {Statements} statements - 当前语句块
 		 */
 		visitor: function(parser, context, statement, statements){
-			var functionBodyStatements = new FunctionBodyStatements();
-			
+			var functionBodyStatements = new FunctionBodyStatements(), declarationCollection = functionBodyStatements.collections.declaration;
+
 			// 收集参数名到声明集合下
-			collectArgumentNames(
-				functionBodyStatements.collections.declaration,
-				statement.expression.arguments.collection
+			forEach(
+				statement.expression.arguments.collection,
+				declarationCollection.collect,
+				declarationCollection
 			);
 
 			(
@@ -5633,17 +5623,7 @@ this.OpenFunctionBodyTag = function(OpenBlockTag, FunctionBodyExpression, Functi
 	this.FunctionBodyExpression,
 	this.FunctionBodyStatements,
 	this.FunctionBodyOuterStatement,
-	// collectArgumentNames
-	function(declarationCollection, argumentNameCollection){
-		for(
-			var i = 0, j = argumentNameCollection.length;i < j;i++
-		){
-			// 将参数名收入声明集合中
-			declarationCollection.collect(
-				argumentNameCollection[i]
-			);
-		}
-	}
+	Rexjs.forEach
 );
 
 this.CloseFunctionBodyTag = function(CloseBlockTag, FunctionDeclarationExpression){
@@ -6755,7 +6735,7 @@ this.ShorthandPropertyValueExpression = function(){
 	return ShorthandPropertyValueExpression;
 }();
 
-this.ObjectExpression = function(config, extractTo, compileInner){
+this.ObjectExpression = function(config, extractTo, compileItem){
 	/**
 	 * 对象表达式
 	 * @param {Context} open - 起始标签上下文
@@ -6789,7 +6769,7 @@ this.ObjectExpression = function(config, extractTo, compileInner){
 				// 追加函数闭包头部
 				contentBuilder.appendString("(function(object, defineProperty){");
 				// 编译内容
-				compileInner(this.inner, contentBuilder);
+				this.inner.forEach(compileItem, contentBuilder);
 				// 追加函数闭包尾部
 				contentBuilder.appendString("return object;}({}, Object.defineProperty))");
 				return;
@@ -6806,15 +6786,9 @@ this.ObjectExpression = function(config, extractTo, compileInner){
 	// config
 	new SyntaxConfig("shorthandProperty", "computedName"),
 	PartnerExpression.prototype.extractTo,
-	// compileInner
-	function(inner, contentBuilder){
-		// 遍历 inner
-		for(
-			var i = inner.min, j = inner.length;i < j;i++
-		){
-			// 编译项
-			inner[i].compileTo(contentBuilder);
-		}
+	// compileItem
+	function(item){
+		item.compileTo(this);
 	}
 );
 
@@ -11986,24 +11960,61 @@ caseValueSeparatorTag = new this.CaseValueSeparatorTag();
 // 模板相关
 void function(){
 
-this.TemplateExpression = function(){
+this.TemplateExpression = function(config, extractTo, compileItem){
 	/**
 	 * 模板表达式
 	 * @param {Context} open - 起始标签上下文
 	 */
 	function TemplateExpression(open){
 		PartnerExpression.call(this, open);
+
+		this.inner = new ListExpression(null, "");
 	};
 	TemplateExpression = new Rexjs(TemplateExpression, PartnerExpression);
 
-	TemplateExpression.props({
-		extractTo: function(){
+	TemplateExpression.static({
+		/**
+		 * 获取表达式编译配置
+		 */
+		get config(){
+			return config;
+		}
+	});
 
+	TemplateExpression.props({
+		/**
+		 * 提取表达式文本内容
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 */
+		extractTo: function(contentBuilder){
+			// 如果需要编译
+			if(
+				config.base
+			){
+				// 追加起始双引号
+				contentBuilder.appendString('"');
+				// 直接编译 inner
+				this.inner.forEach(compileItem, contentBuilder);
+				// 追加结束双引号
+				contentBuilder.appendString('"');
+				return;
+			}
+
+			// 调用父类方法
+			extractTo.call(this, contentBuilder);
 		}
 	});
 
 	return TemplateExpression;
-}();
+}(
+	// config
+	new SyntaxConfig("base"),
+	PartnerExpression.prototype.extractTo,
+	// compileItem
+	function(item, contentBuilder){
+		item.compileTo(this);
+	}
+);
 
 this.OpenTemplateTag = function(TemplateExpression){
 	/**
@@ -12018,6 +12029,13 @@ this.OpenTemplateTag = function(TemplateExpression){
 	OpenTemplateTag.props({
 		$class: CLASS_EXPRESSION,
 		regexp: /`/,
+		/**
+		 * 获取此标签接下来所需匹配的标签列表
+		 * @param {TagsMap} tagsMap - 标签集合映射
+		 */
+		require: function(tagsMap){
+			return tagsMap.templateContentTags;
+		},
 		/**
 		 * 标签访问器
 		 * @param {SyntaxParser} parser - 语法解析器
@@ -12035,6 +12053,76 @@ this.OpenTemplateTag = function(TemplateExpression){
 	this.TemplateExpression
 );
 
+this.CloseTemplateTag = function(){
+	/**
+	 * 结束模板标签
+	 * @param {Number} _type - 标签类型
+	 */
+	function CloseTemplateTag(_type){
+		SyntaxTag.call(this, _type);
+	};
+	CloseTemplateTag = new Rexjs(CloseTemplateTag, SyntaxTag);
+
+	CloseTemplateTag.props({
+		order: ECMAScriptOrders.TEMPLATE_SPECIAL_CONTENT,
+		regexp: /`/,
+		/**
+		 * 获取此标签接下来所需匹配的标签列表
+		 * @param {TagsMap} tagsMap - 标签集合映射
+		 */
+		require: function(tagsMap){
+			return tagsMap.expressionContextTags;
+		},
+		/**
+		 * 标签访问器
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 标签上下文
+		 * @param {Statement} statement - 当前语句
+		 * @param {Statements} statements - 当前语句块
+		 */
+		visitor: function(parser, context, statement, statements){
+			statement.expression.close = context;
+		}
+	});
+
+	return CloseTemplateTag;
+}();
+	
+}.call(
+	this
+);
+
+
+// 模板内容标签相关
+void function(LineTerminatorTag, getUnicode){
+
+this.TemplateUnicodeExpression = function(){
+	/**
+	 * 模板 Unicode 字符编码表达式
+	 * @param {Context} context - 语法标签上下文
+	 * @param {String} unicode - 标签文本内容的 unicode 字符编码
+	 */
+	function TemplateUnicodeExpression(context, unicode){
+		Expression.call(this, context);
+
+		this.unicode = unicode;
+	};
+	TemplateUnicodeExpression = new Rexjs(TemplateUnicodeExpression, Expression);
+
+	TemplateUnicodeExpression.props({
+		/**
+		 * 提取并编译表达式文本内容
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 */
+		compileTo: function(contentBuilder){
+			contentBuilder.appendString("\\u" + this.unicode);
+		},
+		unicode: "0000"
+	});
+
+	return TemplateUnicodeExpression;
+}();
+
 this.TemplateContentTag = function(){
 	/**
 	 * 模板内容标签
@@ -12047,16 +12135,294 @@ this.TemplateContentTag = function(){
 
 	TemplateContentTag.props({
 		order: ECMAScriptOrders.TEMPLATE_CONTENT,
-		regexp: /\\`|[^`]*(?=\$\{)/
+		regexp: /(?:\\[\s\S]|[^`])+?(?=\$\{|[`"\r\n\u2028\u2029])/,
+		/**
+		 * 标签访问器
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 标签上下文
+		 * @param {Statement} statement - 当前语句
+		 * @param {Statements} statements - 当前语句块
+		 */
+		visitor: function(parser, context, statement, statements){
+			// 添加表达式
+			statement.expression.inner.add(
+				// 初始化模板字符串表达式
+				new Expression(context)
+			);
+		}
 	});
 
 	return TemplateContentTag;
-}(
+}();
 
+this.TemplateLineTerminatorTag = function(TemplateUnicodeExpression, RegExp, visitor){
+	/**
+	 * 模板换行符标签
+	 * @param {String} char - 指定的换行符
+	 * @param {Number} _type - 标签类型
+	 */
+	function TemplateLineTerminatorTag(char, _type){
+		LineTerminatorTag.call(this, _type);
+
+		this.regexp = new RegExp(char);
+		this.unicode = getUnicode(char);
+	};
+	TemplateLineTerminatorTag = new Rexjs(TemplateLineTerminatorTag, LineTerminatorTag);
+
+	TemplateLineTerminatorTag.props({
+		order: ECMAScriptOrders.TEMPLATE_SPECIAL_CONTENT,
+		/**
+		 * 标签访问器
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 标签上下文
+		 * @param {Statement} statement - 当前语句
+		 * @param {Statements} statements - 当前语句块
+		 */
+		visitor: function(parser, context, statement, statements){
+			// 添加表达式
+			statement.expression.inner.add(
+				// 初始化 unicode 字符表达式
+				new TemplateUnicodeExpression(context, this.unicode)
+			);
+
+			// 调用父类方法
+			visitor.call(this, parser, context, statement, statements);
+		},
+		unicode: "0000"
+	});
+
+	return TemplateLineTerminatorTag;
+}(
+	this.TemplateUnicodeExpression,
+	RegExp,
+	LineTerminatorTag.prototype.visitor
 );
-	
+
+this.TemplateQouteTag = function(TemplateUnicodeExpression, UNICODE){
+	/**
+	 * 模板双引号标签
+	 * @param {Number} _type - 标签类型
+	 */
+	function TemplateQouteTag(_type){
+		SyntaxTag.call(this, _type);
+	};
+	TemplateQouteTag = new Rexjs(TemplateQouteTag, SyntaxTag);
+
+	TemplateQouteTag.props({
+		order: ECMAScriptOrders.TEMPLATE_SPECIAL_CONTENT,
+		regexp: /"/,
+		/**
+		 * 标签访问器
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 标签上下文
+		 * @param {Statement} statement - 当前语句
+		 * @param {Statements} statements - 当前语句块
+		 */
+		visitor: function(parser, context, statement, statements){
+			// 添加表达式
+			statement.expression.inner.add(
+				// 初始化 unicode 字符表达式
+				new TemplateUnicodeExpression(context, UNICODE)
+			);
+		}
+	});
+
+	return TemplateQouteTag;
+}(
+	this.TemplateUnicodeExpression,
+	// UNICODE
+	getUnicode('"')
+);
+
 }.call(
-	this
+	this,
+	Rexjs.LineTerminatorTag,
+	// getUnicode
+	function(char){
+		var unicode = char.charCodeAt(0).toString(16);
+
+		for(
+			var i = unicode.length;i < 4;i++
+		){
+			unicode = "0" + unicode;
+		}
+
+		return unicode;
+	}
+);
+
+
+// 模板占位符（模板参数）标签相关
+void function(closePlaceHolderTag){
+
+this.PlaceHolderExpression = function(){
+	/**
+	 * 模板占位符（模板参数）表达式
+	 * @param {Context} open - 起始标签上下文
+	 */
+	function PlaceHolderExpression(open){
+		PartnerExpression.call(this, open);
+	};
+	PlaceHolderExpression = new Rexjs(PlaceHolderExpression, PartnerExpression);
+
+	PlaceHolderExpression.props({
+		/**
+		 * 提取并编译表达式文本内容
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 */
+		compileTo: function(contentBuilder){
+			/*
+				追加：
+					1. 上个字符串的结束双引号
+					2. 字符串拼接的加号
+					3. 表达式分组的起始小括号
+			*/
+			contentBuilder.appendString('"+(');
+			// 提取 inner
+			this.inner.extractTo(contentBuilder);
+			/*
+				追加：
+					1. 表达式分组的结束小括号
+					2. 字符串拼接的加号
+					3. 下个字符串的结束双引号
+			*/
+			contentBuilder.appendString(')+"');
+		}
+	});
+
+	return PlaceHolderExpression;
+}();
+
+this.PlaceHolderStatement = function(){
+	/**
+	 * 模板占位符（模板参数）语句
+	 * @param {Statements} statements - 该语句将要所处的语句块
+	 */
+	function PlaceHolderStatement(statements){
+		ECMAScriptStatement.call(this, statements);
+	};
+	PlaceHolderStatement = new Rexjs(PlaceHolderStatement, ECMAScriptStatement);
+
+	PlaceHolderStatement.props({
+		/**
+		 * 捕获处理异常
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 语法标签上下文
+		 */
+		catch: function(parser, context){
+			// 如果不是结束大括号
+			if(
+				context.content !== "}"
+			){
+				// 报错
+				parser.error(context, ECMAScriptErrors.TEMPLATE);
+				return null;
+			}
+
+			var placeholderExpression = this.out().inner.latest;
+
+			// 设置 inner
+			placeholderExpression.inner = this.expression;
+			// 返回结束标签
+			return placeholderExpression.open.tag.binding;
+		}
+	});
+
+	return PlaceHolderStatement;
+}();
+
+this.OpenPlaceHolderTag = function(OpenBraceTag, PlaceHolderExpression, PlaceHolderStatement){
+	/**
+	 * 起始模板占位符（模板参数）标签
+	 * @param {Number} _type - 标签类型
+	 */
+	function OpenPlaceHolderTag(_type){
+		OpenBraceTag.call(this, _type);
+	};
+	OpenPlaceHolderTag = new Rexjs(OpenPlaceHolderTag, OpenBraceTag);
+
+	OpenPlaceHolderTag.props({
+		/**
+		 * 获取绑定的标签，该标签一般是用于语句的 try、catch 的返回值
+		 */
+		get binding(){
+			return closePlaceHolderTag;
+		},
+		order: ECMAScriptOrders.TEMPLATE_SPECIAL_CONTENT,
+		regexp: /\$\{/,
+		/**
+		 * 获取此标签接下来所需匹配的标签列表
+		 * @param {TagsMap} tagsMap - 标签集合映射
+		 */
+		require: function(tagsMap){
+			return tagsMap.expressionTags;
+		},
+		/**
+		 * 标签访问器
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 标签上下文
+		 * @param {Statement} statement - 当前语句
+		 * @param {Statements} statements - 当前语句块
+		 */
+		visitor: function(parser, context, statement, statements){
+			// 添加表达式
+			statement.expression.inner.add(
+				new PlaceHolderExpression(context)
+			);
+
+			// 设置当前语句
+			statements.statement = new PlaceHolderStatement(statements);
+		}
+	});
+
+	return OpenPlaceHolderTag;
+}(
+	this.OpenBraceTag,
+	this.PlaceHolderExpression,
+	this.PlaceHolderStatement
+);
+
+this.ClosePlaceHolderTag = function(CloseBraceTag){
+	/**
+	 * 结束模板占位符（模板参数）标签
+	 * @param {Number} _type - 标签类型
+	 */
+	function ClosePlaceHolderTag(_type){
+		CloseBraceTag.call(this, _type);
+	};
+	ClosePlaceHolderTag = new Rexjs(ClosePlaceHolderTag, CloseBraceTag);
+
+	ClosePlaceHolderTag.props({
+		/**
+		 * 获取此标签接下来所需匹配的标签列表
+		 * @param {TagsMap} tagsMap - 标签集合映射
+		 */
+		require: function(tagsMap){
+			return tagsMap.templateContentTags;
+		},
+		/**
+		 * 标签访问器
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 标签上下文
+		 * @param {Statement} statement - 当前语句
+		 * @param {Statements} statements - 当前语句块
+		 */
+		visitor: function(parser, context, statement, statements){
+			statement.expression.inner.latest.close = context;
+		}
+	});
+
+	return ClosePlaceHolderTag;
+}(
+	this.CloseBraceTag
+);
+
+closePlaceHolderTag = new this.ClosePlaceHolderTag();
+
+}.call(
+	this,
+	// closePlaceHolderTag
+	null
 );
 
 
@@ -13430,6 +13796,39 @@ this.TargetAccessorContextTags = function(TargetTag){
 	this.TargetTag
 );
 
+this.TemplateContentTags = function(TemplateContentTag, OpenPlaceHolderTag, TemplateLineTerminatorTag, TemplateQouteTag, CloseTemplateTag){
+	/**
+	 * 模板内容上下文标签列表
+	 */
+	function TemplateContentTags(){
+		IllegalTags.call(this);
+
+		this.register(
+			new TemplateContentTag(),
+			new OpenPlaceHolderTag(),
+			new TemplateLineTerminatorTag(TemplateLineTerminatorTag.CARRIAGE_RETURN),
+			new TemplateLineTerminatorTag(TemplateLineTerminatorTag.LINE_SEPARATOR),
+			new TemplateLineTerminatorTag(TemplateLineTerminatorTag.LINEFEED),
+			new TemplateLineTerminatorTag(TemplateLineTerminatorTag.PARAGRAPH_SEPARATOR),
+			new TemplateQouteTag(),
+			new CloseTemplateTag()
+		);
+	};
+	TemplateContentTags = new Rexjs(TemplateContentTags, IllegalTags);
+
+	TemplateContentTags.props({
+		id: "templateContentTags"
+	});
+
+	return TemplateContentTags;
+}(
+	this.TemplateContentTag,
+	this.OpenPlaceHolderTag,
+	this.TemplateLineTerminatorTag,
+	this.TemplateQouteTag,
+	this.CloseTemplateTag
+);
+
 this.TerminatedBranchFlowContextTags = function(LabelledIdentifierTag){
 	/**
 	 * 中断分支流上下文标签列表
@@ -13549,7 +13948,7 @@ this.WhileConditionTags = function(OpenWhileConditionTag){
 // 语法配置相关
 void function(){
 
-this.ECMAScript6Config = function(forConfig, functionConfig, objectConfig, callConfig, varConfig){
+this.ECMAScript6Config = function(forConfig, functionConfig, objectConfig, callConfig, varConfig, templateConfig){
 	/**
 	 * ECMAScript6 语法配置
 	 */
@@ -13571,7 +13970,8 @@ this.ECMAScript6Config = function(forConfig, functionConfig, objectConfig, callC
 				this.spread &&
 				this.let &&
 				this.const &&
-				this.arrowFunction
+				this.arrowFunction &&
+				this.template
 			);
 		},
 		/**
@@ -13586,7 +13986,8 @@ this.ECMAScript6Config = function(forConfig, functionConfig, objectConfig, callC
 			this.spread =
 			this.let =
 			this.const =
-			this.arrowFunction = value;
+			this.arrowFunction =
+			this.template = value;
 		},
 		/**
 		 * 获取箭头函数是否应该编译
@@ -13691,6 +14092,19 @@ this.ECMAScript6Config = function(forConfig, functionConfig, objectConfig, callC
 		 */
 		set spread(value){
 			callConfig.spread = value;
+		},
+		/**
+		 * 获取字符串模板是否应该编译
+		 */
+		get template(){
+			return templateConfig.base;
+		},
+		/**
+		 * 设置字符串模板是否应该编译
+		 * @param {Boolean} value - 是否编译
+		 */
+		set template(value){
+			templateConfig.base = value;
 		}
 	});
 
@@ -13705,7 +14119,9 @@ this.ECMAScript6Config = function(forConfig, functionConfig, objectConfig, callC
 	// callConfig
 	this.CallExpression.config,
 	// varConfig
-	this.VarExpression.config
+	this.VarExpression.config,
+	// templateConfig
+	this.TemplateExpression.config
 );
 
 }.call(
@@ -13787,6 +14203,7 @@ this.ECMAScriptTagsMap = function(SyntaxTagsMap, tagsArray){
 		this.SwitchBlockTags,
 		this.SwitchConditionTags,
 		this.TargetAccessorContextTags,
+		this.TemplateContentTags,
 		this.TerminatedBranchFlowContextTags,
 		this.ThrowContextTags,
 		this.UnexpectedTags,

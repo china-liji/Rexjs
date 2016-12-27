@@ -1511,6 +1511,13 @@ this.LineTerminatorTag = function(WhitespaceTag){
 	};
 	LineTerminatorTag = new Rexjs(LineTerminatorTag, WhitespaceTag);
 	
+	LineTerminatorTag.static({
+		CARRIAGE_RETURN: "\r",
+		LINE_SEPARATOR: "\u2028",
+		LINEFEED: "\n",
+		PARAGRAPH_SEPARATOR: "\u2029"
+	});
+
 	LineTerminatorTag.props({
 		regexp: /[\r\n\u2028\u2029]/,
 		/**
@@ -2081,7 +2088,7 @@ this.ListExpression = function(DefaultExpression){
 		 * @param {Expression} expression - 需要添加的表达式
 		 */
 		add: function(expression){
-			this[this.length++] = expression;
+			this[this.length++] = this.latest = expression;
 		},
 		/**
 		 * 提取表达式文本内容
@@ -2114,7 +2121,21 @@ this.ListExpression = function(DefaultExpression){
 				this[i].extractTo(contentBuilder, _anotherBuilder);
 			}
 		},
+		/**
+		 * 遍历每一个有效项
+		 * @param {Function} callback - 回调函数
+		 * @param {Object} _this - 指定回调函数中的 this 对象
+		 */
+		forEach: function(callback, _this){
+			for(
+				var i = this.min, j = this.length;i < j;i++
+			){
+				// 执行回调
+				callback.call(_this, this[i]);
+			}
+		},
 		join: "",
+		latest: null,
 		length: 0,
 		min: 0,
 		/**
@@ -2630,7 +2651,7 @@ this.SyntaxParser = function(SyntaxRegExp, SyntaxError, Position, Context, Conte
 // 解析器测试相关
 void function(File){
 
-this.SimpleTest = function(INNER_CONTENT_REGEXP, file, console, toArray, e, catchErrors){
+this.SimpleTest = function(Error, INNER_CONTENT_REGEXP, file, console, toArray, e, catchErrors){
 	/**
 	 * 解析器测试
 	 * @param {SyntaxParser} parser - 相关的语法解析器
@@ -2747,13 +2768,17 @@ this.SimpleTest = function(INNER_CONTENT_REGEXP, file, console, toArray, e, catc
 			}
 			catch(e){
 				// 输出错误
-				console.error("Fail: " + description + " %o", e);
+				console.error(
+					"Fail: " + description + " - " + (e instanceof Error ? e.stack : e),
+					e
+				);
 			}
 		}
 	});
 	
 	return SimpleTest;
 }(
+	Error,
 	// INNER_CONTENT_REGEXP
 	/\{([\s\S]*)\}\s*$/,
 	// file
