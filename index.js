@@ -1,9 +1,7 @@
-`
-${
-	function(){ return "hello world" }()
+function fn(){
+	debugger
+	console.log(arguments)
 }
-"string"
-var a = '100'
-${1}${2}${3}
-${4}
-`
+
+
+fn`123${"hello"}456${"world"}`

@@ -1,5 +1,5 @@
 ﻿// Rexjs 的实现
-new function(window, descriptor, defineProperty, getPrototypeOf, setPrototypeOf, getOwnPropertyNames){
+new function(global, descriptor, defineProperty, getPrototypeOf, setPrototypeOf, getOwnPropertyNames){
 "use strict";
 
 this.Rexjs = function(Function, create, getProperties, setPrototypeOf){
@@ -93,9 +93,9 @@ this.value = function(Rexjs){
 	this.Rexjs
 );
 
-defineProperty(window, "Rexjs", this);
+defineProperty(global, "Rexjs", this);
 }(
-	window,
+	typeof window === "undefined" ? global : window,
 	// descriptor
 	Object.getOwnPropertyDescriptor(
 		Object.prototype,
@@ -2124,14 +2124,15 @@ this.ListExpression = function(DefaultExpression){
 		/**
 		 * 遍历每一个有效项
 		 * @param {Function} callback - 回调函数
-		 * @param {Object} _this - 指定回调函数中的 this 对象
+		 * @param {ContentBuilder} _contentBuilder - 内容生成器
+		 * @param {ContentBuilder} _anotherBuilder - 另一个内容生成器，一般用于副内容的生成或记录
 		 */
-		forEach: function(callback, _this){
+		forEach: function(callback, _contentBuilder, _anotherBuilder){
 			for(
 				var i = this.min, j = this.length;i < j;i++
 			){
 				// 执行回调
-				callback.call(_this, this[i]);
+				callback(this[i], _contentBuilder, _anotherBuilder);
 			}
 		},
 		join: "",

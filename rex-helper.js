@@ -1,4 +1,4 @@
-new function(){
+new function(global, defineProperty){
 
 // 迭代器相关
 void function(){
@@ -193,21 +193,21 @@ this.Generator = function(Iterator){
 // 其他
 void function(){
 
-this.SpreadParameter = function(forEach, push){
-	function SpreadParameter(value){
+this.Parameter = function(forEach, push){
+	function Parameter(value){
 		this.value = value;
 	};
-	SpreadParameter = new Rexjs(SpreadParameter);
+	Parameter = new Rexjs(Parameter);
 
-	SpreadParameter.static({
-		toArray: function(_args){
+	Parameter.static({
+		toSpreadArray: function(_args){
 			var array = [];
 
 			forEach.call(
 				arguments,
 				function(item){
 					if(
-						item instanceof SpreadParameter
+						item instanceof Parameter
 					){
 						push.apply(array, item.value);
 						return;
@@ -218,14 +218,31 @@ this.SpreadParameter = function(forEach, push){
 			);
 
 			return array;
+		},
+		toTemplateArray: function(_args){
+			var templates = [], array = [templates];
+
+			forEach.call(
+				arguments,
+				function(item){
+					(
+						item instanceof Parameter ? array : templates
+					)
+					.push(
+						item.value
+					);
+				}
+			);
+
+			return array;
 		}
 	});
 
-	SpreadParameter.props({
+	Parameter.props({
 		value: null
 	});
 
-	return SpreadParameter;
+	return Parameter;
 }(
 	Array.prototype.forEach,
 	Array.prototype.push
@@ -235,5 +252,8 @@ this.SpreadParameter = function(forEach, push){
 	this
 );
 
-Rexjs.static(this);
-}();
+defineProperty(global, "RexjsHelper", { value: this });
+}(
+	typeof window === "undefined" ? global : window,
+	Object.defineProperty
+);
