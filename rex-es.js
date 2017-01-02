@@ -344,6 +344,7 @@ this.ECMAScriptOrders = ECMAScriptOrders = function(){
 		SPECIAL_LINE_TERMINATOR: 100,
 		STATEMENT_END: 100,
 		EXPRESSION_BREAK: 101,
+		MATHEMATICAL_NUMBER: 101,
 		SPREAD: 101,
 		IDENTIFIER: 200,
 		PROPERTY_ACCESSOR: 201,
@@ -999,7 +1000,7 @@ this.NumberTag = function(){
 	NumberTag.props({
 		// 防止与 "." 匹配冲突
 		order: ECMAScriptOrders.NUMBER,
-		regexp: /0[bB][01]+|0[oO][0-7]+|0[xX][0-9a-fA-F]+|(?:\d*\.\d+|\d+\.?)(?:e[+-]?\d+)?/,
+		regexp: /0[xX][0-9a-fA-F]+|(?:\d*\.\d+|\d+\.?)(?:e[+-]?\d+)?/,
 		throw: "number"
 	});
 	
@@ -1027,6 +1028,149 @@ this.StringTag = function(){
 }.call(
 	this,
 	this.LiteralTag
+);
+
+
+// 算数标签相关
+void function(){
+
+this.MathematicalNumeralExpression = function(config){
+	/**
+	 * 算数表达式
+	 */
+	function MathematicalNumeralExpression(context){
+		Expression.call(this, context);
+	};
+	MathematicalNumeralExpression = new Rexjs(MathematicalNumeralExpression, Expression);
+
+	MathematicalNumeralExpression.static({
+		/**
+		 * 获取表达式编译配置
+		 */
+		get config(){
+			return config;
+		}
+	});
+
+	return MathematicalNumeralExpression;
+}(
+	// config
+	new SyntaxConfig("binaryNumber", "octalNumber")
+);
+
+this.MathematicalNumberTag = function(NumberTag, MathematicalNumeralExpression){
+	/**
+	 * 需要计算的数字标签
+	 * @param {Number} _type - 标签类型
+	 */
+	function MathematicalNumberTag(_type){
+		NumberTag.call(this, _type);
+	};
+	MathematicalNumberTag = new Rexjs(MathematicalNumberTag, NumberTag);
+	
+	MathematicalNumberTag.props({
+		/**
+		 * 提取文本内容，空函数，不做任何处理
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 * @param {String} content - 标签内容
+		 */
+		extractTo: function(contentBuilder, content){
+			// 追加字符串内容
+			contentBuilder.appendString(
+				// 如果要使用 parseInt 方法
+				this.useParse() ?
+					// 转换为指定基数的数字
+					"(parseInt(" + content.substring(2) + "," + this.radix + "))" :
+					content
+			);
+		},
+		order: ECMAScriptOrders.MATHEMATICAL_NUMBER,
+		radix: "10",
+		/**
+		 * 是否使用 parseInt 方法进行转义
+		 */
+		useParse: function(){
+			return true;
+		},
+		/**
+		 * 标签访问器
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 标签上下文
+		 * @param {Statement} statement - 当前语句
+		 * @param {Statements} statements - 当前语句块
+		 */
+		visitor: function(parser, context, statement, statements){
+			// 设置当前表达式
+			statement.expression = new MathematicalNumeralExpression(context);
+		}
+	});
+	
+	return MathematicalNumberTag;
+}(
+	this.NumberTag,
+	this.MathematicalNumeralExpression
+);
+
+}.call(
+	this
+);
+
+
+// 算数子标签相关
+void function(MathematicalNumberTag, config){
+
+this.BinaryNumberTag = function(){
+	/**
+	 * 二进制数字标签
+	 * @param {Number} _type - 标签类型
+	 */
+	function BinaryNumberTag(_type){
+		MathematicalNumberTag.call(this, _type);
+	};
+	BinaryNumberTag = new Rexjs(BinaryNumberTag, MathematicalNumberTag);
+	
+	BinaryNumberTag.props({
+		radix: "2",
+		regexp: /0[bB][01]+/,
+		/**
+		 * 是否使用 parseInt 方法进行转义
+		 */
+		useParse: function(){
+			return config.binaryNumber;
+		}
+	});
+	
+	return BinaryNumberTag;
+}();
+
+this.OctalNumberTag = function(){
+	/**
+	 * 八进制数字标签
+	 * @param {Number} _type - 标签类型
+	 */
+	function OctalNumberTag(_type){
+		MathematicalNumberTag.call(this, _type);
+	};
+	OctalNumberTag = new Rexjs(OctalNumberTag, MathematicalNumberTag);
+	
+	OctalNumberTag.props({
+		radix: "8",
+		regexp: /0[oO][0-7]+/,
+		/**
+		 * 是否使用 parseInt 方法进行转义
+		 */
+		useParse: function(){
+			return config.octalNumber;
+		}
+	});
+	
+	return OctalNumberTag;
+}();
+
+}.call(
+	this,
+	this.MathematicalNumberTag,
+	this.MathematicalNumeralExpression.config
 );
 
 
@@ -3631,7 +3775,7 @@ this.CallExpression = function(UnaryExpression, AccessorExpression, config, comp
 
 	CallExpression.props({
 		/**
-		 * 提取文本内容，空函数，不做任何处理
+		 * 提取文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
 		 */
 		extractTo: function(contentBuilder){
@@ -7458,6 +7602,7 @@ this.ObjectNumberNameTag = function(NumberTag, ObjectLiteralNameExpression){
 	ObjectNumberNameTag = new Rexjs(ObjectNumberNameTag, NumberTag);
 
 	ObjectNumberNameTag.props({
+		regexp: /0[bB][01]+|0[oO][0-7]+|0[xX][0-9a-fA-F]+|(?:\d*\.\d+|\d+\.?)(?:e[+-]?\d+)?/,
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
@@ -11988,7 +12133,7 @@ this.TemplateExpression = function(config, extractTo, compileItem){
 		extractTo: function(contentBuilder){
 			// 如果需要编译
 			if(
-				config.base
+				config.template
 			){
 				// 追加起始双引号
 				contentBuilder.appendString('"');
@@ -12007,7 +12152,7 @@ this.TemplateExpression = function(config, extractTo, compileItem){
 	return TemplateExpression;
 }(
 	// config
-	new SyntaxConfig("base"),
+	new SyntaxConfig("template"),
 	PartnerExpression.prototype.extractTo,
 	// compileItem
 	function(item, contentBuilder){
@@ -12701,6 +12846,7 @@ this.ECMAScriptTags = function(DefaultTags, list){
 	[
 		this.ArrowTag,
 		this.BasicAssignmentTag,
+		this.BinaryNumberTag,
 		this.BitwiseANDTag,
 		this.BitwiseNOTTag,
 		this.BitwiseORTag,
@@ -12752,6 +12898,7 @@ this.ECMAScriptTags = function(DefaultTags, list){
 		this.NonidentityTag,
 		this.NullTag,
 		this.NumberTag,
+		this.OctalNumberTag,
 		this.OpenArrayTag,
 		this.OpenBlockTag,
 		this.OpenGroupingTag,
@@ -14159,9 +14306,9 @@ this.WhileConditionTags = function(OpenWhileConditionTag){
 
 
 // 语法配置相关
-void function(){
+void function(configs, forEach, defineProperty, getOwnPropertyNames){
 
-this.ECMAScript6Config = function(forConfig, functionConfig, objectConfig, callConfig, varConfig, templateConfig){
+this.ECMAScript6Config = function(getStaticProps){
 	/**
 	 * ECMAScript6 语法配置
 	 */
@@ -14170,175 +14317,66 @@ this.ECMAScript6Config = function(forConfig, functionConfig, objectConfig, callC
 	};
 	ECMAScript6Config = new Rexjs(ECMAScript6Config, SyntaxConfig);
 
-	ECMAScript6Config.static({
-		/**
-		 * 获取是否应该编译 ECMAScript6 的所有表达式
-		 */
-		get all(){
-			return (
-				this.defaultArgument &&
-				this.forOf &&
-				this.restArgument &&
-				this.shorthandProperty &&
-				this.spread &&
-				this.let &&
-				this.const &&
-				this.arrowFunction &&
-				this.template
-			);
-		},
-		/**
-		 * 设置是否应该编译 ECMAScript6 的所有表达式
-		 * @param {Boolean} value - 是否编译
-		 */
-		set all(value){
-			this.defaultArgument =
-			this.forOf =
-			this.restArgument =
-			this.shorthandProperty = 
-			this.spread =
-			this.let =
-			this.const =
-			this.arrowFunction =
-			this.template = value;
-		},
-		/**
-		 * 获取箭头函数是否应该编译
-		 */
-		get arrowFunction(){
-			return functionConfig.arrowFunction;
-		},
-		/**
-		 * 设置箭头函数是否应该编译
-		 * @param {Boolean} value - 是否编译
-		 */
-		set arrowFunction(value){
-			functionConfig.arrowFunction = value;
-		},
-		/**
-		 * 获取 const 关键字是否应该编译
-		 */
-		get const(){
-			return varConfig.const;
-		},
-		/**
-		 * 设置 const 关键字是否应该编译
-		 * @param {Boolean} value - 是否编译
-		 */
-		set const(value){
-			varConfig.const = value;
-		},
-		/**
-		 * 获取默认值参数表达式是否应该编译
-		 */
-		get defaultArgument(){
-			return functionConfig.defaultArgument;
-		},
-		/**
-		 * 设置默认值参数表达式是否应该编译
-		 * @param {Boolean} value - 是否编译
-		 */
-		set defaultArgument(value){
-			functionConfig.defaultArgument = value;
-		},
-		/**
-		 * 获取 for of 表达式是否应该编译
-		 */
-		get forOf(){
-			return forConfig.of;
-		},
-		/**
-		 * 设置 for of 表达式是否应该编译
-		 * @param {Boolean} value - 是否编译
-		 */
-		set forOf(value){
-			forConfig.of = value;
-		},
-		/**
-		 * 获取 let 关键字是否应该编译
-		 */
-		get let(){
-			return varConfig.let;
-		},
-		/**
-		 * 设置 let 关键字是否应该编译
-		 * @param {Boolean} value - 是否编译
-		 */
-		set let(value){
-			varConfig.let = value;
-		},
-		/**
-		 * 获取省略参数表达式是否应该编译
-		 */
-		get restArgument(){
-			return functionConfig.restArgument;
-		},
-		/**
-		 * 设置省略参数表达式是否应该编译
-		 * @param {Boolean} value - 是否编译
-		 */
-		set restArgument(value){
-			functionConfig.restArgument = value;
-		},
-		/**
-		 * 获取对象简写名称是否应该编译
-		 */
-		get shorthandProperty(){
-			return objectConfig.shorthandProperty;
-		},
-		/**
-		 * 设置对象简写名称是否应该编译
-		 * @param {Boolean} value - 是否编译
-		 */
-		set shorthandProperty(value){
-			objectConfig.shorthandProperty = value;
-		},
-		/**
-		 * 获取拓展符是否应该编译
-		 */
-		get spread(){
-			return callConfig.spread;
-		},
-		/**
-		 * 设置拓展符是否应该编译
-		 * @param {Boolean} value - 是否编译
-		 */
-		set spread(value){
-			callConfig.spread = value;
-		},
-		/**
-		 * 获取字符串模板是否应该编译
-		 */
-		get template(){
-			return templateConfig.base;
-		},
-		/**
-		 * 设置字符串模板是否应该编译
-		 * @param {Boolean} value - 是否编译
-		 */
-		set template(value){
-			templateConfig.base = value;
-		}
-	});
+	ECMAScript6Config.static(
+		getStaticProps()	
+	);
 
 	return ECMAScript6Config;
 }(
-	// forConfig
-	this.ForExpression.config,
-	// functionConfig
-	this.FunctionExpression.config,
-	// objectConfig
-	this.ObjectExpression.config,
-	// callConfig
-	this.CallExpression.config,
-	// varConfig
-	this.VarExpression.config,
-	// templateConfig
-	this.TemplateExpression.config
+	// getStaticProps
+	function(){
+		var config, staticProps = {};
+
+		// 遍历所有配置
+		forEach(
+			configs,
+			function(cfg){
+				// 遍历单个配置项
+				forEach(config = cfg, this);
+			},
+			function(value, name){
+				var cfg = config;
+
+				// 定义静态属性
+				defineProperty(
+					staticProps,
+					name,
+					{
+						// 获取
+						get: function(){
+							return cfg[name];
+						},
+						// 设置
+						set: function(value){
+							cfg[name] = value;
+						},
+						enumerable: true,
+						configurable: true
+					}
+				);
+			}
+		);
+
+		// 返回属性
+		return staticProps;
+	}
 );
 
 }.call(
-	this
+	this,
+	// configs
+	[
+		this.MathematicalNumeralExpression.config,
+		this.ForExpression.config,
+		this.FunctionExpression.config,
+		this.ObjectExpression.config,
+		this.CallExpression.config,
+		this.VarExpression.config,
+		this.TemplateExpression.config
+	],
+	Rexjs.forEach,
+	Object.defineProperty,
+	Object.getOwnPropertyNames
 );
 
 
