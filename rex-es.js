@@ -12372,7 +12372,7 @@ this.TemplateContentTag = function(){
 
 	TemplateContentTag.props({
 		order: ECMAScriptOrders.TEMPLATE_CONTENT,
-		regexp: /(?:\\[\s\S]|[^`])+?(?=\$\{|[`\r\n\u2028\u2029])/,
+		regexp: /(?:\\[\s\S]|[^`])+?(?=\$\{|[`"\r\n\u2028\u2029])/,
 		/**
 		 * 标签访问器
 		 * @param {SyntaxParser} parser - 语法解析器

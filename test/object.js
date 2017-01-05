@@ -293,6 +293,17 @@ test.false(
 	}
 );
 
+test.false(
+	"多个冒号",
+	"!{ a: b: c }",
+	function(parser, err){
+		return err.context.tag instanceof Rexjs.ColonTag ? "" : "没有识别出冒号";
+	},
+	function(parser, err){
+		return err.context.position.column === 7 ? "" : "冒号位置不正确";
+	}
+);
+
 test.groupEnd();
 
 }(
