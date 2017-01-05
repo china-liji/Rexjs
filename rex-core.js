@@ -773,7 +773,6 @@ this.Context = function(){
 	
 	Context.props({
 		content: "",
-		content: "",
 		position: 0,
 		tag: null
 	});
@@ -1875,7 +1874,7 @@ this.Statement = function(){
 		/**
 		 * 获取该语句 try、catch 方法所需返回的默认绑定标签
 		 */
-		bindingOf(){
+		bindingOf: function(){
 			return this.tagOf().binding;
 		},
 		/**

@@ -1055,7 +1055,7 @@ this.StringTag = function(){
 	StringTag = new Rexjs(StringTag, LiteralTag);
 	
 	StringTag.props({
-		regexp: /"(?:\\[\s\S]|[^"\\\r\n\u2028\u2029]+)*"|'(?:\\[\s\S]|[^'\\\r\n\u2028\u2029]+)*'/,
+		regexp: /"(?:\\(?:[^\r]|\r\n?)|[^"\\\r\n\u2028\u2029]+)*"|'(?:\\(?:[^\r]|\r\n?)|[^'\\\r\n\u2028\u2029]+)*'/,
 		throw: "string"
 	});
 	
@@ -12372,7 +12372,7 @@ this.TemplateContentTag = function(){
 
 	TemplateContentTag.props({
 		order: ECMAScriptOrders.TEMPLATE_CONTENT,
-		regexp: /(?:\\[\s\S]|[^`])+?(?=\$\{|[`"\r\n\u2028\u2029])/,
+		regexp: /(?:\\[\s\S]|[^`])+?(?=\$\{|[`\r\n\u2028\u2029])/,
 		/**
 		 * 标签访问器
 		 * @param {SyntaxParser} parser - 语法解析器
