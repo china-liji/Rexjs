@@ -8,6 +8,15 @@ test.true("带二元赋值运算的逗号", "a = 1 + 2, a = a += true + null");
 test.true("带多个二元运算表达式的逗号", "1 + 2, 3 + 4, a = 5 + 6 + 8 / 10, a = 0");
 
 test.true(
+	"验证表达式长度",
+	"1,2,3,4,5",
+	false,
+	function(parser){
+		return parser.statements[1].expression.length === 5 ? "" : "逗号表达式长度有误";
+	}
+);
+
+test.true(
 	"验证结果 - 带多个二元运算表达式的逗号",
 	SimpleTest.innerContentOf(function(){
 		a = 1 + 2, 3 + 4, a = 5 + 6 + 8 / 10, a = 0;

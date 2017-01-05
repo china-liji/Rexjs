@@ -40,7 +40,7 @@ test.true("所有情况属性名并存", "!{ a, b: 2, var: 3, c, for: 4, d: 5, '
 test.true(
 	"复杂的测试",
 	SimpleTest.innerContentOf(function(){
-		var a, get, set, e = "e", f = "f", h, i
+		var a, get, set, e = "e", f = "f", h, i, bn = parseInt(1010, 2)
 
 		var obj = {
 			.1: 0.1,
@@ -76,6 +76,16 @@ test.true(
 			set ["i"](value = 88){
 				i = value + 2
 			},
+			get 0b1010(){
+				return bn
+			},
+			set 0b1010(value){
+				bn = value
+			},
+			get 0O1010(){
+				return 0O1010
+			},
+			0b11: "0b11"
 		}
 
 		var names = [
@@ -91,7 +101,10 @@ test.true(
 			"h",
 			"i",
 			"get",
-			"set"
+			"set",
+			parseInt(1010, 2),
+			parseInt(1010, 8),
+			parseInt(11, 2)
 		]
 
 		if(
@@ -126,6 +139,32 @@ test.true(
 			obj.i !== 90
 		){
 			throw "i值获取错误:" + i
+		}
+
+		if(
+			obj[parseInt(1010, 2)] !== parseInt(1010, 2)
+		){
+			throw "二进制属性获取有误"
+		}
+
+		obj[parseInt(1010, 2)] = 1000
+
+		if(
+			bn !== 1000
+		){
+			throw "二进制属性设置失效"
+		}
+
+		if(
+			!obj.hasOwnProperty(parseInt(11, 2))
+		){
+			throw "没有指定二进制属性"
+		}
+
+		if(
+			obj[parseInt(1010, 8)] !== parseInt(1010, 8)
+		){
+			throw "八进制属性有误"
 		}
 	}),
 	true

@@ -1,1 +1,6 @@
-0b10
+class a {
+	hello(){}true(){};
+	;;;
+	world(){};;;
+	;;;
+}

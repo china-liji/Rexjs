@@ -1394,7 +1394,7 @@ this.SyntaxTag = function(SyntaxElement, TagClass, TagType){
 		$class: TagClass.CLASS_NONE,
 		$type: TagType.TYPE_MATCHABLE,
 		/**
-		 * 获取绑定的标签，该标签一般是用于语句的 try、catch 的返回值
+		 * 获取绑定的标签，该标签列表一般是用于语句的 try、catch 的返回值
 		 */
 		get binding(){
 			return null;
@@ -1594,7 +1594,8 @@ this.SyntaxTags = function(List, getSortedValue, distinct){
 		},
 		regexp: /[^\S\s]/g,
 		/**
-		 * 注册添加语法标签，与 push 方法不同的是，register 会进过过滤器，而 push 不会
+		 * 注册添加语法标签，与 push 方法不同的是，register 会进过滤器，而 push 不会
+		 * @param {SyntaxTag, SyntaxTags} _rest - 需要添加的 语法标签 或 语法标签列表
 		 */
 		register: function(_rest){
 			forEach(
@@ -1872,6 +1873,12 @@ this.Statement = function(){
 	
 	Statement.props({
 		/**
+		 * 获取该语句 try、catch 方法所需返回的默认绑定标签
+		 */
+		bindingOf(){
+			return this.tagOf().binding;
+		},
+		/**
 		 * 捕获处理异常
 		 * @param {SyntaxParser} parser - 语法解析器
 		 * @param {Context} context - 语法标签上下文
@@ -1904,6 +1911,12 @@ this.Statement = function(){
 			return target.expression;
 		},
 		statements: null,
+		/**
+		 * 获取该语句 try、catch 方法中所需使用到的标签，一般是指向实例化该语句的标签
+		 */
+		tagOf: function(){
+			return this.target.expression.context.tag;
+		},
 		target: null,
 		/**
 		 * 尝试处理异常

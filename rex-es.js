@@ -104,12 +104,15 @@ this.ConditionStatement = function(){
 				return null;
 			}
 
-			// 跳出该语句并获取条件表达式
-			var condition = this.out().condition;
-
-			// 设置条件表达式的 inner
-			condition.inner = this.expression;
-			return condition.open.tag.binding;
+			// 跳出该语句并设置条件表达式的 inner
+			this.out().condition.inner = this.expression;
+			return this.bindingOf();
+		},
+		/**
+		 * 获取该语句 try、catch 方法中所需使用到的标签，一般是指向实例化该语句的标签
+		 */
+		tagOf: function(){
+			return this.target.expression.condition.context.tag;
 		}
 	});
 	
@@ -476,42 +479,6 @@ this.ExpressionSeparatorTag = function(){
 	return ExpressionSeparatorTag;
 }();
 
-this.LiteralTag = function(){
-	/**
-	 * 字面量标签，即用肉眼一眼就可以看出含义的标签
-	 * @param {Number} _type - 标签类型
-	 */
-	function LiteralTag(_type){
-		SyntaxTag.call(this, _type);
-	};
-	LiteralTag = new Rexjs(LiteralTag, SyntaxTag);
-	
-	LiteralTag.props({
-		$class: CLASS_EXPRESSION,
-		/**
-		 * 获取此标签接下来所需匹配的标签列表
-		 * @param {TagsMap} tagsMap - 标签集合映射
-		 * @param {SyntaxTags} currentTags - 之前标签所需匹配的标签列表
-		 */
-		require: function(tagMaps){
-			return tagMaps.expressionContextTags;
-		},
-		/**
-		 * 标签访问器
-		 * @param {SyntaxParser} parser - 语法解析器
-		 * @param {Context} context - 标签上下文
-		 * @param {Statement} statement - 当前语句
-		 * @param {Statements} statements - 当前语句块
-		 */
-		visitor: function(parser, context, statement){
-			// 设置表达式
-			statement.expression = new Expression(context);
-		}
-	})
-	
-	return LiteralTag;
-}();
-
 this.OpenBraceTag = function(){
 	/**
 	 * 起始大括号标签
@@ -854,8 +821,78 @@ this.CloseMultiLineCommentTag = function(){
 	null
 );
 
+// 字面量标签相关
+void function(){
 
-// 字面量标签
+this.LiteralExpression = function(config){
+	/**
+	 * 字面量表达式
+	 * @param {Context} context - 语法标签上下文
+	 */
+	function LiteralExpression(context){
+		Expression.call(this, context);
+	};
+	LiteralExpression = new Rexjs(LiteralExpression, Expression);
+	
+	LiteralExpression.static({
+		/**
+		 * 获取表达式编译配置
+		 */
+		get config(){
+			return config;
+		}
+	});
+
+	return LiteralExpression;
+}(
+	// config
+	new SyntaxConfig("binaryNumber", "octalNumber")
+);
+
+this.LiteralTag = function(LiteralExpression){
+	/**
+	 * 字面量标签，即用肉眼一眼就可以看出含义的标签
+	 * @param {Number} _type - 标签类型
+	 */
+	function LiteralTag(_type){
+		SyntaxTag.call(this, _type);
+	};
+	LiteralTag = new Rexjs(LiteralTag, SyntaxTag);
+	
+	LiteralTag.props({
+		$class: CLASS_EXPRESSION,
+		/**
+		 * 获取此标签接下来所需匹配的标签列表
+		 * @param {TagsMap} tagsMap - 标签集合映射
+		 * @param {SyntaxTags} currentTags - 之前标签所需匹配的标签列表
+		 */
+		require: function(tagMaps){
+			return tagMaps.expressionContextTags;
+		},
+		/**
+		 * 标签访问器
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 标签上下文
+		 * @param {Statement} statement - 当前语句
+		 * @param {Statements} statements - 当前语句块
+		 */
+		visitor: function(parser, context, statement){
+			// 设置表达式
+			statement.expression = new LiteralExpression(context);
+		}
+	})
+	
+	return LiteralTag;
+}(
+	this.LiteralExpression
+);
+
+}.call(
+	this
+);
+
+
+// 字面量子类标签相关
 void function(LiteralTag){
 
 this.BooleanTag = function(){
@@ -1034,33 +1071,9 @@ this.StringTag = function(){
 // 算数标签相关
 void function(){
 
-this.MathematicalNumeralExpression = function(config){
+this.MathematicalNumberTag = function(NumberTag){
 	/**
-	 * 算数表达式
-	 */
-	function MathematicalNumeralExpression(context){
-		Expression.call(this, context);
-	};
-	MathematicalNumeralExpression = new Rexjs(MathematicalNumeralExpression, Expression);
-
-	MathematicalNumeralExpression.static({
-		/**
-		 * 获取表达式编译配置
-		 */
-		get config(){
-			return config;
-		}
-	});
-
-	return MathematicalNumeralExpression;
-}(
-	// config
-	new SyntaxConfig("binaryNumber", "octalNumber")
-);
-
-this.MathematicalNumberTag = function(NumberTag, MathematicalNumeralExpression){
-	/**
-	 * 需要计算的数字标签
+	 * 算数数字标签
 	 * @param {Number} _type - 标签类型
 	 */
 	function MathematicalNumberTag(_type){
@@ -1091,24 +1104,12 @@ this.MathematicalNumberTag = function(NumberTag, MathematicalNumeralExpression){
 		 */
 		useParse: function(){
 			return true;
-		},
-		/**
-		 * 标签访问器
-		 * @param {SyntaxParser} parser - 语法解析器
-		 * @param {Context} context - 标签上下文
-		 * @param {Statement} statement - 当前语句
-		 * @param {Statements} statements - 当前语句块
-		 */
-		visitor: function(parser, context, statement, statements){
-			// 设置当前表达式
-			statement.expression = new MathematicalNumeralExpression(context);
 		}
 	});
 	
 	return MathematicalNumberTag;
 }(
-	this.NumberTag,
-	this.MathematicalNumeralExpression
+	this.NumberTag
 );
 
 }.call(
@@ -1170,7 +1171,7 @@ this.OctalNumberTag = function(){
 }.call(
 	this,
 	this.MathematicalNumberTag,
-	this.MathematicalNumeralExpression.config
+	this.LiteralExpression.config
 );
 
 
@@ -1795,12 +1796,9 @@ this.BracketAccessorStatement = function(){
 				return null;
 			}
 
-			// 跳出该语句并获取 property 属性
-			var property = this.out().property;
-			
-			// 设置 inner
-			property.inner = this.expression;
-			return property.open.tag.binding;
+			// 跳出该语句并设置 inner
+			this.out().property.inner = this.expression;
+			return this.bindingOf();
 		}
 	});
 	
@@ -1959,13 +1957,10 @@ this.CommaStatement = function(){
 				return null;
 			}
 
-			// 跳出语句
-			var commaExpression = this.out();
-
-			// 添加表达式
-			commaExpression.add(this.expression);
+			// 跳出语句并添加表达式
+			this.out().add(this.expression);
 			// 返回标签
-			return commaExpression.context.tag.binding;
+			return this.bindingOf();
 		}
 	});
 	
@@ -3582,12 +3577,9 @@ this.PositiveStatement = function(){
 				return null;
 			}
 
-			// 跳出语句
-			var ternaryExpression = this.out();
-
-			// 设置 positive
-			ternaryExpression.positive = this.expression;
-			return ternaryExpression.context.tag.binding;
+			// 跳出语句并设置 positive
+			this.out().positive = this.expression;
+			return this.bindingOf();
 		},
 		/**
 		 * 尝试处理异常
@@ -3920,13 +3912,10 @@ this.CallStatement = function(){
 				return null;
 			}
 			
-			// 跳出该语句
-			var callExpression = this.out();
-
-			// 设置表达式
-			callExpression.inner.set(this.expression);
+			// 跳出该语句并设置表达式
+			this.out().inner.set(this.expression);
 			// 返回关闭分组小括号标签
-			return callExpression.open.tag.binding;
+			return this.bindingOf();
 		},
 		/**
 		 * 尝试处理异常
@@ -3941,13 +3930,10 @@ this.CallStatement = function(){
 				return null;
 			}
 
-			// 跳出该语句
-			var callExpression = this.out();
-
-			// 添加表达式
-			callExpression.inner.add(this.expression);
+			// 跳出该语句并添加表达式
+			this.out().inner.add(this.expression);
 			// 返回关闭分组小括号标签
-			return callExpression.open.tag.separator;
+			return this.tagOf().separator;
 		}
 	});
 	
@@ -4299,24 +4285,21 @@ this.ArrayStatement = function(){
 		 * @param {Context} context - 语法标签上下文
 		 */
 		catch: function(parser, context){
-			// 跳出语句
-			var arrayExpression = this.out();
-
 			// 判断标签内容
 			switch(
 				context.content
 			){
 				case ",":
-					// 添加表达式
-					arrayExpression.inner.add(this.expression);
+					// 跳出语句并添加表达式
+					this.out().inner.add(this.expression);
 					// 返回标签
-					return arrayExpression.open.tag.separator;
+					return this.tagOf().separator;
 
 				case "]":
-					// 设置表达式
-					arrayExpression.inner.set(this.expression);
+					// 跳出语句并设置表达式
+					this.out().inner.set(this.expression);
 					// 返回结束标签
-					return arrayExpression.open.tag.binding;
+					return this.bindingOf();
 			}
 
 			// 报错
@@ -4336,13 +4319,10 @@ this.ArrayStatement = function(){
 				return null;
 			}
 
-			// 跳出语句
-			var arrayExpression = this.out();
-
 			// 跳出语句并添加表达式
-			arrayExpression.inner.add(this.expression);
+			this.out().inner.add(this.expression);
 			// 返回标签
-			return arrayExpression.open.tag.separator;
+			return this.tagOf().separator;
 		}
 	});
 
@@ -4562,21 +4542,31 @@ this.BlockBodyStatement = function(DefaultBlockBodyExpression){
 				return null;
 			}
 
-			var statements = this.statements,
-			
-				blockExpression = (
-						// 恢复语句块
-						parser.statements = statements.target
-					)
-					.statement
-					.expression;
-
-			// 设置 inner
-			blockExpression.inner = statements;
+			// 跳出语句并设置 inner
+			this.out(parser).inner = this.statements;
 			// 返回结束语句块标签
-			return blockExpression.open.tag.binding;
+			return this.bindingOf();
 		},
-		expression: new DefaultBlockBodyExpression()
+		expression: new DefaultBlockBodyExpression(),
+		/**
+		 * 跳出该语句
+		 * @param {SyntaxParser} parser - 语法解析器
+		 */
+		out: function(parser){
+			// 返回语句块表达式
+			return (
+				// 恢复语句块
+				parser.statements = this.statements.target
+			)
+			.statement
+			.expression;
+		},
+		/**
+		 * 获取该语句 try、catch 方法中所需使用到的标签，一般是指向实例化该语句的标签
+		 */
+		tagOf: function(){
+			return this.statements.target.statement.expression.context.tag;
+		}
 	});
 	
 	return BlockBodyStatement;
@@ -5018,8 +5008,8 @@ this.ArgumentStatement = function(){
 		 * @param {Context} context - 语法标签上下文
 		 */
 		catch: function(parser, context){
-			// 跳出语句并获取 arguments 属性
-			var args = this.out().arguments;
+			// 跳出语句并获取 inner
+			var inner = this.out().arguments.inner;
 
 			// 判断标签内容
 			switch(
@@ -5027,17 +5017,17 @@ this.ArgumentStatement = function(){
 			){
 				// 如果是逗号（参数名上下文只允许接等于号赋值标签，所以逗号会进入 catch）
 				case ",":
-					// 跳出语句并添加参数表达式
-					args.inner.add(this.expression);
+					// 添加参数表达式
+					inner.add(this.expression);
 					// 返回分隔符标签
-					return args.open.tag.separator;
+					return this.tagOf().separator;
 
 				// 如果是结束小括号，则说明是
 				case ")":
-					// 跳出语句并设置参数表达式（空参数，是默认表达式，要用 set 方法）
-					args.inner.set(this.expression);
+					// 设置参数表达式（空参数，是默认表达式，要用 set 方法）
+					inner.set(this.expression);
 					// 返回参数结束小括号标签
-					return args.open.tag.binding;
+					return this.bindingOf();
 			}
 
 			// 报错
@@ -5056,13 +5046,16 @@ this.ArgumentStatement = function(){
 				return null;
 			}
 
-			// 跳出语句并获取 arguments 属性
-			var args = this.out().arguments;
-
 			// 跳出语句并添加参数表达式
-			args.inner.add(this.expression);
+			this.out().arguments.inner.add(this.expression);
 			// 返回分隔符标签
-			return args.open.tag.separator;
+			return this.tagOf().separator;
+		},
+		/**
+		 * 获取该语句 try、catch 方法中所需使用到的标签，一般是指向实例化该语句的标签
+		 */
+		tagOf: function(){
+			return this.target.expression.arguments.open.tag;
 		}
 	});
 
@@ -6043,7 +6036,7 @@ this.GroupingStatement = function(){
 			}
 
 			// 返回关闭分组小括号标签
-			return groupingExpression.open.tag.binding;
+			return this.bindingOf();
 		},
 		expression: new DefaultExpression(),
 		/**
@@ -6059,12 +6052,9 @@ this.GroupingStatement = function(){
 				return null;
 			}
 
-			// 跳出该语句
-			var groupingExpression = this.out();
-
-			// 添加表达式
-			groupingExpression.inner.add(this.expression);
-			return groupingExpression.open.tag.separator;
+			// 跳出该语句并添加表达式
+			this.out().inner.add(this.expression);
+			return this.tagOf().separator;
 		}
 	});
 	
@@ -6855,30 +6845,7 @@ closeArrowFunctionBodyTag = new this.CloseArrowFunctionBodyTag();
 
 
 // 对象相关
-void function(IdentifierTag, objectItemSeparatorTag, closeObjectTag){
-
-this.ShorthandPropertyValueExpression = function(){
-	/**
-	 * 简写属性值表达式
-	 * @param {Context} context - 语法标签上下文
-	 */
-	function ShorthandPropertyValueExpression(context){
-		EmptyExpression.call(this, context);
-	};
-	ShorthandPropertyValueExpression = new Rexjs(ShorthandPropertyValueExpression, EmptyExpression);
-
-	ShorthandPropertyValueExpression.props({
-		/**
-		 * 提取文本内容
-		 * @param {ContentBuilder} contentBuilder - 内容生成器
-		 */
-		extractTo: function(contentBuilder){
-			contentBuilder.appendString(this.context.content);
-		}
-	});
-
-	return ShorthandPropertyValueExpression;
-}();
+void function(IdentifierTag, propertySeparatorTag, closeObjectTag){
 
 this.ObjectExpression = function(config, extractTo, compileItem){
 	/**
@@ -6907,9 +6874,9 @@ this.ObjectExpression = function(config, extractTo, compileItem){
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
 		 */
 		extractTo: function(contentBuilder){
-			// 如果需要编译
+			// 如果需要使用函数包裹起来
 			if(
-				this.needCompile
+				this.useFunction
 			){
 				// 追加函数闭包头部
 				contentBuilder.appendString("(function(object, defineProperty){");
@@ -6923,7 +6890,7 @@ this.ObjectExpression = function(config, extractTo, compileItem){
 			// 调用父类方法
 			extractTo.call(this, contentBuilder);
 		},
-		needCompile: false
+		useFunction: false
 	});
 
 	return ObjectExpression;
@@ -6937,16 +6904,75 @@ this.ObjectExpression = function(config, extractTo, compileItem){
 	}
 );
 
-this.ObjectItemExpression = function(ShorthandPropertyValueExpression, config){
+this.LiteralPropertyNameExpression = function(){
 	/**
-	 * 对象项表达式
+	 * 对象字面量属性名表达式
+	 * @param {Context} context - 语法标签上下文
 	 */
-	function ObjectItemExpression(){
+	function LiteralPropertyNameExpression(context){
+		Expression.call(this, context);
+	};
+	LiteralPropertyNameExpression = new Rexjs(LiteralPropertyNameExpression, Expression);
+
+	LiteralPropertyNameExpression.props({
+		/**
+		 * 以定义属性的模式提取表达式文本内容
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 */
+		defineTo: function(contentBuilder){
+			// 追加属性名上下文
+			contentBuilder.appendContext(this.context);
+		},
+		/**
+		 * 提取并编译表达式文本内容
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 */
+		compileTo: function(contentBuilder){
+			// 追加起始中括号
+			contentBuilder.appendString("[");
+			// 追加属性名上下文
+			contentBuilder.appendContext(this.context);
+			// 追加结束中括号
+			contentBuilder.appendString("]");
+		}
+	});
+
+	return LiteralPropertyNameExpression;
+}();
+
+this.ShorthandPropertyValueExpression = function(){
+	/**
+	 * 简写属性值表达式
+	 * @param {Context} context - 语法标签上下文
+	 */
+	function ShorthandPropertyValueExpression(context){
+		EmptyExpression.call(this, context);
+	};
+	ShorthandPropertyValueExpression = new Rexjs(ShorthandPropertyValueExpression, EmptyExpression);
+
+	ShorthandPropertyValueExpression.props({
+		/**
+		 * 提取文本内容
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 */
+		extractTo: function(contentBuilder){
+			contentBuilder.appendString(this.context.content);
+		}
+	});
+
+	return ShorthandPropertyValueExpression;
+}();
+
+this.PropertyExpression = function(ShorthandPropertyValueExpression, config){
+	/**
+	 * 对象属性表达式
+	 */
+	function PropertyExpression(){
 		Expression.call(this, null);
 	};
-	ObjectItemExpression = new Rexjs(ObjectItemExpression, Expression);
+	PropertyExpression = new Rexjs(PropertyExpression, Expression);
 
-	ObjectItemExpression.props({
+	PropertyExpression.props({
 		/**
 		 * 获取该属性项是否是一个访问器
 		 */
@@ -7053,18 +7079,24 @@ this.ObjectItemExpression = function(ShorthandPropertyValueExpression, config){
 			// 提取对象值
 			value.extractTo(contentBuilder);
 		},
+		/**
+		 * 判断是否为空属性
+		 */
+		empty: function(){
+			return this.name === null;
+		},
 		name: null,
 		value: null
 	});
 
-	return ObjectItemExpression;
+	return PropertyExpression;
 }(
 	this.ShorthandPropertyValueExpression,
 	// config
 	this.ObjectExpression.config
 );
 
-this.ObjectStatement = function(ObjectItemExpression, ifColon, ifComma){
+this.ObjectStatement = function(PropertyExpression, ifColon, ifComma){
 	/**
 	 * 对象语句
 	 * @param {Statements} statements - 该语句将要所处的语句块
@@ -7072,7 +7104,7 @@ this.ObjectStatement = function(ObjectItemExpression, ifColon, ifComma){
 	function ObjectStatement(statements){
 		ECMAScriptStatement.call(this, statements);
 
-		this.expression = new ObjectItemExpression();
+		this.expression = new PropertyExpression();
 	};
 	ObjectStatement = new Rexjs(ObjectStatement, ECMAScriptStatement);
 
@@ -7097,8 +7129,8 @@ this.ObjectStatement = function(ObjectItemExpression, ifColon, ifComma){
 			switch(
 				true
 			){
-				// 如果表达式名称不存在，说明是空项
-				case expression.name === null:
+				// 如果表达式是空项
+				case expression.empty():
 					break;
 
 				// 如果可能是访问器
@@ -7112,7 +7144,7 @@ this.ObjectStatement = function(ObjectItemExpression, ifColon, ifComma){
 					break;
 			}
 
-			return objectExpression.open.tag.binding;
+			return this.bindingOf();
 		},
 		/**
 		 * 尝试处理异常
@@ -7140,7 +7172,7 @@ this.ObjectStatement = function(ObjectItemExpression, ifColon, ifComma){
 
 	return ObjectStatement;
 }(
-	this.ObjectItemExpression,
+	this.PropertyExpression,
 	// ifColon
 	function(parser, expression, context){
 		var accessor = expression.accessor;
@@ -7163,7 +7195,7 @@ this.ObjectStatement = function(ObjectItemExpression, ifColon, ifComma){
 	},
 	// ifComma
 	function(parser, statement, expression, context){
-		var objectExpression, accessor = expression.accessor;
+		var accessor = expression.accessor;
 
 		// 如果访问器存在
 		if(
@@ -7178,26 +7210,24 @@ this.ObjectStatement = function(ObjectItemExpression, ifColon, ifComma){
 			}
 		}
 
-		// 跳出语句
-		objectExpression = statement.out();
-
-		// 添加表达式
-		objectExpression.inner.add(expression);
-		return objectExpression.open.tag.separator;
+		// 跳出语句并
+		statement.out().inner.add(expression);
+		// 返回分隔符标签
+		return statement.tagOf().separator;
 	}
 );
 
-this.ObjectValueStatement = function(){
+this.PropertyValueStatement = function(){
 	/**
-	 * 对象值语句
+	 * 对象属性值语句
 	 * @param {Statements} statements - 该语句将要所处的语句块
 	 */
-	function ObjectValueStatement(statements){
+	function PropertyValueStatement(statements){
 		ECMAScriptStatement.call(this, statements);
 	};
-	ObjectValueStatement = new Rexjs(ObjectValueStatement, ECMAScriptStatement);
+	PropertyValueStatement = new Rexjs(PropertyValueStatement, ECMAScriptStatement);
 
-	ObjectValueStatement.props({
+	PropertyValueStatement.props({
 		/**
 		 * 捕获处理异常
 		 * @param {SyntaxParser} parser - 语法解析器
@@ -7218,7 +7248,7 @@ this.ObjectValueStatement = function(){
 		}
 	});
 
-	return ObjectValueStatement;
+	return PropertyValueStatement;
 }();
 
 this.OpenObjectTag = function(OpenBraceTag, ObjectExpression, ObjectStatement){
@@ -7243,14 +7273,14 @@ this.OpenObjectTag = function(OpenBraceTag, ObjectExpression, ObjectStatement){
 		 * 获取绑定的分隔符标签，该标签一般是用于语句的 try、catch 的返回值
 		 */
 		get separator(){
-			return objectItemSeparatorTag;
+			return propertySeparatorTag;
 		},
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
 		 */
 		require: function(tagsMap){
-			return tagsMap.objectNameTags;
+			return tagsMap.propertyNameTags;
 		},
 		/**
 		 * 标签访问器
@@ -7274,17 +7304,17 @@ this.OpenObjectTag = function(OpenBraceTag, ObjectExpression, ObjectStatement){
 	this.ObjectStatement
 );
 
-this.ObjectNameSeparatorTag = function(ColonTag, ObjectValueStatement){
+this.PropertyNameSeparatorTag = function(ColonTag, PropertyValueStatement){
 	/**
-	 * 对象名称的分隔符标签
+	 * 对象属性名称的分隔符标签
 	 * @param {Number} _type - 标签类型
 	 */
-	function ObjectNameSeparatorTag(_type){
+	function PropertyNameSeparatorTag(_type){
 		ColonTag.call(this, _type);
 	};
-	ObjectNameSeparatorTag = new Rexjs(ObjectNameSeparatorTag, ColonTag);
+	PropertyNameSeparatorTag = new Rexjs(PropertyNameSeparatorTag, ColonTag);
 
-	ObjectNameSeparatorTag.props({
+	PropertyNameSeparatorTag.props({
 		$type: TYPE_MISTAKABLE,
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
@@ -7301,33 +7331,33 @@ this.ObjectNameSeparatorTag = function(ColonTag, ObjectValueStatement){
 		 * @param {Statements} statements - 当前语句块
 		 */
 		visitor: function(parser, context, statement, statements){
-			statements.statement = new ObjectValueStatement(statements);
+			statements.statement = new PropertyValueStatement(statements);
 		}
 	});
 
-	return ObjectNameSeparatorTag;
+	return PropertyNameSeparatorTag;
 }(
 	this.ColonTag,
-	this.ObjectValueStatement
+	this.PropertyValueStatement
 );
 
-this.ObjectItemSeparatorTag = function(CommaTag, ObjectStatement){
+this.PropertySeparatorTag = function(CommaTag, ObjectStatement){
 	/**
-	 * 对象项的分隔符标签
+	 * 对象属性的分隔符标签
 	 * @param {Number} _type - 标签类型
 	 */
-	function ObjectItemSeparatorTag(_type){
+	function PropertySeparatorTag(_type){
 		CommaTag.call(this, _type);
 	};
-	ObjectItemSeparatorTag = new Rexjs(ObjectItemSeparatorTag, CommaTag);
+	PropertySeparatorTag = new Rexjs(PropertySeparatorTag, CommaTag);
 
-	ObjectItemSeparatorTag.props({
+	PropertySeparatorTag.props({
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
 		 */
 		require: function(tagsMap){
-			return tagsMap.objectNameTags;
+			return tagsMap.propertyNameTags;
 		},
 		/**
 		 * 标签访问器
@@ -7342,7 +7372,7 @@ this.ObjectItemSeparatorTag = function(CommaTag, ObjectStatement){
 		}
 	});
 
-	return ObjectItemSeparatorTag;
+	return PropertySeparatorTag;
 }(
 	this.CommaTag,
 	this.ObjectStatement
@@ -7359,6 +7389,7 @@ this.CloseObjectTag = function(CloseBraceTag){
 	CloseObjectTag = new Rexjs(CloseObjectTag, CloseBraceTag);
 
 	CloseObjectTag.props({
+		$type: TYPE_UNEXPECTED,
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
@@ -7384,68 +7415,151 @@ this.CloseObjectTag = function(CloseBraceTag){
 	this.CloseBraceTag
 );
 
-objectItemSeparatorTag = new this.ObjectItemSeparatorTag();
+propertySeparatorTag = new this.PropertySeparatorTag();
 closeObjectTag = new this.CloseObjectTag();
 
 }.call(
 	this,
-	// objectItemSeparatorTag
+	// propertySeparatorTag
 	null,
 	// closeObjectTag
 	null
 );
 
 
-// 对象基础属性名相关
-void function(IdentifierTag){
+// 对象字面量属性名相关
+void function(require, visitor, mathematicalNumeralVisitor){
 
-this.ObjectLiteralNameExpression = function(){
-	/**
-	 * 对象字面量属性名表达式
-	 * @param {Context} context - 语法标签上下文
-	 */
-	function ObjectLiteralNameExpression(context){
-		Expression.call(this, context);
+require = function(){
+	return function(tagsMap){
+		return tagsMap.propertyNameContextTags;
 	};
-	ObjectLiteralNameExpression = new Rexjs(ObjectLiteralNameExpression, Expression);
-
-	ObjectLiteralNameExpression.props({
-		/**
-		 * 以定义属性的模式提取表达式文本内容
-		 * @param {ContentBuilder} contentBuilder - 内容生成器
-		 */
-		defineTo: function(contentBuilder){
-			// 追加属性名上下文
-			contentBuilder.appendContext(this.context);
-		},
-		/**
-		 * 提取并编译表达式文本内容
-		 * @param {ContentBuilder} contentBuilder - 内容生成器
-		 */
-		compileTo: function(contentBuilder){
-			// 追加起始中括号
-			contentBuilder.appendString("[");
-			// 追加属性名上下文
-			contentBuilder.appendContext(this.context);
-			// 追加结束中括号
-			contentBuilder.appendString("]");
-		}
-	});
-
-	return ObjectLiteralNameExpression;
 }();
 
-this.ObjectIdentifierNameExpression = function(ObjectLiteralNameExpression){
+visitor = function(LiteralPropertyNameExpression){
+	return function(parser, context, statement){
+		// 设置表达式的 name 属性
+		statement.expression.name = new LiteralPropertyNameExpression(context);
+	};
+}(
+	this.LiteralPropertyNameExpression
+);
+
+mathematicalNumeralVisitor = function(){
+	return function(parser, context, statement, statements){
+		// 设置对象表达式的 useFunction 属性，表示要用函数包裹，进行封装
+		statement.target.expression.useFunction = true;
+
+		// 调用 visitor 方法
+		visitor.call(this, parser, context, statement, statements);
+	};
+}();
+
+this.StringPropertyNameTag = function(StringTag){
+	/**
+	 * 字符串属性名标签
+	 * @param {Number} _type - 标签类型
+	 */
+	function StringPropertyNameTag(_type){
+		StringTag.call(this, _type);
+	};
+	StringPropertyNameTag = new Rexjs(StringPropertyNameTag, StringTag);
+
+	StringPropertyNameTag.props({
+		require: require,
+		visitor: visitor
+	});
+
+	return StringPropertyNameTag;
+}(
+	this.StringTag
+);
+
+this.NumberPropertyNameTag = function(NumberTag){
+	/**
+	 * 数字属性名标签
+	 * @param {Number} _type - 标签类型
+	 */
+	function NumberPropertyNameTag(_type){
+		NumberTag.call(this, _type);
+	};
+	NumberPropertyNameTag = new Rexjs(NumberPropertyNameTag, NumberTag);
+
+	NumberPropertyNameTag.props({
+		require: require,
+		visitor: visitor
+	});
+
+	return NumberPropertyNameTag;
+}(
+	this.NumberTag
+);
+
+this.BinaryNumberPropertyNameTag = function(BinaryNumberTag){
+	/**
+	 * 二进制数字属性名标签
+	 * @param {Number} _type - 标签类型
+	 */
+	function BinaryNumberPropertyNameTag(_type){
+		BinaryNumberTag.call(this, _type);
+	};
+	BinaryNumberPropertyNameTag = new Rexjs(BinaryNumberPropertyNameTag, BinaryNumberTag);
+	
+	BinaryNumberPropertyNameTag.props({
+		require: require,
+		visitor: mathematicalNumeralVisitor
+	});
+	
+	return BinaryNumberPropertyNameTag;
+}(
+	this.BinaryNumberTag
+);
+
+this.OctalNumberPropertyNameTag = function(OctalNumberTag){
+	/**
+	 * 八进制数字属性名标签
+	 * @param {Number} _type - 标签类型
+	 */
+	function OctalNumberPropertyNameTag(_type){
+		OctalNumberTag.call(this, _type);
+	};
+	OctalNumberPropertyNameTag = new Rexjs(OctalNumberPropertyNameTag, OctalNumberTag);
+	
+	OctalNumberPropertyNameTag.props({
+		require: require,
+		visitor: mathematicalNumeralVisitor
+	});
+	
+	return OctalNumberPropertyNameTag;
+}(
+	this.OctalNumberTag
+);
+
+}.call(
+	this,
+	// require
+	null,
+	// visitor
+	null,
+	// mathematicalNumeralVisitor
+	null
+);
+
+
+// 对象标识符属性名相关
+void function(IdentifierTag){
+
+this.IdentifierPropertyNameExpression = function(LiteralPropertyNameExpression){
 	/**
 	 * 对象标识符属性名表达式
 	 * @param {Context} context - 语法标签上下文
 	 */
-	function ObjectIdentifierNameExpression(context){
-		ObjectLiteralNameExpression.call(this, context);
+	function IdentifierPropertyNameExpression(context){
+		LiteralPropertyNameExpression.call(this, context);
 	};
-	ObjectIdentifierNameExpression = new Rexjs(ObjectIdentifierNameExpression, ObjectLiteralNameExpression);
+	IdentifierPropertyNameExpression = new Rexjs(IdentifierPropertyNameExpression, LiteralPropertyNameExpression);
 
-	ObjectIdentifierNameExpression.props({
+	IdentifierPropertyNameExpression.props({
 		/**
 		 * 以定义属性的模式提取表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
@@ -7470,28 +7584,28 @@ this.ObjectIdentifierNameExpression = function(ObjectLiteralNameExpression){
 		}
 	});
 
-	return ObjectIdentifierNameExpression;
+	return IdentifierPropertyNameExpression;
 }(
-	this.ObjectLiteralNameExpression
+	this.LiteralPropertyNameExpression
 );
 
-this.ObjectIdentifierNameTag = function(ObjectIdentifierNameExpression, ShorthandPropertyValueExpression){
+this.IdentifierPropertyNameTag = function(IdentifierPropertyNameExpression, ShorthandPropertyValueExpression){
 	/**
-	 * 对象标识符属性名称标签
+	 * 标识符属性名称标签
 	 * @param {Number} _type - 标签类型
 	 */
-	function ObjectIdentifierNameTag(_type){
+	function IdentifierPropertyNameTag(_type){
 		IdentifierTag.call(this, _type);
 	};
-	ObjectIdentifierNameTag = new Rexjs(ObjectIdentifierNameTag, IdentifierTag);
+	IdentifierPropertyNameTag = new Rexjs(IdentifierPropertyNameTag, IdentifierTag);
 
-	ObjectIdentifierNameTag.props({
+	IdentifierPropertyNameTag.props({
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
 		 */
 		require: function(tagsMap){
-			return tagsMap.objectIdentifierNameContextTags;
+			return tagsMap.identifierPropertyNameContextTags;
 		},
 		/**
 		 * 标签访问器
@@ -7504,36 +7618,36 @@ this.ObjectIdentifierNameTag = function(ObjectIdentifierNameExpression, Shorthan
 			var expression = statement.expression;
 
 			// 设置表达式的 name 属性
-			expression.name = new ObjectIdentifierNameExpression(context);
+			expression.name = new IdentifierPropertyNameExpression(context);
 			// 设置表达式的 value 属性
 			expression.value = new ShorthandPropertyValueExpression(context);
 		}
 	});
 
-	return ObjectIdentifierNameTag;
+	return IdentifierPropertyNameTag;
 }(
-	this.ObjectIdentifierNameExpression,
+	this.IdentifierPropertyNameExpression,
 	this.ShorthandPropertyValueExpression
 );
 
-this.ObjectPropertyNameTag = function(ObjectIdentifierNameTag, ObjectIdentifierNameExpression){
+this.KeywordPropertyNameTag = function(IdentifierPropertyNameTag, IdentifierPropertyNameExpression){
 	/**
-	 * 对象属性名标签
+	 * 关键字属性名标签
 	 * @param {Number} _type - 标签类型
 	 */
-	function ObjectPropertyNameTag(_type){
-		ObjectIdentifierNameTag.call(this, _type);
+	function KeywordPropertyNameTag(_type){
+		IdentifierPropertyNameTag.call(this, _type);
 	};
-	ObjectPropertyNameTag = new Rexjs(ObjectPropertyNameTag, ObjectIdentifierNameTag);
+	KeywordPropertyNameTag = new Rexjs(KeywordPropertyNameTag, IdentifierPropertyNameTag);
 
-	ObjectPropertyNameTag.props({
+	KeywordPropertyNameTag.props({
 		regexp: new RegExp(IdentifierTag.keywords),
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
 		 */
 		require: function(tagsMap){
-			return tagsMap.objectNameContextTags;
+			return tagsMap.propertyNameContextTags;
 		},
 		/**
 		 * 标签访问器
@@ -7544,89 +7658,14 @@ this.ObjectPropertyNameTag = function(ObjectIdentifierNameTag, ObjectIdentifierN
 		 */
 		visitor: function(parser, context, statement, statements){
 			// 设置表达式的 name 属性
-			statement.expression.name = new ObjectIdentifierNameExpression(context); 
+			statement.expression.name = new IdentifierPropertyNameExpression(context); 
 		}
 	});
 
-	return ObjectPropertyNameTag;
+	return KeywordPropertyNameTag;
 }(
-	this.ObjectIdentifierNameTag,
-	this.ObjectIdentifierNameExpression
-);
-
-this.ObjectStringNameTag = function(StringTag, ObjectLiteralNameExpression){
-	/**
-	 * 对象字符串属性名标签
-	 * @param {Number} _type - 标签类型
-	 */
-	function ObjectStringNameTag(_type){
-		StringTag.call(this, _type);
-	};
-	ObjectStringNameTag = new Rexjs(ObjectStringNameTag, StringTag);
-
-	ObjectStringNameTag.props({
-		/**
-		 * 获取此标签接下来所需匹配的标签列表
-		 * @param {TagsMap} tagsMap - 标签集合映射
-		 */
-		require: function(tagsMap){
-			return tagsMap.objectNameContextTags;
-		},
-		/**
-		 * 标签访问器
-		 * @param {SyntaxParser} parser - 语法解析器
-		 * @param {Context} context - 标签上下文
-		 * @param {Statement} statement - 当前语句
-		 * @param {Statements} statements - 当前语句块
-		 */
-		visitor: function(parser, context, statement, statements){
-			// 设置表达式的 name 属性
-			statement.expression.name = new ObjectLiteralNameExpression(context); 
-		}
-	});
-
-	return ObjectStringNameTag;
-}(
-	this.StringTag,
-	this.ObjectLiteralNameExpression
-);
-
-this.ObjectNumberNameTag = function(NumberTag, ObjectLiteralNameExpression){
-	/**
-	 * 对象数字属性名标签
-	 * @param {Number} _type - 标签类型
-	 */
-	function ObjectNumberNameTag(_type){
-		NumberTag.call(this, _type);
-	};
-	ObjectNumberNameTag = new Rexjs(ObjectNumberNameTag, NumberTag);
-
-	ObjectNumberNameTag.props({
-		regexp: /0[bB][01]+|0[oO][0-7]+|0[xX][0-9a-fA-F]+|(?:\d*\.\d+|\d+\.?)(?:e[+-]?\d+)?/,
-		/**
-		 * 获取此标签接下来所需匹配的标签列表
-		 * @param {TagsMap} tagsMap - 标签集合映射
-		 */
-		require: function(tagsMap){
-			return tagsMap.objectNameContextTags;
-		},
-		/**
-		 * 标签访问器
-		 * @param {SyntaxParser} parser - 语法解析器
-		 * @param {Context} context - 标签上下文
-		 * @param {Statement} statement - 当前语句
-		 * @param {Statements} statements - 当前语句块
-		 */
-		visitor: function(parser, context, statement, statements){
-			// 设置表达式的 name 属性
-			statement.expression.name = new ObjectLiteralNameExpression(context); 
-		}
-	});
-
-	return ObjectNumberNameTag;
-}(
-	this.NumberTag,
-	this.ObjectLiteralNameExpression
+	this.IdentifierPropertyNameTag,
+	this.IdentifierPropertyNameExpression
 );
 
 }.call(
@@ -7636,19 +7675,19 @@ this.ObjectNumberNameTag = function(NumberTag, ObjectLiteralNameExpression){
 
 
 // 对象计算式属性相关
-void function(closeObjectComputedNameTag){
+void function(closeComputedPropertyNameTag){
 
-this.ObjectComputedNameExpression = function(){
+this.ComputedPropertyNameExpression = function(){
 	/**
-	 * 匹配组表达式
+	 * 属性计算式表达式
 	 * @param {Context} open - 起始标签上下文
 	 */
-	function ObjectComputedNameExpression(open){
+	function ComputedPropertyNameExpression(open){
 		PartnerExpression.call(this, open);
 	};
-	ObjectComputedNameExpression = new Rexjs(ObjectComputedNameExpression, PartnerExpression);
+	ComputedPropertyNameExpression = new Rexjs(ComputedPropertyNameExpression, PartnerExpression);
 
-	ObjectComputedNameExpression.props({
+	ComputedPropertyNameExpression.props({
 		/**
 		 * 以定义属性的模式提取表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
@@ -7665,7 +7704,7 @@ this.ObjectComputedNameExpression = function(){
 		}
 	});
 
-	return ObjectComputedNameExpression;
+	return ComputedPropertyNameExpression;
 }();
 
 this.ObjectComputedNameStatement = function(){
@@ -7694,34 +7733,38 @@ this.ObjectComputedNameStatement = function(){
 				return null;
 			}
 
-			// 跳出语句并获取计算式表达式
-			var objectComputedNameExpression = this.out().name;
-
 			// 跳出语句并设置 inner
-			objectComputedNameExpression.inner = this.expression;
-			return objectComputedNameExpression.open.tag.binding;
+			this.out().name.inner = this.expression;
+			// 返回结束标签
+			return this.bindingOf();
+		},
+		/**
+		 * 获取该语句 try、catch 方法中所需使用到的标签，一般是指向实例化该语句的标签
+		 */
+		tagOf: function(){
+			return this.target.expression.name.context.tag;
 		}
 	})
 
 	return ObjectComputedNameStatement;
 }();
 
-this.OpenObjectComputedNameTag = function(OpenBracketTag, ObjectComputedNameExpression, ObjectComputedNameStatement){
+this.OpenComputedPropertyNameTag = function(OpenBracketTag, ComputedPropertyNameExpression, ObjectComputedNameStatement){
 	/**
 	 * 起始对象计算式属性名标签
 	 * @param {Number} _type - 标签类型
 	 */
-	function OpenObjectComputedNameTag(_type){
+	function OpenComputedPropertyNameTag(_type){
 		OpenBracketTag.call(this, _type);
 	};
-	OpenObjectComputedNameTag = new Rexjs(OpenObjectComputedNameTag, OpenBracketTag);
+	OpenComputedPropertyNameTag = new Rexjs(OpenComputedPropertyNameTag, OpenBracketTag);
 
-	OpenObjectComputedNameTag.props({
+	OpenComputedPropertyNameTag.props({
 		/**
 		 * 获取绑定的标签，该标签一般是用于语句的 try、catch 的返回值
 		 */
 		get binding(){
-			return closeObjectComputedNameTag;
+			return closeComputedPropertyNameTag;
 		},
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
@@ -7739,39 +7782,39 @@ this.OpenObjectComputedNameTag = function(OpenBracketTag, ObjectComputedNameExpr
 		 */
 		visitor: function(parser, context, statement, statements){
 			// 设置表达式的 name 属性
-			statement.expression.name = new ObjectComputedNameExpression(context);
+			statement.expression.name = new ComputedPropertyNameExpression(context);
 
-			// 设置对象表达式的 needCompile 属性
-			statement.target.expression.needCompile = true;
+			// 设置对象表达式的 useFunction 属性，表示要用函数包裹，进行封装
+			statement.target.expression.useFunction = true;
 			// 设置当前属性
 			statements.statement = new ObjectComputedNameStatement(statements);
 		}
 	});
 
-	return OpenObjectComputedNameTag;
+	return OpenComputedPropertyNameTag;
 }(
 	this.OpenBracketTag,
-	this.ObjectComputedNameExpression,
+	this.ComputedPropertyNameExpression,
 	this.ObjectComputedNameStatement
 );
 
-this.CloseObjectComputedNameTag = function(CloseBracketTag){
+this.CloseComputedPropertyNameTag = function(CloseBracketTag){
 	/**
 	 * 结束对象计算式属性名标签
 	 * @param {Number} _type - 标签类型
 	 */
-	function CloseObjectComputedNameTag(_type){
+	function CloseComputedPropertyNameTag(_type){
 		CloseBracketTag.call(this, _type);
 	};
-	CloseObjectComputedNameTag = new Rexjs(CloseObjectComputedNameTag, CloseBracketTag);
+	CloseComputedPropertyNameTag = new Rexjs(CloseComputedPropertyNameTag, CloseBracketTag);
 
-	CloseObjectComputedNameTag.props({
+	CloseComputedPropertyNameTag.props({
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
 		 */
 		require: function(tagsMap){
-			return tagsMap.objectNameContextTags;
+			return tagsMap.propertyNameContextTags;
 		},
 		/**
 		 * 标签访问器
@@ -7785,22 +7828,22 @@ this.CloseObjectComputedNameTag = function(CloseBracketTag){
 		}
 	});
 
-	return CloseObjectComputedNameTag;
+	return CloseComputedPropertyNameTag;
 }(
 	this.CloseBracketTag
 );
 
-closeObjectComputedNameTag = new this.CloseObjectComputedNameTag();
+closeComputedPropertyNameTag = new this.CloseComputedPropertyNameTag();
 
 }.call(
 	this,
-	// closeObjectComputedNameTag
+	// closeComputedPropertyNameTag
 	null
 );
 
 
 // 对象简写方法相关
-void function(OpenArgumentsTag, ObjectItemSeparatorTag){
+void function(OpenArgumentsTag, PropertySeparatorTag){
 
 this.ShorthandMethodHeadExpression = function(){
 	/**
@@ -7825,24 +7868,37 @@ this.ShorthandMethodHeadExpression = function(){
 	return ShorthandMethodHeadExpression;
 }();
 
-this.ObjectShorthandMethodStatement = function(ShorthandMethodHeadExpression, FunctionExpression){
+this.ShorthandMethodExpression = function(FunctionExpression, ShorthandMethodHeadExpression){
+	/**
+	 * 简写方法表达式
+	 */
+	function ShorthandMethodExpression(){
+		FunctionExpression.call(this, null);
+
+		this.head = new ShorthandMethodHeadExpression();
+	};
+	ShorthandMethodExpression = new Rexjs(ShorthandMethodExpression, FunctionExpression);
+
+	return ShorthandMethodExpression;
+}(
+	this.FunctionExpression,
+	this.ShorthandMethodHeadExpression
+);
+
+this.ShorthandMethodStatement = function(ShorthandMethodExpression){
 	/**
 	 * 对象简写方法语句
 	 * @param {Statements} statements - 该语句将要所处的语句块
 	 */
-	function ObjectShorthandMethodStatement(statements){
+	function ShorthandMethodStatement(statements){
 		ECMAScriptStatement.call(this, statements);
 
-		(
-			// 初始化函数表达式
-			this.expression = new FunctionExpression()
-		)
-		// 设置函数表达式头部
-		.head = new ShorthandMethodHeadExpression();
+		// 初始化简写函数表达式
+		this.expression = new ShorthandMethodExpression()
 	};
-	ObjectShorthandMethodStatement = new Rexjs(ObjectShorthandMethodStatement, ECMAScriptStatement);
+	ShorthandMethodStatement = new Rexjs(ShorthandMethodStatement, ECMAScriptStatement);
 
-	ObjectShorthandMethodStatement.props({
+	ShorthandMethodStatement.props({
 		/**
 		 * 捕获处理异常
 		 * @param {SyntaxParser} parser - 语法解析器
@@ -7861,13 +7917,12 @@ this.ObjectShorthandMethodStatement = function(ShorthandMethodHeadExpression, Fu
 		}
 	});
 
-	return ObjectShorthandMethodStatement;
+	return ShorthandMethodStatement;
 }(
-	this.ShorthandMethodHeadExpression,
-	this.FunctionExpression
+	this.ShorthandMethodExpression
 );
 
-this.OpenShorthandMethodTag = function(ObjectShorthandMethodStatement, visitor){
+this.OpenShorthandMethodTag = function(ShorthandMethodStatement, visitor){
 	/**
 	 * 对象起始简写方法标签
 	 * @param {Number} _type - 标签类型
@@ -7891,7 +7946,7 @@ this.OpenShorthandMethodTag = function(ObjectShorthandMethodStatement, visitor){
 				this,
 				parser,
 				context,
-				statements.statement = new ObjectShorthandMethodStatement(statements),
+				statements.statement = new ShorthandMethodStatement(statements),
 				statements
 			);
 		}
@@ -7900,7 +7955,7 @@ this.OpenShorthandMethodTag = function(ObjectShorthandMethodStatement, visitor){
 	return OpenShorthandMethodTag;
 }(
 	
-	this.ObjectShorthandMethodStatement,
+	this.ShorthandMethodStatement,
 	OpenArgumentsTag.prototype.visitor
 );
 
@@ -7910,9 +7965,9 @@ this.ShorthandItemSeparatorTag = function(visitor){
 	 * @param {Number} _type - 标签类型
 	 */
 	function ShorthandItemSeparatorTag(_type){
-		ObjectItemSeparatorTag.call(this, _type)
+		PropertySeparatorTag.call(this, _type)
 	};
-	ShorthandItemSeparatorTag = new Rexjs(ShorthandItemSeparatorTag, ObjectItemSeparatorTag);
+	ShorthandItemSeparatorTag = new Rexjs(ShorthandItemSeparatorTag, PropertySeparatorTag);
 
 	ShorthandItemSeparatorTag.props({
 		/**
@@ -7932,28 +7987,28 @@ this.ShorthandItemSeparatorTag = function(visitor){
 
 	return ShorthandItemSeparatorTag;
 }(
-	ObjectItemSeparatorTag.prototype.visitor
+	PropertySeparatorTag.prototype.visitor
 );
 
 }.call(
 	this,
 	this.OpenArgumentsTag,
-	this.ObjectItemSeparatorTag
+	this.PropertySeparatorTag
 );
 
 
 // 对象属性访问器相关
-void function(ObjectNameSeparatorTag){
+void function(PropertyNameSeparatorTag){
 
-this.PropertyAccessorTag = function(ObjectIdentifierNameTag, FunctionExpression, AccessorStatement, visitor){
+this.PropertyAccessorTag = function(IdentifierPropertyNameTag, FunctionExpression, AccessorStatement, visitor){
 	/**
 	 * 对象属性访问器标签
 	 * @param {Number} _type - 标签类型
 	 */
 	function PropertyAccessorTag(_type){
-		ObjectIdentifierNameTag.call(this, _type);
+		IdentifierPropertyNameTag.call(this, _type);
 	};
-	PropertyAccessorTag = new Rexjs(PropertyAccessorTag, ObjectIdentifierNameTag);
+	PropertyAccessorTag = new Rexjs(PropertyAccessorTag, IdentifierPropertyNameTag);
 
 	PropertyAccessorTag.props({
 		/**
@@ -8038,10 +8093,10 @@ this.PropertyAccessorTag = function(ObjectIdentifierNameTag, FunctionExpression,
 
 	return PropertyAccessorTag;
 }(
-	this.ObjectIdentifierNameTag,
+	this.IdentifierPropertyNameTag,
 	this.FunctionExpression,
 	this.AccessorStatement,
-	this.ObjectIdentifierNameTag.prototype.visitor
+	this.IdentifierPropertyNameTag.prototype.visitor
 );
 
 this.GetTag = function(PropertyAccessorTag){
@@ -8088,7 +8143,7 @@ this.SetTag = function(PropertyAccessorTag){
 
 }.call(
 	this,
-	this.ObjectNameSeparatorTag
+	this.PropertyNameSeparatorTag
 );
 
 
@@ -8806,13 +8861,10 @@ this.VarStatement = function(){
 		 * @param {Context} context - 语法标签上下文
 		 */
 		catch: function(parser, context){
-			// 跳出语句
-			var varExpression = this.out();
-
-			// 添加表达式
-			varExpression.list.add(this.expression);
+			// 跳出语句并添加表达式
+			this.out().list.add(this.expression);
 			// 如果是逗号，返回指定的分隔符，否则返回 null
-			return context.content === "," ? varExpression.context.tag.binding : null;
+			return context.content === "," ? this.bindingOf() : null;
 		},
 		/**
 		 * 尝试处理异常
@@ -8827,13 +8879,10 @@ this.VarStatement = function(){
 				return null;
 			}
 
-			// 跳出语句
-			var varExpression = this.out();
-
-			// 添加表达式
-			varExpression.list.add(this.expression);
+			// 跳出语句并添加表达式
+			this.out().list.add(this.expression);
 			// 返回分隔符标签
-			return varExpression.context.tag.binding;
+			return this.bindingOf();
 		}
 	});
 	
@@ -9354,10 +9403,10 @@ this.IfBodyStatement = function(){
 		 * @param {Context} context - 语法标签上下文
 		 */
 		catch: function(parser, context){
-			var expression = this.expression, ifExpression = this.out();
+			var expression = this.expression;
 
-			// 设置 if 表达式的主体
-			ifExpression.ifBody = expression;
+			// 跳出语句并设置 if 表达式的主体
+			this.out().ifBody = expression;
 			
 			switch(
 				false
@@ -9374,7 +9423,7 @@ this.IfBodyStatement = function(){
 
 				default:
 					// 返回 else 标签
-					return ifExpression.ifContext.tag.binding;
+					return this.bindingOf();
 			}
 		}
 	});
@@ -9868,13 +9917,10 @@ this.DoStatement = function(){
 					break;
 					
 				default:
-					// 跳出语句
-					var doExpression = this.out();
-
 					// 跳出语句并设置 body
-					doExpression.body = expression;
+					this.out().body = expression;
 					// 返回 do while 标签
-					return doExpression.context.tag.binding;
+					return this.bindingOf();
 			}
 
 			var tag = context.tag;
@@ -10993,22 +11039,19 @@ this.TryStatement = function(){
 		 * @param {Context} context - 语法标签上下文
 		 */
 		catch: function(parser, context){
-			// 跳出语句
-			var tryExpression = this.out();
-
-			// 设置 tryBlock 属性
-			tryExpression.tryBlock = this.expression;
+			// 跳出语句并设置 tryBlock 属性
+			this.out().tryBlock = this.expression;
 			
 			switch(
 				context.content
 			){
 				// 如果是 catch
 				case "catch" :
-					return tryExpression.context.tag.catch;
+					return this.tagOf().catch;
 				
 				// 如果是 finally
 				case "finally" :
-					return tryExpression.context.tag.finally;
+					return this.tagOf().finally;
 			}
 
 			// 报错
@@ -11036,13 +11079,10 @@ this.CatchStatement = function(){
 		 * @param {Context} context - 语法标签上下文
 		 */
 		catch: function(parser, context){
-			// 跳出语句
-			var tryExpression = this.out();
-
-			// 设置 catchBlock 属性
-			tryExpression.catchBlock = this.expression;
+			// 跳出语句并设置 catchBlock 属性
+			this.out().catchBlock = this.expression;
 			// 如果是 finally，则返回 finallyTag
-			return context.content === "finally" ? tryExpression.context.tag.finally : null;
+			return context.content === "finally" ? this.tagOf().finally : null;
 		}
 	});
 	
@@ -11426,20 +11466,16 @@ this.SwitchBodyStatement = function(BlockBodyStatement){
 				return null;
 			}
 
-			var statements = this.statements,
-
-				body = (
-					// 恢复语句块
-						parser.statements = statements.target
-					)
-					.statement
-					.expression
-					.body;
-
-			// 设置 inner
-			body.inner = statements;
+			// 跳出语句并设置 inner
+			this.out(parser).body.inner = this.statements;
 			// 返回结束语句块标签
-			return body.open.tag.binding;
+			return this.bindingOf();
+		},
+		/**
+		 * 获取该语句 try、catch 方法中所需使用到的标签，一般是指向实例化该语句的标签
+		 */
+		tagOf: function(){
+			return this.statements.target.statement.expression.body.context.tag;
 		}
 	});
 
@@ -11797,12 +11833,9 @@ this.CaseValueStatement = function(){
 				return null;
 			}
 
-			// 跳出语句
-			var caseExpression = this.out();
-
-			// 设置 value
-			caseExpression.value = this.expression;
-			return caseExpression.context.tag.binding;
+			// 跳出语句并设置 value
+			this.out().value = this.expression;
+			return this.bindingOf();
 		}
 	});
 	
@@ -12194,13 +12227,10 @@ this.TemplateStatement = function(){
 				return null;
 			}
 
-			// 跳出语句
-			var templateExpression = this.out();
-
-			// 设置模板表达式的 inner
-			templateExpression.inner = this.expression;
+			// 跳出语句并设置模板表达式的 inner
+			this.out().inner = this.expression;
 			// 返回结束标签
-			return templateExpression.open.tag.binding;
+			return this.bindingOf();
 		}
 	});
 
@@ -12539,12 +12569,16 @@ this.PlaceHolderStatement = function(){
 				return null;
 			}
 
-			var placeholderExpression = this.out().latest;
-
-			// 设置 inner
-			placeholderExpression.inner = this.expression;
+			// 跳出语句并设置最近表达式的 inner
+			this.out().latest.inner = this.expression;
 			// 返回结束标签
-			return placeholderExpression.open.tag.binding;
+			return this.bindingOf();
+		},
+		/**
+		 * 获取该语句 try、catch 方法中所需使用到的标签，一般是指向实例化该语句的标签
+		 */
+		tagOf: function(){
+			return this.target.expression.latest.context.tag;
 		}
 	});
 
@@ -12785,6 +12819,446 @@ this.OpenTemplateParameterTag = function(OpenTemplateTag, TemplateParameterExpre
 );
 
 
+// 类标签相关
+void function(){
+
+this.ClassExpression = function(){
+	/**
+	 * 类表达式
+	 * @param {Context} context - 语法标签上下文
+	 */
+	function ClassExpression(context){
+		Expression.call(this, context);
+	};
+	ClassExpression = new Rexjs(ClassExpression, Expression);
+
+	ClassExpression.props({
+		name: new DefaultExpression()
+	});
+
+	return ClassExpression;
+}();
+
+this.ClassTag = function(ClassExpression){
+	/**
+	 * 类标签
+	 * @param {Number} _type - 标签类型
+	 */
+	function ClassTag(_type){
+		SyntaxTag.call(this, _type);
+	};
+	ClassTag = new Rexjs(ClassTag, SyntaxTag);
+
+	ClassTag.props({
+		$class: CLASS_EXPRESSION,
+		regexp: /class/,
+		/**
+		 * 获取此标签接下来所需匹配的标签列表
+		 * @param {TagsMap} tagsMap - 标签集合映射
+		 */
+		require: function(tagsMap){
+			return tagsMap.classContextTags;
+		},
+		/**
+		 * 标签访问器
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 标签上下文
+		 * @param {Statement} statement - 当前语句
+		 * @param {Statements} statements - 当前语句块
+		 */
+		visitor: function(parser, context, statement, statements){
+			statement.expression = new ClassExpression(context);
+		}
+	});
+
+	return ClassTag;
+}(
+	this.ClassExpression
+);
+
+this.ClassDeclarationTag = function(ClassTag){
+	/**
+	 * 类声明标签
+	 * @param {Number} _type - 标签类型
+	 */
+	function ClassDeclarationTag(context){
+		ClassTag.call(this, context);
+	};
+	ClassDeclarationTag = new Rexjs(ClassDeclarationTag, ClassTag);
+
+	ClassDeclarationTag.props({
+		$class: CLASS_STATEMENT_BEGIN
+	});
+
+	return ClassDeclarationTag;
+}(
+	this.ClassTag
+);
+
+this.ClassNameTag = function(VariableDeclarationTag){
+	/**
+	 * 类名称标签
+	 * @param {Number} _type - 标签类型
+	 */
+	function ClassNameTag(_type){
+		VariableDeclarationTag.call(this, _type);
+	};
+	ClassNameTag = new Rexjs(ClassNameTag, VariableDeclarationTag);
+
+	ClassNameTag.props({
+		/**
+		 * 提取表达式文本内容
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 * @param {String} content - 标签内容
+		 */
+		extractTo: function(contentBuilder, content){
+			// 追加空格
+			contentBuilder.appendSpace();
+			// 追加标签内容
+			contentBuilder.appendString(content);
+		},
+		/**
+		 * 获取此标签接下来所需匹配的标签列表
+		 * @param {TagsMap} tagsMap - 标签集合映射
+		 */
+		require: function(tagsMap){
+			return tagsMap.classNameContextTags;
+		},
+		/**
+		 * 标签访问器
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 标签上下文
+		 * @param {Statement} statement - 当前语句
+		 * @param {Statements} statements - 当前语句块
+		 */
+		visitor: function(parser, context, statement, statements){
+			statement.expression.name = new Expression(context);
+		}
+	});
+
+	return ClassNameTag;
+}(
+	this.VariableDeclarationTag
+);
+
+}.call(
+	this
+);
+
+
+// 类主体标签相关
+void function(classPropertySeparatorTag, closeClassBodyTag){
+
+this.ClassBodyExpression = function(ObjectExpression, config){
+	/**
+	 * 对象表达式
+	 * @param {Context} open - 起始标签上下文
+	 */
+	function ClassBodyExpression(open){
+		ObjectExpression.call(this, open);
+	};
+	ClassBodyExpression = new Rexjs(ClassBodyExpression, ObjectExpression);
+
+	ClassBodyExpression.static({
+		/**
+		 * 获取表达式编译配置
+		 */
+		get config(){
+			return config;
+		}
+	});
+
+	ClassBodyExpression.props({
+		/**
+		 * 提取表达式文本内容
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 */
+		extractTo: function(contentBuilder){
+			
+		}
+	});
+
+	return ClassBodyExpression;
+}(
+	this.ObjectExpression,
+	// config
+	new SyntaxConfig("class")
+);
+
+this.ClassBodyStatement = function(ObjectStatement, ShorthandMethodExpression){
+	/**
+	 * 类主体语句
+	 * @param {Statements} statements - 该语句将要所处的语句块
+	 */
+	function ClassBodyStatement(statements){
+		ObjectStatement.call(this, statements);
+	};
+	ClassBodyStatement = new Rexjs(ClassBodyStatement, ObjectStatement);
+
+	ClassBodyStatement.props({
+		/**
+		 * 捕获处理异常
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 语法标签上下文
+		 */
+		catch: function(parser, context){
+			var classBodyExpression = this.out().body, propertyExpression = this.expression;
+
+			debugger
+
+			block:
+			{
+				switch(
+					true
+				){
+					case propertyExpression.empty():
+						break;
+
+					case propertyExpression.value instanceof ShorthandMethodExpression:
+						classBodyExpression.inner.add(propertyExpression);
+						break;
+
+					default:
+						break block;
+				}
+
+				var tag = this.tagOf();
+
+				switch(
+					context.content
+				){
+					case "}":
+						return tag.binding;
+
+					case ";":
+						return tag.separator;
+
+					case "get":
+						return tag.get;
+
+					case "set":
+						return tag.set;
+					
+					case "[":
+						return tag.openComputedPropertyName;
+				}
+			}
+
+			parser.error(context);
+		},
+		/**
+		 * 获取该语句 try、catch 方法中所需使用到的标签，一般是指向实例化该语句的标签
+		 */
+		tagOf: function(){
+			return this.target.expression.body.context.tag;
+		},
+		/**
+		 * 尝试处理异常
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 语法标签上下文
+		 */
+		try: function(parser, context){
+			// 直接报错
+			parser.error(context);
+		}
+	});
+
+	return ClassBodyStatement;
+}(
+	this.ObjectStatement,
+	this.ShorthandMethodExpression
+);
+
+this.OpenClassBodyTag = function(
+	OpenObjectTag,
+	ClassBodyExpression, ClassBodyStatement,
+	identifierPropertyNameTag, numberPropertyNameTag, binaryNumberPropertyNameTag,
+	octalNumberPropertyNameTag, keywordPropertyNameTag, stringPropertyNameTag,
+	openComputedPropertyNameTag, getTag, setTag
+){
+	/**
+	 * 起始函数主体标签
+	 * @param {Number} _type - 标签类型
+	 */
+	function OpenClassBodyTag(_type){
+		OpenObjectTag.call(this, _type);
+	};
+	OpenClassBodyTag = new Rexjs(OpenClassBodyTag, OpenObjectTag);
+
+	OpenClassBodyTag.props({
+		get binaryNumberPropertyName(){
+			return binaryNumberPropertyNameTag;
+		},
+		/**
+		 * 获取绑定的函数主体结束标签，该标签一般是用于语句的 try、catch 的返回值
+		 */
+		get binding(){
+			return closeClassBodyTag;
+		},
+		get get(){
+			return getTag;
+		},
+		/**
+		 * 获取绑定的分隔符标签，该标签一般是用于语句的 try、catch 的返回值
+		 */
+		get identifierPropertyName(){
+			return identifierPropertyNameTag;
+		},
+		get keywordPropertyName(){
+			return keywordPropertyNameTag;
+		},
+		get numberPropertyName(){
+			return numberPropertyNameTag;
+		},
+		get octalNumberPropertyName(){
+			return octalNumberPropertyNameTag;
+		},
+		get openComputedPropertyName(){
+			return openComputedPropertyNameTag;
+		},
+		/**
+		 * 获取绑定的分隔符标签，该标签一般是用于语句的 try、catch 的返回值
+		 */
+		get separator(){
+			return classPropertySeparatorTag;
+		},
+		get set(){
+			return setTag;
+		},
+		get stringPropertyName(){
+			return stringPropertyNameTag
+		},
+		/**
+		 * 获取此标签接下来所需匹配的标签列表
+		 * @param {TagsMap} tagsMap - 标签集合映射
+		 */
+		require: function(tagMaps){
+			return tagMaps.classPropertyNameTags;
+		},
+		/**
+		 * 标签访问器
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 标签上下文
+		 * @param {Statement} statement - 当前语句
+		 * @param {Statements} statements - 当前语句块
+		 */
+		visitor: function(parser, context, statement, statements){
+			statement.expression.body = new ClassBodyExpression(context);
+			statements.statement = new ClassBodyStatement(statements);
+		}
+	});
+
+	return OpenClassBodyTag;
+}(
+	this.OpenObjectTag,
+	this.ClassBodyExpression,
+	this.ClassBodyStatement,
+	// identifierPropertyNameTag
+	new this.IdentifierPropertyNameTag(),
+	// numberPropertyNameTag
+	new this.NumberPropertyNameTag(),
+	// binaryNumberPropertyNameTag
+	new this.BinaryNumberPropertyNameTag(),
+	// octalNumberPropertyNameTag
+	new this.OctalNumberPropertyNameTag(),
+	// keywordPropertyNameTag
+	new this.KeywordPropertyNameTag(),
+	// stringPropertyNameTag
+	new this.StringPropertyNameTag(),
+	// openComputedPropertyNameTag
+	new this.OpenComputedPropertyNameTag(),
+	// getTag
+	new this.GetTag(),
+	// setTag
+	new this.SetTag()
+);
+
+this.ClassPropertySeparatorTag = function(SemicolonTag, ClassBodyStatement){
+	/**
+	 * 类属性分隔符标签
+	 * @param {Number} _type - 标签类型
+	 */
+	function ClassPropertySeparatorTag(_type){
+		SemicolonTag.call(this, _type);
+	};
+	ClassPropertySeparatorTag = new Rexjs(ClassPropertySeparatorTag, SemicolonTag);
+
+	ClassPropertySeparatorTag.props({
+		$type: TYPE_UNEXPECTED,
+		/**
+		 * 获取此标签接下来所需匹配的标签列表
+		 * @param {TagsMap} tagsMap - 标签集合映射
+		 */
+		require: function(tagMaps){
+			return tagMaps.classPropertyNameTags;
+		},
+		/**
+		 * 标签访问器
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 标签上下文
+		 * @param {Statement} statement - 当前语句
+		 * @param {Statements} statements - 当前语句块
+		 */
+		visitor: function(parser, context, statement, statements){
+			// 设置当前语句
+			statements.statement = new ClassBodyStatement(statements);
+		}
+	});
+
+	return ClassPropertySeparatorTag;
+}(
+	this.SemicolonTag,
+	this.ClassBodyStatement
+);
+
+this.CloseClassBodyTag = function(CloseObjectTag){
+	/**
+	 * 类主体结束标签
+	 * @param {Number} _type - 标签类型
+	 */
+	function CloseClassBodyTag(_type){
+		CloseObjectTag.call(this, _type);
+	};
+	CloseClassBodyTag = new Rexjs(CloseClassBodyTag, CloseObjectTag);
+
+	CloseClassBodyTag.props({
+		/**
+		 * 获取此标签接下来所需匹配的标签列表
+		 * @param {TagsMap} tagsMap - 标签集合映射
+		 */
+		require: function(tagsMap){
+			return tagsMap.expressionContextTags;
+		},
+		/**
+		 * 标签访问器
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 标签上下文
+		 * @param {Statement} statement - 当前语句
+		 * @param {Statements} statements - 当前语句块
+		 */
+		visitor: function(parser, context, statement, statements){
+			// 设置 close
+			statement.expression.body.close = context;
+		}
+	});
+
+	return CloseClassBodyTag;
+}(
+	this.CloseObjectTag
+);
+
+classPropertySeparatorTag = new this.ClassPropertySeparatorTag();
+closeClassBodyTag = new this.CloseClassBodyTag();
+
+}.call(
+	this,
+	// classPropertySeparatorTag
+	null,
+	// closeClassBodyTag
+	null
+);
+
+
 // 辅助性的标签列表相关
 void function(SyntaxTags){
 
@@ -12855,6 +13329,7 @@ this.ECMAScriptTags = function(DefaultTags, list){
 		this.BreakTag,
 		this.CaseTag,
 		this.CatchTag,
+		this.ClassTag,
 		this.CloseBraceTag,
 		this.CloseBracketTag,
 		this.CloseParenTag,
@@ -13260,6 +13735,50 @@ this.CatchedExceptionTags = function(OpenCatchedExceptionTag){
 	return CatchedExceptionTags;
 }(
 	this.OpenCatchedExceptionTag
+);
+
+this.ClassContextTags = function(ClassNameTag){
+	/**
+	 * 类关键字上下文标签列表
+	 */
+	function ClassContextTags(){
+		IllegalTags.call(this);
+		
+		this.register(
+			new ClassNameTag()
+		);
+	};
+	ClassContextTags = new Rexjs(ClassContextTags, IllegalTags);
+
+	ClassContextTags.props({
+		id: "classContextTags"
+	});
+	
+	return ClassContextTags;
+}(
+	this.ClassNameTag
+);
+
+this.ClassNameContextTags = function(OpenClassBodyTag){
+	/**
+	 * 类关键字上下文标签列表
+	 */
+	function ClassNameContextTags(){
+		IllegalTags.call(this);
+		
+		this.register(
+			new OpenClassBodyTag()
+		);
+	};
+	ClassNameContextTags = new Rexjs(ClassNameContextTags, IllegalTags);
+
+	ClassNameContextTags.props({
+		id: "classNameContextTags"
+	});
+	
+	return ClassNameContextTags;
+}(
+	this.OpenClassBodyTag
 );
 
 this.CloseArrowFunctionBodyContextTags = function(CommaTag, filter){
@@ -13786,127 +14305,6 @@ this.NewContextTags = function(UnaryTag, NewTag, TargetAccessorTag, filter){
 	this.ExpressionTags.prototype.filter
 );
 
-this.ObjectNameContextTags = function(OpenShorthandMethodTag, ObjectNameSeparatorTag){
-	/**
-	 * 对象名称上下文标签列表
-	 */
-	function ObjectNameContextTags(){
-		IllegalTags.call(this);
-
-		this.register(
-			new OpenShorthandMethodTag(),
-			new ObjectNameSeparatorTag()
-		);
-	};
-	ObjectNameContextTags = new Rexjs(ObjectNameContextTags, IllegalTags);
-
-	ObjectNameContextTags.props({
-		id: "objectNameContextTags"
-	});
-
-	return ObjectNameContextTags;
-}(
-	this.OpenShorthandMethodTag,
-	this.ObjectNameSeparatorTag
-);
-
-this.ObjectIdentifierNameContextTags = function(ObjectNameContextTags, ShorthandItemSeparatorTag, CloseObjectTag){
-	/**
-	 * 对象标识符名称上下文标签列表
-	 */
-	function ObjectIdentifierNameContextTags(){
-		ObjectNameContextTags.call(this);
-
-		this.register(
-			new ShorthandItemSeparatorTag(),
-			new CloseObjectTag(TYPE_UNEXPECTED)
-		);
-	};
-	ObjectIdentifierNameContextTags = new Rexjs(ObjectIdentifierNameContextTags, ObjectNameContextTags);
-
-	ObjectIdentifierNameContextTags.props({
-		id: "objectIdentifierNameContextTags"
-	});
-
-	return ObjectIdentifierNameContextTags;
-}(
-	this.ObjectNameContextTags,
-	this.ShorthandItemSeparatorTag,
-	this.CloseObjectTag
-);
-
-this.ObjectNameTags = function(CloseObjectTag, ObjectIdentifierNameTag, ObjectNumberNameTag, ObjectPropertyNameTag, ObjectStringNameTag, OpenObjectComputedNameTag, GetTag, SetTag){
-	/**
-	 * 对象名称标签列表
-	 */
-	function ObjectNameTags(){
-		IllegalTags.call(this);
-
-		this.register(
-			new CloseObjectTag(TYPE_UNEXPECTED),
-			new ObjectIdentifierNameTag(),
-			new ObjectNumberNameTag(),
-			new ObjectPropertyNameTag(),
-			new ObjectStringNameTag(),
-			new OpenObjectComputedNameTag(),
-			new GetTag(),
-			new SetTag()
-		);
-	};
-	ObjectNameTags = new Rexjs(ObjectNameTags, IllegalTags);
-
-	ObjectNameTags.props({
-		id: "objectNameTags"
-	});
-
-	return ObjectNameTags;
-}(
-	this.CloseObjectTag,
-	this.ObjectIdentifierNameTag,
-	this.ObjectNumberNameTag,
-	this.ObjectPropertyNameTag,
-	this.ObjectStringNameTag,
-	this.OpenObjectComputedNameTag,
-	this.GetTag,
-	this.SetTag
-);
-
-this.AccessorContextTags = function(ObjectNameTags, OpenShorthandMethodTag, ObjectNameSeparatorTag, ShorthandItemSeparatorTag, PropertyAccessorTag){
-	/**
-	 * 属性访问器上下文标签列表
-	 */
-	function AccessorContextTags(){
-		ObjectNameTags.call(this);
-		
-		this.register(
-			new OpenShorthandMethodTag(),
-			new ObjectNameSeparatorTag(),
-			new ShorthandItemSeparatorTag()
-		);
-	};
-	AccessorContextTags = new Rexjs(AccessorContextTags, ObjectNameTags);
-
-	AccessorContextTags.props({
-		/**
-		 * 标签过滤处理
-		 * @param {SyntaxTag} tag - 语法标签
-		 */
-		filter: function(tag){
-			// 如果是访问器标签，则过滤掉
-			return tag instanceof PropertyAccessorTag;
-		},
-		id: "accessorContextTags"
-	});
-	
-	return AccessorContextTags;
-}(
-	this.ObjectNameTags,
-	this.OpenShorthandMethodTag,
-	this.ObjectNameSeparatorTag,
-	this.ShorthandItemSeparatorTag,
-	this.PropertyAccessorTag
-);
-
 this.OpenArgumentsContextTags = function(ArgumentSeparatorContextTags, CloseArgumentsTag){
 	/**
 	 * 参数起始上下文标签列表
@@ -14022,6 +14420,154 @@ this.PlusContextTags = function(PlusSiblingTag, IncrementSiblingTag){
 }(
 	this.PlusSiblingTag,
 	this.IncrementSiblingTag
+);
+
+this.PropertyNameContextTags = function(OpenShorthandMethodTag, PropertyNameSeparatorTag){
+	/**
+	 * 对象名称上下文标签列表
+	 */
+	function PropertyNameContextTags(){
+		IllegalTags.call(this);
+
+		this.register(
+			new OpenShorthandMethodTag(),
+			new PropertyNameSeparatorTag()
+		);
+	};
+	PropertyNameContextTags = new Rexjs(PropertyNameContextTags, IllegalTags);
+
+	PropertyNameContextTags.props({
+		id: "propertyNameContextTags"
+	});
+
+	return PropertyNameContextTags;
+}(
+	this.OpenShorthandMethodTag,
+	this.PropertyNameSeparatorTag
+);
+
+this.IdentifierPropertyNameContextTags = function(PropertyNameContextTags, ShorthandItemSeparatorTag, CloseObjectTag){
+	/**
+	 * 对象标识符名称上下文标签列表
+	 */
+	function IdentifierPropertyNameContextTags(){
+		PropertyNameContextTags.call(this);
+
+		this.register(
+			new ShorthandItemSeparatorTag(),
+			new CloseObjectTag(TYPE_UNEXPECTED)
+		);
+	};
+	IdentifierPropertyNameContextTags = new Rexjs(IdentifierPropertyNameContextTags, PropertyNameContextTags);
+
+	IdentifierPropertyNameContextTags.props({
+		id: "identifierPropertyNameContextTags"
+	});
+
+	return IdentifierPropertyNameContextTags;
+}(
+	this.PropertyNameContextTags,
+	this.ShorthandItemSeparatorTag,
+	this.CloseObjectTag
+);
+
+this.PropertyNameTags = function(list){
+	/**
+	 * 对象属性名称标签列表
+	 */
+	function PropertyNameTags(){
+		IllegalTags.call(this);
+
+		// 注册标签
+		this.register.apply(
+			this,
+			// 映射标签
+			list.map(function(SyntaxTag){
+				// 实例化标签
+				return new SyntaxTag();
+			})
+		);
+	};
+	PropertyNameTags = new Rexjs(PropertyNameTags, IllegalTags);
+
+	PropertyNameTags.props({
+		id: "propertyNameTags"
+	});
+
+	return PropertyNameTags;
+}(
+	// list
+	[
+		this.CloseObjectTag,
+		this.IdentifierPropertyNameTag,
+		this.NumberPropertyNameTag,
+		this.BinaryNumberPropertyNameTag,
+		this.OctalNumberPropertyNameTag,
+		this.KeywordPropertyNameTag,
+		this.StringPropertyNameTag,
+		this.OpenComputedPropertyNameTag,
+		this.GetTag,
+		this.SetTag
+	]
+);
+
+this.AccessorContextTags = function(PropertyNameTags, OpenShorthandMethodTag, PropertyNameSeparatorTag, ShorthandItemSeparatorTag, PropertyAccessorTag){
+	/**
+	 * 属性访问器上下文标签列表
+	 */
+	function AccessorContextTags(){
+		PropertyNameTags.call(this);
+		
+		this.register(
+			new OpenShorthandMethodTag(),
+			new PropertyNameSeparatorTag(),
+			new ShorthandItemSeparatorTag()
+		);
+	};
+	AccessorContextTags = new Rexjs(AccessorContextTags, PropertyNameTags);
+
+	AccessorContextTags.props({
+		/**
+		 * 标签过滤处理
+		 * @param {SyntaxTag} tag - 语法标签
+		 */
+		filter: function(tag){
+			// 如果是访问器标签，则过滤掉
+			return tag instanceof PropertyAccessorTag;
+		},
+		id: "accessorContextTags"
+	});
+	
+	return AccessorContextTags;
+}(
+	this.PropertyNameTags,
+	this.OpenShorthandMethodTag,
+	this.PropertyNameSeparatorTag,
+	this.ShorthandItemSeparatorTag,
+	this.PropertyAccessorTag
+);
+
+this.ClassPropertyNameTags = function(PropertyNameTags, ClassPropertySeparatorTag){
+	/**
+	 * 类属性名标签列表
+	 */
+	function ClassPropertyNameTags(){
+		PropertyNameTags.call(this);
+		
+		this.register(
+			new ClassPropertySeparatorTag
+		);
+	};
+	ClassPropertyNameTags = new Rexjs(ClassPropertyNameTags, PropertyNameTags);
+
+	ClassPropertyNameTags.props({
+		id: "classPropertyNameTags"
+	});
+	
+	return ClassPropertyNameTags;
+}(
+	this.PropertyNameTags,
+	this.ClassPropertySeparatorTag
 );
 
 this.RestArgumentNameTags = function(RestArgumentNameTag){
@@ -14318,7 +14864,7 @@ this.ECMAScript6Config = function(getStaticProps){
 	ECMAScript6Config = new Rexjs(ECMAScript6Config, SyntaxConfig);
 
 	ECMAScript6Config.static(
-		getStaticProps()	
+		getStaticProps()
 	);
 
 	return ECMAScript6Config;
@@ -14366,7 +14912,7 @@ this.ECMAScript6Config = function(getStaticProps){
 	this,
 	// configs
 	[
-		this.MathematicalNumeralExpression.config,
+		this.LiteralExpression.config,
 		this.ForExpression.config,
 		this.FunctionExpression.config,
 		this.ObjectExpression.config,
@@ -14420,6 +14966,9 @@ this.ECMAScriptTagsMap = function(SyntaxTagsMap, tagsArray){
 		this.ArrowContextTags,
 		this.BlockTags,
 		this.CatchedExceptionTags,
+		this.ClassContextTags,
+		this.ClassNameContextTags,
+		this.ClassPropertyNameTags,
 		this.CloseArrowFunctionBodyContextTags,
 		this.CloseCatchedExceptionTags,
 		this.ClosureVariableContextTags,
@@ -14435,19 +14984,19 @@ this.ECMAScriptTagsMap = function(SyntaxTagsMap, tagsArray){
 		this.FunctionBodyTags,
 		this.FunctionContextTags,
 		this.FunctionDeclarationContextTags,
+		this.IdentifierPropertyNameContextTags,
 		this.IfConditionTags,
 		this.LabelContextTags,
 		this.LetContextTags,
 		this.NegationContextTags,
 		this.NewContextTags,
-		this.ObjectIdentifierNameContextTags,
-		this.ObjectNameContextTags,
-		this.ObjectNameTags,
 		this.OpenArgumentsContextTags,
 		this.OpenGroupingContextTags,
 		this.OpenSwitchBodyContextTags,
 		this.ParameterTags,
 		this.PlusContextTags,
+		this.PropertyNameTags,
+		this.PropertyNameContextTags,
 		this.RestArgumentNameTags,
 		this.RestArgumentNameContextTags,
 		this.ReturnContextTags,
