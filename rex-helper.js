@@ -1,4 +1,4 @@
-new function(global, defineProperty){
+new function(Rexjs){
 
 // 迭代器相关
 void function(){
@@ -190,6 +190,105 @@ this.Generator = function(Iterator){
 );
 
 
+// 类相关
+void function(){
+
+this.ClassProperty = function(){
+	function ClassProperty(name, value, _type){
+		this.name = name;
+		this.value = value;
+
+		if(
+			_type
+		){
+			this.type = _type;
+		}
+	};
+	ClassProperty = new Rexjs(ClassProperty);
+
+	ClassProperty.props({
+		name: "",
+		type: "value",
+		value: null
+	});
+
+	return ClassProperty;
+}();
+
+this.StaticProperty = function(ClassProperty){
+	function StaticProperty(name, value, _type){
+		ClassProperty.call(this, name, value, _type);
+	};
+	StaticProperty = new Rexjs(StaticProperty, ClassProperty);
+
+	return StaticProperty;
+}(
+	this.ClassProperty
+);
+
+this.Class = function(ClassProperty, StaticProperty, defineProperty){
+	function Class(){
+
+	};
+	Class = new Rexjs(Class);
+
+	Class.static({
+		create: function(SuperClass, allProps, indexOfConstructor){
+			var constructor = allProps[indexOfConstructor].value;
+
+			if(
+				typeof constructor !== "function"
+			){
+				throw "Class extends value " + constructor.toString() + " is not a constructor or null";
+			}
+
+			var CreatedClass = new Rexjs(constructor, SuperClass);
+
+			allProps.forEach(
+				function(property, index){
+					if(
+						index === indexOfConstructor
+					){
+						return;
+					}
+
+					var type = property.type, descriptor = { enumerable: false, configurable: true };
+
+					if(
+						type === "value"
+					){
+						descriptor.writable = true;
+						descriptor.value = property.value;
+					}
+					else {
+						descriptor[type] = property.value;
+					}
+
+					defineProperty(
+						property instanceof StaticProperty ? CreatedClass : this,
+						property.name,
+						descriptor
+					);
+				},
+				CreatedClass.prototype
+			);
+
+			return CreatedClass;
+		}
+	});
+
+	return Class;
+}(
+	this.ClassProperty,
+	this.StaticProperty,
+	Object.defineProperty
+);
+
+}.call(
+	this
+);
+
+
 // 其他
 void function(){
 
@@ -252,8 +351,7 @@ this.Parameter = function(forEach, push){
 	this
 );
 
-defineProperty(global, "RexjsHelper", { value: this });
+Rexjs.static(this);
 }(
-	typeof window === "undefined" ? global : window,
-	Object.defineProperty
+	Rexjs
 );

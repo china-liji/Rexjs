@@ -20,13 +20,13 @@ test.true(
 		}
 		
 		if(
-			$Rexjs_0 instanceof RexjsHelper.Generator === false
+			$Rexjs_0 instanceof Rexjs.Generator === false
 		){
 			throw "临时变量名值1错误"
 		}
 
 		if(
-			$Rexjs_1 instanceof RexjsHelper.Generator === false
+			$Rexjs_1 instanceof Rexjs.Generator === false
 		){
 			throw "临时变量名值2错误"
 		}

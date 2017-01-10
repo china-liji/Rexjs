@@ -85,7 +85,10 @@ test.true(
 			get 0O1010(){
 				return 0O1010
 			},
-			0b11: "0b11"
+			0b11: "0b11",
+			get8888(){
+				return 8888
+			}
 		}
 
 		var names = [
@@ -104,7 +107,8 @@ test.true(
 			"set",
 			parseInt(1010, 2),
 			parseInt(1010, 8),
-			parseInt(11, 2)
+			parseInt(11, 2),
+			"get8888"
 		]
 
 		if(
@@ -166,16 +170,20 @@ test.true(
 		){
 			throw "八进制属性有误"
 		}
+
+		if(
+			typeof obj["get8888"] !== "function"
+		){
+			throw "带访问器的属性名解析不正确"
+		}
+
+		if(
+			obj["get8888"]() !== 8888
+		){
+			throw "带访问器的属性返回值不正确"
+		}
 	}),
 	true
-);
-
-test.false(
-	"函数调用表达式内带其他语句",
-	"a(break)",
-	function(parser, err){
-		return err.context.tag instanceof Rexjs.BreakTag ? "" : "没有识别出 break 关键字";
-	}
 );
 
 test.false(
@@ -235,6 +243,14 @@ test.false(
 );
 
 test.false(
+	"计算式名称带逗号",
+	"!{ [1,2]: 3 }",
+	function(parser, err){
+		return err.context.content === "," ? "" : "没有识别出逗号";
+	}
+);
+
+test.false(
 	"简写方法后面接其他非法字符",
 	"!{ a(){}() }",
 	function(parser, err){
@@ -283,6 +299,25 @@ test.false(
 );
 
 test.false(
+	"只有逗号",
+	"!{ , }",
+	function(parser, err){
+		return err.context.tag instanceof Rexjs.CommaTag ? "" : "没有识别出逗号标签";
+	}
+);
+
+test.false(
+	"多个逗号",
+	"!{ a,, }",
+	function(parser, err){
+		return err.context.tag instanceof Rexjs.CommaTag ? "" : "没有识别出逗号标签";
+	},
+	function(parser, err){
+		return err.context.position.column === 5 ? "" : "逗号位置识别错误";
+	}
+);
+
+test.false(
 	"带多个参数的设置器",
 	"!{ set var(a, b){} }",
 	function(parser, err){
@@ -301,6 +336,28 @@ test.false(
 	},
 	function(parser, err){
 		return err.context.position.column === 7 ? "" : "冒号位置不正确";
+	}
+);
+
+test.false(
+	"数字属性名后面接其他",
+	"!{ 1e+10a: 1 }",
+	function(parser, err){
+		return err.context.tag instanceof Rexjs.LabelTag ? "" : "没有识别出标记标签";
+	},
+	function(parser, err){
+		return err.context.content === "a" ? "" : "没有找到错误的标识符";
+	}
+);
+
+test.false(
+	"二进制数字属性名后面接其他",
+	"!{ 0b01a: 1 }",
+	function(parser, err){
+		return err.context.tag instanceof Rexjs.LabelTag ? "" : "没有识别出标记标签";
+	},
+	function(parser, err){
+		return err.context.content === "a" ? "" : "没有找到错误的标识符";
 	}
 );
 

@@ -1,7 +1,7 @@
-﻿console.log("a.js loaded");
+﻿new function ( ) {
+var a = 1
 
-class a {};
+a = 2
 
-var obj = { get static(){} };
-
-import {a} from "./b.js";
+debugger
+} ( ) 
