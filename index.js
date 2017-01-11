@@ -1,15 +1,15 @@
-class a extends Rexjs["List"].prototype.constructor {
-	set b(d){}
+var a = class extends Rexjs["List"].prototype.constructor {
+	set b(d){};
 	static constructor(){
 		console.log("cs")
-	}
+	};
 	c(){
 		return 100
 	}
-
+;
 	static get get(){
 		return 1
-	}
+	};
 
 	constructor(){
 		console.log(arguments, this)
