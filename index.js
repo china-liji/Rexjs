@@ -12,6 +12,7 @@ var a = class extends Rexjs["List"].prototype.constructor {
 	};
 
 	constructor(){
+		super()
 		console.log(arguments, this)
 	}
 }
