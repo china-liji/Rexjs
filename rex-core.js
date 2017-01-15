@@ -2,7 +2,7 @@
 new function(global, descriptor, defineProperty, getPrototypeOf, setPrototypeOf, getOwnPropertyNames){
 "use strict";
 
-this.Rexjs = function(Function, create, getProperties, setPrototypeOf){
+this.Rexjs = function(Function, create, getPrototypeOf, getProperties, setPrototypeOf){
 	/**
 	 * 创建一个继承至指定父类的子类
 	 * @param {Function} constructor - 构造函数
@@ -23,7 +23,7 @@ this.Rexjs = function(Function, create, getProperties, setPrototypeOf){
 
 			// 如果是 undefined
 			case "undefined":
-				__proto__ = Rexjs.getOwnPrototype();
+				__proto__ = getPrototypeOf(Rexjs);
 				prototype = this.constructor.prototype;
 				break;
 
@@ -45,6 +45,7 @@ this.Rexjs = function(Function, create, getProperties, setPrototypeOf){
 }(
 	Function,
 	Object.create,
+	getPrototypeOf,
 	// getProperties
 	function(constructor){
 		return {
@@ -109,24 +110,23 @@ defineProperty(global, "Rexjs", this);
 
 
 // 原型链属性的定义
-new function(Function, prototype, propertyIsEnumerable, hasOwnProperty, isPrototypeOf, getPrototypeOf, defineProperty, getOwnPropertyDescriptor, definePrototype){
+new function(Function, prototype, propertyIsEnumerable, hasOwnProperty, isPrototypeOf, defineProperty, getOwnPropertyDescriptor, definePrototype){
 "use strict";
 
 this.hasOwnProperty = hasOwnProperty;
 this.isPrototypeOf = isPrototypeOf;
 this.propertyIsEnumerable = propertyIsEnumerable;
 
-this.constructor = function(constructor, call, apply, bind, toString, getOwnPrototype, defineProperties){
+this.constructor = function(constructor, call, apply, bind, toString, getPrototypeOf, defineProperties){
 	defineProperties(
 		definePrototype(
 			// 兼容 ： IE9、IE10、Android
-			getOwnPrototype.call(constructor)
+			getPrototypeOf(constructor)
 		),
 		{
 			apply: apply,
 			bind: bind,
 			call: call,
-			getOwnPrototype: getOwnPrototype,
 			/**
 			 * 将一个或多个属性添加到该类，并/或修改现有属性的特性
 			 * @param {Object} props - 包含一个或多个属性的键值对
@@ -157,10 +157,7 @@ this.constructor = function(constructor, call, apply, bind, toString, getOwnProt
 	Function.prototype.apply,
 	Function.prototype.bind,
 	Function.prototype.toString,
-	// getOwnPrototype
-	function(){
-		return this instanceof Function ? this : getPrototypeOf(this);
-	},
+	Object.getPrototypeOf,
 	// defineProperties
 	function(obj, props){
 		for(
@@ -217,7 +214,6 @@ prototype
 	Object.prototype.propertyIsEnumerable,
 	Object.prototype.hasOwnProperty,
 	Object.prototype.isPrototypeOf,
-	Object.getPrototypeOf,
 	Object.defineProperty,
 	Object.getOwnPropertyDescriptor,
 	// definePrototype

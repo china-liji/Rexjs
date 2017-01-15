@@ -226,7 +226,7 @@ this.StaticProperty = function(ClassProperty){
 	this.ClassProperty
 );
 
-this.Class = function(ClassProperty, StaticProperty, defineProperty){
+this.Class = function(ClassProperty, StaticProperty, defineProperty, getPrototypeOf){
 	function Class(){
 
 	};
@@ -274,6 +274,17 @@ this.Class = function(ClassProperty, StaticProperty, defineProperty){
 			);
 
 			return CreatedClass;
+		},
+		superOf: function(instance, depth){
+			var sp = null;
+
+			for(
+				var i = 0;i < depth;i++
+			){
+				sp = instance = getPrototypeOf(instance);
+			}
+
+			return sp;
 		}
 	});
 
@@ -281,7 +292,8 @@ this.Class = function(ClassProperty, StaticProperty, defineProperty){
 }(
 	this.ClassProperty,
 	this.StaticProperty,
-	Object.defineProperty
+	Object.defineProperty,
+	Object.getPrototypeOf
 );
 
 }.call(
