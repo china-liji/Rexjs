@@ -137,6 +137,14 @@ async
 --------
 已完成功能 ↓
 --------
+完成类的解析、类的部分测试 及 其他 - 2017.01.20
+	- 类的 ES6 版本全功能解析
+	- 类的测试代码，除 super 的错误测试之外
+	- 细化 DotAccessorTag，分离出 DotTag，用于解决与数字标签的异常捕获问题（标签优先级问题）
+	- BlockOuterStatement 更名为 BlockComponentStatement
+	- 属性方法名标签从类的分离至对象，因为类的 get、set 访问器也需要用到
+	- 细化 IllegalTags 与 ECMAScriptTags 的差异，并针对优化代码，详细区别见 note.md
+
 优化 OpenBlockTag 类 并 开始解析 super - 2017.01.13
 	- OpenBlockTag 类，新增 in 方法，用于初始化当前语句块
 	- 根据上一条，优化其他基于该类的子类

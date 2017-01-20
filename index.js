@@ -1,33 +1,11 @@
-var a = class extends Rexjs["List"].prototype.constructor {
-	set b(d){};
-	static constructor(){
-		console.log("cs")
+class Car {
+			constructor(name = "湘LNB326", height = 1.5, width = 1.8){
+				this.name = name
+				this.height = height
+				this.width = width
+			}
+		}
 
-		super.a
-	};
-	c(){
-		return 100
-	}
-;
-	static(){
-		
-	}
+		class Audi extends Car {}
 
-	static get get(){
-		return 1
-	};
-
-	constructor(){
-		super()
-		console.log(arguments, this, super.b)
-	}
-}
-
-a.constructor()
-
-console.log(
-	new a(1,2,3).c(),
-	a.get
-)
-
-window.a = a
+		let audi = new Audi()

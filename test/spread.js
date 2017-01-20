@@ -76,7 +76,7 @@ test.false(
 	"拓展符在参数之后",
 	"fn(1 ...)",
 	function(parser, err){
-		return err.context.tag instanceof Rexjs.DotAccessorTag ? "" : "没有识别出错误的属性访问器";
+		return err.context.tag instanceof Rexjs.DotTag ? "" : "没有识别出错误的点标签";
 	}
 );
 

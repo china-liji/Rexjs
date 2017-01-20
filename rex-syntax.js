@@ -1450,7 +1450,7 @@ this.Statement = function(){
 		out: function(){
 			var target = this.target;
 
-			// 记录当前表达式的状态
+			// 记录当前表达式的状态，这里不能用 "|="，因为该状态是覆盖操作
 			target.expression.state = this.expression.state;
 			// 恢复语句
 			this.statements.statement = target;

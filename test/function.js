@@ -188,7 +188,15 @@ test.false(
 	"属性访问器参数",
 	"function fn(window.a){}",
 	function(parser, err){
-		return err.context.tag instanceof Rexjs.DotAccessorTag ? "" : "没有识别出点标签";
+		return err.context.tag instanceof Rexjs.DotTag ? "" : "没有识别出点标签";
+	}
+);
+
+test.false(
+	"参数后面接数字",
+	"function fn(window.123){}",
+	function(parser, err){
+		return err.context.tag instanceof Rexjs.NumberTag ? "" : "没有识别出数字";
 	}
 );
 

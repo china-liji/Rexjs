@@ -46,7 +46,7 @@ test.false(
 	"连续的点",
 	"a.._",
 	function(parser, err){
-		return err.context.tag instanceof Rexjs.DotAccessorTag ? "" : "没有识别出多余的点标签";
+		return err.context.tag instanceof Rexjs.DotTag ? "" : "没有识别出多余的点标签";
 	}
 );
 
@@ -54,7 +54,7 @@ test.false(
 	"以点开始的语句",
 	"._$",
 	function(parser, err){
-		return err.context.tag instanceof Rexjs.DotAccessorTag ? "" : "没有识别出多余的点标签";
+		return err.context.tag instanceof Rexjs.DotTag ? "" : "没有识别出多余的点标签";
 	}
 );
 
@@ -62,7 +62,7 @@ test.false(
 	"一元运算符后面的点",
 	"!._",
 	function(parser, err){
-		return err.context.tag instanceof Rexjs.DotAccessorTag ? "" : "没有识别出多余的点标签";
+		return err.context.tag instanceof Rexjs.DotTag ? "" : "没有识别出多余的点标签";
 	}
 );
 
@@ -70,7 +70,7 @@ test.false(
 	"二元运算符后面的点",
 	"a + .9 - ._$",
 	function(parser, err){
-		return err.context.tag instanceof Rexjs.DotAccessorTag ? "" : "没有识别出多余的点标签";
+		return err.context.tag instanceof Rexjs.DotTag ? "" : "没有识别出多余的点标签";
 	},
 	function(parser, err){
 		return err.context.position.column === 9 ? "" : "没有正确的识别出出错位置";

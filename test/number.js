@@ -46,7 +46,7 @@ test.false(
 	"错误的指数幂",
 	".e1",
 	function(parser, err){
-		return err.context.tag instanceof Rexjs.DotAccessorTag ? "" : "没有正确的识别出访问器";
+		return err.context.tag instanceof Rexjs.DotTag ? "" : "没有正确的识别出点符号";
 	}
 );
 

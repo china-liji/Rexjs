@@ -275,7 +275,7 @@ this.Class = function(ClassProperty, StaticProperty, defineProperty, getPrototyp
 
 			return CreatedClass;
 		},
-		superOf: function(instance, depth){
+		superOf: function(instance, depth, _willCall){
 			var sp = null;
 
 			for(
@@ -284,7 +284,13 @@ this.Class = function(ClassProperty, StaticProperty, defineProperty, getPrototyp
 				sp = instance = getPrototypeOf(instance);
 			}
 
-			return sp;
+			return (
+				_willCall ?
+					function(){
+						sp.constructor.apply(instance, arguments);
+					} :
+					sp
+			);
 		}
 	});
 
