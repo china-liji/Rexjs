@@ -2221,7 +2221,7 @@ this.SyntaxParser = function(SyntaxRegExp, SyntaxError, Position, Context, Conte
 
 
 // 解析器测试相关
-void function(File){
+void function(File, String){
 
 this.SimpleTest = function(Error, INNER_CONTENT_REGEXP, file, console, toArray, e, catchErrors){
 	/**
@@ -2259,7 +2259,7 @@ this.SimpleTest = function(Error, INNER_CONTENT_REGEXP, file, console, toArray, 
 				
 				// 解析文件
 				parser.parse(file);
-				// 如果进入这里，说明上面解析没有报错，而我们是希望报错的，说明解析器有 bug
+				// 如果进入这里，说明上面解析没有报错，而我们是希望报错的，说明解析有 bug
 				console.error("Uncaught Exceptions: " + description);
 			}
 			catch(e){
@@ -2366,21 +2366,27 @@ this.SimpleTest = function(Error, INNER_CONTENT_REGEXP, file, console, toArray, 
 			
 			// 如果返回了错误信息
 			if(
-				err
+				!err
 			){
-				// 输出错误
-				console.error(description + " - Callback Error: " + err);
-				return false;
+				return true;
 			}
 
-			return true;
+			// 输出错误
+			console.error(
+				description + " - Callback Error" + (
+					err instanceof String ? ":" + err : "!"
+				)
+			);
+
+			return false;
 		});
 	}
 );
 
 }.call(
 	this,
-	this.File
+	this.File,
+	String
 );
 
 Rexjs.static(this);

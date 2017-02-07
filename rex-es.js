@@ -61,6 +61,7 @@ this.ECMAScriptErrors = ECMAScriptErrors = function(REGEXP){
 		TEMPLATE: "Unterminated template literal",
 		TRY: "Missing catch or finally after try",
 		WITH: "The code may not include a with statement",
+		WITHOUT_SUPER_CALL: "Missing super call in this class constructor",
 		/**
 		 * 将错误信息模板里的参数进行替换，并返回结果
 		 * @param {String} type - 错误信息类型
@@ -13985,7 +13986,7 @@ this.StaticModifierTag = function(StaticTag, StaticModifierExpression, Identifie
 
 
 // 构造函数标签相关
-void function(OpenShorthandMethodArgumentsTag, PHASE_NONE, PHASE_WAITING_CALL, PHASE_CALLED, closeConstructorArgumentsTag, getClassPropertyStatement){
+void function(OpenShorthandMethodArgumentsTag, CloseShorthandMethodBodyTag, PHASE_NONE, PHASE_WAITING_CALL, PHASE_CALLED, closeConstructorArgumentsTag, closeConstructorBodyTag, getClassPropertyStatement){
 
 this.ConstructorNameExpression = function(config){
 	/**
@@ -14142,7 +14143,7 @@ this.ConstructorBodyStatements = function(ShorthandMethodBodyStatements){
 				ECMAScriptErrors.template("KEYWORD", context.content)
 			);
 		},
-		phase: false
+		phase: PHASE_NONE
 	});
 
 	return ConstructorBodyStatements;
@@ -14291,6 +14292,12 @@ this.OpenConstructorBodyTag = function(OpenShorthandMethodBodyTag, ConstructorBo
 
 	OpenConstructorBodyTag.props({
 		/**
+		 * 获取绑定的标签，该标签一般是用于语句的 try、catch 的返回值
+		 */
+		get binding(){
+			return closeConstructorBodyTag;
+		},
+		/**
 		 * 进入函数主体语句块内部
 		 * @param {SyntaxParser} parser - 语法解析器
 		 * @param {Statements} statements - 当前语句块
@@ -14315,11 +14322,51 @@ this.OpenConstructorBodyTag = function(OpenShorthandMethodBodyTag, ConstructorBo
 	this.ConstructorBodyStatements
 );
 
+this.CloseConstructorBodyTag = function(visitor){
+	/**
+	 * 构造函数起始主体标签
+	 * @param {Number} _type - 标签类型
+	 */
+	function CloseConstructorBodyTag(_type){
+		CloseShorthandMethodBodyTag.call(this, _type);
+	};
+	CloseConstructorBodyTag = new Rexjs(CloseConstructorBodyTag, CloseShorthandMethodBodyTag);
+
+	CloseConstructorBodyTag.props({
+		/**
+		 * 标签访问器
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 标签上下文
+		 * @param {Statement} statement - 当前语句
+		 * @param {Statements} statements - 当前语句块
+		 */
+		visitor: function(parser, context, statement, statements){
+			// 如果需要调用 super，但没有调用
+			if(
+				statement.expression.inner.phase === PHASE_WAITING_CALL
+			){
+				// 报错
+				parser.error(statement.target.target.expression.name.context, ECMAScriptErrors.WITHOUT_SUPER_CALL);
+				return;
+			}
+
+			// 调用父类方法
+			visitor.call(this, parser, context, statement, statements);
+		}
+	});
+
+	return CloseConstructorBodyTag;
+}(
+	CloseShorthandMethodBodyTag.prototype.visitor
+);
+
 closeConstructorArgumentsTag = new this.CloseConstructorArgumentsTag();
+closeConstructorBodyTag = new this.CloseConstructorBodyTag();
 
 }.call(
 	this,
 	this.OpenShorthandMethodArgumentsTag,
+	this.CloseShorthandMethodBodyTag,
 	// PHASE_NONE
 	0,
 	// PHASE_WAITING_CALL
@@ -14327,6 +14374,8 @@ closeConstructorArgumentsTag = new this.CloseConstructorArgumentsTag();
 	// PHASE_CALLED
 	2,
 	// closeConstructorArgumentsTag
+	null,
+	// closeConstructorBodyTag
 	null,
 	// getClassPropertyStatement
 	function(statements){

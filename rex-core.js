@@ -355,19 +355,6 @@ this.forEach = function(every){
 	this.every
 );
 
-this.isInstanceOf = function(getPrototypeOf){
-	/**
-	 * 判断对象是否为指定类构造函数的一级实例（即直接由该类实例化）
-	 * @param {Object} obj - 用于判断的实例对象
-	 * @param {Function} constructor - 指定的类的构造函数
-	 */
-	return function isInstanceOf(obj, constructor){
-		return getPrototypeOf(obj) === constructor.prototype;
-	};
-}(
-	Object.getPrototypeOf
-);
-
 this.map = function(forEach){
 	/**
 	 * 遍历对象的所有成员并对其执行指定操作函数，取其返回值作为新对象集合的同名值，最后返回此新对象
