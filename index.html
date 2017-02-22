@@ -9,60 +9,15 @@
 	<div></div>
 	<script src="rex-core.js"></script>
 	<script src="rex-syntax.js"></script>
-	<script src="rex-helper.js"></script>
 	<script src="rex-es.js"></script>
+	<script src="rex-helper.js"></script>
 	
 	<script>
 		new function(){
 			var debug = true;
-			
-			// 初始化解析器包
-			var xhr = new XMLHttpRequest();
-			
 			var filename = document.baseURI + (debug ? "index.js" : "test-old/profile.js");
 
-			// Rexjs.ECMAScript6Config.all = false
-
-			window.b = 123;
-
-			xhr.onreadystatechange = function(){
-				if(
-					this.status === 200 && this.readyState === 4
-				){
-					var parser = new Rexjs.ECMAScriptParser();
-					
-					var file = new Rexjs.File(filename, xhr.responseText);
-					
-					if(
-						debug
-					){
-						var builder = new Rexjs.MappingBuilder(file);
-						
-						parser.parse(file);
-						
-						var result = parser.build(builder);
-						
-						eval(result);
-						
-						document.querySelector("body > div").innerHTML = result;
-						return;
-					}
-					
-					var builder = new Rexjs.ContentBuilder();
-					
-					console.time("ss")
-					parser.parse(file);
-					
-					var result = parser.build(builder);
-					console.timeEnd("ss")
-					
-					new Function(result)
-				}
-			};
-			
-			
-			xhr.open("get", filename);
-			xhr.send();
+			new Rexjs.Module(filename);
 		}()
 	</script>
 </body>

@@ -307,6 +307,412 @@ this.Class = function(ClassProperty, StaticProperty, defineProperty, getPrototyp
 );
 
 
+void function(XMLHttpRequest, URL_REGEXP, encodeURI, parseInt){
+
+this.URL = function(toString, parse){
+	/**
+	 * 地址，需要兼容 node 环境
+	 * @param {String} urlString - 地址字符串
+	 * @param {String} _baseURLstring - 基准地址
+	 */
+	function URL(urlString, _baseURLstring){
+		// 转化为字符串
+		var urlObj;
+		
+		// 转化为字符串
+		urlString = toString(urlString);
+		
+		// 如果解析 URL 成功，说明是个完整的 URL，则不需要继续关联 _baseURLstring
+		if(
+			parse(this, urlString)
+		){
+			return;
+		}
+
+		if(
+			_baseURLstring
+		){
+			var baseURL = new URL(_baseURLstring);
+
+			if(
+				parse(
+					this,
+					baseURL.origin + (baseURL.dirname + "/") + urlString
+				)
+			){
+				return;
+			}
+		}
+
+		// 报错
+		throw "Invalid URL: " + urlString;
+	};
+	URL = new Rexjs(URL);
+
+	URL.props({
+		dirname : "",
+		filename: "",
+		hash : "",
+		get host(){
+			return this.hostname + (this.port ? ":" + this.port : "");
+		},
+		hostname : "",
+		get href(){
+			return this.origin + this.pathname + this.search + this.hash;	
+		},
+		get origin(){
+			return this.protocal + "//" + this.host;	
+		},
+		get pathname(){
+			var dirname = this.dirname;
+			
+			return dirname + (dirname[dirname.length - 1] === "/" ? "" : "/") + this.filename;
+		},
+		port : "",
+		protocal : "",
+		search : "",
+		toString : function(){
+			return this.href;
+		}
+	});
+
+	return URL;
+}(
+	// toString
+	function(urlString){
+		// 如果不是字符串
+		if(
+			typeof urlString !== "string"
+		){
+			// 如果是 undefined 或者 null，则为空字符串，否则为 toString 的返回值
+			urlString = urlString == null ? "" : urlString.toString();
+		}
+		
+		// 返回转码后的字符串
+		return encodeURI(
+			urlString.trim()
+		);
+	},
+	// parse
+	function(url, urlString){
+		// 匹配地址
+		var result = urlString.match(URL_REGEXP);
+		
+		// 如果没有匹配结果
+		if(
+			result === null
+		){
+			return false;
+		}
+		
+		var pathname = result[4] || "", protocal = result[1], hostname = result[2] || "", port = result[3] || "";
+		
+		url.protocal = protocal;
+		url.hostname = hostname;
+		url.port = port;
+		url.search = result[5] || "";
+		url.hash = result[6] || "";
+
+		switch(
+			protocal
+		){
+			case "http:":
+			case "https:":
+				if(
+					!url.hostname
+				){
+					return false;
+				}
+
+				break;
+
+			case undefined:
+				return false;
+
+			default: {
+				var index;
+		
+				// 还原链接字符串
+				urlString = decodeURI(urlString);
+				
+				switch(
+					true
+				){
+					// 如果存在 search
+					case url.search.length > 0 :
+						// 设置 index
+						index = urlString.indexOf("?");
+						break;
+					
+					// 如果存在 hash
+					case url.hash.length > 0 :
+						// 设置 index
+						index = urlString.indexOf("#");
+						break;
+
+					default :
+						// 设置 index
+						index = urlString.length;
+						break;
+				}
+				
+				// 重置 url 部分属性
+				pathname = urlString.substring(protocal.length, index);
+				url.hostname = url.port = "";
+				url.search = decodeURI(url.search);
+				url.hash = decodeURI(url.hash);
+
+				break;
+			}
+		}
+		
+		var hasFilename, length, pathnameArray = [];
+		
+		// 分割路径
+		pathname
+			.split(
+				"/"
+			)
+			.forEach(function(name){
+				switch(
+					name
+				){
+					// 如果是1点，说明是保持当前层目录，不需要做任何处理
+					case "." :
+						break;
+					
+					// 如果是2点，说明是返回上一层目录，则去掉数组的最后一个
+					case ".." :
+						pathnameArray.splice(pathnameArray.length - 1);
+						break;
+						
+					case "" :
+						break;
+					
+					// 添加目录
+					default :
+						pathnameArray.push(name);
+						break;
+				}
+			});
+
+		length = pathnameArray.length;
+		hasFilename = length > 0 ? pathnameArray[length - 1].indexOf(".") > -1 : false;
+
+		url.dirname = "/" + (hasFilename ? pathnameArray.slice(0, pathnameArray.length - 1) : pathnameArray).join("/");
+		url.filename = hasFilename ? pathnameArray[length - 1] : "";
+
+		return true;
+	}
+);
+
+this.ModuleName = function(URL, BASE_URI){
+	function ModuleName(value){
+		URL.call(this, value, BASE_URI);
+
+		if(
+			this.filename === ""
+		){
+			this.filename = "index.js";
+		}
+	};
+	ModuleName = new Rexjs(ModuleName, URL);
+
+	ModuleName.props({
+		value: ""
+	});
+
+	return ModuleName;
+}(
+	this.URL,
+	// BASE_URI todo: 需要兼容 node 环境
+	document.baseURI
+);
+
+this.Module = function(ModuleName, ECMAScriptParser, MappingBuilder, File, STATUS_NONE, STATUS_LOADING, STATUS_PARSING, STATUS_READY, STATUS_COMPLETED, cache, callbacks, nativeEval, load){
+	/**
+	 * 模块，todo: 需要兼容 node 环境
+	 */
+	function Module(name, _code){
+		var moduleName = new ModuleName(name), href = moduleName.href;
+
+		this.imports = [];
+		this.name = moduleName;
+		this.status = STATUS_LOADING;
+		this.targets = [];
+
+		cache[href] = this;
+
+		if(
+			typeof _code === "string"
+		){
+			this.ready(_code);
+			return;
+		}
+
+		load(this, name, href);
+	};
+	Module = new Rexjs(Module);
+
+	Module.static({
+		STATUS_NONE: STATUS_NONE,
+		STATUS_LOADING: STATUS_LOADING,
+		STATUS_PARSING: STATUS_PARSING,
+		STATUS_READY: STATUS_READY,
+		STATUS_COMPLETED: STATUS_COMPLETED,
+		get cache(){
+			return cache;
+		},
+		import: function(name){
+			return cache[
+				new ModuleName(name).href
+			];
+		}
+	});
+
+	Module.props({
+		eval: function(){
+			switch(
+				this.status
+			){
+				case STATUS_READY:
+					break;
+
+				case STATUS_COMPLETED:
+					return true;
+
+				default:
+					return false;
+			}
+
+			if(
+				!this.imports.every(function(i){
+					if(
+						(i.status & STATUS_READY) === STATUS_READY
+					){
+						return true;
+					}
+
+					return false;
+				})
+			){
+				return false;
+			}
+
+			this.status = STATUS_COMPLETED;
+
+			nativeEval(this.result);
+
+			this.targets.forEach(
+				function(target){
+					target.eval();
+				},
+				this
+			);
+
+			return true;
+		},
+		imports: null,
+		name: null,
+		ready: function(code){
+			var imports = this.imports, parser = new ECMAScriptParser(), file = new File(this.name.href, code);
+			//var builder = new MappingBuilder(file);
+			
+			this.status = STATUS_PARSING;
+			
+			parser.parse(file);
+			
+			this.result = parser.build();
+			this.status = STATUS_READY;
+
+			parser.deps.forEach(
+				function(dep){
+					var href = new ModuleName(dep).href, mod = cache.hasOwnProperty(href) ? cache[href] : new Module(dep);
+
+					if(
+						(mod.status & STATUS_READY) === STATUS_READY
+					){
+						return;
+					}
+
+					if(
+						imports.indexOf(mod) > -1
+					){
+						return;
+					}
+
+					imports.push(mod);
+					mod.targets.push(this);
+				},
+				this
+			);
+
+			this.eval();
+		},
+		result: "",
+		status: STATUS_NONE,
+		targets: null
+	});
+
+	return Module;
+}(
+	this.ModuleName,
+	Rexjs.ECMAScriptParser,
+	Rexjs.MappingBuilder,
+	Rexjs.File,
+	// STATUS_NONE
+	parseInt(0, 2),
+	// STATUS_LOADING
+	parseInt(10, 2),
+	// STATUS_PARSING
+	parseInt(100, 2),
+	// STATUS_READY
+	parseInt(1000, 2),
+	// STATUS_COMPLETED
+	parseInt(11000, 2),
+	// cache
+	{},
+	// callbacks
+	[],
+	// nativeEval
+	eval,
+	// load
+	function(mod, name, href){
+		var request = new XMLHttpRequest();
+
+		// 监听 onload 事件
+		request.addEventListener(
+			"load",
+			function(){
+				// 如果存在错误
+				if(
+					this.status !== 200
+				){
+					throw '加载模块 "' + name + '" 错误，status：' + this.status + "。";
+					return;
+				}
+				
+				mod.ready(this.responseText);
+			}
+		);
+		
+		// 打开请求，采用异步get方式
+		request.open("get", href, true);
+		// 发送请求
+		request.send();
+	}
+);
+
+}.call(
+	this,
+	XMLHttpRequest,
+	// URL_REGEXP
+	/^([^:/?#.]+:)?(?:\/\/(?:[^/?#]*@)?([\w\d\-\u0100-\uffff.%]*)(?::([0-9]+))?)?([^?#]+)?(?:(\?[^#]*))?(?:(#.*))?$/,
+	encodeURI,
+	parseInt
+);
+
+
 // 其他
 void function(){
 

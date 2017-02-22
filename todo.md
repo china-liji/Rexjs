@@ -3,12 +3,8 @@
 ------
 enum
 export
-extends
 import
-static
-super
 yield
-super.xx
 **
 ++
 --
@@ -137,6 +133,10 @@ async
 --------
 已完成功能 ↓
 --------
+import 默认输出完成 及 模块的引入功能完成 - 2017.02.22
+	- import 默认输出，即：import a from "a.js"
+	- 模块的引入功能完成，即：new Rexjs.Module("a.js");
+
 修复bug 及 其他 - 2017.02.07
 	- 修复bug：子类构造函数没有调用 super 却不报错的 bug
 	- 完成 super 测试代码

@@ -15232,6 +15232,259 @@ this.SuperTag = function(LiteralTag, SuperExpression, SuperStatement){
 );
 
 
+// import 关键字相关
+void function(){
+
+this.ImportExpression = function(config){
+	/**
+	 * import 表达式
+	 * @param {Context} context - 语法标签上下文
+	 */
+	function ImportExpression(context){
+		Expression.call(this, context);
+	};
+	ImportExpression = new Rexjs(ImportExpression, Expression);
+
+	ImportExpression.static({
+		/**
+		 * 获取表达式编译配置
+		 */
+		get config(){
+			return config;
+		}
+	});
+
+	ImportExpression.props({
+		/**
+		 * 提取表达式文本内容
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 */
+		extractTo: function(contentBuilder){
+			// 如果需要编译 import 语句
+			if(
+				config.import
+			){
+				// 追加模块导入方法
+				contentBuilder.appendString("Rexjs.Module.import(");
+				// 编译 from 表达式
+				this.from.compileTo(contentBuilder);
+				// 追加模块导入方法的结束小括号
+				contentBuilder.appendString(")");
+				return;
+			}
+
+			contentBuilder.appendContext(this.context);
+			contentBuilder.appendSpace();
+
+			this.member.extractTo(contentBuilder);
+			this.from.extractTo(contentBuilder);
+		},
+		from: null,
+		member: null
+	});
+
+	return ImportExpression;
+}(
+	// config
+	new SyntaxConfig("import")
+);
+
+this.FromExpression = function(){
+	/**
+	 * from 表达式
+	 * @param {Context} context - 语法标签上下文
+	 */
+	function FromExpression(context){
+		Expression.call(this, context);
+	};
+	FromExpression = new Rexjs(FromExpression, Expression);
+
+	FromExpression.props({
+		/**
+		 * 提取并编译表达式文本内容
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 */
+		compileTo: function(contentBuilder){
+			// 直接提取模块名称
+			contentBuilder.appendContext(this.name);
+		},
+		/**
+		 * 提取表达式文本内容
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 */
+		extractTo: function(contentBuilder){
+			// 追加空格
+			contentBuilder.appendSpace();
+			// 追加 from
+			contentBuilder.appendContext(this.context);
+			// 提取模块名称
+			contentBuilder.appendContext(this.name);
+		},
+		name: null
+	});
+
+	return FromExpression;
+}();
+
+this.ImportTag = function(ImportExpression){
+	/**
+	 * import 关键字标签
+	 * @param {Number} _type - 标签类型
+	 */
+	function ImportTag(_type){
+		SyntaxTag.call(this, _type);
+	};
+	ImportTag = new Rexjs(ImportTag, SyntaxTag);
+
+	ImportTag.props({
+		$class: CLASS_STATEMENT_BEGIN,
+		regexp: /import/,
+		/**
+		 * 获取此标签接下来所需匹配的标签列表
+		 * @param {TagsMap} tagsMap - 标签集合映射
+		 */
+		require: function(tagsMap){
+			return tagsMap.importContextTags;
+		},
+		/**
+		 * 标签访问器
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 标签上下文
+		 * @param {Statement} statement - 当前语句
+		 * @param {Statements} statements - 当前语句块
+		 */
+		visitor: function(parser, context, statement, statements){
+			// 设置当前表达式
+			statement.expression = new ImportExpression(context);
+		}
+	});
+
+	return ImportTag;
+}(
+	this.ImportExpression
+);
+
+this.DefaultMemberTag = function(VariableTag){
+	/**
+	 * 模块默认成员标签
+	 * @param {Number} _type - 标签类型
+	 */
+	function DefaultMemberTag(_type){
+		VariableTag.call(this, _type);
+	};
+	DefaultMemberTag = new Rexjs(DefaultMemberTag, VariableTag);
+
+	DefaultMemberTag.props({
+		/**
+		 * 获取此标签接下来所需匹配的标签列表
+		 * @param {TagsMap} tagsMap - 标签集合映射
+		 */
+		require: function(tagsMap){
+			return tagsMap.defaultMemberContextTags;
+		},
+		/**
+		 * 标签访问器
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 标签上下文
+		 * @param {Statement} statement - 当前语句
+		 * @param {Statements} statements - 当前语句块
+		 */
+		visitor: function(parser, context, statement, statements){
+			// 设置当前表达式
+			statement.expression.member = new Expression(context);
+		}
+	});
+
+	return DefaultMemberTag;
+}(
+	this.VariableTag
+);
+
+this.FromTag = function(FromExpression){
+	/**
+	 * from 标签
+	 * @param {Number} _type - 标签类型
+	 */
+	function FromTag(_type){
+		SyntaxTag.call(this, _type);
+	};
+	FromTag = new Rexjs(FromTag, SyntaxTag);
+
+	FromTag.props({
+		regexp: /from/,
+		/**
+		 * 获取此标签接下来所需匹配的标签列表
+		 * @param {TagsMap} tagsMap - 标签集合映射
+		 */
+		require: function(tagsMap){
+			return tagsMap.moduleNameTags;
+		},
+		/**
+		 * 标签访问器
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 标签上下文
+		 * @param {Statement} statement - 当前语句
+		 * @param {Statements} statements - 当前语句块
+		 */
+		visitor: function(parser, context, statement, statements){
+			// 设置 import 表达式的 from 属性
+			statement.expression.from = new FromExpression(context);
+		}
+	});
+
+	return FromTag;
+}(
+	this.FromExpression
+);
+
+this.ModuleNameTag = function(StringTag){
+	/**
+	 * 模块名称标签
+	 * @param {Number} _type - 标签类型
+	 */
+	function ModuleNameTag(_type){
+		StringTag.call(this, _type);
+	};
+	ModuleNameTag = new Rexjs(ModuleNameTag, StringTag);
+
+	ModuleNameTag.props({
+		/**
+		 * 获取此标签接下来所需匹配的标签列表
+		 * @param {TagsMap} tagsMap - 标签集合映射
+		 */
+		require: function(tagsMap){
+			return tagsMap.statementEndTags;
+		},
+		/**
+		 * 标签访问器
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 标签上下文
+		 * @param {Statement} statement - 当前语句
+		 * @param {Statements} statements - 当前语句块
+		 */
+		visitor: function(parser, context, statement, statements){
+			var content = context.content;
+
+			// 设置 from 表达式的 name 属性
+			statement.expression.from.name = context;
+
+			// 添加模块依赖
+			parser.deps.push(
+				content.substring(1, content.length - 1)
+			);
+		}
+	});
+
+	return ModuleNameTag; 
+}(
+	this.StringTag
+);
+
+}.call(
+	this
+);
+
+
 // 辅助性的标签列表相关
 void function(SyntaxTags){
 
@@ -15322,6 +15575,7 @@ this.ECMAScriptTags = function(DefaultTags, list){
 		this.GreaterThanTag,
 		this.IdentityTag,
 		this.IfTag,
+		this.ImportTag,
 		this.InTag,
 		this.IncrementTag,
 		this.InequalityTag,
@@ -15958,6 +16212,28 @@ this.ConstructorBodyTags = function(OpenConstructorBodyTag){
 	this.OpenConstructorBodyTag
 );
 
+this.DefaultMemberContextTags = function(FromTag){
+	/**
+	 * 模块默认名称上下文标签列表
+	 */
+	function DefaultMemberContextTags(){
+		IllegalTags.call(this);
+
+		this.register(
+			new FromTag()
+		);
+	};
+	DefaultMemberContextTags = new Rexjs(DefaultMemberContextTags, IllegalTags);
+
+	DefaultMemberContextTags.props({
+		id: "defaultMemberContextTags"
+	});
+
+	return DefaultMemberContextTags;
+}(
+	this.FromTag
+);
+
 this.DoWhileConditionTags = function(OpenDoWhileConditionTag){
 	/**
 	 * do while 条件标签列表
@@ -16256,6 +16532,25 @@ this.IfConditionTags = function(OpenIfConditionTag){
 	this.OpenIfConditionTag
 );
 
+this.ImportContextTags = function(DefaultMemberTag){
+	function ImportContextTags(){
+		IllegalTags.call(this);
+
+		this.register(
+			new DefaultMemberTag()
+		);
+	};
+	ImportContextTags = new Rexjs(ImportContextTags, IllegalTags);
+
+	ImportContextTags.props({
+		id: "importContextTags"
+	});
+
+	return ImportContextTags;
+}(
+	this.DefaultMemberTag
+);
+
 this.LabelContextTags = function(LabelColonTag){
 	/**
 	 * 标记标签上下文列表
@@ -16298,6 +16593,28 @@ this.LetContextTags = function(LocalVariableTag){
 	return LetContextTags;
 }(
 	this.LocalVariableTag
+);
+
+this.ModuleNameTags = function(ModuleNameTag){
+	/**
+	 * 模块名称标签列表
+	 */
+	function ModuleNameTags(){
+		IllegalTags.call(this);
+		
+		this.register(
+			new ModuleNameTag()
+		);
+	};
+	ModuleNameTags = new Rexjs(ModuleNameTags, IllegalTags);
+
+	ModuleNameTags.props({
+		id: "moduleNameTags"
+	});
+	
+	return ModuleNameTags;
+}(
+	this.ModuleNameTag
 );
 
 this.NegationContextTags = function(NegationSiblingTag, DecrementSiblingTag){
@@ -17175,6 +17492,7 @@ this.ECMAScript6Config = function(configs, forEach, every, defineProperty){
 		this.CallExpression,
 		this.ForExpression,
 		this.FunctionExpression,
+		this.ImportExpression,
 		this.LiteralExpression,
 		this.ObjectExpression,
 		this.PropertyExpression,
@@ -17245,6 +17563,7 @@ this.ECMAScriptTagsMap = function(SyntaxTagsMap, tagsArray){
 		this.ConstContextTags,
 		this.ConstructorArgumentsTags,
 		this.ConstructorBodyTags,
+		this.DefaultMemberContextTags,
 		this.DoWhileConditionTags,
 		this.DotAccessorContextTags,
 		this.ExceptionVariableTags,
@@ -17258,8 +17577,10 @@ this.ECMAScriptTagsMap = function(SyntaxTagsMap, tagsArray){
 		this.FunctionVariableTags,
 		this.IdentifierPropertyNameContextTags,
 		this.IfConditionTags,
+		this.ImportContextTags,
 		this.LabelContextTags,
 		this.LetContextTags,
+		this.ModuleNameTags,
 		this.NegationContextTags,
 		this.NewContextTags,
 		this.OpenArgumentsContextTags,
@@ -17297,6 +17618,8 @@ this.ECMAScriptParser = function(ECMAScriptTagsMap, GlobalStatements, tagsMap, p
 	 */
 	function ECMAScriptParser(){
 		SyntaxParser.call(this);
+
+		this.deps = [];
 	};
 	ECMAScriptParser = new Rexjs(ECMAScriptParser, SyntaxParser);
 
@@ -17327,6 +17650,7 @@ this.ECMAScriptParser = function(ECMAScriptTagsMap, GlobalStatements, tagsMap, p
 
 			return contentBuilder.complete();
 		},
+		deps: null,
 		/**
 		 * 开始解析
 		 * @param {File} file - 文件信息
