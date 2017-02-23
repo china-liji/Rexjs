@@ -630,12 +630,6 @@ this.Module = function(ModuleName, ECMAScriptParser, MappingBuilder, File, STATU
 					var href = new ModuleName(dep).href, mod = cache.hasOwnProperty(href) ? cache[href] : new Module(dep);
 
 					if(
-						(mod.status & STATUS_READY) === STATUS_READY
-					){
-						return;
-					}
-
-					if(
 						imports.indexOf(mod) > -1
 					){
 						return;

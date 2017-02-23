@@ -130,9 +130,15 @@ async
 	- 利用 Electron 封装一个浏览器，使其内部加载 Rexjs（但不能影响当前运行环境）并利用 Rexjs 编译所有 js 文件，包括 new Function("try fn()");
 	- 这样，可以使代码不用每次写完都 watch 编译，尽量使得开发环境简单
 
+分解 rex-es.js - 2016.02.23
+	- 分解成 n 个文件
+	- 利用打包工具合并
+
 --------
 已完成功能 ↓
 --------
+import as 表达式基本解析完成 - 2017.02.22
+
 import 默认输出完成 及 模块的引入功能完成 - 2017.02.22
 	- import 默认输出，即：import a from "a.js"
 	- 模块的引入功能完成，即：new Rexjs.Module("a.js");
