@@ -137,6 +137,11 @@ async
 --------
 已完成功能 ↓
 --------
+完成 import 部分 - 2017.02.24
+	- import "module-name.js" 解析完成
+	- import * as Name, defaultMember from "module-name.js"
+	- 重新优化 import as 表达式的逻辑
+
 import as 表达式基本解析完成 - 2017.02.22
 
 import 默认输出完成 及 模块的引入功能完成 - 2017.02.22
