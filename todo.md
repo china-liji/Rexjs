@@ -137,6 +137,10 @@ async
 --------
 已完成功能 ↓
 --------
+继续完成 import 部分功能 - 2017.02.27
+	- import { A, B, C } from "module-name.js" 解析完成
+	- 但 import { A as a } from "module-name.js" 并未完成
+
 完成 import 部分 - 2017.02.24
 	- import "module-name.js" 解析完成
 	- import * as Name, defaultMember from "module-name.js"
