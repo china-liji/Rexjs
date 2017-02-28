@@ -142,7 +142,7 @@ this.VariableCollection = function(){
 		 * 判断该集合内是否包含指定变量名
 		 * @param {String} variable - 指定的变量名
 		 */
-		contain: function(variable){
+		contains: function(variable){
 			for(
 				var i = 0, j = this.length;i < j;i++
 			){
