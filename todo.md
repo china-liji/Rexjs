@@ -137,6 +137,10 @@ async
 --------
 已完成功能 ↓
 --------
+开始编译 import 语句 - 2017.03.01
+	- 已完成编译 import {} from "module-name.js"
+	- 对 import 语句所在语句块做限制，只允许最外层语句块使用 import 语句
+
 继续完成 import 部分功能 - 2017.02.27
 	- import { A, B, C } from "module-name.js" 解析完成
 	- 但 import { A as a } from "module-name.js" 并未完成

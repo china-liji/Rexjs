@@ -1720,11 +1720,12 @@ this.ListExpression = function(DefaultExpression, extractItem){
 			if(
 				expression instanceof DefaultExpression
 			){
-				return;
+				return false;
 			}
 
 			// 添加表达式
 			this.add(expression);
+			return true;
 		}
 	});
 	
