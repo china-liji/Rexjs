@@ -15300,10 +15300,10 @@ this.ImportExpression = function(compileMember){
 				// 直接提取模块名称
 				contentBuilder.appendContext(this.name);
 				// 追加模块导入方法的结束小括号
-				contentBuilder.appendString(")");
+				contentBuilder.appendString(");var ");
 
 				// 编译每一个成员
-				this.members.forEach(compileMember, contentBuilder);
+				this.members.execJoin(compileMember, contentBuilder);
 				return;
 			}
 
@@ -15535,8 +15535,6 @@ this.MultipleMembersExpression = function(compileMember){
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
 		 */
 		compileTo: function(contentBuilder){
-			// 追加 var
-			contentBuilder.appendString(";var ");
 			// 执行连接所有成员表达式内容
 			this.inner.execJoin(compileMember, contentBuilder);
 		}
@@ -15566,10 +15564,8 @@ this.MemberExpression = function(){
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
 		 */
 		compileTo: function(contentBuilder){
-			var content = this.context.content;
-
 			// 追加成员变量赋值字符串
-			contentBuilder.appendString(content + "=" + "Rexjs.Module.locked." + content);
+			contentBuilder.appendString(this.variable.content + "=" + 'Rexjs.Module.memberOf("' + this.context.content + '")');
 		},
 		/**
 		 * 获取模块成员变量名
@@ -15594,14 +15590,6 @@ this.MemberAliasExpression = function(MemberExpression){
 
 	MemberAliasExpression.props({
 		alias: null,
-		/**
-		 * 提取并编译表达式文本内容
-		 * @param {ContentBuilder} contentBuilder - 内容生成器
-		 */
-		compileTo: function(contentBuilder){
-			// 追加成员变量赋值字符串
-			contentBuilder.appendString(this.variable.content + "=" + "Rexjs.Module.locked." + this.context.content);
-		},
 		/**
 		 * 提取表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
@@ -15961,7 +15949,33 @@ closeMultipleMembersTag = new this.CloseMultipleMembersTag();
 // 模块默认成员标签相关
 void function(){
 
-this.DefaultMemberTag = function(MemberVariableTag, MemberExpression){
+this.DefaultMemberExpression = function(MemberExpression){
+	/**
+	 * 模块默认成员导入表达式
+	 * @param {Context} context - 语法标签上下文
+	 */
+	function DefaultMemberExpression(context){
+		MemberExpression.call(this, context);
+	};
+	DefaultMemberExpression = new Rexjs(DefaultMemberExpression, MemberExpression);
+
+	DefaultMemberExpression.props({
+		/**
+		 * 提取并编译表达式文本内容
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 */
+		compileTo: function(contentBuilder){
+			// 追加成员变量赋值字符串
+			contentBuilder.appendString(this.context.content + "=Rexjs.Module.defaultOf()");
+		}
+	});
+
+	return DefaultMemberExpression;
+}(
+	this.MemberExpression
+);
+
+this.DefaultMemberTag = function(MemberVariableTag, DefaultMemberExpression){
 	/**
 	 * 模块默认成员标签
 	 * @param {Number} _type - 标签类型
@@ -15987,20 +16001,25 @@ this.DefaultMemberTag = function(MemberVariableTag, MemberExpression){
 		 * @param {Statements} statements - 当前语句块
 		 */
 		visitor: function(parser, context, statement, statements){
+			var importExpression = statement.expression;
+
 			// 收集变量名
 			this.collectTo(parser, context, statements);
 
 			// 向 import 表达式的添加成员
-			statement.expression.members.add(
-				new MemberExpression(context)
+			importExpression.members.add(
+				new DefaultMemberExpression(context)
 			);
+
+			// 设置 clean 属性为 false，表示有变量名导入
+			importExpression.clean = false;
 		}
 	});
 
 	return DefaultMemberTag;
 }(
 	this.MemberVariableTag,
-	this.MemberExpression
+	this.DefaultMemberExpression
 );
 
 }.call(
@@ -16027,7 +16046,7 @@ this.AllMembersExpression = function(MemberAliasExpression){
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
 		 */
 		compileTo: function(contentBuilder){
-
+			contentBuilder.appendString(this.variable.content + "=Rexjs.Module.moduleOf()");
 		}
 	});
 
@@ -16063,10 +16082,15 @@ this.AllMembersTag = function(AllMembersExpression){
 		 * @param {Statements} statements - 当前语句块
 		 */
 		visitor: function(parser, context, statement, statements){
+			var importExpression = statement.expression;
+
 			// 向 import 表达式添加成员
-			statement.expression.members.add(
+			importExpression.members.add(
 				new AllMembersExpression(context)
 			);
+			
+			// 设置 clean 属性为 false，表示有变量名导入
+			importExpression.clean = false;
 		}
 	});
 

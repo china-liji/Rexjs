@@ -529,7 +529,7 @@ this.ModuleName = function(URL, BASE_URI){
 	document.baseURI
 );
 
-this.Module = function(ModuleName, ECMAScriptParser, MappingBuilder, File, STATUS_NONE, STATUS_LOADING, STATUS_PARSING, STATUS_READY, STATUS_COMPLETED, cache, locked, nativeEval, load){
+this.Module = function(ModuleName, ECMAScriptParser, MappingBuilder, File, STATUS_NONE, STATUS_LOADING, STATUS_PARSING, STATUS_READY, STATUS_COMPLETED, cache, name, nativeEval, load){
 	/**
 	 * 模块，todo: 需要兼容 node 环境
 	 */
@@ -563,20 +563,22 @@ this.Module = function(ModuleName, ECMAScriptParser, MappingBuilder, File, STATU
 		get cache(){
 			return cache;
 		},
-		
+		defaultOf: function(_name){
+			return this.import(_name || name).default;
+		},
 		import: function(name){
 			return cache[
 				new ModuleName(name).href
 			];
 		},
-		lock: function(name){
-			locked = this.import(name);
+		lock: function(n){
+			name = n;
 		},
-		get locked(){
-			return locked;
+		memberOf: function(member, _name){
+			return this.import(_name || name)[member];
 		},
-		unlock: function(){
-			locked = null;
+		moduleOf: function(_name){
+			return this.import(_name || name);
 		}
 	});
 
@@ -676,8 +678,8 @@ this.Module = function(ModuleName, ECMAScriptParser, MappingBuilder, File, STATU
 	parseInt(11000, 2),
 	// cache
 	{},
-	// locked
-	null,
+	// name
+	"",
 	// nativeEval
 	eval,	
 	// load
