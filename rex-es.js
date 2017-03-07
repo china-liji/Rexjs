@@ -43,7 +43,6 @@ this.ECMAScriptErrors = ECMAScriptErrors = function(REGEXP){
 		FOR_IN: "Invalid left-hand side in for-in loop: Must have a single binding",
 		GETTER: "Getter must not have any formal parameters",
 		ILLEGAL_STATEMENT: "Illegal ${1} statement",
-		IMPORT: "Import statement is not allowed here",
 		KEYWORD: '"${1}" keyword unexpected here',
 		LABEL: 'Undefined label "${1}"',
 		MISSING_INITIALIZER: "Missing initializer in const declaration",
@@ -9476,15 +9475,14 @@ this.ContinueTag = function(FLOW_CIRCULAR){
 // var 语句相关
 void function(VariableDeclarationTag, vdsTag){
 
-this.VarExpression = function(config, extractTo){
+this.VarExpression = function(IdentifierExpression, config){
 	/**
 	 * var 表达式
 	 * @param {Context} context - 标签上下文
 	 */
-	function VarExpression(context){
+	function VarExpression(context, collection){
 		Expression.call(this, context);
 
-		// 初始化 list
 		this.list = new ListExpression(null, ",");
 	};
 	VarExpression = new Rexjs(VarExpression, Expression);
@@ -9512,14 +9510,31 @@ this.VarExpression = function(config, extractTo){
 			// 提取变量列表
 			this.list.extractTo(contentBuilder);
 		},
-		list: null
+		list: null,
+		variables: function(callback, _this){
+			var list = this.list;
+
+			// 遍历 list
+			for(
+				var i = 0, j = list.length;i < j;i++
+			){
+				var expression = list[i];
+
+				// 执行回调
+				callback.call(
+					_this,
+					// 判断表达式类型，取变量名上下文
+					expression instanceof IdentifierExpression ? expression.context : expression[0].left.context
+				);
+			}
+		}
 	});
 
 	return VarExpression;
 }(
+	this.IdentifierExpression,
 	// config
-	new SyntaxConfig("let", "const"),
-	ListExpression.prototype.extractTo
+	new SyntaxConfig("let", "const")
 );
 
 this.VarStatement = function(){
@@ -15382,7 +15397,10 @@ this.ImportTag = function(ImportExpression){
 			}
 
 			// 报错
-			parser.error(context, ECMAScriptErrors.import);
+			parser.error(
+				context,
+				ECMAScriptErrors.template("ILLEGAL_STATEMENT", "import")
+			);
 		}
 	});
 
@@ -16179,6 +16197,163 @@ this.ModuleVariableTag = function(ConstVariableTag){
 );
 
 
+// export 标签相关
+void function(VarExpression){
+
+this.ExportExpression = function(config, compile){
+	/**
+	 * export 表达式
+	 * @param {Context} context - 语法标签上下文
+	 */
+	function ExportExpression(context){
+		Expression.call(this, context);
+	};
+	ExportExpression = new Rexjs(ExportExpression, Expression);
+
+	ExportExpression.static({
+		/**
+		 * 获取表达式编译配置
+		 */
+		get config(){
+			return config;
+		}
+	});
+
+	ExportExpression.props({
+		/**
+		 * 提取表达式文本内容
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 */
+		extractTo: function(contentBuilder){
+			// 如果需要解析 export
+			if(
+				config.export
+			){
+				compile(this.member, contentBuilder);
+				return;
+			}
+
+			// 追加 export 关键字
+			contentBuilder.appendContext(this.context);
+			// 追加空格
+			contentBuilder.appendSpace();
+			// 提取成员
+			this.member.extractTo(contentBuilder);
+		},
+
+		member: null
+	});
+
+	return ExportExpression;
+}(
+	// config
+	new SyntaxConfig("export"),
+	// compile
+	function(member, contentBuilder){
+		switch(
+			true
+		){
+			case member instanceof VarExpression:
+				member.extractTo(contentBuilder);
+				break;
+
+			default:
+				return;
+		}
+
+		member.variables(
+			function(context){
+				var content = context.content;
+
+				contentBuilder.appendString(';Rexjs.Module.export("' + content + '", ' + content + ")");
+			}
+		);
+	}
+);
+
+this.ExportStatement = function(){
+	/**
+	 * export 语句
+	 * @param {Statements} statements - 该语句将要所处的语句块
+	 */
+	function ExportStatement(statements){
+		ECMAScriptStatement.call(this, statements);
+	};
+	ExportStatement = new Rexjs(ExportStatement, ECMAScriptStatement);
+
+	ExportStatement.props({
+		/**
+		 * 捕获处理异常
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 语法标签上下文
+		 */
+		catch: function(parser, context){
+			this.out().member = this.expression;
+		}
+	});
+
+	return ExportStatement;
+}();
+
+this.ExportTag = function(ExportExpression, ExportStatement){
+	/**
+	 * import 关键字标签
+	 * @param {Number} _type - 标签类型
+	 */
+	function ExportTag(_type){
+		SyntaxTag.call(this, _type);
+	};
+	ExportTag = new Rexjs(ExportTag, SyntaxTag);
+
+	ExportTag.props({
+		$class: CLASS_STATEMENT_BEGIN,
+		regexp: /export/,
+		/**
+		 * 获取此标签接下来所需匹配的标签列表
+		 * @param {TagsMap} tagsMap - 标签集合映射
+		 */
+		require: function(tagsMap){
+			return tagsMap.exportContextTags;
+		},
+		/**
+		 * 标签访问器
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 标签上下文
+		 * @param {Statement} statement - 当前语句
+		 * @param {Statements} statements - 当前语句块
+		 */
+		visitor: function(parser, context, statement, statements){
+			// 如果当前语句没有 target，说明最外层语句
+			if(
+				statements.target === null
+			){
+				// 设置当前表达式
+				statement.expression = new ExportExpression(context);
+				// 设置当前语句
+				statements.statement = new ExportStatement(statements);
+				return;
+			}
+
+			// 报错
+			parser.error(
+				context,
+				ECMAScriptErrors.template("ILLEGAL_STATEMENT", "export")
+			);
+		}
+	});
+
+	return ExportTag;
+}(
+	this.ExportExpression,
+	this.ExportStatement
+);
+
+}.call(
+	this,
+	this.VarExpression
+);
+
+
 // 辅助性的标签列表相关
 void function(SyntaxTags){
 
@@ -16260,6 +16435,7 @@ this.ECMAScriptTags = function(DefaultTags, list){
 		this.ElseTag,
 		this.EmptyStatementTag,
 		this.EqualityTag,
+		this.ExportTag,
 		this.ExtendsTag,
 		this.FileEndTag,
 		this.FinallyTag,
@@ -16971,6 +17147,32 @@ this.ExceptionVariableTags = function(ExceptionVariableTag){
 	return ExceptionVariableTags;
 }(
 	this.ExceptionVariableTag
+);
+
+this.ExportContextTags = function(VarTag, LetTag, ConstTag){
+	/**
+	 * export 关键字上下文标签列表
+	 */
+	function ExportContextTags(){
+		IllegalTags.call(this);
+
+		this.register(
+			new VarTag(),
+			new LetTag(),
+			new ConstTag()
+		);
+	};
+	ExportContextTags = new Rexjs(ExportContextTags, IllegalTags);
+
+	ExportContextTags.props({
+		id: "exportContextTags"
+	});
+
+	return ExportContextTags;
+}(
+	this.VarTag,
+	this.LetTag,
+	this.ConstTag
 );
 
 this.ExtendsContextTags = function(UnaryTag, NewTag, filter){
@@ -18326,6 +18528,7 @@ this.ECMAScript6Config = function(configs, forEach, every, defineProperty){
 	// configs
 	[
 		this.CallExpression,
+		this.ExportExpression,
 		this.ForExpression,
 		this.FunctionExpression,
 		this.ImportExpression,
@@ -18402,6 +18605,7 @@ this.ECMAScriptTagsMap = function(SyntaxTagsMap, tagsArray){
 		this.DoWhileConditionTags,
 		this.DotAccessorContextTags,
 		this.ExceptionVariableTags,
+		this.ExportContextTags,
 		this.ExtendsContextTags,
 		this.FileStartTags,
 		this.ForConditionTags,

@@ -3,7 +3,6 @@
 ------
 enum
 export
-import
 yield
 **
 ++
@@ -137,6 +136,9 @@ async
 --------
 已完成功能 ↓
 --------
+开始编译 export 语句 - 2017.03.07
+	- 已完成对 export var、 export let、 export const 的编译
+
 所有编译 import 都已完成 - 2017.03.02
 
 开始编译 import 语句 - 2017.03.01

@@ -529,13 +529,14 @@ this.ModuleName = function(URL, BASE_URI){
 	document.baseURI
 );
 
-this.Module = function(ModuleName, ECMAScriptParser, MappingBuilder, File, STATUS_NONE, STATUS_LOADING, STATUS_PARSING, STATUS_READY, STATUS_COMPLETED, cache, name, nativeEval, load){
+this.Module = function(ModuleName, ECMAScriptParser, MappingBuilder, File, STATUS_NONE, STATUS_LOADING, STATUS_PARSING, STATUS_READY, STATUS_COMPLETED, cache, name, exports, create, defineProperty, nativeEval, load){
 	/**
 	 * 模块，todo: 需要兼容 node 环境
 	 */
 	function Module(name, _code){
 		var moduleName = new ModuleName(name), href = moduleName.href;
 
+		this.exports = create(null);
 		this.imports = [];
 		this.name = moduleName;
 		this.status = STATUS_LOADING;
@@ -566,6 +567,17 @@ this.Module = function(ModuleName, ECMAScriptParser, MappingBuilder, File, STATU
 		defaultOf: function(_name){
 			return this.import(_name || name).default;
 		},
+		export: function(name, value){
+			defineProperty(
+				exports,
+				name,
+				{
+					get: function(){ return value },
+					configurable: false,
+					enumerable: true
+				}
+			);
+		},
 		import: function(name){
 			return cache[
 				new ModuleName(name).href
@@ -575,7 +587,7 @@ this.Module = function(ModuleName, ECMAScriptParser, MappingBuilder, File, STATU
 			name = n;
 		},
 		memberOf: function(member, _name){
-			return this.import(_name || name)[member];
+			return this.import(_name || name).exports[member];
 		},
 		moduleOf: function(_name){
 			return this.import(_name || name);
@@ -583,6 +595,7 @@ this.Module = function(ModuleName, ECMAScriptParser, MappingBuilder, File, STATU
 	});
 
 	Module.props({
+		exports: null,
 		eval: function(){
 			switch(
 				this.status
@@ -612,8 +625,11 @@ this.Module = function(ModuleName, ECMAScriptParser, MappingBuilder, File, STATU
 			}
 
 			this.status = STATUS_COMPLETED;
+			exports = this.exports;
 
 			nativeEval(this.result);
+
+			exports = null;			
 
 			this.targets.forEach(
 				function(target){
@@ -680,6 +696,10 @@ this.Module = function(ModuleName, ECMAScriptParser, MappingBuilder, File, STATU
 	{},
 	// name
 	"",
+	// exports
+	null,
+	Object.create,
+	Object.defineProperty,
 	// nativeEval
 	eval,	
 	// load

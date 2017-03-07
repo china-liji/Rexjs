@@ -1,6 +1,1 @@
-import a from "./module/a.js";
-import * as Index, { A as X, B, C }, defaultMember from "./module/a.js";
-import "./module/a.js";
-// import { A as X, B, C } from "./module/a.js";
-
-console.log("index.js loaded");
+export let a = 1, b = 2, c , d
