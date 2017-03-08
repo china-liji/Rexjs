@@ -136,6 +136,8 @@ async
 --------
 已完成功能 ↓
 --------
+完成 export default 语句 - 2017.03.08
+
 开始编译 export 语句 - 2017.03.07
 	- 已完成对 export var、 export let、 export const 的编译
 

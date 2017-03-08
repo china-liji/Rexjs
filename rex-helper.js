@@ -581,13 +581,14 @@ this.Module = function(ModuleName, ECMAScriptParser, MappingBuilder, File, STATU
 		import: function(name){
 			return cache[
 				new ModuleName(name).href
-			];
+			]
+			.exports;
 		},
 		lock: function(n){
 			name = n;
 		},
 		memberOf: function(member, _name){
-			return this.import(_name || name).exports[member];
+			return this.import(_name || name)[member];
 		},
 		moduleOf: function(_name){
 			return this.import(_name || name);

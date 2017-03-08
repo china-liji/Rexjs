@@ -1,1 +1,9 @@
-export let a = 1, b = 2, c , d
+import * as M from "./module/a.js"
+
+import { a, b } from "./module/a.js"
+
+import MyClass from "./module/a.js"
+
+// export default function(){}
+
+debugger

@@ -39,6 +39,7 @@ this.ECMAScriptErrors = ECMAScriptErrors = function(REGEXP){
 		CONSTRUCTOR: "Class constructor may not be ${1}",
 		DEFAULT_CLAUSE: "More than one default clause in switch statement",
 		DUPLICATE_PARAMETER_NAME: "Duplicate parameter name not allowed in this context",
+		EXPORT_DEFAULT: "Default member has already been exported",
 		FOR: "Invalid left-hand side in for-loop",
 		FOR_IN: "Invalid left-hand side in for-in loop: Must have a single binding",
 		GETTER: "Getter must not have any formal parameters",
@@ -16240,7 +16241,6 @@ this.ExportExpression = function(config, compile){
 			// 提取成员
 			this.member.extractTo(contentBuilder);
 		},
-
 		member: null
 	});
 
@@ -16250,11 +16250,12 @@ this.ExportExpression = function(config, compile){
 	new SyntaxConfig("export"),
 	// compile
 	function(member, contentBuilder){
+		member.compileTo(contentBuilder);
+
 		switch(
 			true
 		){
 			case member instanceof VarExpression:
-				member.extractTo(contentBuilder);
 				break;
 
 			default:
@@ -16351,6 +16352,132 @@ this.ExportTag = function(ExportExpression, ExportStatement){
 }.call(
 	this,
 	this.VarExpression
+);
+
+
+// export default 标签相关
+void function(){
+
+this.DefaultExportExpression = function(ExportExpression){
+	/**
+	 * 模块默认输出表达式
+	 * @param {Context} context - 标签上下文
+	 */
+	function DefaultExportExpression(context){
+		ExportExpression.call(this, context);
+	};
+	DefaultExportExpression = new Rexjs(DefaultExportExpression, ExportExpression);
+
+	DefaultExportExpression.props({
+		/**
+		 * 提取表达式文本内容
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 */
+		extractTo: function(contentBuilder){
+			// 追加 default 关键字
+			contentBuilder.appendContext(this.context);
+			// 追加空格
+			contentBuilder.appendSpace();
+			// 提取成员
+			this.member.extractTo(contentBuilder);
+		},
+		/**
+		 * 提取并编译表达式文本内容
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 */
+		compileTo: function(contentBuilder){
+			// 追加提取方法
+			contentBuilder.appendString('Rexjs.Module.export("default",');
+			// 提取成员
+			this.member.extractTo(contentBuilder);
+			// 追加提取方法结束小括号
+			contentBuilder.appendString(")");
+		}
+	});
+
+	return DefaultExportExpression;
+}(
+	this.ExportExpression
+);
+
+this.DefaultExportStatement = function(){
+	/**
+	 * 模块默认输出语句
+	 * @param {Statements} statements - 该语句将要所处的语句块
+	 */
+	function DefaultExportStatement(statements){
+		ECMAScriptStatement.call(this, statements);
+	};
+	DefaultExportStatement = new Rexjs(DefaultExportStatement, ECMAScriptStatement);
+
+	DefaultExportStatement.props({
+		/**
+		 * 捕获处理异常
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 语法标签上下文
+		 */
+		catch: function(parser, context){
+			// 跳出当前语句并设置 member 属性
+			this.out().member = this.expression;
+		}
+	});
+
+	return DefaultExportStatement;
+}();
+
+this.DefaultExportTag = function(DefaultTag, DefaultExportExpression, DefaultExportStatement){
+	/**
+	 * 模块默认输出标签
+	 * @param {Number} _type - 标签类型
+	 */
+	function DefaultExportTag(_type){
+		DefaultTag.call(this, _type);
+	};
+	DefaultExportTag = new Rexjs(DefaultExportTag, DefaultTag);
+
+	DefaultExportTag.props({
+		/**
+		 * 获取此标签接下来所需匹配的标签列表
+		 * @param {TagsMap} tagsMap - 标签集合映射
+		 */
+		require: function(tagsMap){
+			return tagsMap.expressionTags;
+		},
+		/**
+		 * 标签访问器
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 标签上下文
+		 * @param {Statement} statement - 当前语句
+		 * @param {Statements} statements - 当前语句块
+		 */
+		visitor: function(parser, context, statement, statements){
+			// 如果已经输出过默认成员
+			if(
+				parser.defaultExported
+			){
+				parser.error(context, ECMAScriptErrors.EXPORT_DEFAULT);
+				return;
+			}
+
+			// 记录全局解析器属性，标识已经输出过默认成员
+			parser.defaultExported = true;
+			
+			// 设置当前表达式
+			statement.expression = new DefaultExportExpression(context);
+			// 设置当前语句
+			statements.statement = new DefaultExportStatement(statements);
+		}
+	});
+
+	return DefaultExportTag;
+}(
+	this.DefaultTag,
+	this.DefaultExportExpression,
+	this.DefaultExportStatement
+);
+
+}.call(
+	this
 );
 
 
@@ -17149,7 +17276,7 @@ this.ExceptionVariableTags = function(ExceptionVariableTag){
 	this.ExceptionVariableTag
 );
 
-this.ExportContextTags = function(VarTag, LetTag, ConstTag){
+this.ExportContextTags = function(VarTag, LetTag, ConstTag, DefaultExportTag){
 	/**
 	 * export 关键字上下文标签列表
 	 */
@@ -17159,7 +17286,8 @@ this.ExportContextTags = function(VarTag, LetTag, ConstTag){
 		this.register(
 			new VarTag(),
 			new LetTag(),
-			new ConstTag()
+			new ConstTag(),
+			new DefaultExportTag()
 		);
 	};
 	ExportContextTags = new Rexjs(ExportContextTags, IllegalTags);
@@ -17172,7 +17300,8 @@ this.ExportContextTags = function(VarTag, LetTag, ConstTag){
 }(
 	this.VarTag,
 	this.LetTag,
-	this.ConstTag
+	this.ConstTag,
+	this.DefaultExportTag
 );
 
 this.ExtendsContextTags = function(UnaryTag, NewTag, filter){
@@ -18696,6 +18825,7 @@ this.ECMAScriptParser = function(ECMAScriptTagsMap, GlobalStatements, tagsMap, p
 
 			return contentBuilder.complete();
 		},
+		defaultExported: false,
 		deps: null,
 		/**
 		 * 开始解析
