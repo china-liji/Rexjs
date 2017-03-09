@@ -591,6 +591,31 @@ this.ExpressionSeparatorTag = function(){
 	return ExpressionSeparatorTag;
 }();
 
+this.ModuleTag = function(){
+	/**
+	 * 模块标签
+	 * @param {Number} _type - 标签类型
+	 */
+	function ModuleTag(_type){
+		SyntaxTag.call(this, _type);
+	};
+	ModuleTag = new Rexjs(ModuleTag, SyntaxTag);
+
+	ModuleTag.props({
+		$class: CLASS_STATEMENT_BEGIN,
+		/**
+		 * 收集该表达式所产生的变量名
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} variable - 变量名标签上下文
+		 */
+		collectVariables: function(parser, variable){
+			variable.tag.collectTo(parser, variable, parser.statements);
+		}
+	});
+
+	return ModuleTag;
+}();
+
 this.OpenBraceTag = function(){
 	/**
 	 * 起始大括号标签
@@ -15360,18 +15385,17 @@ this.ImportExpression = function(compileMember){
 	}
 );
 
-this.ImportTag = function(ImportExpression){
+this.ImportTag = function(ModuleTag, ImportExpression){
 	/**
 	 * import 关键字标签
 	 * @param {Number} _type - 标签类型
 	 */
 	function ImportTag(_type){
-		SyntaxTag.call(this, _type);
+		ModuleTag.call(this, _type);
 	};
-	ImportTag = new Rexjs(ImportTag, SyntaxTag);
+	ImportTag = new Rexjs(ImportTag, ModuleTag);
 
 	ImportTag.props({
-		$class: CLASS_STATEMENT_BEGIN,
 		regexp: /import/,
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
@@ -15407,6 +15431,7 @@ this.ImportTag = function(ImportExpression){
 
 	return ImportTag;
 }(
+	this.ModuleTag,
 	this.ImportExpression
 );
 
@@ -15536,7 +15561,7 @@ this.ModuleNameTag = function(StringTag){
 // 模块多成员表达式相关
 void function(multipleMembersSeparatorTag, closeMultipleMembersTag){
 
-this.MultipleMembersExpression = function(compileMember){
+this.MultipleMembersExpression = function(importMember, exportMember){
 	/**
 	 * 多成员导入表达式
 	 * @param {Context} open - 起始标签上下文
@@ -15554,16 +15579,35 @@ this.MultipleMembersExpression = function(compileMember){
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
 		 */
 		compileTo: function(contentBuilder){
-			// 执行连接所有成员表达式内容
-			this.inner.execJoin(compileMember, contentBuilder);
-		}
+			var inner = this.inner;
+
+			// 如果是导入
+			if(
+				this.import
+			){
+				// 执行成员导入项连接
+				inner.execJoin(importMember, contentBuilder);
+				return;
+			}
+
+			// 修改连接符为分号
+			inner.join = ";";
+			
+			// 执行成员输出项连接
+			inner.execJoin(exportMember, contentBuilder);
+		},
+		import: true
 	});
 
 	return MultipleMembersExpression;
 }(
-	// compileMember
+	// importMember
 	function(member, contentBuilder){
-		member.compileTo(contentBuilder);
+		member.importTo(contentBuilder);
+	},
+	// exportMember
+	function(member, contentBuilder){
+		member.exportTo(contentBuilder);
 	}
 );
 
@@ -15578,13 +15622,28 @@ this.MemberExpression = function(){
 	MemberExpression = new Rexjs(MemberExpression, Expression);
 
 	MemberExpression.props({
+		// compileTo: function(contentBuilder){
+		// 	this.importTo(contentBuilder);
+		// },
 		/**
-		 * 提取并编译表达式文本内容
+		 * 以输出形式提取并编译表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
 		 */
-		compileTo: function(contentBuilder){
+		exportTo: function(contentBuilder){
+			// 追加成员输出字符串
+			contentBuilder.appendString(
+				'Rexjs.Module.export("' + this.variable.content + '", ' + this.context.content + ")"
+			);
+		},
+		/**
+		 * 以导入形式提取并编译表达式文本内容
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 */
+		importTo: function(contentBuilder){
 			// 追加成员变量赋值字符串
-			contentBuilder.appendString(this.variable.content + "=" + 'Rexjs.Module.memberOf("' + this.context.content + '")');
+			contentBuilder.appendString(
+				this.variable.content + "=" + 'Rexjs.Module.memberOf("' + this.context.content + '")'
+			);
 		},
 		/**
 		 * 获取模块成员变量名
@@ -15633,7 +15692,7 @@ this.MemberAliasExpression = function(MemberExpression){
 	this.MemberExpression
 );
 
-this.MultipleMembersStatement = function(){
+this.MultipleMembersStatement = function(out){
 	/**
 	 * 模板语句
 	 * @param {Statements} statements - 该语句将要所处的语句块
@@ -15644,7 +15703,6 @@ this.MultipleMembersStatement = function(){
 	MultipleMembersStatement = new Rexjs(MultipleMembersStatement, ECMAScriptStatement);
 
 	MultipleMembersStatement.props({
-		expression: new DefaultExpression(),
 		/**
 		 * 捕获处理异常
 		 * @param {SyntaxParser} parser - 语法解析器
@@ -15660,20 +15718,12 @@ this.MultipleMembersStatement = function(){
 				return null;
 			}
 
-			var expression = this.expression;
-
-			if(
-				// 跳出语句并设置表达式
-				this.out().members.latest.inner.set(expression)
-			){
-				var context = expression.context;
-
-				// 收集变量名
-				context.tag.collectTo(parser, context, this.statements);
-			}
-
+			// 跳出语句
+			out(parser, this, true);
 			return this.bindingOf();
 		},
+		collectVariables: true,
+		expression: new DefaultExpression(),
 		/**
 		 * 尝试处理异常
 		 * @param {SyntaxParser} parser - 语法解析器
@@ -15689,13 +15739,8 @@ this.MultipleMembersStatement = function(){
 				return null;
 			}
 
-			var expression = this.expression, context = expression.context;
-
-			// 跳出语句并设置表达式
-			this.out().members.latest.inner.add(expression)
-			// 收集变量名
-			context.tag.collectTo(parser, context, this.statements);
-
+			// 跳出语句
+			out(parser, this, false);
 			return this.tagOf().separator;
 		},
 		/**
@@ -15707,7 +15752,31 @@ this.MultipleMembersStatement = function(){
 	});
 
 	return MultipleMembersStatement;
-}();
+}(
+	// out
+	function(parser, statement, fromCatch){
+		var expression = statement.expression, importExpression = statement.out(), inner = importExpression.members.latest.inner;
+
+		// 如果来自 catch 方法
+		if(
+			fromCatch
+		){
+			// 如果设置失败，则说明 expression 是默认表达式
+			if(
+				!inner.set(expression)
+			){
+				return;
+			}
+		}
+		else {
+			// 添加表达式
+			inner.add(expression);
+		}
+
+		// 收集变量名
+		importExpression.context.tag.collectVariables(parser, expression.variable);
+	}
+);
 
 this.OpenMultipleMembersTag = function(OpenBraceTag, MultipleMembersExpression, MultipleMembersStatement){
 	/**
@@ -16230,6 +16299,7 @@ this.ExportExpression = function(config, compile){
 			if(
 				config.export
 			){
+				debugger
 				compile(this.member, contentBuilder);
 				return;
 			}
@@ -16296,18 +16366,23 @@ this.ExportStatement = function(){
 	return ExportStatement;
 }();
 
-this.ExportTag = function(ExportExpression, ExportStatement){
+this.ExportTag = function(ModuleTag, ExportExpression, ExportStatement){
 	/**
 	 * import 关键字标签
 	 * @param {Number} _type - 标签类型
 	 */
 	function ExportTag(_type){
-		SyntaxTag.call(this, _type);
+		ModuleTag.call(this, _type);
 	};
-	ExportTag = new Rexjs(ExportTag, SyntaxTag);
+	ExportTag = new Rexjs(ExportTag, ModuleTag);
 
 	ExportTag.props({
-		$class: CLASS_STATEMENT_BEGIN,
+		/**
+		 * 收集该表达式所产生的变量名
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} variable - 变量名标签上下文
+		 */
+		collectVariables: function(){},
 		regexp: /export/,
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
@@ -16345,6 +16420,7 @@ this.ExportTag = function(ExportExpression, ExportStatement){
 
 	return ExportTag;
 }(
+	this.ModuleTag,
 	this.ExportExpression,
 	this.ExportStatement
 );
@@ -16478,6 +16554,131 @@ this.DefaultExportTag = function(DefaultTag, DefaultExportExpression, DefaultExp
 
 }.call(
 	this
+);
+
+
+// 模块输出多成员表达式相关
+void function(closeExportMultipleMembersTag){
+
+this.PseudoImportExpression = function(ImportExpression){
+	/**
+	 * 伪 import 表达式，用于模拟相关环境
+	 * @param {Context} context - 标签上下文
+	 */
+	function PseudoImportExpression(context){
+		ImportExpression.call(this, context);
+	};
+	PseudoImportExpression = new Rexjs(PseudoImportExpression, ImportExpression);
+
+	PseudoImportExpression.props({
+		/**
+		 * 提取表达式文本内容
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 */
+		extractTo: function(contentBuilder){
+			// 提取成员
+			this.members.extractTo(contentBuilder);
+		},
+		/**
+		 * 提取并编译表达式文本内容
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 */
+		compileTo: function(contentBuilder){
+			// 解析语法时确保过，只有唯一一个，所以直接编译最近且唯一项
+			this.members.latest.compileTo(contentBuilder);
+		}
+	});
+
+	return PseudoImportExpression;
+}(
+	this.ImportExpression
+);
+
+this.OpenExportMultipleMembersTag = function(OpenMultipleMembersTag, PseudoImportExpression, MultipleMembersExpression, MultipleMembersStatement){
+	/**
+	 * 多成员输出起始标签
+	 * @param {Number} _type - 标签类型
+	 */
+	function OpenExportMultipleMembersTag(_type){
+		OpenMultipleMembersTag.call(this, _type);
+	};
+	OpenExportMultipleMembersTag = new Rexjs(OpenExportMultipleMembersTag, OpenMultipleMembersTag);
+
+	OpenExportMultipleMembersTag.props({
+		/**
+		 * 获取绑定的标签，该标签一般是用于语句的 try、catch 的返回值
+		 */
+		get binding(){
+			return closeExportMultipleMembersTag;
+		},
+		/**
+		 * 标签访问器
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 标签上下文
+		 * @param {Statement} statement - 当前语句
+		 * @param {Statements} statements - 当前语句块
+		 */
+		visitor: function(parser, context, statement, statements){
+			var multipleMembersExpression = new MultipleMembersExpression(context);
+
+			multipleMembersExpression.import = false;
+
+			// 设置当前表达式
+			(
+				statement.expression = new PseudoImportExpression(
+					statement.target.expression.context
+				)
+			)
+			.members
+			// 添加成员
+			.add(
+				multipleMembersExpression
+			);
+
+			// 设置当前语句
+			statements.statement = new MultipleMembersStatement(statements);
+		}
+	});
+
+	return OpenExportMultipleMembersTag;
+}(
+	this.OpenMultipleMembersTag,
+	this.PseudoImportExpression,
+	this.MultipleMembersExpression,
+	this.MultipleMembersStatement
+);
+
+this.CloseExportMultipleMembersTag = function(CloseMultipleMembersTag){
+	/**
+	 * 多成员输出结束标签
+	 * @param {Number} _type - 标签类型
+	 */
+	function CloseExportMultipleMembersTag(_type){
+		CloseMultipleMembersTag.call(this, _type);
+	};
+	CloseExportMultipleMembersTag = new Rexjs(CloseExportMultipleMembersTag, CloseMultipleMembersTag);
+
+	CloseExportMultipleMembersTag.props({
+		/**
+		 * 获取此标签接下来所需匹配的标签列表
+		 * @param {TagsMap} tagsMap - 标签集合映射
+		 */
+		require: function(tagsMap){
+			return tagsMap.statementEndTags;
+		}
+	});
+
+	return CloseExportMultipleMembersTag;
+}(
+	this.CloseMultipleMembersTag
+);
+
+closeExportMultipleMembersTag = new this.CloseExportMultipleMembersTag();
+
+}.call(
+	this,
+	// closeExportMultipleMembersTag
+	null
 );
 
 
@@ -17276,7 +17477,7 @@ this.ExceptionVariableTags = function(ExceptionVariableTag){
 	this.ExceptionVariableTag
 );
 
-this.ExportContextTags = function(VarTag, LetTag, ConstTag, DefaultExportTag){
+this.ExportContextTags = function(VarTag, LetTag, ConstTag, DefaultExportTag, OpenExportMultipleMembersTag){
 	/**
 	 * export 关键字上下文标签列表
 	 */
@@ -17287,7 +17488,8 @@ this.ExportContextTags = function(VarTag, LetTag, ConstTag, DefaultExportTag){
 			new VarTag(),
 			new LetTag(),
 			new ConstTag(),
-			new DefaultExportTag()
+			new DefaultExportTag(),
+			new OpenExportMultipleMembersTag()
 		);
 	};
 	ExportContextTags = new Rexjs(ExportContextTags, IllegalTags);
@@ -17301,7 +17503,8 @@ this.ExportContextTags = function(VarTag, LetTag, ConstTag, DefaultExportTag){
 	this.VarTag,
 	this.LetTag,
 	this.ConstTag,
-	this.DefaultExportTag
+	this.DefaultExportTag,
+	this.OpenExportMultipleMembersTag
 );
 
 this.ExtendsContextTags = function(UnaryTag, NewTag, filter){

@@ -136,6 +136,8 @@ async
 --------
 已完成功能 ↓
 --------
+完成 export { A as X, B as Y, C, D } 语句 - 2017.03.09
+
 完成 export default 语句 - 2017.03.08
 
 开始编译 export 语句 - 2017.03.07
