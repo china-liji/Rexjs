@@ -6,6 +6,6 @@ import { a, b } from "./module/a.js"
 
 // export default function(){}
 
-export { a as X, b as Y, a }
+export class fn{}
 
 debugger

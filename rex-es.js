@@ -9537,7 +9537,12 @@ this.VarExpression = function(IdentifierExpression, config){
 			this.list.extractTo(contentBuilder);
 		},
 		list: null,
-		variables: function(callback, _this){
+		/**
+		 * 遍历该表达式中所有的变量名，执行指定回调
+		 * @param {ContentBuilder} _contentBuilder - 内容生成器
+		 * @param {ContentBuilder} _anotherBuilder - 另一个内容生成器，一般用于副内容的生成或记录
+		 */
+		variables: function(callback, _contentBuilder, _anotherBuilder){
 			var list = this.list;
 
 			// 遍历 list
@@ -9547,10 +9552,11 @@ this.VarExpression = function(IdentifierExpression, config){
 				var expression = list[i];
 
 				// 执行回调
-				callback.call(
-					_this,
+				callback(
 					// 判断表达式类型，取变量名上下文
-					expression instanceof IdentifierExpression ? expression.context : expression[0].left.context
+					expression instanceof IdentifierExpression ? expression.context : expression[0].left.context,
+					_contentBuilder,
+					_anotherBuilder
 				);
 			}
 		}
@@ -16268,7 +16274,7 @@ this.ModuleVariableTag = function(ConstVariableTag){
 
 
 // export 标签相关
-void function(VarExpression){
+void function(VarExpression, FunctionDeclarationExpression, ClassDeclarationExpression, exportVariable){
 
 this.ExportExpression = function(config, compile){
 	/**
@@ -16299,7 +16305,7 @@ this.ExportExpression = function(config, compile){
 			if(
 				config.export
 			){
-				debugger
+				// 编译成员
 				compile(this.member, contentBuilder);
 				return;
 			}
@@ -16320,25 +16326,26 @@ this.ExportExpression = function(config, compile){
 	new SyntaxConfig("export"),
 	// compile
 	function(member, contentBuilder){
+		// 先编译成员
 		member.compileTo(contentBuilder);
 
 		switch(
 			true
 		){
+			// 如果是 var、let、const 表达式
 			case member instanceof VarExpression:
-				break;
+				// 遍历所定义的变量并输出
+				member.variables(exportVariable, contentBuilder);
+				return;
 
-			default:
+			// 如果是函数声明
+			case member instanceof FunctionDeclarationExpression:
+			// 如果是类声明
+			case member instanceof ClassDeclarationExpression:
+				// 输出表达式名称变量
+				exportVariable(member.name.context, contentBuilder);
 				return;
 		}
-
-		member.variables(
-			function(context){
-				var content = context.content;
-
-				contentBuilder.appendString(';Rexjs.Module.export("' + content + '", ' + content + ")");
-			}
-		);
 	}
 );
 
@@ -16427,7 +16434,16 @@ this.ExportTag = function(ModuleTag, ExportExpression, ExportStatement){
 
 }.call(
 	this,
-	this.VarExpression
+	this.VarExpression,
+	this.FunctionDeclarationExpression,
+	this.ClassDeclarationExpression,
+	// exportVariable
+	function(context, contentBuilder){
+		var content = context.content;
+
+		// 追加输出字符串
+		contentBuilder.appendString(';Rexjs.Module.export("' + content + '", ' + content + ")");
+	}
 );
 
 
@@ -16621,6 +16637,7 @@ this.OpenExportMultipleMembersTag = function(OpenMultipleMembersTag, PseudoImpor
 		visitor: function(parser, context, statement, statements){
 			var multipleMembersExpression = new MultipleMembersExpression(context);
 
+			// 告知该表达式所属语句不是导入语句
 			multipleMembersExpression.import = false;
 
 			// 设置当前表达式
@@ -17477,7 +17494,7 @@ this.ExceptionVariableTags = function(ExceptionVariableTag){
 	this.ExceptionVariableTag
 );
 
-this.ExportContextTags = function(VarTag, LetTag, ConstTag, DefaultExportTag, OpenExportMultipleMembersTag){
+this.ExportContextTags = function(VarTag, LetTag, ConstTag, FunctionDeclarationTag, ClassDeclarationTag, DefaultExportTag, OpenExportMultipleMembersTag){
 	/**
 	 * export 关键字上下文标签列表
 	 */
@@ -17488,6 +17505,8 @@ this.ExportContextTags = function(VarTag, LetTag, ConstTag, DefaultExportTag, Op
 			new VarTag(),
 			new LetTag(),
 			new ConstTag(),
+			new FunctionDeclarationTag(),
+			new ClassDeclarationTag(),
 			new DefaultExportTag(),
 			new OpenExportMultipleMembersTag()
 		);
@@ -17503,6 +17522,8 @@ this.ExportContextTags = function(VarTag, LetTag, ConstTag, DefaultExportTag, Op
 	this.VarTag,
 	this.LetTag,
 	this.ConstTag,
+	this.FunctionDeclarationTag,
+	this.ClassDeclarationTag,
 	this.DefaultExportTag,
 	this.OpenExportMultipleMembersTag
 );
