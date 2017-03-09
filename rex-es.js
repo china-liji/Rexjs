@@ -591,7 +591,7 @@ this.ExpressionSeparatorTag = function(){
 	return ExpressionSeparatorTag;
 }();
 
-this.ModuleTag = function(){
+this.ModuleTag = function(FLOW_INHERIT){
 	/**
 	 * 模块标签
 	 * @param {Number} _type - 标签类型
@@ -610,11 +610,32 @@ this.ModuleTag = function(){
 		 */
 		collectVariables: function(parser, variable){
 			variable.tag.collectTo(parser, variable, parser.statements);
+		},
+		/**
+		 * 标签访问器
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 标签上下文
+		 * @param {Statement} statement - 当前语句
+		 * @param {Statements} statements - 当前语句块
+		 */
+		visitor: function(parser, context, statement, statements){
+			// 如果当前语句有 target，说明不是最外层语句 或者 不是默认语句流
+			if(
+				statements.target !== null || statement.flow !== FLOW_INHERIT
+			){
+				// 报错
+				parser.error(
+					context,
+					ECMAScriptErrors.template("ILLEGAL_STATEMENT", context.content)
+				);
+			}
 		}
 	});
 
 	return ModuleTag;
-}();
+}(
+	ECMAScriptStatement.FLOW_INHERIT
+);
 
 this.OpenBraceTag = function(){
 	/**
@@ -10150,21 +10171,22 @@ this.IfBodyStatement = function(){
 					// 返回 else 标签
 					return this.bindingOf();
 			}
-		}
+		},
+		flow: ECMAScriptStatement.FLOW_LINEAR
 	});
 	
 	return IfBodyStatement;
 }();
 
-this.ElseBodyStatement = function(){
+this.ElseBodyStatement = function(IfBodyStatement){
 	/**
 	 * else 主体语句
 	 * @param {Statements} statements - 该语句将要所处的语句块
 	 */
 	function ElseBodyStatement(statements){
-		ECMAScriptStatement.call(this, statements);
+		IfBodyStatement.call(this, statements);
 	};
-	ElseBodyStatement = new Rexjs(ElseBodyStatement, ECMAScriptStatement);
+	ElseBodyStatement = new Rexjs(ElseBodyStatement, IfBodyStatement);
 	
 	ElseBodyStatement.props({
 		/**
@@ -10179,7 +10201,9 @@ this.ElseBodyStatement = function(){
 	});
 	
 	return ElseBodyStatement;
-}();
+}(
+	this.IfBodyStatement
+);
 
 this.IfTag = function(IfExpression){
 	/**
@@ -15300,7 +15324,7 @@ this.SuperTag = function(LiteralTag, SuperExpression, SuperStatement){
 
 
 // import 关键字相关
-void function(config){
+void function(ModuleTag, config){
 
 this.ImportExpression = function(compileMember){
 	/**
@@ -15391,7 +15415,7 @@ this.ImportExpression = function(compileMember){
 	}
 );
 
-this.ImportTag = function(ModuleTag, ImportExpression){
+this.ImportTag = function(ImportExpression, visitor){
 	/**
 	 * import 关键字标签
 	 * @param {Number} _type - 标签类型
@@ -15418,27 +15442,18 @@ this.ImportTag = function(ModuleTag, ImportExpression){
 		 * @param {Statements} statements - 当前语句块
 		 */
 		visitor: function(parser, context, statement, statements){
-			// 如果当前语句没有 target，说明最外层语句
-			if(
-				statements.target === null
-			){
-				// 设置当前表达式
-				statement.expression = new ImportExpression(context);
-				return;
-			}
+			// 先调用父类方法，进行环境上下文检测
+			visitor.call(this, parser, context, statement, statements);
 
-			// 报错
-			parser.error(
-				context,
-				ECMAScriptErrors.template("ILLEGAL_STATEMENT", "import")
-			);
+			// 设置当前表达式
+			statement.expression = new ImportExpression(context);
 		}
 	});
 
 	return ImportTag;
 }(
-	this.ModuleTag,
-	this.ImportExpression
+	this.ImportExpression,
+	ModuleTag.prototype.visitor
 );
 
 this.MemberSeparatorTag = function(CommaTag){
@@ -15559,6 +15574,7 @@ this.ModuleNameTag = function(StringTag){
 
 }.call(
 	this,
+	this.ModuleTag,
 	// config
 	new SyntaxConfig("import")
 );
@@ -16274,7 +16290,7 @@ this.ModuleVariableTag = function(ConstVariableTag){
 
 
 // export 标签相关
-void function(VarExpression, FunctionDeclarationExpression, ClassDeclarationExpression, exportVariable){
+void function(ModuleTag, VarExpression, FunctionDeclarationExpression, ClassDeclarationExpression, exportVariable){
 
 this.ExportExpression = function(config, compile){
 	/**
@@ -16373,7 +16389,7 @@ this.ExportStatement = function(){
 	return ExportStatement;
 }();
 
-this.ExportTag = function(ModuleTag, ExportExpression, ExportStatement){
+this.ExportTag = function(ExportExpression, ExportStatement, visitor){
 	/**
 	 * import 关键字标签
 	 * @param {Number} _type - 标签类型
@@ -16406,34 +16422,26 @@ this.ExportTag = function(ModuleTag, ExportExpression, ExportStatement){
 		 * @param {Statements} statements - 当前语句块
 		 */
 		visitor: function(parser, context, statement, statements){
-			// 如果当前语句没有 target，说明最外层语句
-			if(
-				statements.target === null
-			){
-				// 设置当前表达式
-				statement.expression = new ExportExpression(context);
-				// 设置当前语句
-				statements.statement = new ExportStatement(statements);
-				return;
-			}
+			// 先调用父类方法，进行环境上下文检测
+			visitor.call(this, parser, context, statement, statements);
 
-			// 报错
-			parser.error(
-				context,
-				ECMAScriptErrors.template("ILLEGAL_STATEMENT", "export")
-			);
+			// 设置当前表达式
+			statement.expression = new ExportExpression(context);
+			// 设置当前语句
+			statements.statement = new ExportStatement(statements);
 		}
 	});
 
 	return ExportTag;
 }(
-	this.ModuleTag,
 	this.ExportExpression,
-	this.ExportStatement
+	this.ExportStatement,
+	ModuleTag.prototype.visitor
 );
 
 }.call(
 	this,
+	this.ModuleTag,
 	this.VarExpression,
 	this.FunctionDeclarationExpression,
 	this.ClassDeclarationExpression,

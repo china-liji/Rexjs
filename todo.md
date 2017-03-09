@@ -136,6 +136,8 @@ async
 --------
 已完成功能 ↓
 --------
+修复能在 if else 语句下使用 import、export 的 bug - 2017.03.09
+
 完成 export class A {} 及 export function A(){} - 2017.03.09
 
 完成 export { A as X, B as Y, C, D } 语句 - 2017.03.09
