@@ -12,9 +12,7 @@ this.Rexjs = function(Function, create, getPrototypeOf, getProperties, setProtot
 		var __proto__, prototype, properties = getProperties(constructor);
 
 		// 判断父类类型
-		switch(
-			typeof _SuperClass
-		){
+		switch(typeof _SuperClass){
 			// 如果是函数
 			case "function":
 				__proto__ = _SuperClass;
@@ -70,9 +68,7 @@ this.Rexjs = function(Function, create, getPrototypeOf, getProperties, setProtot
 						prototype
 					)
 					.forEach(function(name){
-						if(
-							obj.hasOwnProperty(name)
-						){
+						if(obj.hasOwnProperty(name)){
 							return;
 						}
 
@@ -81,9 +77,7 @@ this.Rexjs = function(Function, create, getPrototypeOf, getProperties, setProtot
 
 					prototype = getPrototypeOf(prototype);
 				}
-				while(
-					prototype
-				);
+				while(prototype);
 			}
 	)
 );
@@ -160,9 +154,7 @@ this.constructor = function(constructor, call, apply, bind, toString, getPrototy
 	Object.getPrototypeOf,
 	// defineProperties
 	function(obj, props){
-		for(
-			var name in props
-		){
+		for(var name in props){
 			var descriptor = getOwnPropertyDescriptor(props, name);
 
 			descriptor.enumerable = false;
@@ -224,9 +216,7 @@ prototype
 			最后，就算其他支持 __proto__ 属性的浏览器，不定义 __proto__ 也没关系，
 			通过 Object.getPrototypeO f方法一样可以获取，只不过在控制台里看不到 __proto__ 属性而已。
 		*/
-		if(
-			!Object.prototype.hasOwnProperty("__proto__")
-		){
+		if(!Object.prototype.hasOwnProperty("__proto__")){
 			return obj;
 		}
 
@@ -257,12 +247,8 @@ this.except = function(){
 	return function except(obj, props){
 		var result = {};
 
-		for(
-			var name in obj
-		){
-			if(
-				props.indexOf(name) > -1
-			){
+		for(var name in obj){
+			if(props.indexOf(name) > -1){
 				continue;
 			}
 
@@ -283,16 +269,12 @@ this.every = function(){
 	 */
 	return function every(obj, fn, _this, _arrayLike){
 		// 如果是数组
-		if(
-			_arrayLike
-		){
+		if(_arrayLike){
 			for(
 				var i = 0, n = obj.length;i < n;i++
 			){
 				// 调用测试函数
-				if(
-					fn.call(_this, obj[i], i, obj)
-				){
+				if(fn.call(_this, obj[i], i, obj)){
 					continue;
 				}
 				
@@ -301,13 +283,9 @@ this.every = function(){
 		}
 		else {
 			// 遍历
-			for(
-				var name in obj
-			){
+			for(var name in obj){
 				// 调用测试函数
-				if(
-					fn.call(_this, obj[name], name, obj)
-				){
+				if(fn.call(_this, obj[name], name, obj)){
 					continue;
 				}
 				
@@ -329,21 +307,15 @@ this.forEach = function(every){
 	 */
 	return function forEach(obj, fn, _this, _arrayLike){
 		// 如果是数组
-		if(
-			_arrayLike
-		){
-			for(
-				var i = 0, n = obj.length;i < n;i++
-			){
+		if(_arrayLike){
+			for(var i = 0, n = obj.length;i < n;i++){
 				// 调用测试函数
 				fn.call(_this, obj[i], i, obj)
 			}
 		}
 		else {
 			// 遍历
-			for(
-				var name in obj
-			){
+			for(var name in obj){
 				// 调用测试函数
 				fn.call(_this, obj[name], name, obj)
 			}
@@ -390,9 +362,7 @@ this.set = function(){
 	 * @param {Object} props - 需要添加或修改的属性集合
 	 */
 	return function set(obj, props){
-		for(
-			var name in props
-		){
+		for(var name in props){
 			obj[name] = props[name];
 		}
 
@@ -421,9 +391,7 @@ this.toString = function(){
 	return function toString(){
 		var name = this.name;
 
-		if(
-			name
-		){
+		if(name){
 			return "function " + name + "() { [native code] }";
 		}
 
@@ -435,9 +403,7 @@ this.forEach(
 	this,
 	function(property, name, self){
 		// 如果属性是函数
-		if(
-			typeof property === "function"
-		){
+		if(typeof property === "function"){
 			// 将函数的 toString 设置为 self.toString，实现模拟 native code
 			property.toString = self.toString;
 		}

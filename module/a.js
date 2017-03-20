@@ -1,4 +1,4 @@
-export let a = 1, b = 3;
+export let a = 1, b = 2;
 
 export default class a{}
 

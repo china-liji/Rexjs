@@ -222,9 +222,7 @@ this.ConditionStatement = function(){
 		 */
 		catch: function(parser, context){
 			// 如果不是小括号
-			if(
-				context.content !== ")"
-			){
+			if(context.content !== ")"){
 				// 报错
 				parser.error(context);
 				return null;
@@ -591,7 +589,7 @@ this.ExpressionSeparatorTag = function(){
 	return ExpressionSeparatorTag;
 }();
 
-this.ModuleTag = function(FLOW_INHERIT){
+this.ModuleTag = function(FLOW_MAIN){
 	/**
 	 * 模块标签
 	 * @param {Number} _type - 标签类型
@@ -620,9 +618,7 @@ this.ModuleTag = function(FLOW_INHERIT){
 		 */
 		visitor: function(parser, context, statement, statements){
 			// 如果当前语句有 target，说明不是最外层语句 或者 不是默认语句流
-			if(
-				statements.target !== null || statement.flow !== FLOW_INHERIT
-			){
+			if(statements.target !== null || statement.flow !== FLOW_MAIN){
 				// 报错
 				parser.error(
 					context,
@@ -634,7 +630,7 @@ this.ModuleTag = function(FLOW_INHERIT){
 
 	return ModuleTag;
 }(
-	ECMAScriptStatement.FLOW_INHERIT
+	ECMAScriptStatement.FLOW_MAIN
 );
 
 this.OpenBraceTag = function(){
@@ -1100,13 +1096,9 @@ this.RegExpTag = function(visitor){
 			
 			// 遍历正则标记
 			flags:
-			for(
-				var n = content.length - 1;n > -1;n--
-			){
+			for(var n = content.length - 1;n > -1;n--){
 				// 判断当前标记
-				switch(
-					content[n]
-				){
+				switch(content[n]){
 					case "/":
 						break flags;
 
@@ -1136,9 +1128,7 @@ this.RegExpTag = function(visitor){
 				}
 				
 				// 如果对应标记出现过 2 次
-				if(
-					count > 1
-				){
+				if(count > 1){
 					// 报错
 					parser.error(context, ECMAScriptErrors.REGEXP_FLAGS);
 					return;
@@ -1460,9 +1450,7 @@ this.VariableTag = function(IdentifierTag){
 
 			do {
 				// 如果已被收集
-				if(
-					this.containsBy(content, statements.collections)
-				){
+				if(this.containsBy(content, statements.collections)){
 					// 报错
 					parser.error(
 						context,
@@ -1475,9 +1463,7 @@ this.VariableTag = function(IdentifierTag){
 				statements = statements.target;
 			}
 			// 如果语句块存在
-			while(
-				statements
-			)
+			while(statements);
 
 			return false;
 		},
@@ -1511,9 +1497,7 @@ this.VariableDeclarationTag = function(VariableTag, visitor){
 			var content = context.content;
 
 			// 如果已被收集
-			if(
-				this.collected(parser, context, statements)
-			){
+			if(this.collected(parser, context, statements)){
 				return;
 			}
 			
@@ -1930,9 +1914,7 @@ this.BracketAccessorStatement = function(){
 		 */
 		catch: function(parser, context){
 			// 如果不是关闭分组小括号
-			if(
-				context.content !== "]"
-			){
+			if(context.content !== "]"){
 				// 报错
 				parser.error(context);
 				return null;
@@ -2093,9 +2075,7 @@ this.CommaStatement = function(){
 		 */
 		try: function(parser, context){
 			// 如果不是逗号
-			if(
-				context.content !== ","
-			){
+			if(context.content !== ","){
 				return null;
 			}
 
@@ -2254,9 +2234,7 @@ this.UnaryStatement = function(){
 		 */
 		try: function(parser, context){
 			// 如果一元标签验证该标签为表达式分隔符标签
-			if(
-				this.target.expression.context.tag.isSeparator(context)
-			){
+			if(this.target.expression.context.tag.isSeparator(context)){
 				// 跳出语句并设置 operand
 				this.out().operand = this.expression;
 			}
@@ -2622,14 +2600,10 @@ this.UnaryAssignmentStatement = function(catchMethod, tryMethod, checkExpression
 		var expression = statement.expression;
 
 		// 如果当前表达式是赋值表达式
-		if(
-			expression instanceof AssignableExpression
-		){
+		if(expression instanceof AssignableExpression){
 			var ctx = expression.context;
 
-			switch(
-				true
-			){
+			switch(true){
 				// 如果是属性访问表达式
 				case expression instanceof AccessorExpression:
 					break;
@@ -2920,9 +2894,7 @@ this.BinaryStatement = function(){
 		 */
 		try: function(parser, context){
 			// 如果是表达式分隔符标签
-			if(
-				this.target.expression.latest.context.tag.isSeparator(context)
-			){
+			if(this.target.expression.latest.context.tag.isSeparator(context)){
 				// 跳出语句并添加表达式
 				this.out().add(this.expression);
 			}
@@ -2970,9 +2942,7 @@ this.BinaryTag = function(ExpressionSeparatorTag, BinaryExpression, BinaryStatem
 			var expression = statement.expression;
 
 			// 如果当前表达式是二元表达式
-			if(
-				expression instanceof BinaryExpression
-			){
+			if(expression instanceof BinaryExpression){
 				// 替换最近添加的表达式
 				expression.replace(
 					new LeftHandSideExpression(expression.latest, context)
@@ -3038,9 +3008,7 @@ this.AssignmentTag = function(BinaryExpression, AssignableExpression, Identifier
 		visitor: function(parser, context, statement, statements){
 			var expression = statement.expression;
 
-			switch(
-				true
-			){
+			switch(true){
 				// 如果表达式是可赋值表达式
 				case expression instanceof AssignableExpression:
 					break;
@@ -3048,9 +3016,7 @@ this.AssignmentTag = function(BinaryExpression, AssignableExpression, Identifier
 				// 如果表达式是二元表达式
 				case expression instanceof BinaryExpression:
 					// 如果上一个表达式也属于赋值表达式
-					if(
-						expression[expression.length - 2].context.tag.precedence === 0
-					){
+					if(expression[expression.length - 2].context.tag.precedence === 0){
 						expression = expression[expression.length - 1];
 						break;
 					}
@@ -3062,14 +3028,10 @@ this.AssignmentTag = function(BinaryExpression, AssignableExpression, Identifier
 			}
 
 			// 如果是标识符表达式，那么需要验证是否为常量赋值
-			if(
-				expression instanceof IdentifierExpression
-			){
+			if(expression instanceof IdentifierExpression){
 				var ctx = expression.context, tag = ctx.tag;
 
-				switch(
-					true
-				){
+				switch(true){
 					// 如果当前是声明变量名标签，则不判断是否被收集，因为在声明中，已经判断，再判断的话，100% 由于重复定义，而报错
 					case tag instanceof VariableDeclarationTag:
 						break;
@@ -3707,9 +3669,7 @@ this.PositiveStatement = function(){
 		 */
 		catch: function(parser, context){
 			// 如果不是冒号
-			if(
-				context.content !== ":"
-			){
+			if(context.content !== ":"){
 				// 报错
 				parser.error(context);
 				return null;
@@ -3726,9 +3686,7 @@ this.PositiveStatement = function(){
 		 */
 		try: function(parser, context){
 			// 如果是逗号
-			if(
-				context.content === ","
-			){
+			if(context.content === ","){
 				// 报错
 				parser.error(context);
 			}
@@ -3765,9 +3723,7 @@ this.NegativeStatement = function(){
 		 */
 		try: function(parser, context){
 			// 如果是逗号
-			if(
-				context.content === ","
-			){
+			if(context.content === ","){
 				// 跳出语句并设置 negative
 				this.out().negative = this.expression;
 			}
@@ -3912,12 +3868,8 @@ this.CallExpression = function(UnaryExpression, AccessorExpression, config, comp
 			var operand = this.operand;
 
 			// 如果有拓展符且需要编译
-			if(
-				this.hasSpread && config.spread
-			){
-				switch(
-					true
-				){
+			if(this.hasSpread && config.spread){
+				switch(true){
 					// 如果是对象方法的调用
 					case operand instanceof AccessorExpression:
 						// 根据访问器编译
@@ -3927,9 +3879,7 @@ this.CallExpression = function(UnaryExpression, AccessorExpression, config, comp
 					// 如果是一元表达式
 					case operand instanceof UnaryExpression:
 						// 而且如果是 new 关键字
-						if(
-							operand.context.content === "new"
-						){
+						if(operand.context.content === "new"){
 							// 根据 new 关键字编译
 							compileWithNew(contentBuilder, this, operand);
 							return;
@@ -3968,9 +3918,7 @@ this.CallExpression = function(UnaryExpression, AccessorExpression, config, comp
 		contentBuilder.appendString(")");
 
 		// 如果是中括号属性访问表达式
-		if(
-			operand instanceof BracketAccessorExpression
-		){
+		if(operand instanceof BracketAccessorExpression){
 			// 提取中括号
 			operand.property.extractTo(contentBuilder);
 		}
@@ -4042,9 +3990,7 @@ this.CallStatement = function(){
 		 */
 		catch: function(parser, context){
 			// 如果不是关闭分组小括号
-			if(
-				context.content !== ")"
-			){
+			if(context.content !== ")"){
 				// 报错
 				parser.error(context, ECMAScriptErrors.CALL);
 				return null;
@@ -4062,9 +4008,7 @@ this.CallStatement = function(){
 		 */
 		try: function(parser, context){
 			// 如果不是逗号
-			if(
-				context.content !== ","
-			){
+			if(context.content !== ","){
 				return null;
 			}
 
@@ -4248,9 +4192,7 @@ this.SpreadExpression = function(config){
 		 */
 		extractTo: function(contentBuilder){
 			// 如果需要编译拓展符
-			if(
-				config.spread
-			){
+			if(config.spread){
 				// 追加编译拓展符方法
 				contentBuilder.appendString("new Rexjs.Parameter(");
 				// 提取参数
@@ -4299,9 +4241,7 @@ this.SpreadStatement = function(){
 		 */
 		try: function(parser, context){
 			// 如果是逗号
-			if(
-				context.content === ","
-			){
+			if(context.content === ","){
 				// 跳出语句并设置 argument
 				this.out().argument = this.expression;
 			}
@@ -4348,15 +4288,11 @@ this.SpreadTag = function(SpreadExpression, SpreadStatement, AccessorExpression)
 			statements.statement = new SpreadStatement(statements);
 
 			// 如果已有拓展符
-			if(
-				callExpression.hasSpread
-			){
+			if(callExpression.hasSpread){
 				return;
 			}
 
-			switch(
-				false
-			){
+			switch(false){
 				// 如果函数调用表达式的操作对象不是属性表达式
 				case callExpression.operand instanceof AccessorExpression:
 					break;
@@ -4424,9 +4360,7 @@ this.ArrayStatement = function(){
 		 */
 		catch: function(parser, context){
 			// 判断标签内容
-			switch(
-				context.content
-			){
+			switch(context.content){
 				case ",":
 					// 跳出语句并添加表达式
 					this.out().inner.add(this.expression);
@@ -4451,9 +4385,7 @@ this.ArrayStatement = function(){
 		 */
 		try: function(parser, context){
 			// 如果不是逗号
-			if(
-				context.content !== ","
-			){
+			if(context.content !== ","){
 				return null;
 			}
 
@@ -4674,9 +4606,7 @@ this.BlockBodyStatement = function(DefaultBlockBodyExpression){
 		 */
 		catch: function(parser, context){
 			// 如果不是关闭大括号
-			if(
-				context.content !== "}"
-			){
+			if(context.content !== "}"){
 				return null;
 			}
 
@@ -5319,9 +5249,7 @@ this.ArgumentStatement = function(){
 			var inner = this.out().arguments.inner;
 
 			// 判断标签内容
-			switch(
-				context.content
-			){
+			switch(context.content){
 				// 如果是逗号（参数名上下文只允许接等于号赋值标签，所以逗号会进入 catch）
 				case ",":
 					// 添加参数表达式
@@ -5347,9 +5275,7 @@ this.ArgumentStatement = function(){
 		 */
 		try: function(parser, context){
 			// 如果不是逗号
-			if(
-				context.content !== ","
-			){
+			if(context.content !== ","){
 				return null;
 			}
 
@@ -5442,9 +5368,7 @@ this.ArgumentNameTag = function(VariableDeclarationTag, ArgumentExpression){
 			var content = context.content;
 
 			// 如果已经定义，说明是重复的参数名
-			if(
-				collection.contains(content)
-			){
+			if(collection.contains(content)){
 				// 报错
 				parser.error(context, ECMAScriptErrors.DUPLICATE_PARAMETER_NAME);
 				return;
@@ -5590,9 +5514,7 @@ this.DefaultArgumentExpression = function(ArgumentExpression, config){
 		 */
 		extractTo: function(contentBuilder, anotherBuilder){
 			// 如果需要编译默认参数
-			if(
-				config.defaultArgument
-			){
+			if(config.defaultArgument){
 				var context = this.context;
 
 				// 追加参数名至 contentBuilder
@@ -5648,9 +5570,7 @@ this.ArgumentAssignmentStatement = function(){
 		 */
 		try: function(parser, context){
 			// 如果是逗号
-			if(
-				context.content === ","
-			){
+			if(context.content === ","){
 				// 跳出语句并设置 assignment
 				this.out().assignment = this.expression;
 			}
@@ -5734,9 +5654,7 @@ this.RestArgumentExpression = function(ArgumentExpression, config){
 		 */
 		extractTo: function(contentBuilder, anotherBuilder){
 			// 如果需要编译省略参数
-			if(
-				config.restArgument
-			){
+			if(config.restArgument){
 				// 将默认参数名追加至临时生成器
 				anotherBuilder.appendContext(this.name);
 				// 将赋值运算追加至临时生成器
@@ -5896,9 +5814,7 @@ this.FunctionBodyExpression = function(extractTo, insertDefaults){
 			var defaults = defaultArgumentBuilder.result;
 
 			// 如果没有默认或省略参数
-			if(
-				defaults.length === 0
-			){
+			if(defaults.length === 0){
 				// 直接提取函数主体
 				extractTo.call(this, contentBuilder);
 				return;
@@ -5923,9 +5839,7 @@ this.FunctionBodyExpression = function(extractTo, insertDefaults){
 		inner[0].expression.extractTo(builder);
 
 		// 判断临时生成器内容
-		switch(
-			builder.result
-		){
+		switch(builder.result){
 			// 如果是 'use strict'
 			case "'use strict'":
 			// 如果是 "use strict"
@@ -6191,9 +6105,7 @@ this.TargetTag = function(SCOPE_CLOSURE, SCOPE_LAZY, visitor){
 			doBlock:
 			do {
 				// 判断作用域类型
-				switch(
-					s.scope & SCOPE_LAZY
-				){
+				switch(s.scope & SCOPE_LAZY){
 					// 如果是惰性闭包
 					case SCOPE_LAZY:
 						break doBlock;
@@ -6210,9 +6122,7 @@ this.TargetTag = function(SCOPE_CLOSURE, SCOPE_LAZY, visitor){
 						break;
 				}
 			}
-			while(
-				s
-			)
+			while(s);
 
 			// 报错
 			parser.error(statement.expression.context, ECMAScriptErrors.TARGET);
@@ -6298,9 +6208,7 @@ this.GroupingStatement = function(){
 		 */
 		catch: function(parser, context){
 			// 如果不是关闭分组小括号
-			if(
-				context.content !== ")"
-			){
+			if(context.content !== ")"){
 				// 报错
 				parser.error(context);
 				return null;
@@ -6312,9 +6220,7 @@ this.GroupingStatement = function(){
 			inner.set(this.expression);
 
 			// 如果经过上面设置表达式后，长度还是 0，就说明是空的小括号，就应该是要作为箭头函数参数存在
-			if(
-				inner.length === 0
-			){
+			if(inner.length === 0){
 				// 设置 asArguments，表示这个分组表达式要作为箭头函数的参数使用
 				groupingExpression.asArguments = true;
 			}
@@ -6330,9 +6236,7 @@ this.GroupingStatement = function(){
 		 */
 		try: function(parser, context){
 			// 如果不是逗号
-			if(
-				context.content !== ","
-			){
+			if(context.content !== ","){
 				return null;
 			}
 
@@ -6372,9 +6276,7 @@ this.IllegibleRestArgumentStatement = function(){
 		 */
 		try: function(parser, context){
 			// 如果是逗号
-			if(
-				context.content === ","
-			){
+			if(context.content === ","){
 				// 跳出该语句并设置 operand
 				this.out().operand = this.expression;
 			}
@@ -6413,13 +6315,9 @@ this.GroupingContextStatement = function(ArgumentsExpression, BinaryExpression, 
 			var expression = this.out();
 
 			// 如果不是箭头符号
-			if(
-				context.content !== "=>"
-			){
+			if(context.content !== "=>"){
 				// 如果要作为参数，即 有省略参数符号 或 空的小括号
-				if(
-					expression.asArguments
-				){
+				if(expression.asArguments){
 					// 报错
 					error(parser, expression);
 				}
@@ -6430,14 +6328,10 @@ this.GroupingContextStatement = function(ArgumentsExpression, BinaryExpression, 
 			var inner = expression.inner, argumentsExpression = new ArgumentsExpression(expression.open);
 
 			// 遍历项
-			for(
-				var i = 0, j = inner.length;i < j;i++
-			){
+			for(var i = 0, j = inner.length;i < j;i++){
 				var exp = inner[i];
 
-				switch(
-					true
-				){
+				switch(true){
 					// 如果是标识符表达式
 					case exp instanceof IdentifierExpression:
 						i = ifIdentifier(parser, exp, argumentsExpression, i, j);
@@ -6471,19 +6365,13 @@ this.GroupingContextStatement = function(ArgumentsExpression, BinaryExpression, 
 		var context;
 
 		// 如果是省略参数表达式
-		if(
-			expression instanceof RestArgumentExpression
-		){
+		if(expression instanceof RestArgumentExpression){
 			var operand = expression.operand;
 
 			// 如果省略符的操作对象是标识符表达式
-			if(
-				operand instanceof IdentifierExpression
-			){
+			if(operand instanceof IdentifierExpression){
 				// 如果省略参数不是最后一项
-				if(
-					i !== j - 1
-				){
+				if(i !== j - 1){
 					// 报错
 					parser.error(expression.context, ECMAScriptErrors.REST);
 					return j;
@@ -6513,9 +6401,7 @@ this.GroupingContextStatement = function(ArgumentsExpression, BinaryExpression, 
 	function(parser, expression, argumentsExpression, i, j){
 		var leftHandSideExpression = expression[0], left = leftHandSideExpression.left, context = left.context;
 
-		switch(
-			false
-		){
+		switch(false){
 			// 如果左侧表达式不是标识符表达式
 			case left instanceof IdentifierExpression:
 				// 报错
@@ -6631,20 +6517,23 @@ this.IllegibleRestTag = function(RestTag, IllegibleRestArgumentExpression, Illeg
 		visitor: function(parser, context, statement, statements){
 			var groupingExpression = statement.target.expression;
 
+			// 设置当前表达式
 			statement.expression = new IllegibleRestArgumentExpression(
 				context,
 				groupingExpression.inner.length
 			);
 
+			// 设置当前语句
 			statements.statement = new IllegibleRestArgumentStatement(statements);
 
-			if(
-				groupingExpression.asArguments
-			){
+			// 如果已经标记过该属性
+			if(groupingExpression.asArguments){
 				return;
 			}
 			
+			// 设置表达式属性，标识视为参数
 			groupingExpression.asArguments = true;
+			// 设置参数起始索引
 			groupingExpression.restIndex = groupingExpression.inner.length;
 		}
 	});
@@ -6774,9 +6663,7 @@ this.ArrowFunctionExpression = function(){
 			var defaultArgumentBuilder = new ContentBuilder();
 
 			// 如果需要编译箭头函数
-			if(
-				config.arrowFunction
-			){
+			if(config.arrowFunction){
 				// 追加参数起始小括号
 				contentBuilder.appendString("(function");
 				// 提取并编译函数参数
@@ -6872,9 +6759,7 @@ this.ArrowFunctionBodyExpression = function(FunctionBodyExpression){
 			contentBuilder.appendString("{");
 
 			// 如果没有默认或省略参数
-			if(
-				defaults.length > 0
-			){
+			if(defaults.length > 0){
 				// 插入默认参数
 				contentBuilder.appendString(defaults);
 			}
@@ -6893,9 +6778,7 @@ this.ArrowFunctionBodyExpression = function(FunctionBodyExpression){
 		 */
 		extractTo: function(contentBuilder, defaultArgumentBuilder){
 			// 如果有默认参数
-			if(
-				defaultArgumentBuilder.result.length > 0
-			){
+			if(defaultArgumentBuilder.result.length > 0){
 				// 进行编译
 				this.compileTo(contentBuilder, defaultArgumentBuilder);
 				return;
@@ -6939,9 +6822,7 @@ this.ArrowContextStatement = function(ArrowFunctionBodyExpression){
 		 */
 		try: function(parser, context){
 			// 如果是逗号
-			if(
-				context.content == ","
-			){
+			if(context.content == ","){
 				// 跳出语句并设置 body
 				this.out().body = new ArrowFunctionBodyExpression(this.expression);
 			}
@@ -6985,9 +6866,7 @@ this.ArrowTag = function(ExpressionSeparatorTag, ArrowFunctionExpression, Single
 		visitor: function(parser, context, statement, statements){
 			var expression = statement.expression;
 
-			switch(
-				true
-			){
+			switch(true){
 				// 如果是标识符表达式
 				case expression instanceof IdentifierExpression:
 					// 设置当前表达式
@@ -7010,9 +6889,7 @@ this.ArrowTag = function(ExpressionSeparatorTag, ArrowFunctionExpression, Single
 			}
 
 			// 如果箭头符号换行了
-			if(
-				(expression.state & STATE_STATEMENT_ENDABLE) === STATE_STATEMENT_ENDABLE
-			){
+			if((expression.state & STATE_STATEMENT_ENDABLE) === STATE_STATEMENT_ENDABLE){
 				// 报错
 				parser.error(context, ECMAScriptErrors.NEWLINE_BEFORE_ARROW);
 				return;
@@ -7163,9 +7040,7 @@ this.PropertyExpression = function(ShorthandPropertyValueExpression, config){
 		 */
 		compileTo: function(contentBuilder){
 			// 如果是访问器
-			if(
-				this.accessible
-			){
+			if(this.accessible){
 				// 追加 defineProperty 的调用
 				contentBuilder.appendString("defineProperty(object,");
 				// 提取属性名
@@ -7196,9 +7071,7 @@ this.PropertyExpression = function(ShorthandPropertyValueExpression, config){
 		 */
 		extractTo: function(contentBuilder){
 			// 如果是访问器
-			if(
-				this.accessible
-			){
+			if(this.accessible){
 				// 追加访问器
 				contentBuilder.appendContext(this.accessor);
 				// 追加空格
@@ -7222,9 +7095,7 @@ this.PropertyExpression = function(ShorthandPropertyValueExpression, config){
 		 * @param {Context} context - 需要判断的指定标签
 		 */
 		named: function(context){
-			switch(
-				context
-			){
+			switch(context){
 				// 如果 context 不存在
 				case null:
 					break;
@@ -7351,9 +7222,7 @@ this.PropertyValueStatement = function(){
 		},
 		try: function(parser, context){
 			// 如果是逗号
-			if(
-				context.content === ","
-			){
+			if(context.content === ","){
 				// 跳出语句并设置 operand
 				this.out().value.operand = this.expression;
 			}
@@ -7383,9 +7252,7 @@ this.PropertyStatement = function(PropertyExpression, ifComma){
 		 */
 		catch: function(parser, context){
 			// 如果不是结束大括号
-			if(
-				context.content !== "}"
-			){
+			if(context.content !== "}"){
 				// 报错
 				parser.error(context);
 				return null;
@@ -7393,9 +7260,7 @@ this.PropertyStatement = function(PropertyExpression, ifComma){
 
 			var expression = this.expression, objectExpression = this.out();
 
-			switch(
-				true
-			){
+			switch(true){
 				// 如果表达式是空项
 				case expression.empty():
 					break;
@@ -7425,9 +7290,7 @@ this.PropertyStatement = function(PropertyExpression, ifComma){
 		 * @param {Context} context - 语法标签上下文
 		 */
 		try: function(parser, context){
-			switch(
-				context.content
-			){
+			switch(context.content){
 				// 如果是冒号
 				case ":":
 					break;
@@ -7452,9 +7315,7 @@ this.PropertyStatement = function(PropertyExpression, ifComma){
 	// ifComma
 	function(parser, statement, expression, context){
 		// 如果是属性访问器
-		if(
-			expression.accessible
-		){
+		if(expression.accessible){
 			// 核对访问器函数
 			expression.accessor.tag.checkFunction(
 				parser,
@@ -7565,9 +7426,7 @@ visitorOfMathematicalNumeral = function(){
 	 */
 	return function(parser, context, statement, statements){
 		// 如果需要编译
-		if(
-			this.useParse()
-		){
+		if(this.useParse()){
 			// 设置对象表达式的 useFunction 属性，表示要用函数包裹，进行封装
 			statement.target.expression.useFunction = true;
 		}
@@ -7848,9 +7707,7 @@ this.IdentifierPropertyValueStatement = function(PropertyValueStatement, Shortha
 			var propertyExpression = this.out();
 
 			// 如果是逗号
-			if(
-				context.content === ","
-			){
+			if(context.content === ","){
 				// 设置 value 为简写属性值表达式
 				propertyExpression.value = new ShorthandPropertyValueExpression(propertyExpression.name.context);
 			}
@@ -8063,9 +7920,7 @@ this.ObjectComputedNameStatement = function(){
 		 */
 		catch: function(parser, context){
 			// 如果不是结束中括号
-			if(
-				context.content !== "]"
-			){
+			if(context.content !== "]"){
 				// 报错
 				parser.error(context);
 				return null;
@@ -8084,9 +7939,7 @@ this.ObjectComputedNameStatement = function(){
 		},
 		try: function(parser, context){
 			// 如果是逗号
-			if(
-				context.content === ","
-			){
+			if(context.content === ","){
 				// 报错
 				parser.error(context);
 			}
@@ -8132,9 +7985,7 @@ this.OpenComputedPropertyNameTag = function(OpenBracketTag, ComputedPropertyName
 			statement.expression.name = new ComputedPropertyNameExpression(context);
 
 			// 如果需要编译计算式名称
-			if(
-				config.computedName
-			){
+			if(config.computedName){
 				// 设置对象表达式的 useFunction 属性，表示要用函数包裹，进行封装
 				statement.target.expression.useFunction = true;
 			}
@@ -8559,14 +8410,10 @@ this.PropertyAccessorTag = function(FunctionExpression, AccessorStatement, visit
 		 */
 		checkFunction: function(parser, expression, context){
 			// 如果是函数表达式
-			if(
-				expression instanceof FunctionExpression
-			){
+			if(expression instanceof FunctionExpression){
 				var length = expression.arguments.inner.length;
 				
-				switch(
-					true
-				){
+				switch(true){
 					// 如果长度小于最小参数长度
 					case length < this.minArgs:
 						// 报错
@@ -8705,9 +8552,7 @@ this.ObjectExpression = function(extractTo, compileItem){
 		 */
 		extractTo: function(contentBuilder){
 			// 如果需要使用函数包裹起来
-			if(
-				this.useFunction
-			){
+			if(this.useFunction){
 				// 追加函数闭包头部
 				contentBuilder.appendString("(function(object, defineProperty){");
 				// 编译内容
@@ -9024,9 +8869,7 @@ this.TerminatedFlowExpression = function(){
 			contentBuilder.appendContext(this.context);
 
 			// 如果是空表达式
-			if(
-				object instanceof EmptyExpression
-			){
+			if(object instanceof EmptyExpression){
 				return;
 			}
 
@@ -9078,7 +8921,7 @@ this.TerminatedFlowTag = function(TerminatedFlowExpression, TerminatedFlowStatem
 	
 	TerminatedFlowTag.props({
 		$class: CLASS_STATEMENT_BEGIN,
-		flow: ECMAScriptStatement.FLOW_INHERIT,
+		flow: ECMAScriptStatement.FLOW_MAIN,
 		/**
 		 * 标签访问器
 		 * @param {SyntaxParser} parser - 语法解析器
@@ -9140,13 +8983,9 @@ this.ReturnTag = function(SCOPE_CLOSURE, visitor){
 			var s = statements;
 
 			// 如果语句块存在
-			while(
-				s
-			){
+			while(s){
 				// 如果是闭包，而且不是全局系统最外层闭包
-				if(
-					(s.scope & SCOPE_CLOSURE) === SCOPE_CLOSURE
-				){
+				if((s.scope & SCOPE_CLOSURE) === SCOPE_CLOSURE){
 					// 调用父类访问器
 					visitor.call(this, parser, context, statement, statements);
 
@@ -9257,9 +9096,7 @@ this.TerminatedBranchFlowStatement = function(catchMethod, withoutAnyFlow){
 		catch: function(parser, context){
 			var expression = this.expression, terminatedFlowExpression = this.target.expression;
 
-			switch(
-				false
-			){
+			switch(false){
 				// 如果不是空表达式，说明是属于标记表达式，而标记表达式已经经过验证
 				case expression instanceof EmptyExpression:
 					break;
@@ -9291,19 +9128,13 @@ this.TerminatedBranchFlowStatement = function(catchMethod, withoutAnyFlow){
 	TerminatedFlowStatement.prototype.catch,
 	// withoutAnyFlow
 	function(statements, flow){
-		while(
-			statements
-		){
+		while(statements){
 			var statement = statements.statement;
 
 			// 如果语句存在
-			while(
-				statement
-			){
+			while(statement){
 				// 如果流一致
-				if(
-					(statement.flow & flow) === flow
-				){
+				if((statement.flow & flow) === flow){
 					return false;
 				}
 
@@ -9393,9 +9224,7 @@ this.LabelledIdentifierTag = function(LabelTag, withoutAnyFlow){
 		 */
 		visitor: function(parser, context, statement, statements){
 			// 如果没有存在指定的流语句中
-			if(
-				withoutAnyFlow(statements, statement.target.expression.context.tag, context.content)
-			){
+			if(withoutAnyFlow(statements, statement.target.expression.context.tag, context.content)){
 				// 报错
 				parser.error(
 					context,
@@ -9416,20 +9245,14 @@ this.LabelledIdentifierTag = function(LabelTag, withoutAnyFlow){
 	// withoutAnyFlow
 	function(statements, terminatedFlowTag, content){
 		// 如果语句块存在
-		while(
-			statements
-		){
+		while(statements){
 			var statement = statements.statement;
 
 			// 如果目标语句存在
-			while(
-				statement
-			){
+			while(statement){
 				var target = statement.target;
 
-				switch(
-					false
-				){
+				switch(false){
 					// 如果目标语句不是标记语句
 					case statement instanceof LabelledStatement:
 						break;
@@ -9567,9 +9390,7 @@ this.VarExpression = function(IdentifierExpression, config){
 			var list = this.list;
 
 			// 遍历 list
-			for(
-				var i = 0, j = list.length;i < j;i++
-			){
+			for(var i = 0, j = list.length;i < j;i++){
 				var expression = list[i];
 
 				// 执行回调
@@ -9619,9 +9440,7 @@ this.VarStatement = function(){
 		 */
 		try: function(parser, context){
 			// 如果不是逗号
-			if(
-				context.content !== ","
-			){
+			if(context.content !== ","){
 				return null;
 			}
 
@@ -9893,9 +9712,7 @@ this.ConstStatement = function(catchMethod, tryMethod){
 		 */
 		catch: function(parser, context){
 			// 如果表达式是可赋值表达式
-			if(
-				this.expression instanceof IdentifierExpression
-			){
+			if(this.expression instanceof IdentifierExpression){
 				// 由于没有赋值操作，则报错
 				parser.error(this.expression.context, ECMAScriptErrors.MISSING_INITIALIZER);
 				// 返回分隔符标签
@@ -9911,9 +9728,7 @@ this.ConstStatement = function(catchMethod, tryMethod){
 		 */
 		try: function(parser, context){
 			// 如果表达式是可赋值表达式
-			if(
-				this.expression instanceof IdentifierExpression
-			){
+			if(this.expression instanceof IdentifierExpression){
 				// 由于没有赋值操作，则报错
 				parser.error(this.expression.context, ECMAScriptErrors.MISSING_INITIALIZER);
 				return null;
@@ -10101,16 +9916,12 @@ this.IfExpression = function(ConditionalExpression){
 			this.ifBody.extractTo(contentBuilder);
 			
 			// 如果没有 else 关键字
-			if(
-				elseContext === null
-			){
+			if(elseContext === null){
 				return;
 			}
 			
 			// 判断 if 主体表达式是否需要加分号
-			if(
-				(this.ifBody.state & STATE_STATEMENT_ENDED) !== STATE_STATEMENT_ENDED
-			){
+			if((this.ifBody.state & STATE_STATEMENT_ENDED) !== STATE_STATEMENT_ENDED){
 				// 追加分号
 				contentBuilder.appendString(";");
 			}
@@ -10154,9 +9965,7 @@ this.IfBodyStatement = function(){
 			// 跳出语句并设置 if 表达式的主体
 			this.out().ifBody = expression;
 			
-			switch(
-				false
-			){
+			switch(false){
 				// 如果不是 else
 				case context.content === "else":
 					break;
@@ -10605,9 +10414,7 @@ this.DoExpression = function(ConditionalExpression){
 			body.extractTo(contentBuilder);
 			
 			// 判断 do while 主体表达式是否需要加分号
-			if(
-				(body.state & STATE_STATEMENT_ENDED) !== STATE_STATEMENT_ENDED
-			){
+			if((body.state & STATE_STATEMENT_ENDED) !== STATE_STATEMENT_ENDED){
 				// 追加分号
 				contentBuilder.appendString(";");
 			}
@@ -10654,9 +10461,7 @@ this.DoStatement = function(){
 		catch: function(parser, context){
 			var expression = this.expression;
 			
-			switch(
-				false
-			){
+			switch(false){
 				// 如果不是 while 关键字
 				case context.content === "while":
 					break;
@@ -10675,9 +10480,7 @@ this.DoStatement = function(){
 			var tag = context.tag;
 
 			// 如果是语句结束标签
-			if(
-				tag.class.statementEnd
-			){
+			if(tag.class.statementEnd){
 				// 返回该标签
 				return tag;
 			}
@@ -10889,9 +10692,7 @@ this.ForExpression = function(ConditionalExpression, config, compileOf){
 			contentBuilder.appendContext(this.context);
 
 			// 如果是 of 标签而且需要编译 of
-			if(
-				this.iterator === "of" && config.of
-			){
+			if(this.iterator === "of" && config.of){
 				// 编译 for of
 				compileOf(
 					this.condition,
@@ -11141,9 +10942,7 @@ this.ForOfTag = function(IteratorTag, config, visitor){
 		 */
 		visitor: function(parser, context, statement, statements){
 			// 如果需要编译 of
-			if(
-				config.of
-			){
+			if(config.of){
 				// 生成并记录临时变量名
 				statement.target.expression.variable = statements.collections.generate();
 			}
@@ -11205,9 +11004,7 @@ this.FCIStatement = function(ForConditionInnerStatement, hasError){
 			var tag, expression = this.expression, target = this.target;
 
 			// 判断标签内容
-			switch(
-				context.content
-			){
+			switch(context.content){
 				// 如果是分号
 				case ";":
 					// 设置标签
@@ -11230,9 +11027,7 @@ this.FCIStatement = function(ForConditionInnerStatement, hasError){
 				// 如果是 of
 				case "of":
 					// 如果验证出错
-					if(
-						hasError(parser, expression, context)
-					){
+					if(hasError(parser, expression, context)){
 						return;
 					}
 
@@ -11260,9 +11055,7 @@ this.FCIStatement = function(ForConditionInnerStatement, hasError){
 		 */
 		try: function(parser, context){
 			// 判断标签内容
-			switch(
-				context.content
-			){
+			switch(context.content){
 				// 如果是 in 关键字
 				case "in":
 					break;
@@ -11279,9 +11072,7 @@ this.FCIStatement = function(ForConditionInnerStatement, hasError){
 			var expression = this.expression;
 
 			// 如果验证出错
-			if(
-				hasError(parser, expression, context)
-			){
+			if(hasError(parser, expression, context)){
 				return null;
 			}
 
@@ -11300,15 +11091,11 @@ this.FCIStatement = function(ForConditionInnerStatement, hasError){
 	// hasError
 	function(parser, expression, context){
 		// 如果是声明表达式
-		if(
-			expression instanceof VarExpression
-		){
+		if(expression instanceof VarExpression){
 			var list = expression.list;
 
 			// 如果声明列表长度等于 1
-			if(
-				list.length === 1
-			){
+			if(list.length === 1){
 				// 设置表达式为列表的第一项
 				expression = list[0];
 			}
@@ -11320,9 +11107,7 @@ this.FCIStatement = function(ForConditionInnerStatement, hasError){
 		}
 
 		// 如果是标识符表达式
-		if(
-			expression instanceof IdentifierExpression
-		){
+		if(expression instanceof IdentifierExpression){
 			return false;
 		}
 
@@ -11350,9 +11135,7 @@ this.FCLStatement = function(ForConditionInnerStatement){
 		 */
 		catch: function(parser, context){
 			// 如果不是分号
-			if(
-				context.content !== ";"
-			){
+			if(context.content !== ";"){
 				// 报错
 				parser.error(context);
 				return null;
@@ -11415,9 +11198,7 @@ this.FCICStatement = function(tryMethod){
 		 */
 		try: function(parser, context){
 			// 如果是 in 关键字
-			if(
-				context.content === "in"
-			){
+			if(context.content === "in"){
 				// 跳出当前语句并添加表达式
 				this.out().add(this.expression);
 				return null;
@@ -11736,9 +11517,7 @@ this.TryExpression = function(){
 			this.tryBlock.extractTo(contentBuilder);
 			
 			// 如果异常存在，说明存在 catch 语句
-			if(
-				exception
-			){
+			if(exception){
 				// 追加 catch 关键字
 				contentBuilder.appendContext(this.catchContext);
 				// 提取异常内容
@@ -11748,9 +11527,7 @@ this.TryExpression = function(){
 			}
 			
 			// 如果 finally 关键字存在
-			if(
-				finallyContext
-			){
+			if(finallyContext){
 				// 追加 finally 关键字
 				contentBuilder.appendContext(finallyContext);
 				// 提取 finally 语句块
@@ -11791,9 +11568,7 @@ this.TryStatement = function(){
 			// 跳出语句并设置 tryBlock 属性
 			this.out().tryBlock = this.expression;
 			
-			switch(
-				context.content
-			){
+			switch(context.content){
 				// 如果是 catch
 				case "catch" :
 					return this.tagOf().catch;
@@ -12221,9 +11996,7 @@ this.SwitchBodyStatement = function(BlockBodyStatement){
 		 */
 		catch: function(parser, context){
 			// 如果不是关闭大括号
-			if(
-				context.content !== "}"
-			){
+			if(context.content !== "}"){
 				parser.error(context);
 				return null;
 			}
@@ -12545,9 +12318,7 @@ this.CaseValueStatement = function(){
 		 */
 		catch: function(parser, context){
 			// 如果不是冒号
-			if(
-				context.content !== ":"
-			){
+			if(context.content !== ":"){
 				// 报错
 				parser.error(context);
 				return null;
@@ -12598,9 +12369,7 @@ this.CaseBodyStatement = function(BlockBodyStatement, isCase, isCloseBrace){
 		 * @param {Context} context - 语法标签上下文
 		 */
 		catch: function(parser, context){
-			switch(
-				context.content
-			){
+			switch(context.content){
 				// 如果是 case 关键字
 				case "case":
 					return isCase(parser, this, context).case;
@@ -12631,9 +12400,7 @@ this.CaseBodyStatement = function(BlockBodyStatement, isCase, isCloseBrace){
 			caseExpression = targetStatements.statement.expression;
 
 		// 如果语句可以结束
-		if(
-			(statement.expression.state & STATE_STATEMENT_ENDABLE) === STATE_STATEMENT_ENDABLE
-		){
+		if((statement.expression.state & STATE_STATEMENT_ENDABLE) === STATE_STATEMENT_ENDABLE){
 			// 设置 case 表达式的 statements
 			caseExpression.statements = statements;
 			// 恢复语句块
@@ -12773,9 +12540,7 @@ this.DefaultTag = function(CaseTag, DefaultExpression, DefaultValueStatement){
 			var switchExpression = statements.target.statement.expression;
 
 			// 如果已经存在 default 表达式
-			if(
-				switchExpression.hasDefault
-			){
+			if(switchExpression.hasDefault){
 				// 报错
 				parser.error(context, ECMAScriptErrors.DEFAULT_CLAUSE);
 				return;
@@ -12885,9 +12650,7 @@ this.TemplateExpression = function(config, extractTo, compileItem){
 		 */
 		extractTo: function(contentBuilder){
 			// 如果需要编译
-			if(
-				config.template
-			){
+			if(config.template){
 				// 追加起始双引号
 				contentBuilder.appendString('"');
 				// 直接编译 inner
@@ -12941,9 +12704,7 @@ this.TemplateStatement = function(){
 		 */
 		try: function(parser, context){
 			// 如果不是反引号
-			if(
-				context.content !== "`"
-			){
+			if(context.content !== "`"){
 				return null;
 			}
 
@@ -13199,9 +12960,7 @@ this.TemplateQouteTag = function(TemplateUnicodeExpression, UNICODE){
 		var unicode = char.charCodeAt(0).toString(16);
 
 		// 根据长度来生成前面的 0
-		for(
-			var i = unicode.length;i < 4;i++
-		){
+		for(var i = unicode.length;i < 4;i++){
 			unicode = "0" + unicode;
 		}
 
@@ -13281,9 +13040,7 @@ this.PlaceHolderStatement = function(){
 		 */
 		catch: function(parser, context){
 			// 如果不是结束大括号
-			if(
-				context.content !== "}"
-			){
+			if(context.content !== "}"){
 				// 报错
 				parser.error(context, ECMAScriptErrors.TEMPLATE);
 				return null;
@@ -13426,9 +13183,7 @@ this.TemplateParameterExpression = function(config, extractTo, compileInner){
 			this.operand.extractTo(contentBuilder);
 
 			// 如果需要编译
-			if(
-				config.base
-			){
+			if(config.base){
 				// 编译 inner
 				compileInner(this.inner, contentBuilder);
 				return;
@@ -13457,15 +13212,11 @@ this.TemplateParameterExpression = function(config, extractTo, compileInner){
 		contentBuilder.appendString('(["');
 
 		// 遍历 inner
-		for(
-			var i = inner.min, j = inner.length;i < j;i++
-		){
+		for(var i = inner.min, j = inner.length;i < j;i++){
 			var expression = inner[i];
 
 			// 如果是模板占位符表达式
-			if(
-				expression instanceof PlaceHolderExpression
-			){
+			if(expression instanceof PlaceHolderExpression){
 				// 分隔两个字符串
 				contentBuilder.appendString('","');
 				// 添加占位符表达式，目的是滞后编译
@@ -13485,9 +13236,7 @@ this.TemplateParameterExpression = function(config, extractTo, compileInner){
 		contentBuilder.appendString('"]');
 
 		// 遍历占位符表达式数组
-		for(
-			var x = 0, y = placeholders.length;x < y;x++
-		){
+		for(var x = 0, y = placeholders.length;x < y;x++){
 			// 参数化提取该占位符表达式
 			placeholders[x].parameterizeTo(contentBuilder);
 		}
@@ -13679,9 +13428,7 @@ this.ClassPropertyExpression = function(extractTo){
 			this.value.extractTo(contentBuilder);
 
 			// 如果存在访问器
-			if(
-				this.accessible
-			){
+			if(this.accessible){
 				// 追加 属性类型分隔符 及 属性类型
 				contentBuilder.appendString(
 					',"' + this.accessor.content + '"'
@@ -13703,9 +13450,7 @@ this.ClassPropertyExpression = function(extractTo){
 		 */
 		extractTo: function(contentBuilder){
 			// 如果是静态属性
-			if(
-				this.static
-			){
+			if(this.static){
 				// 追加修饰符
 				contentBuilder.appendContext(this.modifier);
 				// 追加空格
@@ -13766,9 +13511,7 @@ this.ClassExpression = function(DefaultExtendsExpression, config){
 		 */
 		extractTo: function(contentBuilder){
 			// 如果需要编译类
-			if(
-				config.class
-			){
+			if(config.class){
 				var body = this.body;
 				
 				// 追加闭包头部
@@ -13912,9 +13655,7 @@ this.ClassDeclarationExpression = function(config, extractTo){
 		 */
 		extractTo: function(contentBuilder){
 			// 如果需要解析类
-			if(
-				config.class
-			){
+			if(config.class){
 				// 追加 var 关键字
 				contentBuilder.appendString("var");
 				// 提取名称
@@ -14096,15 +13837,11 @@ this.ConstructorNameExpression = function(config){
 		 */
 		extractTo: function(contentBuilder){
 			// 如果需要编译类
-			if(
-				config.class
-			){
+			if(config.class){
 				var context = this.context;
 				
 				// 如果没有类名
-				if(
-					context === null
-				){
+				if(context === null){
 					return;
 				}
 
@@ -14191,9 +13928,7 @@ this.ConstructorBodyStatements = function(ShorthandMethodBodyStatements){
 		 */
 		applySuperCall: function(parser, context, open){
 			// 判断阶段
-			switch(
-				this.phase
-			){
+			switch(this.phase){
 				// 如果已经调用过 super
 				case PHASE_CALLED:
 					// 报错
@@ -14222,9 +13957,7 @@ this.ConstructorBodyStatements = function(ShorthandMethodBodyStatements){
 		 */
 		applyThis: function(parser, context){
 			// 如果阶段不等于等待调用 super，则说明，没有 super 或 已经调用
-			if(
-				this.phase !== PHASE_WAITING_CALL
-			){
+			if(this.phase !== PHASE_WAITING_CALL){
 				return;
 			}
 
@@ -14275,16 +14008,12 @@ this.ConstructorTag = function(WordPropertyNameTag, IdentifierPropertyNameExpres
 			propertyExpression.name = new IdentifierPropertyNameExpression(context);
 
 			// 如果是静态属性
-			if(
-				propertyExpression.static
-			){
+			if(propertyExpression.static){
 				return;
 			}
 
 			// 如果存在访问器
-			if(
-				propertyExpression.accessible
-			){
+			if(propertyExpression.accessible){
 				// 报错
 				parser.error(
 					context,
@@ -14433,9 +14162,7 @@ this.CloseConstructorBodyTag = function(visitor){
 		 */
 		visitor: function(parser, context, statement, statements){
 			// 如果需要调用 super，但没有调用
-			if(
-				statement.expression.inner.phase === PHASE_WAITING_CALL
-			){
+			if(statement.expression.inner.phase === PHASE_WAITING_CALL){
 				// 报错
 				parser.error(statement.target.target.expression.name.context, ECMAScriptErrors.WITHOUT_SUPER_CALL);
 				return;
@@ -14590,13 +14317,9 @@ this.ClassPropertyStatement = function(PropertyStatement, ClassPropertyExpressio
 			var classExpression = this.out(), classBodyExpression = classExpression.body, propertyExpression = this.expression;
 
 			// 如果不是空表达式
-			if(
-				!propertyExpression.empty()
-			){
+			if(!propertyExpression.empty()){
 				// 如果存在访问器
-				if(
-					propertyExpression.accessible
-				){
+				if(propertyExpression.accessible){
 					// 根据访问器核对函数正确性
 					propertyExpression.accessor.tag.checkFunction(
 						parser,
@@ -14611,9 +14334,7 @@ this.ClassPropertyStatement = function(PropertyStatement, ClassPropertyExpressio
 
 			var t, tag = this.tagOf(), content = context.content;
 
-			switch(
-				content
-			){
+			switch(content){
 				// 如果是属性分隔符
 				case ";":
 					return tag.separator;
@@ -14654,9 +14375,7 @@ this.ClassPropertyStatement = function(PropertyStatement, ClassPropertyExpressio
 				default: {
 					var contextTag = context.tag;
 
-					switch(
-						true
-					){
+					switch(true){
 						// 如果标签是标识符标签
 						case contextTag instanceof IdentifierTag:
 							t = tag.identifierPropertyName;
@@ -14726,9 +14445,7 @@ this.ClassPropertyStatement = function(PropertyStatement, ClassPropertyExpressio
 	this.StringTag,
 	// insertConstructorIfNeed
 	function(classExpression, classBodyExpression){
-		switch(
-			false
-		){
+		switch(false){
 			// 如果不需要编译类表达式
 			case config.class:
 				return;
@@ -14754,16 +14471,12 @@ this.ClassPropertyStatement = function(PropertyStatement, ClassPropertyExpressio
 	// getNumberTag
 	function(tag, contextTag){
 		// 如果是二进制数字标签
-		if(
-			contextTag instanceof BinaryNumberTag
-		){
+		if(contextTag instanceof BinaryNumberTag){
 			return tag.binaryNumberPropertyName;
 		}
 
 		// 如果是八进制数字标签
-		if(
-			contextTag instanceof OctalNumberTag
-		){
+		if(contextTag instanceof OctalNumberTag){
 			return tag.octalNumberPropertyName;
 		}
 
@@ -15056,9 +14769,7 @@ this.ExtendsStatement = function(){
 		 */
 		catch: function(parser, context){
 			// 如果是起始大括号
-			if(
-				context.content !== "{"
-			){
+			if(context.content !== "{"){
 				// 报错
 				parser.error(context);
 				return null;
@@ -15080,9 +14791,7 @@ this.ExtendsStatement = function(){
 		 * @param {Context} context - 语法标签上下文
 		 */
 		try: function(parser, context){
-			switch(
-				context.content
-			){
+			switch(context.content){
 				// 点属性访问器
 				case ".":
 					break;
@@ -15187,9 +14896,7 @@ this.SuperExpression = function(LiteralExpression, config){
 		 */
 		extractTo: function(contentBuilder){
 			// 如果需要编译类
-			if(
-				config.class
-			){
+			if(config.class){
 				// 追加编译后调用 super 的字符串
 				contentBuilder.appendString(
 					"(Rexjs.Class.superOf(this," + this.depth + "" + (this.call ? ",true" : "") + "))"
@@ -15244,9 +14951,7 @@ this.SuperStatement = function(){
 			// 跳出当前语句
 			var superExpression = this.out();
 
-			switch(
-				context.content
-			){
+			switch(context.content){
 				// 如果是小括号
 				case "(":
 					// 表明是调用 super
@@ -15355,13 +15060,9 @@ this.ImportExpression = function(compileMember){
 		 */
 		extractTo: function(contentBuilder){
 			// 如果需要编译 import 语句
-			if(
-				config.import
-			){
+			if(config.import){
 				// 如果当前 import 没有导入任何成员
-				if(
-					this.clean
-				){
+				if(this.clean){
 					// 返回，因为模块在依赖分析时候就已经加载
 					return;
 				}
@@ -15386,9 +15087,7 @@ this.ImportExpression = function(compileMember){
 			contentBuilder.appendSpace();
 
 			// 如果有 from
-			if(
-				from
-			){
+			if(from){
 				// 提取成员
 				this.members.extractTo(contentBuilder);
 				// 追加空格
@@ -15556,9 +15255,7 @@ this.ModuleNameTag = function(StringTag){
 			statement.expression.name = context;
 
 			// 如果需要解析 import 语句，否则不需要添加依赖，因为统统交给浏览器自己或第三方去处理 import 语句
-			if(
-				config.import
-			){
+			if(config.import){
 				// 添加模块依赖
 				parser.deps.push(
 					content.substring(1, content.length - 1)
@@ -15583,7 +15280,7 @@ this.ModuleNameTag = function(StringTag){
 // 模块多成员表达式相关
 void function(multipleMembersSeparatorTag, closeMultipleMembersTag){
 
-this.MultipleMembersExpression = function(importMember, exportMember){
+this.MultipleMembersExpression = function(importMember, exportMember, exportMemberAs){
 	/**
 	 * 多成员导入表达式
 	 * @param {Context} open - 起始标签上下文
@@ -15599,24 +15296,42 @@ this.MultipleMembersExpression = function(importMember, exportMember){
 		/**
 		 * 提取并编译表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 * @param {ContentBuilder} anotherBuilder - 另一个内容生成器，一般用于副内容的生成或记录
 		 */
-		compileTo: function(contentBuilder){
+		compileTo: function(contentBuilder, anotherBuilder){
 			var inner = this.inner;
 
 			// 如果是导入
-			if(
-				this.import
-			){
+			if(this.import){
 				// 执行成员导入项连接
 				inner.execJoin(importMember, contentBuilder);
 				return;
 			}
 
-			// 修改连接符为分号
-			inner.join = ";";
-			
-			// 执行成员输出项连接
-			inner.execJoin(exportMember, contentBuilder);
+			var result = anotherBuilder.result, endingString = ")";
+
+			// 追加提取方法
+			contentBuilder.appendString("Rexjs.Module.exportAs(");
+			// 追加对象起始大括号
+			contentBuilder.appendContext(this.open);
+
+			// 如果长度大于 0，则说明是 export from 表达式
+			if(result.length > 0){
+				// 执行成员输出项连接
+				inner.execJoin(exportMemberAs, contentBuilder, anotherBuilder);
+
+				// 添加模块名称
+				endingString = "," + result + endingString;
+			}
+			else {
+				// 执行成员输出项连接
+				inner.execJoin(exportMember, contentBuilder);
+			}
+
+			// 追加对象结束大括号
+			contentBuilder.appendContext(this.close);
+			// 追加提取方法结束小括号
+			contentBuilder.appendString(endingString);
 		},
 		import: true
 	});
@@ -15628,8 +15343,12 @@ this.MultipleMembersExpression = function(importMember, exportMember){
 		member.importTo(contentBuilder);
 	},
 	// exportMember
-	function(member, contentBuilder){
-		member.exportTo(contentBuilder);
+	function(member, contentBuilder, anotherBuilder){
+		member.exportTo(contentBuilder, anotherBuilder);
+	},
+	// exportMemberAs
+	function(member, contentBuilder, anotherBuilder){
+		member.exportAsTo(contentBuilder, anotherBuilder);
 	}
 );
 
@@ -15644,18 +15363,26 @@ this.MemberExpression = function(){
 	MemberExpression = new Rexjs(MemberExpression, Expression);
 
 	MemberExpression.props({
-		// compileTo: function(contentBuilder){
-		// 	this.importTo(contentBuilder);
-		// },
 		/**
 		 * 以输出形式提取并编译表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
 		 */
-		exportTo: function(contentBuilder){
-			// 追加成员输出字符串
-			contentBuilder.appendString(
-				'Rexjs.Module.export("' + this.variable.content + '", ' + this.context.content + ")"
-			);
+		exportAsTo: function(contentBuilder, anotherBuilder){
+			// 追加属性名
+			contentBuilder.appendContext(this.variable);
+			// 追加属性值
+			contentBuilder.appendString(':"' + this.context.content + '"');
+		},
+		/**
+		 * 以输出形式提取并编译表达式文本内容
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 * @param {ContentBuilder} anotherBuilder - 另一个内容生成器，一般用于副内容的生成或记录
+		 */
+		exportTo: function(contentBuilder, anotherBuilder){
+			// 追加属性名
+			contentBuilder.appendContext(this.variable);
+			// 追加属性值
+			contentBuilder.appendString(":" + this.context.content);
 		},
 		/**
 		 * 以导入形式提取并编译表达式文本内容
@@ -15732,9 +15459,7 @@ this.MultipleMembersStatement = function(out){
 		 */
 		catch: function(parser, context){
 			// 如果不是结束大括号
-			if(
-				context.content !== "}"
-			){
+			if(context.content !== "}"){
 				// 报错
 				parser.error(context);
 				return null;
@@ -15753,9 +15478,7 @@ this.MultipleMembersStatement = function(out){
 		 */
 		try: function(parser, context){
 			// 如果不是逗号
-			if(
-				context.content !== ","
-			){
+			if(context.content !== ","){
 				// 报错
 				parser.error(context);
 				return null;
@@ -15780,13 +15503,9 @@ this.MultipleMembersStatement = function(out){
 		var expression = statement.expression, importExpression = statement.out(), inner = importExpression.members.latest.inner;
 
 		// 如果来自 catch 方法
-		if(
-			fromCatch
-		){
+		if(fromCatch){
 			// 如果设置失败，则说明 expression 是默认表达式
-			if(
-				!inner.set(expression)
-			){
+			if(!inner.set(expression)){
 				return;
 			}
 		}
@@ -16317,12 +16036,12 @@ this.ExportExpression = function(config, compile){
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
 		 */
 		extractTo: function(contentBuilder){
+			var from = this.from;
+
 			// 如果需要解析 export
-			if(
-				config.export
-			){
+			if(config.export){
 				// 编译成员
-				compile(this.member, contentBuilder);
+				compile(this.member, this.from, this.name, contentBuilder);
 				return;
 			}
 
@@ -16332,6 +16051,18 @@ this.ExportExpression = function(config, compile){
 			contentBuilder.appendSpace();
 			// 提取成员
 			this.member.extractTo(contentBuilder);
+
+			// 如果有 from
+			if(from){
+				// 追加空格
+				contentBuilder.appendSpace();
+				// 追加 from 上下文
+				contentBuilder.appendContext(from);
+				// 追加空格
+				contentBuilder.appendSpace();
+				// 追加模块名称
+				contentBuilder.appendContext(this.name);
+			}
 		},
 		member: null
 	});
@@ -16341,13 +16072,20 @@ this.ExportExpression = function(config, compile){
 	// config
 	new SyntaxConfig("export"),
 	// compile
-	function(member, contentBuilder){
-		// 先编译成员
-		member.compileTo(contentBuilder);
+	function(member, from, name, contentBuilder){
+		// 初始化内容生成器
+		var anotherBuilder = new ContentBuilder();
 
-		switch(
-			true
-		){
+		// 如果有 from
+		if(from){
+			// 追加模块名称
+			anotherBuilder.appendString(name.content);
+		}
+
+		// 先编译成员
+		member.compileTo(contentBuilder, anotherBuilder);
+
+		switch(true){
 			// 如果是 var、let、const 表达式
 			case member instanceof VarExpression:
 				// 遍历所定义的变量并输出
@@ -16359,7 +16097,7 @@ this.ExportExpression = function(config, compile){
 			// 如果是类声明
 			case member instanceof ClassDeclarationExpression:
 				// 输出表达式名称变量
-				exportVariable(member.name.context, contentBuilder);
+				exportVariable(member.name.context, contentBuilder, true);
 				return;
 		}
 	}
@@ -16376,22 +16114,27 @@ this.ExportStatement = function(){
 	ExportStatement = new Rexjs(ExportStatement, ECMAScriptStatement);
 
 	ExportStatement.props({
+		allowFrom: false,
 		/**
 		 * 捕获处理异常
 		 * @param {SyntaxParser} parser - 语法解析器
 		 * @param {Context} context - 语法标签上下文
 		 */
 		catch: function(parser, context){
+			// 跳出语句并设置 member
 			this.out().member = this.expression;
+
+			// 如果是 from 且 该语句上下文中允许 from 出现
+			return context.content === "from" && this.allowFrom ? this.bindingOf() : null;
 		}
 	});
 
 	return ExportStatement;
 }();
 
-this.ExportTag = function(ExportExpression, ExportStatement, visitor){
+this.ExportTag = function(ExportExpression, ExportStatement, fromTag, visitor){
 	/**
-	 * import 关键字标签
+	 * export 关键字标签
 	 * @param {Number} _type - 标签类型
 	 */
 	function ExportTag(_type){
@@ -16400,6 +16143,12 @@ this.ExportTag = function(ExportExpression, ExportStatement, visitor){
 	ExportTag = new Rexjs(ExportTag, ModuleTag);
 
 	ExportTag.props({
+		/**
+		 * 获取绑定的标签，该标签一般是用于语句的 try、catch 的返回值
+		 */
+		get binding(){
+			return fromTag;
+		},
 		/**
 		 * 收集该表达式所产生的变量名
 		 * @param {SyntaxParser} parser - 语法解析器
@@ -16436,6 +16185,8 @@ this.ExportTag = function(ExportExpression, ExportStatement, visitor){
 }(
 	this.ExportExpression,
 	this.ExportStatement,
+	// fromTag
+	new this.FromTag(),
 	ModuleTag.prototype.visitor
 );
 
@@ -16446,11 +16197,20 @@ this.ExportTag = function(ExportExpression, ExportStatement, visitor){
 	this.FunctionDeclarationExpression,
 	this.ClassDeclarationExpression,
 	// exportVariable
-	function(context, contentBuilder){
-		var content = context.content;
+	function(context, contentBuilder, _semicolonAfter){
+		var content = context.content, str = 'Rexjs.Module.export("' + content + '", ' + content + ")";
+
+		// 如果需要语句后面加分号
+		if(_semicolonAfter){
+			str += ";";
+		}
+		// 否则之前加分号
+		else {
+			str = ";" + str;
+		}
 
 		// 追加输出字符串
-		contentBuilder.appendString(';Rexjs.Module.export("' + content + '", ' + content + ")");
+		contentBuilder.appendString(str);
 	}
 );
 
@@ -16552,9 +16312,7 @@ this.DefaultExportTag = function(DefaultTag, DefaultExportExpression, DefaultExp
 		 */
 		visitor: function(parser, context, statement, statements){
 			// 如果已经输出过默认成员
-			if(
-				parser.defaultExported
-			){
+			if(parser.defaultExported){
 				parser.error(context, ECMAScriptErrors.EXPORT_DEFAULT);
 				return;
 			}
@@ -16582,7 +16340,7 @@ this.DefaultExportTag = function(DefaultTag, DefaultExportExpression, DefaultExp
 
 
 // 模块输出多成员表达式相关
-void function(closeExportMultipleMembersTag){
+void function(CloseMultipleMembersTag, closeExportMultipleMembersTag){
 
 this.PseudoImportExpression = function(ImportExpression){
 	/**
@@ -16606,10 +16364,11 @@ this.PseudoImportExpression = function(ImportExpression){
 		/**
 		 * 提取并编译表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 * @param {ContentBuilder} anotherBuilder - 另一个内容生成器，一般用于副内容的生成或记录
 		 */
-		compileTo: function(contentBuilder){
+		compileTo: function(contentBuilder, anotherBuilder){
 			// 解析语法时确保过，只有唯一一个，所以直接编译最近且唯一项
-			this.members.latest.compileTo(contentBuilder);
+			this.members.latest.compileTo(contentBuilder, anotherBuilder);
 		}
 	});
 
@@ -16673,7 +16432,7 @@ this.OpenExportMultipleMembersTag = function(OpenMultipleMembersTag, PseudoImpor
 	this.MultipleMembersStatement
 );
 
-this.CloseExportMultipleMembersTag = function(CloseMultipleMembersTag){
+this.CloseExportMultipleMembersTag = function(visitor){
 	/**
 	 * 多成员输出结束标签
 	 * @param {Number} _type - 标签类型
@@ -16690,20 +16449,117 @@ this.CloseExportMultipleMembersTag = function(CloseMultipleMembersTag){
 		 */
 		require: function(tagsMap){
 			return tagsMap.statementEndTags;
+		},
+		/**
+		 * 标签访问器
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 标签上下文
+		 * @param {Statement} statement - 当前语句
+		 * @param {Statements} statements - 当前语句块
+		 */
+		visitor: function(parser, context, statement, statements){
+			// 设置语句允许出现 from
+			statement.allowFrom = true;
+
+			// 调用父类方法
+			visitor.call(this, parser, context, statement, statements);
 		}
 	});
 
 	return CloseExportMultipleMembersTag;
 }(
-	this.CloseMultipleMembersTag
+	CloseMultipleMembersTag.prototype.visitor
 );
 
 closeExportMultipleMembersTag = new this.CloseExportMultipleMembersTag();
 
 }.call(
 	this,
+	this.CloseMultipleMembersTag,
 	// closeExportMultipleMembersTag
 	null
+);
+
+
+// 输出所有成员符号标签相关
+void function(){
+
+this.ExportAllMembersExpression = function(){
+	/**
+	 * 输出所有模块成员表达式
+	 * @param {Context} context - 语法标签上下文
+	 */
+	function ExportAllMembersExpression(context){
+		Expression.call(this, context);
+	};
+	ExportAllMembersExpression = new Rexjs(ExportAllMembersExpression, Expression);
+
+	ExportAllMembersExpression.props({
+		/**
+		 * 提取并编译表达式文本内容
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 * @param {ContentBuilder} anotherBuilder - 另一个内容生成器，一般用于副内容的生成或记录
+		 */
+		compileTo: function(contentBuilder, anotherBuilder){
+			// 追加输出字符串
+			contentBuilder.appendString(
+				"Rexjs.Module.exportFrom(" + anotherBuilder.result + ")"
+			);
+		},
+		/**
+		 * 提取表达式文本内容
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 */
+		extractTo: function(contentBuilder){
+			// 追加 * 上下文
+			contentBuilder.appendContext(this.context);
+		}
+	});
+
+	return ExportAllMembersExpression;
+}();
+
+this.ExportAllMembersTag = function(AllMembersTag, ExportAllMembersExpression){
+	/**
+	 * 输出所有成员符号标签
+	 * @param {Number} _type - 标签类型
+	 */
+	function ExportAllMembersTag(_type){
+		AllMembersTag.call(this, _type);
+	};
+	ExportAllMembersTag = new Rexjs(ExportAllMembersTag, AllMembersTag);
+
+	ExportAllMembersTag.props({
+		/**
+		 * 获取此标签接下来所需匹配的标签列表
+		 * @param {TagsMap} tagsMap - 标签集合映射
+		 */
+		require: function(tagsMap){
+			return tagsMap.unexpectedTags;
+		},
+		/**
+		 * 标签访问器
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 标签上下文
+		 * @param {Statement} statement - 当前语句
+		 * @param {Statements} statements - 当前语句块
+		 */
+		visitor: function(parser, context, statement, statements){
+			// 设置当前表达式
+			statement.expression = new ExportAllMembersExpression(context);
+			// 设置 allowFrom 属性，表示检测到 from 是属于正常语句部分
+			statement.allowFrom = true;
+		}
+	});
+
+	return ExportAllMembersTag;
+}(
+	this.AllMembersTag,
+	this.ExportAllMembersExpression
+);
+
+}.call(
+	this
 );
 
 
@@ -16878,9 +16734,7 @@ this.ExpressionTags = function(FunctionTag, ClassTag, OpenObjectTag, VariableTag
 		 */
 		filter: function(tag){
 			// 如果是表达式标签
-			if(
-				tag.class.expression
-			){
+			if(tag.class.expression){
 				// 设置为可匹配
 				tag.type = new TagType(TYPE_MATCHABLE);
 			}
@@ -16917,9 +16771,7 @@ this.ExpressionContextTags = function(list){
 		filter: function(tag){
 			var tagClass = tag.class
 
-			switch(
-				true
-			){
+			switch(true){
 				// 如果是表达式上下文标签
 				case tagClass.expressionContext:
 				// 如果是语句标签
@@ -16966,9 +16818,7 @@ this.StatementTags = function(FileEndTag){
 		 */
 		filter: function(tag){
 			// 如果是语句标签
-			if(
-				tag.class.statementBegin
-			){
+			if(tag.class.statementBegin){
 				// 设置标签类型
 				tag.type = new TagType(
 					tag instanceof FileEndTag ? TYPE_MISTAKABLE : TYPE_MATCHABLE
@@ -17021,9 +16871,7 @@ this.MistakableTags = function(StatementTags){
 		 */
 		filter: function(tag){
 			// 如果是语句标签
-			if(
-				tag.class.statementBegin
-			){
+			if(tag.class.statementBegin){
 				// 设置类型
 				tag.type = new TagType(TYPE_MISTAKABLE);
 			}
@@ -17265,9 +17113,7 @@ this.CloseArrowFunctionBodyContextTags = function(CommaTag, filter){
 		 */
 		filter: function(tag){
 			// 如果是逗号
-			if(
-				tag instanceof CommaTag
-			){
+			if(tag instanceof CommaTag){
 				// 设置类型
 				tag.type = new TagType(TYPE_MISTAKABLE);
 				return false;
@@ -17326,9 +17172,7 @@ this.ClosureVariableContextTags = function(BasicAssignmentTag, IllegalShorthandA
 		 */
 		filter: function(tag){
 			// 如果是赋值标签
-			if(
-				tag instanceof BasicAssignmentTag
-			){
+			if(tag instanceof BasicAssignmentTag){
 				// 设置为可匹配
 				tag.type = new TagType(TYPE_MATCHABLE);
 			}
@@ -17502,22 +17346,14 @@ this.ExceptionVariableTags = function(ExceptionVariableTag){
 	this.ExceptionVariableTag
 );
 
-this.ExportContextTags = function(VarTag, LetTag, ConstTag, FunctionDeclarationTag, ClassDeclarationTag, DefaultExportTag, OpenExportMultipleMembersTag){
+this.ExportContextTags = function(list){
 	/**
 	 * export 关键字上下文标签列表
 	 */
 	function ExportContextTags(){
 		IllegalTags.call(this);
 
-		this.register(
-			new VarTag(),
-			new LetTag(),
-			new ConstTag(),
-			new FunctionDeclarationTag(),
-			new ClassDeclarationTag(),
-			new DefaultExportTag(),
-			new OpenExportMultipleMembersTag()
-		);
+		this.delegate(list);
 	};
 	ExportContextTags = new Rexjs(ExportContextTags, IllegalTags);
 
@@ -17527,13 +17363,17 @@ this.ExportContextTags = function(VarTag, LetTag, ConstTag, FunctionDeclarationT
 
 	return ExportContextTags;
 }(
-	this.VarTag,
-	this.LetTag,
-	this.ConstTag,
-	this.FunctionDeclarationTag,
-	this.ClassDeclarationTag,
-	this.DefaultExportTag,
-	this.OpenExportMultipleMembersTag
+	// list
+	[
+		this.VarTag,
+		this.LetTag,
+		this.ConstTag,
+		this.FunctionDeclarationTag,
+		this.ClassDeclarationTag,
+		this.DefaultExportTag,
+		this.OpenExportMultipleMembersTag,
+		this.ExportAllMembersTag
+	]
 );
 
 this.ExtendsContextTags = function(UnaryTag, NewTag, filter){
@@ -17552,13 +17392,9 @@ this.ExtendsContextTags = function(UnaryTag, NewTag, filter){
 		 */
 		filter: function(tag){
 			// 如果是一元标签
-			if(
-				tag instanceof UnaryTag
-			){
+			if(tag instanceof UnaryTag){
 				// 如果是 new 关键字标签
-				if(
-					tag instanceof NewTag
-				){
+				if(tag instanceof NewTag){
 					// 设置为可匹配
 					tag.type = new TagType(TYPE_MATCHABLE);
 				}
@@ -17639,9 +17475,7 @@ this.ForConditionContextTags = function(VarTag){
 		 */
 		filter: function(tag){
 			// 如果是语句标签
-			if(
-				tag instanceof VarTag
-			){
+			if(tag instanceof VarTag){
 				// 设置为可匹配
 				tag.type = new TagType(TYPE_MATCHABLE);
 			}
@@ -18060,9 +17894,7 @@ this.NewContextTags = function(ExtendsContextTags, TargetAccessorTag, SuperTag, 
 		 */
 		filter: function(tag){
 			// 如果是 super 标签，则不修改 type，因为 new 后面不能接 super 关键字
-			if(
-				tag instanceof SuperTag
-			){
+			if(tag instanceof SuperTag){
 				return false;
 			}
 
@@ -18218,9 +18050,7 @@ this.PropertyNameContextTags = function(OpenShorthandMethodArgumentsTag, Propert
 		 * @param {SyntaxTag} tag - 语法标签
 		 */
 		filter: function(tag){
-			if(
-				tag instanceof CloseBraceTag
-			){
+			if(tag instanceof CloseBraceTag){
 				return !(tag instanceof CloseObjectTag);
 			}
 			

@@ -2,17 +2,16 @@
 功能缺失
 ------
 enum
-export
 yield
 **
 ++
 --
+await
+async
 解构赋值
 可省略 super
 可选参数
 目录别名、文件别名
-await
-async
 
 利用 that 做些什么？
 	- 如指向外层 this ？
@@ -136,6 +135,11 @@ async
 --------
 已完成功能 ↓
 --------
+完成 export 所有解析 及 其他 - 2017.03.20
+	- export from 语句
+	- 将所有 if、for、while、switch 条件带换行的，去除换行
+	- 只差 import、 export 的测试代码
+
 修复能在 if else 语句下使用 import、export 的 bug - 2017.03.09
 
 完成 export class A {} 及 export function A(){} - 2017.03.09

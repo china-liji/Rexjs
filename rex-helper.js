@@ -59,25 +59,19 @@ this.Iterator = function(IteratorIndex, IteratorResult, Infinity){
 		block:
 		{
 			// 如果是 null 或 undefined
-			if(
-				iterable == null
-			){
+			if(iterable == null){
 				break block;
 			}
 
 			var length = iterable.length;
 
 			// 如果长度属性不是数字
-			if(
-				typeof length !== "number"
-			){
+			if(typeof length !== "number"){
 				// 取 size 属性
 				length = iterable.size;
 
 				// 如果还不是数字
-				if(
-					typeof length !== "number"
-				){
+				if(typeof length !== "number"){
 					break block;
 				}
 			}
@@ -198,9 +192,7 @@ this.ClassProperty = function(){
 		this.name = name;
 		this.value = value;
 
-		if(
-			_type
-		){
+		if(_type){
 			this.type = _type;
 		}
 	};
@@ -236,9 +228,7 @@ this.Class = function(ClassProperty, StaticProperty, defineProperty, getPrototyp
 		create: function(SuperClass, allProps, indexOfConstructor){
 			var constructor = allProps[indexOfConstructor].value;
 
-			if(
-				typeof constructor !== "function"
-			){
+			if(typeof constructor !== "function"){
 				throw "Class extends value " + constructor.toString() + " is not a constructor or null";
 			}
 
@@ -246,17 +236,13 @@ this.Class = function(ClassProperty, StaticProperty, defineProperty, getPrototyp
 
 			allProps.forEach(
 				function(property, index){
-					if(
-						index === indexOfConstructor
-					){
+					if(index === indexOfConstructor){
 						return;
 					}
 
 					var type = property.type, descriptor = { enumerable: false, configurable: true };
 
-					if(
-						type === "value"
-					){
+					if(type === "value"){
 						descriptor.writable = true;
 						descriptor.value = property.value;
 					}
@@ -278,9 +264,7 @@ this.Class = function(ClassProperty, StaticProperty, defineProperty, getPrototyp
 		superOf: function(instance, depth, _willCall){
 			var sp = null;
 
-			for(
-				var i = 0;i < depth;i++
-			){
+			for(var i = 0;i < depth;i++){
 				sp = instance = getPrototypeOf(instance);
 			}
 
@@ -323,15 +307,11 @@ this.URL = function(toString, parse){
 		urlString = toString(urlString);
 		
 		// 如果解析 URL 成功，说明是个完整的 URL，则不需要继续关联 _baseURLstring
-		if(
-			parse(this, urlString)
-		){
+		if(parse(this, urlString)){
 			return;
 		}
 
-		if(
-			_baseURLstring
-		){
+		if(_baseURLstring){
 			var baseURL = new URL(_baseURLstring);
 
 			if(
@@ -381,9 +361,7 @@ this.URL = function(toString, parse){
 	// toString
 	function(urlString){
 		// 如果不是字符串
-		if(
-			typeof urlString !== "string"
-		){
+		if(typeof urlString !== "string"){
 			// 如果是 undefined 或者 null，则为空字符串，否则为 toString 的返回值
 			urlString = urlString == null ? "" : urlString.toString();
 		}
@@ -399,9 +377,7 @@ this.URL = function(toString, parse){
 		var result = urlString.match(URL_REGEXP);
 		
 		// 如果没有匹配结果
-		if(
-			result === null
-		){
+		if(result === null){
 			return false;
 		}
 		
@@ -413,14 +389,10 @@ this.URL = function(toString, parse){
 		url.search = result[5] || "";
 		url.hash = result[6] || "";
 
-		switch(
-			protocal
-		){
+		switch(protocal){
 			case "http:":
 			case "https:":
-				if(
-					!url.hostname
-				){
+				if(!url.hostname){
 					return false;
 				}
 
@@ -435,9 +407,7 @@ this.URL = function(toString, parse){
 				// 还原链接字符串
 				urlString = decodeURI(urlString);
 				
-				switch(
-					true
-				){
+				switch(true){
 					// 如果存在 search
 					case url.search.length > 0 :
 						// 设置 index
@@ -474,9 +444,7 @@ this.URL = function(toString, parse){
 				"/"
 			)
 			.forEach(function(name){
-				switch(
-					name
-				){
+				switch(name){
 					// 如果是1点，说明是保持当前层目录，不需要做任何处理
 					case "." :
 						break;
@@ -510,9 +478,7 @@ this.ModuleName = function(URL, BASE_URI){
 	function ModuleName(value){
 		URL.call(this, value, BASE_URI);
 
-		if(
-			this.filename === ""
-		){
+		if(this.filename === ""){
 			this.filename = "index.js";
 		}
 	};
@@ -544,9 +510,7 @@ this.Module = function(ModuleName, ECMAScriptParser, MappingBuilder, File, STATU
 
 		cache[href] = this;
 
-		if(
-			typeof _code === "string"
-		){
+		if(typeof _code === "string"){
 			this.ready(_code);
 			return;
 		}
@@ -567,16 +531,47 @@ this.Module = function(ModuleName, ECMAScriptParser, MappingBuilder, File, STATU
 		defaultOf: function(_name){
 			return this.import(_name || name).default;
 		},
-		export: function(name, value){
+		export: function(propertyName, value){
 			defineProperty(
 				exports,
-				name,
+				propertyName,
 				{
 					get: function(){ return value },
 					configurable: false,
 					enumerable: true
 				}
 			);
+		},
+		exportAs: function(exports, _name){
+			if(!_name){
+				for(var propertyName in exports){
+					this.export(propertyName, exports[propertyName]);
+				}
+
+				return;
+			}
+
+			var allExports = this.import(_name);
+
+			for(var propertyName in exports){
+				this.export(
+					propertyName,
+					allExports[
+						exports[n]
+					]
+				);
+			}
+		},
+		exportFrom: function(name){
+			var exports = this.import(name);
+
+			for(var propertyName in exports){
+				if(propertyName === "default"){
+					continue;
+				}
+
+				this.export(propertyName, exports[propertyName]);
+			}
 		},
 		import: function(name){
 			return cache[
@@ -598,9 +593,7 @@ this.Module = function(ModuleName, ECMAScriptParser, MappingBuilder, File, STATU
 	Module.props({
 		exports: null,
 		eval: function(){
-			switch(
-				this.status
-			){
+			switch(this.status){
 				case STATUS_READY:
 					break;
 
@@ -613,9 +606,7 @@ this.Module = function(ModuleName, ECMAScriptParser, MappingBuilder, File, STATU
 
 			if(
 				!this.imports.every(function(i){
-					if(
-						(i.status & STATUS_READY) === STATUS_READY
-					){
+					if((i.status & STATUS_READY) === STATUS_READY){
 						return true;
 					}
 
@@ -658,9 +649,7 @@ this.Module = function(ModuleName, ECMAScriptParser, MappingBuilder, File, STATU
 				function(dep){
 					var href = new ModuleName(dep).href, mod = cache.hasOwnProperty(href) ? cache[href] : new Module(dep);
 
-					if(
-						imports.indexOf(mod) > -1
-					){
+					if(imports.indexOf(mod) > -1){
 						return;
 					}
 
@@ -712,9 +701,7 @@ this.Module = function(ModuleName, ECMAScriptParser, MappingBuilder, File, STATU
 			"load",
 			function(){
 				// 如果存在错误
-				if(
-					this.status !== 200
-				){
+				if(this.status !== 200){
 					throw '加载模块 "' + name + '" 错误，status：' + this.status + "。";
 					return;
 				}
@@ -756,9 +743,7 @@ this.Parameter = function(forEach, push){
 			forEach.call(
 				arguments,
 				function(item){
-					if(
-						item instanceof Parameter
-					){
+					if(item instanceof Parameter){
 						push.apply(array, item.value);
 						return;
 					}

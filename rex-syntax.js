@@ -47,9 +47,7 @@ this.List = function(Array, Object, toArray){
 				)
 				.forEach(
 					function(item){
-						if(
-							this.indexOf(item) > -1
-						){
+						if(this.indexOf(item) > -1){
 							return;
 						}
 
@@ -67,15 +65,11 @@ this.List = function(Array, Object, toArray){
 		)
 		.forEach(
 			function(name){
-				if(
-					List.prototype.hasOwnProperty(name)
-				){
+				if(List.prototype.hasOwnProperty(name)){
 					return;
 				}
 
-				if(
-					name === "toString"
-				){
+				if(name === "toString"){
 					return;
 				}
 
@@ -143,13 +137,9 @@ this.VariableCollection = function(){
 		 * @param {String} variable - 指定的变量名
 		 */
 		contains: function(variable){
-			for(
-				var i = 0, j = this.length;i < j;i++
-			){
+			for(var i = 0, j = this.length;i < j;i++){
 				// 如果变量名相同
-				if(
-					this[i] === variable
-				){
+				if(this[i] === variable){
 					return true;
 				}
 			}
@@ -167,17 +157,13 @@ this.VariableCollection = function(){
 			var length = this.length;
 
 			// 如果有效长度是 0
-			if(
-				length === 0
-			){
+			if(length === 0){
 				return "";
 			}
 
 			var result = before + this[0];
 
-			for(
-				var i = 1;i < length;i++
-			){
+			for(var i = 1;i < length;i++){
 				// 拼接连接符
 				result += join;
 				// 拼接变量名
@@ -379,9 +365,7 @@ this.Base64VLQ = function(base64, parseInt){
 			var result = "", binary = num.toString(2) + "0", length = binary.length;
 			
 			// 字符串从后往前逆序循环，当长度大于 5 时
-			while(
-				length > 5
-			){
+			while(length > 5){
 				// 拼接结果
 				result += base64[
 					// 转化为十进制
@@ -475,9 +459,7 @@ this.MappingBuilder = function(MappingPosition, Base64VLQ, JSON, appendContext, 
 				generatedColumnDiff = builderPosition.generatedColumnDiff;
 				
 			// 如果不是空行
-			if(
-				builderPosition.generatedLineOffset !== builderPosition.generatedColumnOffset
-			){
+			if(builderPosition.generatedLineOffset !== builderPosition.generatedColumnOffset){
 				// 追加逗号
 				this.appendMappings(",");
 			}
@@ -533,9 +515,7 @@ this.MappingBuilder = function(MappingPosition, Base64VLQ, JSON, appendContext, 
 			this.appendString("//# sourceURL=http://rexjs.org/" + filename);
 			
 			// 如果 btoa 存在，则添加 mappingURL，否则不支持 btao 的环境，应该也不会支持 source map
-			if(
-				btoa
-			){
+			if(btoa){
 				// 追加新行
 				this.newline();
 
@@ -648,9 +628,7 @@ this.SyntaxConfig = function(SyntaxConfigItem){
 			arguments,
 			function(item){
 				// 如果是 SyntaxConfigItem 的实例
-				if(
-					item instanceof SyntaxConfigItem
-				){
+				if(item instanceof SyntaxConfigItem){
 					// 记录配置
 					this[item.key] = item.value;
 					return;
@@ -706,17 +684,13 @@ this.SyntaxRegExp = function(RegExp, Infinity){
 			// 初始化
 			this.lastIndex = 0;
 			
-			for(
-				;;
-			){
+			for(;;){
 				regexp = this.originalRegExp;
 				regexp.lastIndex = lastIndex = this.lastIndex;
 				result = regexp.exec(source);
 
 				// 如果没匹配到结果
-				if(
-					result === null
-				){
+				if(result === null){
 					// 跳出循环
 					break;
 				}
@@ -724,9 +698,7 @@ this.SyntaxRegExp = function(RegExp, Infinity){
 				diff = result.index - lastIndex;
 				
 				// 存在中间未捕获的内容
-				if(
-					diff === 0
-				){
+				if(diff === 0){
 					content = result[0];
 					index = result.lastIndexOf("") - 1;
 				}
@@ -744,9 +716,7 @@ this.SyntaxRegExp = function(RegExp, Infinity){
 			}
 
 			// 如果成立，说明已经没有未处理的代码
-			if(
-				this.lastIndex >= source.length
-			){
+			if(this.lastIndex >= source.length){
 				return;
 			}
 			
@@ -1144,18 +1114,14 @@ this.SyntaxTags = function(List, getSortedValue, distinct){
 				arguments,
 				function(obj){
 					// 如果对象也是一个标签列表
-					if(
-						obj instanceof SyntaxTags
-					){
+					if(obj instanceof SyntaxTags){
 						// 再次调用注册方法
 						this.register.apply(this, obj);
 						return;
 					}
 
 					// 检查是否应该过滤该标签
-					if(
-						this.filter(obj)
-					){
+					if(this.filter(obj)){
 						return;
 					}
 					
@@ -1175,15 +1141,11 @@ this.SyntaxTags = function(List, getSortedValue, distinct){
 	function(copy, tag1, tag2, property, value, _bothNot){
 		var type1 = tag1.type, type2 = tag2.type;
 
-		switch(
-			value
-		){
+		switch(value){
 			// 如果第一个类型属性值为 value
 			case type1[property]:
 				// 如果第二个类型属性值不为 value
-				if(
-					type2[property] !== value
-				){
+				if(type2[property] !== value){
 					// 将第一个标签插入到第二个标签前面
 					return -1;
 				}
@@ -1199,9 +1161,7 @@ this.SyntaxTags = function(List, getSortedValue, distinct){
 			// 两个类型属性值都不为 value
 			default:
 				// 如果在都不为 value 的情况下，还需要继续对比
-				if(
-					_bothNot
-				){
+				if(_bothNot){
 					break;
 				}
 
@@ -1210,17 +1170,13 @@ this.SyntaxTags = function(List, getSortedValue, distinct){
 		}
 
 		// 如果 tag1 的排序更大
-		if(
-			tag1.order - tag2.order > 0
-		){
+		if(tag1.order - tag2.order > 0){
 			// 将 tag1 插入到 tag2 前面
 			return -1;
 		}
 		
 		// 如果 tag2 的排序更大
-		if(
-			tag1.order - tag2.order < 0
-		){
+		if(tag1.order - tag2.order < 0){
 			// 将 tag2 插入到 tag1 前面
 			return 1;
 		}
@@ -1240,9 +1196,7 @@ this.SyntaxTags = function(List, getSortedValue, distinct){
 					var regexp = tag.regexp;
 					
 					// 如果没有提供正则，则说明不需要匹配，作为未捕获的标签
-					if(
-						regexp === null
-					){
+					if(regexp === null){
 						tags[-1] = tag;
 						return;
 					}
@@ -1250,9 +1204,7 @@ this.SyntaxTags = function(List, getSortedValue, distinct){
 					var source = regexp.source;
 					
 					// 如果已经存在
-					if(
-						this(source)
-					){
+					if(this(source)){
 						return;
 					}
 					
@@ -1316,9 +1268,7 @@ this.SyntaxTagsMap = function(){
 			tags.ready();
 			
 			// 如果是入口标签列表
-			if(
-				tags.entrance
-			){
+			if(tags.entrance){
 				// 设置入口标签
 				this.entranceTags = tags;
 			}
@@ -1413,7 +1363,7 @@ this.Statement = function(){
 	Statement = new Rexjs(Statement, SyntaxElement);
 
 	Statement.static({
-		FLOW_INHERIT: parseInt(10, 2),
+		FLOW_MAIN: parseInt(10, 2),
 		FLOW_BRANCH: parseInt(100, 2),
 		FLOW_LINEAR: parseInt(1100, 2),
 		FLOW_CIRCULAR: parseInt(10100, 2)
@@ -1443,7 +1393,7 @@ this.Statement = function(){
 			// 提取表达式内容
 			this.expression.extractTo(contentBuilder);
 		},
-		flow: Statement.FLOW_INHERIT,
+		flow: Statement.FLOW_MAIN,
 		/**
 		 * 跳出该语句
 		 */
@@ -1521,18 +1471,14 @@ this.Statements = function(Statement, STATE_STATEMENT_ENDED, parseInt){
 			var join = this.join;
 
 			// 遍历所有语句
-			for(
-				var i = this.min, j = this.length;i < j;i++
-			){
+			for(var i = this.min, j = this.length;i < j;i++){
 				var statement = this[i];
 
 				// 提取语句
 				statement.extractTo(contentBuilder);
 
 				// 如果表达式状态是 STATE_STATEMENT_ENDED，则说明不需要加语句连接符
-				if(
-					(statement.expression.state & STATE_STATEMENT_ENDED) === STATE_STATEMENT_ENDED
-				){
+				if((statement.expression.state & STATE_STATEMENT_ENDED) === STATE_STATEMENT_ENDED){
 					continue;
 				}
 				
@@ -1662,9 +1608,7 @@ this.ListExpression = function(DefaultExpression, extractItem){
 			var min = this.min, length = this.length;
 
 			// 如果长度小于等于最小索引值
-			if(
-				length <= min
-			){
+			if(length <= min){
 				return;
 			}
 
@@ -1674,9 +1618,7 @@ this.ListExpression = function(DefaultExpression, extractItem){
 			callback(this[min], contentBuilder, _anotherBuilder);
 
 			// 遍历项
-			for(
-				var i = min + 1, j = length;i < j;i++
-			){
+			for(var i = min + 1, j = length;i < j;i++){
 				// 添加表达式连接符
 				contentBuilder.appendString(join);
 
@@ -1700,9 +1642,7 @@ this.ListExpression = function(DefaultExpression, extractItem){
 		 * @param {ContentBuilder} _anotherBuilder - 另一个内容生成器，一般用于副内容的生成或记录
 		 */
 		forEach: function(callback, _contentBuilder, _anotherBuilder){
-			for(
-				var i = this.min, j = this.length;i < j;i++
-			){
+			for(var i = this.min, j = this.length;i < j;i++){
 				// 执行回调
 				callback(this[i], _contentBuilder, _anotherBuilder);
 			}
@@ -1717,9 +1657,7 @@ this.ListExpression = function(DefaultExpression, extractItem){
 		 */
 		set: function(expression){
 			// 如果是默认表达式
-			if(
-				expression instanceof DefaultExpression
-			){
+			if(expression instanceof DefaultExpression){
 				return false;
 			}
 
@@ -1872,9 +1810,7 @@ this.SyntaxError = function(MappingBuilder, e, contextOf){
 		var context = contextOf(info), content = context.content, position = context.position;
 
 		// 如果支持 MappingBuilder
-		if(
-			MappingBuilder.supported
-		){
+		if(MappingBuilder.supported){
 			// 生成源文件 map
 			e(
 				new MappingBuilder(file).complete()
@@ -1882,9 +1818,7 @@ this.SyntaxError = function(MappingBuilder, e, contextOf){
 		}
 
 		// 如果是引用错误
-		if(
-			_reference
-		){
+		if(_reference){
 			this.reference = true;
 		}
 
@@ -1923,26 +1857,18 @@ this.SyntaxError = function(MappingBuilder, e, contextOf){
 	// contextOf
 	function(info){
 		// 如果不是表达式
-		if(
-			!(info instanceof Expression)
-		){
+		if(!(info instanceof Expression)){
 			// 认为是 context，直接返回
 			return info;
 		}
 
 		var expression = info;
 
-		for(
-			;;
-		){
+		for(;;){
 			// 如果是列表表达式
-			if(
-				info instanceof ListExpression
-			){
+			if(info instanceof ListExpression){
 				// 如果长度为 0
-				if(
-					info.length > 0
-				){
+				if(info.length > 0){
 					// 记录表达式
 					expression = info;
 					// 取第一项
@@ -1951,9 +1877,7 @@ this.SyntaxError = function(MappingBuilder, e, contextOf){
 				}
 			}
 			// 如果是左侧表达式
-			else if(
-				info instanceof LeftHandSideExpression
-			){
+			else if(info instanceof LeftHandSideExpression){
 				// 记录表达式
 				expression = info;
 				// 获取 left
@@ -2046,9 +1970,7 @@ this.SyntaxParser = function(SyntaxRegExp, SyntaxError, Position, Context, Conte
 					position.column += content.length;
 					
 					// 如果标签异常，即不应该被捕获
-					if(
-						tag.type.unexpected
-					){
+					if(tag.type.unexpected){
 						// 如果表达式存在，则进入异常捕获处理
 						context.tag = tag = toTryCatch(parser, context, tag, parser.statements);
 					}
@@ -2089,25 +2011,17 @@ this.SyntaxParser = function(SyntaxRegExp, SyntaxError, Position, Context, Conte
 
 		// 如果表达式存在
 		outerBlock:
-		if(
-			statement.expression
-		){
+		if(statement.expression){
 			var tagClass = tag.class, tagType = tag.type, mistakable = tagType.mistakable;
 
-			if(
-				// 如果标签是可能被误解的而且是语句标签 或 标签是合法的非误解标签
-				mistakable ? tagClass.statement : !tagType.illegal
-			){
-				for(
-					;;
-				){
+			// 如果标签是可能被误解的而且是语句标签 或 标签是合法的非误解标签
+			if(mistakable ? tagClass.statement : !tagType.illegal){
+				for(;;){
 					// 获取 catch 所返回的标签
 					var t = statement.catch(parser, context);
 
 					// 如果标签存在
-					if(
-						t
-					){
+					if(t){
 						// 返回该标签
 						return t;
 					}
@@ -2116,16 +2030,12 @@ this.SyntaxParser = function(SyntaxRegExp, SyntaxError, Position, Context, Conte
 					var s = (statements = parser.statements).statement;
 
 					// 如果等于当前语句
-					if(
-						statement === s
-					){
+					if(statement === s){
 						// 获取 target
 						s = statement.target;
 
 						// 如果 target 存在
-						if(
-							s
-						){
+						if(s){
 							// 跳出当前语句
 							statement.out();
 						}
@@ -2141,21 +2051,15 @@ this.SyntaxParser = function(SyntaxRegExp, SyntaxError, Position, Context, Conte
 				}
 
 				// 如果是被误解的
-				if(
-					mistakable
-				){
+				if(mistakable){
 					// 如果是语句结束标签
-					if(
-						tagClass.statementEnd
-					){
+					if(tagClass.statementEnd){
 						// 返回标签
 						return tag;
 					}
 
 					// 如果表达式可以结束
-					if(
-						(statements.statement.expression.state & STATE_STATEMENT_ENDABLE) === STATE_STATEMENT_ENDABLE
-					){
+					if((statements.statement.expression.state & STATE_STATEMENT_ENDABLE) === STATE_STATEMENT_ENDABLE){
 						// 创建新语句，这里不能直接用 statements，因为在上面可能当前语句块已经发生改变
 						statements.newStatement();
 						// 返回标签
@@ -2168,20 +2072,14 @@ this.SyntaxParser = function(SyntaxRegExp, SyntaxError, Position, Context, Conte
 			}
 
 			// 如果是可误解的，且不是语句标签（上面的判断保证了一定不是语句标签）
-			if(
-				mistakable
-			){
+			if(mistakable){
 				// 如果语句存在
-				while(
-					statement
-				){
+				while(statement){
 					// 获取 try 所返回的标签
 					var t = statement.try(parser, context);
 
 					// 如果标签存在
-					if(
-						t
-					){
+					if(t){
 						// 返回该标签
 						return t;
 					}
@@ -2190,9 +2088,7 @@ this.SyntaxParser = function(SyntaxRegExp, SyntaxError, Position, Context, Conte
 					var s = parser.statements.statement;
 
 					// 如果等于当前语句，说明没有跳出语句
-					if(
-						statement === s
-					){
+					if(statement === s){
 						// 中断循环
 						break;
 					}
@@ -2316,9 +2212,7 @@ this.SimpleTest = function(Error, INNER_CONTENT_REGEXP, file, console, toArray, 
 				parser.parse(file);
 				
 				// 如果需要执行
-				if(
-					_eval
-				){
+				if(_eval){
 					// 获取解析结果
 					result = parser.build();
 
@@ -2366,9 +2260,7 @@ this.SimpleTest = function(Error, INNER_CONTENT_REGEXP, file, console, toArray, 
 			var err = callback(parser, error);
 			
 			// 如果返回了错误信息
-			if(
-				!err
-			){
+			if(!err){
 				return true;
 			}
 
