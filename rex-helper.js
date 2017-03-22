@@ -330,6 +330,7 @@ this.URL = function(toString, parse){
 	URL = new Rexjs(URL);
 
 	URL.props({
+		ext: "",
 		dirname : "",
 		filename: "",
 		hash : "",
@@ -386,8 +387,9 @@ this.URL = function(toString, parse){
 		url.protocal = protocal;
 		url.hostname = hostname;
 		url.port = port;
-		url.search = result[5] || "";
-		url.hash = result[6] || "";
+		url.ext = result[5] || "";
+		url.search = result[6] || "";
+		url.hash = result[7] || "";
 
 		switch(protocal){
 			case "http:":
@@ -475,11 +477,16 @@ this.URL = function(toString, parse){
 );
 
 this.ModuleName = function(URL, BASE_URI){
-	function ModuleName(value){
-		URL.call(this, value, BASE_URI);
+	function ModuleName(value, _baseURLstring){
+		URL.call(
+			this,
+			value,
+			typeof _baseURLstring === "string" ? _baseURLstring : BASE_URI
+		);
 
 		if(this.filename === ""){
 			this.filename = "index.js";
+			this.ext = ".js";
 		}
 	};
 	ModuleName = new Rexjs(ModuleName, URL);
@@ -621,7 +628,7 @@ this.Module = function(ModuleName, ECMAScriptParser, MappingBuilder, File, STATU
 
 			nativeEval(this.result);
 
-			exports = null;			
+			exports = null;
 
 			this.targets.forEach(
 				function(target){
@@ -634,12 +641,48 @@ this.Module = function(ModuleName, ECMAScriptParser, MappingBuilder, File, STATU
 		},
 		imports: null,
 		name: null,
-		ready: function(code){
-			var imports = this.imports, parser = new ECMAScriptParser(), file = new File(this.name.href, code);
+		ready: function(content){
+			var name = this.name;
+
+			switch(name.ext){
+				case ".js":
+					break;
+
+				case ".css":
+					var style = document.createElement("style");
+
+					style.textContent = content;
+
+					document.head.appendChild(style);
+
+				default:
+					defineProperty(
+						this.exports,
+						"default",
+						{
+							get: function(){ return content },
+							configurable: false,
+							enumerable: true
+						}
+					);
+					
+					this.result = content;
+					this.status = STATUS_COMPLETED;
+
+					this.targets.forEach(
+						function(target){
+							target.eval();
+						},
+						this
+					);
+					return;
+			}
+
+			var imports = this.imports, parser = new ECMAScriptParser(), file = new File(name.href, content);
 			//var builder = new MappingBuilder(file);
 			
 			this.status = STATUS_PARSING;
-			
+
 			parser.parse(file);
 			
 			this.result = parser.build();
@@ -647,7 +690,7 @@ this.Module = function(ModuleName, ECMAScriptParser, MappingBuilder, File, STATU
 
 			parser.deps.forEach(
 				function(dep){
-					var href = new ModuleName(dep).href, mod = cache.hasOwnProperty(href) ? cache[href] : new Module(dep);
+					var href = new ModuleName(dep, name.href).href, mod = cache.hasOwnProperty(href) ? cache[href] : new Module(href);
 
 					if(imports.indexOf(mod) > -1){
 						return;
@@ -665,6 +708,25 @@ this.Module = function(ModuleName, ECMAScriptParser, MappingBuilder, File, STATU
 		status: STATUS_NONE,
 		targets: null
 	});
+
+	document.addEventListener(
+		"DOMContentLoaded",
+		function(){
+			var count = 0;
+
+			[].forEach.call(
+				document.querySelectorAll('script[type="text/rexjs"]'),
+				function(script){
+					if(script.hasAttribute("src")){
+						new Module(script.src);
+						return;
+					}
+
+					new Module("inline-script-" + count++ +".js", script.textContent);
+				}
+			);
+		}
+	);
 
 	return Module;
 }(
@@ -721,7 +783,7 @@ this.Module = function(ModuleName, ECMAScriptParser, MappingBuilder, File, STATU
 	this,
 	XMLHttpRequest,
 	// URL_REGEXP
-	/^([^:/?#.]+:)?(?:\/\/(?:[^/?#]*@)?([\w\d\-\u0100-\uffff.%]*)(?::([0-9]+))?)?([^?#]+)?(?:(\?[^#]*))?(?:(#.*))?$/,
+	/^([^:/?#.]+:)?(?:\/\/(?:[^/?#]*@)?([\w\d\-\u0100-\uffff.%]*)(?::([0-9]+))?)?([^?#]+?(\.[^.?#]+)?)?(?:(\?[^#]*))?(?:(#.*))?$/,
 	encodeURI,
 	parseInt
 );

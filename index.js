@@ -4,6 +4,9 @@
 
 //import MyClass from "./module/a.js"
 
+import xml from "./module/a.xml"
+import css from "./module/a.css"
+
 var z = 3
 
 export let x = 1, y = 2
