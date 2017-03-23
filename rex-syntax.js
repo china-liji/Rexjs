@@ -1955,7 +1955,7 @@ this.SyntaxParser = function(SyntaxRegExp, SyntaxError, Position, Context, Conte
 				file.source,
 				function(content, tagIndex){
 					var context, tag = tags[tagIndex];
-					
+
 					// 初始化 context
 					context = new Context(
 						tag,
