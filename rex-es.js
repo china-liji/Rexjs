@@ -13183,7 +13183,7 @@ this.TemplateParameterExpression = function(config, extractTo, compileInner){
 			this.operand.extractTo(contentBuilder);
 
 			// 如果需要编译
-			if(config.base){
+			if(config.template){
 				// 编译 inner
 				compileInner(this.inner, contentBuilder);
 				return;

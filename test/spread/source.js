@@ -3,7 +3,7 @@ var obj = { value: 88 }
 function fn(a, b, c, d, e, g){
 	// 1 + 4 + 6 + ?
 	return new Number(
-		a + d + g + (this ? this.value : 6)
+		a + d + g + (this === window || this === void 0 ? 6 : this.value)
 	);
 };
 

@@ -42,7 +42,7 @@ if(
 
 var fn = function(texts, x, y, z){
 	if(
-		texts[0].match(/^[\r\n\u2028\u2029]$/) === null
+		texts[0].match(/^[\r\n\u2028\u2029]+$/) === null
 	){
 		throw "没有检测到换行符"
 	}
