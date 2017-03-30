@@ -1,13 +1,10 @@
 new function(Rexjs, File, String){
 
-this.SimpleTest = function(XMLHttpRequest, Error, INNER_CONTENT_REGEXP, file, console, toArray, e, catchErrors){
+this.SimpleTest = function(ECMAScriptParser, Module, XMLHttpRequest, Error, INNER_CONTENT_REGEXP, file, console, toArray, e, catchErrors){
 	/**
 	 * 解析器测试
-	 * @param {SyntaxParser} parser - 相关的语法解析器
 	 */
-	function SimpleTest(parser){
-		this.parser = parser;
-	};
+	function SimpleTest(){};
 	SimpleTest = new Rexjs(SimpleTest);
 	
 	SimpleTest.static({
@@ -28,7 +25,7 @@ this.SimpleTest = function(XMLHttpRequest, Error, INNER_CONTENT_REGEXP, file, co
 		 * @param {Function} _callbacks - 解析错误分析回调
 		 */
 		false: function(description, source, _callbacks){
-			var parser = this.parser;
+			var parser = new ECMAScriptParser();
 			
 			try {
 				// 设置文件源代码
@@ -73,7 +70,6 @@ this.SimpleTest = function(XMLHttpRequest, Error, INNER_CONTENT_REGEXP, file, co
 			this.groupName = "";
 		},
 		groupName: "",
-		parser: null,
 		/**
 		 * 测试结果为真的代码，即代码正确解析
 		 * @param {String} description - 该测试的描述
@@ -83,7 +79,7 @@ this.SimpleTest = function(XMLHttpRequest, Error, INNER_CONTENT_REGEXP, file, co
 		 */
 		true: function(description, source, _eval, _callbacks){
 			try {
-				var parser = this.parser, result = "";
+				var parser = new ECMAScriptParser(), result = "";
 				
 				// 设置文件源代码
 				file.source = source;
@@ -96,6 +92,7 @@ this.SimpleTest = function(XMLHttpRequest, Error, INNER_CONTENT_REGEXP, file, co
 					// 获取解析结果
 					result = parser.build();
 
+					new Module("inline-script-" + count++ +".js", script.textContent);
 					// 执行代码
 					e(result);
 				}
@@ -158,6 +155,8 @@ this.SimpleTest = function(XMLHttpRequest, Error, INNER_CONTENT_REGEXP, file, co
 	
 	return SimpleTest;
 }(
+	Rexjs.ECMAScriptParser,
+	Rexjs.Module,
 	XMLHttpRequest,
 	Error,
 	// INNER_CONTENT_REGEXP

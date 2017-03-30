@@ -135,6 +135,8 @@ async
 --------
 已完成功能 ↓
 --------
+新增模板语法分析测试 - 2017.03.30
+
 解决测试文件在 IE9 上面跑出的 2 个 bug - 2017.03.29
 	- fn`123` 没有解析，原因是 config.template 写成了 config.base
 	- 函数参数拓展符的 bug，由于 IE9 没有 "use strict" 的严格模式，即函数调用 fn() 中的 this 是指向 winodw 的，而严格模式下是 undefined
