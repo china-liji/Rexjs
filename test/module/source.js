@@ -1,0 +1,1 @@
+new Rexjs.Module("/module/import.js", null, true);

@@ -506,7 +506,7 @@ this.Module = function(ModuleName, ECMAScriptParser, MappingBuilder, File, STATU
 	/**
 	 * 模块，todo: 需要兼容 node 环境
 	 */
-	function Module(name, _code){
+	function Module(name, _code, _sync){
 		var moduleName = new ModuleName(name), href = moduleName.href;
 
 		this.exports = create(null);
@@ -518,11 +518,11 @@ this.Module = function(ModuleName, ECMAScriptParser, MappingBuilder, File, STATU
 		cache[href] = this;
 
 		if(typeof _code === "string"){
-			this.ready(_code);
+			this.ready(_code, _sync);
 			return;
 		}
 
-		load(this, name, href);
+		load(this, name, href, _sync);
 	};
 	Module = new Rexjs(Module);
 
@@ -535,8 +535,8 @@ this.Module = function(ModuleName, ECMAScriptParser, MappingBuilder, File, STATU
 		get cache(){
 			return cache;
 		},
-		defaultOf: function(_name){
-			return this.import(_name || name).default;
+		defaultOf: function(name, _baseURLstring){
+			return this.import(name, _baseURLstring).default;
 		},
 		export: function(propertyName, value){
 			defineProperty(
@@ -569,8 +569,8 @@ this.Module = function(ModuleName, ECMAScriptParser, MappingBuilder, File, STATU
 				);
 			}
 		},
-		exportFrom: function(name){
-			var exports = this.import(name);
+		exportFrom: function(name, _baseURLstring){
+			var exports = this.import(name, _baseURLstring);
 
 			for(var propertyName in exports){
 				if(propertyName === "default"){
@@ -580,20 +580,20 @@ this.Module = function(ModuleName, ECMAScriptParser, MappingBuilder, File, STATU
 				this.export(propertyName, exports[propertyName]);
 			}
 		},
-		import: function(name){
+		import: function(name, _baseURLstring){
 			return cache[
-				new ModuleName(name).href
+				new ModuleName(name, _baseURLstring).href
 			]
 			.exports;
 		},
 		lock: function(n){
 			name = n;
 		},
-		memberOf: function(member, _name){
-			return this.import(_name || name)[member];
+		memberOf: function(member, name, _baseURLstring){
+			return this.import(name, _baseURLstring)[member];
 		},
-		moduleOf: function(_name){
-			return this.import(_name || name);
+		moduleOf: function(name, _baseURLstring){
+			return this.import(name, _baseURLstring);
 		}
 	});
 
@@ -641,7 +641,7 @@ this.Module = function(ModuleName, ECMAScriptParser, MappingBuilder, File, STATU
 		},
 		imports: null,
 		name: null,
-		ready: function(content){
+		ready: function(content, _sync){
 			var name = this.name;
 
 			switch(name.ext){
@@ -690,7 +690,7 @@ this.Module = function(ModuleName, ECMAScriptParser, MappingBuilder, File, STATU
 
 			parser.deps.forEach(
 				function(dep){
-					var href = new ModuleName(dep, name.href).href, mod = cache.hasOwnProperty(href) ? cache[href] : new Module(href);
+					var href = new ModuleName(dep, name.href).href, mod = cache.hasOwnProperty(href) ? cache[href] : new Module(href, null, _sync);
 
 					if(imports.indexOf(mod) > -1){
 						return;
@@ -755,7 +755,7 @@ this.Module = function(ModuleName, ECMAScriptParser, MappingBuilder, File, STATU
 	// nativeEval
 	eval,	
 	// load
-	function(mod, name, href){
+	function(mod, name, href, _sync){
 		var request = new XMLHttpRequest();
 
 		// 监听 onload 事件
@@ -768,12 +768,12 @@ this.Module = function(ModuleName, ECMAScriptParser, MappingBuilder, File, STATU
 					return;
 				}
 				
-				mod.ready(this.responseText);
+				mod.ready(this.responseText, _sync);
 			}
 		);
 		
 		// 打开请求，采用异步get方式
-		request.open("get", href, true);
+		request.open("get", href, !_sync);
 		// 发送请求
 		request.send();
 	}

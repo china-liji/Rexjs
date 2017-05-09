@@ -1,6 +1,6 @@
 new function(Rexjs, File, String){
 
-this.SimpleTest = function(ECMAScriptParser, Module, XMLHttpRequest, Error, INNER_CONTENT_REGEXP, file, console, toArray, e, catchErrors){
+this.SimpleTest = function(ECMAScriptParser, XMLHttpRequest, Error, INNER_CONTENT_REGEXP, file, console, toArray, e, catchErrors){
 	/**
 	 * 解析器测试
 	 */
@@ -92,7 +92,6 @@ this.SimpleTest = function(ECMAScriptParser, Module, XMLHttpRequest, Error, INNE
 					// 获取解析结果
 					result = parser.build();
 
-					new Module("inline-script-" + count++ +".js", script.textContent);
 					// 执行代码
 					e(result);
 				}
@@ -156,7 +155,6 @@ this.SimpleTest = function(ECMAScriptParser, Module, XMLHttpRequest, Error, INNE
 	return SimpleTest;
 }(
 	Rexjs.ECMAScriptParser,
-	Rexjs.Module,
 	XMLHttpRequest,
 	Error,
 	// INNER_CONTENT_REGEXP

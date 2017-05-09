@@ -1,5 +1,1 @@
-export let a = 1, b = 2;
-
-export default class a{}
-
-console.log("a.js loaded");
+export let i = 1, k = 2;

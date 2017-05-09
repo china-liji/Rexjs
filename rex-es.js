@@ -15035,10 +15035,12 @@ this.ImportExpression = function(compileMember){
 	/**
 	 * import 表达式
 	 * @param {Context} context - 语法标签上下文
+	 * @param {File} file - 当前解析源文件信息
 	 */
-	function ImportExpression(context){
+	function ImportExpression(context, file){
 		Expression.call(this, context);
 
+		this.file = file;
 		this.members = new ListExpression(null, ",");
 	};
 	ImportExpression = new Rexjs(ImportExpression, Expression);
@@ -15067,15 +15069,21 @@ this.ImportExpression = function(compileMember){
 					return;
 				}
 
-				// 追加模块导入方法
-				contentBuilder.appendString("Rexjs.Module.lock(");
-				// 直接提取模块名称
-				contentBuilder.appendContext(this.name);
-				// 追加模块导入方法的结束小括号
-				contentBuilder.appendString(");var ");
+				// 初始化内容生成器
+				var anotherBuilder = new ContentBuilder();
 
+				// 如果有 from
+				if(this.from){
+					// 追加模块名称
+					anotherBuilder.appendString(
+						this.name.content + ',"' + this.file.filename + '"'
+					);
+				}
+
+				// 追加变量声明关键字
+				contentBuilder.appendString("var ");
 				// 编译每一个成员
-				this.members.execJoin(compileMember, contentBuilder);
+				this.members.execJoin(compileMember, contentBuilder, anotherBuilder);
 				return;
 			}
 
@@ -15101,6 +15109,7 @@ this.ImportExpression = function(compileMember){
 			// 提取模块名称
 			contentBuilder.appendContext(this.name);
 		},
+		file: null,
 		from: null,
 		members: null,
 		name: null
@@ -15109,8 +15118,8 @@ this.ImportExpression = function(compileMember){
 	return ImportExpression;
 }(
 	// compileMember
-	function(member, contentBuilder){
-		member.compileTo(contentBuilder);
+	function(member, contentBuilder, anotherBuilder){
+		member.compileTo(contentBuilder, anotherBuilder);
 	}
 );
 
@@ -15145,7 +15154,7 @@ this.ImportTag = function(ImportExpression, visitor){
 			visitor.call(this, parser, context, statement, statements);
 
 			// 设置当前表达式
-			statement.expression = new ImportExpression(context);
+			statement.expression = new ImportExpression(context, parser.file);
 		}
 	});
 
@@ -15304,7 +15313,7 @@ this.MultipleMembersExpression = function(importMember, exportMember, exportMemb
 			// 如果是导入
 			if(this.import){
 				// 执行成员导入项连接
-				inner.execJoin(importMember, contentBuilder);
+				inner.execJoin(importMember, contentBuilder, anotherBuilder);
 				return;
 			}
 
@@ -15339,8 +15348,8 @@ this.MultipleMembersExpression = function(importMember, exportMember, exportMemb
 	return MultipleMembersExpression;
 }(
 	// importMember
-	function(member, contentBuilder){
-		member.importTo(contentBuilder);
+	function(member, contentBuilder, anotherBuilder){
+		member.importTo(contentBuilder, anotherBuilder);
 	},
 	// exportMember
 	function(member, contentBuilder, anotherBuilder){
@@ -15387,11 +15396,17 @@ this.MemberExpression = function(){
 		/**
 		 * 以导入形式提取并编译表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 * @param {ContentBuilder} anotherBuilder - 另一个内容生成器，一般用于副内容的生成或记录
 		 */
-		importTo: function(contentBuilder){
+		importTo: function(contentBuilder, anotherBuilder){
+			var result = anotherBuilder.result;
+
 			// 追加成员变量赋值字符串
 			contentBuilder.appendString(
-				this.variable.content + "=" + 'Rexjs.Module.memberOf("' + this.context.content + '")'
+				this.variable.content + "=" + 'Rexjs.Module.memberOf("' +
+					this.context.content + '"' + (result.length > 0 ? "," : "") +
+					result +
+				")"
 			);
 		},
 		/**
@@ -15792,10 +15807,13 @@ this.DefaultMemberExpression = function(MemberExpression){
 		/**
 		 * 提取并编译表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 * @param {ContentBuilder} anotherBuilder - 另一个内容生成器，一般用于副内容的生成或记录
 		 */
-		compileTo: function(contentBuilder){
+		compileTo: function(contentBuilder, anotherBuilder){
 			// 追加成员变量赋值字符串
-			contentBuilder.appendString(this.context.content + "=Rexjs.Module.defaultOf()");
+			contentBuilder.appendString(
+				this.context.content + "=Rexjs.Module.defaultOf(" + anotherBuilder.result + ")"
+			);
 		}
 	});
 
@@ -15873,9 +15891,12 @@ this.AllMembersExpression = function(MemberAliasExpression){
 		/**
 		 * 提取并编译表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 * @param {ContentBuilder} anotherBuilder - 另一个内容生成器，一般用于副内容的生成或记录
 		 */
-		compileTo: function(contentBuilder){
-			contentBuilder.appendString(this.variable.content + "=Rexjs.Module.moduleOf()");
+		compileTo: function(contentBuilder, anotherBuilder){
+			contentBuilder.appendString(
+				this.variable.content + "=Rexjs.Module.moduleOf(" + anotherBuilder.result + ")"
+			);
 		}
 	});
 
@@ -16015,9 +16036,12 @@ this.ExportExpression = function(config, compile){
 	/**
 	 * export 表达式
 	 * @param {Context} context - 语法标签上下文
+	 * @param {File} file - 当前解析源文件信息
 	 */
-	function ExportExpression(context){
+	function ExportExpression(context, file){
 		Expression.call(this, context);
+
+		this.file = file;
 	};
 	ExportExpression = new Rexjs(ExportExpression, Expression);
 
@@ -16041,7 +16065,7 @@ this.ExportExpression = function(config, compile){
 			// 如果需要解析 export
 			if(config.export){
 				// 编译成员
-				compile(this.member, this.from, this.name, contentBuilder);
+				compile(this.member, this.from, this.name, this.file, contentBuilder);
 				return;
 			}
 
@@ -16064,6 +16088,7 @@ this.ExportExpression = function(config, compile){
 				contentBuilder.appendContext(this.name);
 			}
 		},
+		file: null,
 		member: null
 	});
 
@@ -16072,14 +16097,14 @@ this.ExportExpression = function(config, compile){
 	// config
 	new SyntaxConfig("export"),
 	// compile
-	function(member, from, name, contentBuilder){
+	function(member, from, name, file, contentBuilder){
 		// 初始化内容生成器
 		var anotherBuilder = new ContentBuilder();
 
 		// 如果有 from
 		if(from){
 			// 追加模块名称
-			anotherBuilder.appendString(name.content);
+			anotherBuilder.appendString(name.content + ',"' + file.filename + '"');
 		}
 
 		// 先编译成员
@@ -16175,7 +16200,7 @@ this.ExportTag = function(ExportExpression, ExportStatement, fromTag, visitor){
 			visitor.call(this, parser, context, statement, statements);
 
 			// 设置当前表达式
-			statement.expression = new ExportExpression(context);
+			statement.expression = new ExportExpression(context, parser.file);
 			// 设置当前语句
 			statements.statement = new ExportStatement(statements);
 		}
@@ -16224,7 +16249,7 @@ this.DefaultExportExpression = function(ExportExpression){
 	 * @param {Context} context - 标签上下文
 	 */
 	function DefaultExportExpression(context){
-		ExportExpression.call(this, context);
+		ExportExpression.call(this, context, null);
 	};
 	DefaultExportExpression = new Rexjs(DefaultExportExpression, ExportExpression);
 
@@ -16346,9 +16371,10 @@ this.PseudoImportExpression = function(ImportExpression){
 	/**
 	 * 伪 import 表达式，用于模拟相关环境
 	 * @param {Context} context - 标签上下文
+	 * @param {File} file - 当前解析源文件信息
 	 */
-	function PseudoImportExpression(context){
-		ImportExpression.call(this, context);
+	function PseudoImportExpression(context, file){
+		ImportExpression.call(this, context, file);
 	};
 	PseudoImportExpression = new Rexjs(PseudoImportExpression, ImportExpression);
 
@@ -16410,7 +16436,8 @@ this.OpenExportMultipleMembersTag = function(OpenMultipleMembersTag, PseudoImpor
 			// 设置当前表达式
 			(
 				statement.expression = new PseudoImportExpression(
-					statement.target.expression.context
+					statement.target.expression.context,
+					parser.file
 				)
 			)
 			.members

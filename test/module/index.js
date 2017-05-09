@@ -1,6 +1,6 @@
 test.unit(
-	[ "module/import.js" ],
-	function(importSource){
+	[ "module/source.js" ],
+	function(source){
 		this.group("模块测试");
 
 		this.true("导入模块", 'import "index.js"');
@@ -20,7 +20,7 @@ test.unit(
 		this.true("输出其他模块成员", 'export { a, b as c, d } from "index.js"');
 		this.true("输出其他模块所有成员", 'export * from "index.js"');
 
-		// this.true("复杂的测试", importSource, true);
+		this.true("复杂的测试", source, true);
 
 		this.false(
 			"不规范的模块名称",
