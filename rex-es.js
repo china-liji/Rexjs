@@ -50,7 +50,8 @@ this.ECMAScriptErrors = ECMAScriptErrors = function(REGEXP){
 		NEWLINE: "Illegal newline",
 		NEWLINE_AFTER_THROW: "Illegal newline after throw",
 		NEWLINE_BEFORE_ARROW: "Illegal newline before arrow",
-		PREFIEX_OPERATION: "Invalid left-hand side expression in prefix operation",
+		PREFIX_OPERATION: "Invalid left-hand side expression in prefix operation",
+		POSTFIX_OPERATION: "Invalid left-hand side expression in postfix operation",
 		REDECLARATION: 'Identifier "${1}" has already been declared',
 		REGEXP_FLAGS: "Invalid regular expression flags",
 		REST: "Rest parameter must be last formal parameter",
@@ -122,9 +123,9 @@ this.ECMAScriptOrders = ECMAScriptOrders = function(){
 		LOGICAL_AND: 301,
 		LOGICAL_OR: 301,
 		RIGHT_SHIFT: 301,
-		DECREMENT_SIBLING: 302,
 		EQUALITY: 302,
-		INCREMENT_SIBLING: 302,
+		UNARY_ASSIGNMENT: 302,
+		POSTFIX_UNARY_ASSIGNMENT: 303,
 		INEQUALITY: 302,
 		UNSIGNED_RIGHT_SHIFT: 302,
 		IDENTITY: 303,
@@ -893,8 +894,8 @@ this.CommentContentTag = function(){
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
 		 */
-		require: function(tagsMap){
-			return tagsMap.commentContextTags;
+		require: function(tagsMap, currentTags){
+			return currentTags;
 		}
 	});
 	
@@ -1726,6 +1727,13 @@ this.ExpressionBreakTag = function(){
 		// 防止与 StatementBreakTag 冲突
 		order: ECMAScriptOrders.EXPRESSION_BREAK,
 		/**
+		 * 获取此标签接下来所需匹配的标签列表
+		 * @param {TagsMap} tagsMap - 标签集合映射
+		 */
+		require: function(tagsMap){
+			return tagsMap.nonpostfixExpressionContextTags;
+		},
+		/**
 		 * 标签访问器
 		 * @param {SyntaxParser} parser - 语法解析器
 		 * @param {Context} context - 标签上下文
@@ -2194,10 +2202,8 @@ this.UnaryExpression = function(){
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
 		 */
 		extractTo: function(contentBuilder){
-			var context = this.context;
-			
 			// 提取一元操作符的内容
-			contentBuilder.appendContext(context);
+			contentBuilder.appendContext(this.context);
 			// 提取操作对象内容
 			this.operand.extractTo(contentBuilder);
 		},
@@ -2206,6 +2212,34 @@ this.UnaryExpression = function(){
 	
 	return UnaryExpression;
 }();
+
+this.PostfixUnaryExpression = function(UnaryExpression){
+	/**
+	 * 后置一元表达式
+	 * @param {Context} context - 标签上下文
+	 */
+	function PostfixUnaryExpression(context){
+		UnaryExpression.call(this, context);
+	};
+	PostfixUnaryExpression = new Rexjs(PostfixUnaryExpression, UnaryExpression);
+	
+	PostfixUnaryExpression.props({
+		/**
+		 * 提取表达式文本内容
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 */
+		extractTo: function(contentBuilder){
+			// 提取操作对象内容
+			this.operand.extractTo(contentBuilder);
+			// 提取一元操作符的内容
+			contentBuilder.appendContext(this.context);
+		}
+	});
+	
+	return PostfixUnaryExpression;
+}(
+	this.UnaryExpression
+);
 
 this.UnaryStatement = function(){
 	/**
@@ -2508,6 +2542,17 @@ this.NegationSiblingTag = function(NegationTag){
 	NegationSiblingTag = new Rexjs(NegationSiblingTag, NegationTag);
 	
 	NegationSiblingTag.props({
+		/**
+		 * 提取表达式文本内容
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 * @param {String} content - 标签内容
+		 */
+		extractTo: function(contentBuilder, content){
+			// 追加空格
+			contentBuilder.appendSpace();
+			// 追加标签内容
+			contentBuilder.appendString(content);
+		},
 		order: ECMAScriptOrders.NEGATION_SIBLING
 	});
 	
@@ -2558,7 +2603,7 @@ this.LogicalNOTTag = function(){
 
 
 // 一元赋值标签
-void function(AssignableExpression, AccessorExpression, UnaryStatement, VariableTag){
+void function(UnaryStatement, VariableTag){
 
 this.UnaryAssignmentStatement = function(catchMethod, tryMethod, checkExpression){
 	/**
@@ -2597,33 +2642,19 @@ this.UnaryAssignmentStatement = function(catchMethod, tryMethod, checkExpression
 	UnaryStatement.prototype.try,
 	// checkExpression
 	function(parser, statement, context, method){
-		var expression = statement.expression;
-
-		// 如果当前表达式是赋值表达式
-		if(expression instanceof AssignableExpression){
-			var ctx = expression.context;
-
-			switch(true){
-				// 如果是属性访问表达式
-				case expression instanceof AccessorExpression:
-					break;
-
-				// 如果已被收集到常量（会触发报错）
-				case ctx.tag.collected(parser, ctx, parser.statements):
-					return;
-			}
-
+		// 如果满足一元赋值标签条件
+		if(statement.target.expression.context.tag.operable(parser, statement.expression)){
 			// 调用父类方法
 			method.call(statement, parser, context);
 			return;
 		}
 
 		// 报错
-		parser.error(statement.target.expression.context, ECMAScriptErrors.PREFIEX_OPERATION, true);
+		parser.error(statement.target.expression.context, ECMAScriptErrors.PREFIX_OPERATION, true);
 	}
 );
 
-this.UnaryAssignmentTag = function(UnaryTag, UnaryExpression, UnaryAssignmentStatement){
+this.UnaryAssignmentTag = function(UnaryTag, UnaryExpression, UnaryAssignmentStatement, AssignableExpression, AccessorExpression){
 	/**
 	 * 一元赋值标签
 	 * @param {Number} _type - 标签类型
@@ -2635,6 +2666,32 @@ this.UnaryAssignmentTag = function(UnaryTag, UnaryExpression, UnaryAssignmentSta
 
 	UnaryAssignmentTag.props({
 		/**
+		 * 判断该一元表达式在当前表达式中，是否能使用
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Expression} expression - 当前表达式
+		 */
+		operable: function(parser, expression){
+			// 如果当前表达式是赋值表达式
+			if(expression instanceof AssignableExpression){
+				var ctx = expression.context;
+
+				switch(true){
+					// 如果是属性访问表达式
+					case expression instanceof AccessorExpression:
+						break;
+
+					// 如果已被收集到常量（会触发报错）
+					case ctx.tag.collected(parser, ctx, parser.statements):
+						return false;
+				}
+
+				return true;
+			}
+
+			return false;
+		},
+		order: ECMAScriptOrders.UNARY_ASSIGNMENT,
+		/**
 		 * 标签访问器
 		 * @param {SyntaxParser} parser - 语法解析器
 		 * @param {Context} context - 标签上下文
@@ -2642,7 +2699,7 @@ this.UnaryAssignmentTag = function(UnaryTag, UnaryExpression, UnaryAssignmentSta
 		 * @param {Statements} statements - 当前语句块
 		 */
 		visitor: function(parser, context, statement, statements){
-			// 设置临时表达式
+			// 设置当前表达式
 			statement.expression = new UnaryExpression(context);
 			// 设置当前语句
 			statements.statement = new UnaryAssignmentStatement(statements);
@@ -2653,10 +2710,12 @@ this.UnaryAssignmentTag = function(UnaryTag, UnaryExpression, UnaryAssignmentSta
 }(
 	this.UnaryTag,
 	this.UnaryExpression,
-	this.UnaryAssignmentStatement
+	this.UnaryAssignmentStatement,
+	this.AssignableExpression,
+	this.AccessorExpression
 );
 
-this.PostfixUnaryAssignmentTag = function(UnaryAssignmentTag){
+this.PostfixUnaryAssignmentTag = function(UnaryAssignmentTag, PostfixUnaryExpression){
 	/**
 	 * 后置一元赋值标签
 	 * @param {Number} _type - 标签类型
@@ -2668,6 +2727,7 @@ this.PostfixUnaryAssignmentTag = function(UnaryAssignmentTag){
 
 	PostfixUnaryAssignmentTag.props({
 		$class: CLASS_EXPRESSION_CONTEXT,
+		order: ECMAScriptOrders.POSTFIX_UNARY_ASSIGNMENT,
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
@@ -2683,24 +2743,33 @@ this.PostfixUnaryAssignmentTag = function(UnaryAssignmentTag){
 		 * @param {Statements} statements - 当前语句块
 		 */
 		visitor: function(parser, context, statement, statements){
-			parser.error(context);
-			return;
-			// 设置临时表达式
-			statement.expression = new UnaryExpression(context);
-			// 设置当前语句
-			statements.statement = new UnaryAssignmentStatement(statements);
+			var expression = statement.expression;
+
+			// 如果满足一元赋值标签条件
+			if(this.operable(parser, expression)){
+				(
+					// 设置当前表达式
+					statement.expression = new PostfixUnaryExpression(context)
+				)
+				// 设置 operand 属性
+				.operand = expression;
+
+				return;
+			}
+
+			// 报错
+			parser.error(context, ECMAScriptErrors.POSTFIX_OPERATION, true);
 		}
 	});
 
 	return PostfixUnaryAssignmentTag;
 }(
-	this.UnaryAssignmentTag
+	this.UnaryAssignmentTag,
+	this.PostfixUnaryExpression
 );
 
 }.call(
 	this,
-	this.AssignableExpression,
-	this.AccessorExpression,
 	this.UnaryStatement,
 	this.VariableTag
 );
@@ -2754,8 +2823,7 @@ this.IncrementSiblingTag = function(IncrementTag){
 			contentBuilder.appendSpace();
 			// 追加标签内容
 			contentBuilder.appendString(content);
-		},
-		order: ECMAScriptOrders.INCREMENT_SIBLING
+		}
 	});
 	
 	return IncrementSiblingTag;
@@ -2825,8 +2893,7 @@ this.DecrementSiblingTag = function(DecrementTag){
 			contentBuilder.appendSpace();
 			// 追加标签内容
 			contentBuilder.appendString(content);
-		},
-		order: ECMAScriptOrders.DECREMENT_SIBLING
+		}
 	});
 	
 	return DecrementSiblingTag;
@@ -16796,7 +16863,7 @@ this.ExpressionContextTags = function(list){
 		 * @param {SyntaxTag} tag - 语法标签
 		 */
 		filter: function(tag){
-			var tagClass = tag.class
+			var tagClass = tag.class;
 
 			switch(true){
 				// 如果是表达式上下文标签
@@ -17939,6 +18006,40 @@ this.NewContextTags = function(ExtendsContextTags, TargetAccessorTag, SuperTag, 
 	this.ExtendsContextTags.prototype.filter
 );
 
+this.NonpostfixExpressionContextTags = function(PostfixUnaryAssignmentTag, filter){
+	/**
+	 * 表达式上下文标签列表
+	 */
+	function NonpostfixExpressionContextTags(){
+		ExpressionContextTags.call(this);
+	};
+	NonpostfixExpressionContextTags = new Rexjs(NonpostfixExpressionContextTags, ExpressionContextTags);
+	
+	NonpostfixExpressionContextTags.props({
+		/**
+		 * 标签过滤处理
+		 * @param {SyntaxTag} tag - 语法标签
+		 */
+		filter: function(tag){
+			if(tag instanceof PostfixUnaryAssignmentTag){
+				return true;
+			}
+
+			if(tag instanceof Rexjs.UnaryAssignmentTag){
+				tag.type = new TagType(TYPE_MISTAKABLE);
+			}
+
+			return filter.call(this, tag);
+		},
+		id: "nonpostfixExpressionContextTags"
+	});
+	
+	return NonpostfixExpressionContextTags;
+}(
+	this.PostfixUnaryAssignmentTag,
+	ExpressionContextTags.prototype.filter
+);
+
 this.OpenArgumentsContextTags = function(ArgumentSeparatorContextTags, CloseArgumentsTag){
 	/**
 	 * 参数起始上下文标签列表
@@ -18847,6 +18948,7 @@ this.ECMAScriptTagsMap = function(SyntaxTagsMap, tagsArray){
 		this.ModuleVariableTags,
 		this.NegationContextTags,
 		this.NewContextTags,
+		this.NonpostfixExpressionContextTags,
 		this.OpenArgumentsContextTags,
 		this.OpenClassBodyContextTags,
 		this.OpenGroupingContextTags,

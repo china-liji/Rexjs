@@ -39,6 +39,7 @@ test.unit(
 		)
 
 		console.warn("var a = 1,\n b = a ++ b，这是个错误的语句");
+		console.warn("缺少复杂的测试， 如 - + - + + + - - 2");
 
 		test.false(
 			"不完整的一元表达式",
