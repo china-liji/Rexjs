@@ -549,7 +549,7 @@ this.Module = function(ModuleName, ECMAScriptParser, MappingBuilder, File, STATU
 				}
 			);
 		},
-		exportAs: function(exports, _name){
+		exportAs: function(exports, _name, _baseURLstring){
 			if(!_name){
 				for(var propertyName in exports){
 					this.export(propertyName, exports[propertyName]);
@@ -558,13 +558,13 @@ this.Module = function(ModuleName, ECMAScriptParser, MappingBuilder, File, STATU
 				return;
 			}
 
-			var allExports = this.import(_name);
+			var allExports = this.import(_name, _baseURLstring);
 
 			for(var propertyName in exports){
 				this.export(
 					propertyName,
 					allExports[
-						exports[n]
+						exports[propertyName]
 					]
 				);
 			}
@@ -581,6 +581,12 @@ this.Module = function(ModuleName, ECMAScriptParser, MappingBuilder, File, STATU
 			}
 		},
 		import: function(name, _baseURLstring){
+			if(!cache[
+				new ModuleName(name, _baseURLstring).href
+			]){
+				debugger
+			}
+
 			return cache[
 				new ModuleName(name, _baseURLstring).href
 			]

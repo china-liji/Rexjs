@@ -4,6 +4,7 @@ test.unit(
 		this.group("类测试");
 
 		this.true("最简单的类", "class a{}");
+		this.true("类表达式", "(class {})");
 		this.true("带很多分号的空属性类", "class a{;;;;;;;;;;;;;;;;;}");
 		this.true("带构造函数的类", "class a { constructor(){} }");
 		this.true("带方法的类", "class a { a(){} }");

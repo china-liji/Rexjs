@@ -133,8 +133,9 @@ this.ECMAScriptOrders = ECMAScriptOrders = function(){
 		SHORTHAND_ASSIGNMENT: 303,
 		ILLEGAL_SHORTHAND_ASSIGNMENT: 304,
 		COMMENT: 400,
-		COMMENT_CONTENT: 401,
-		ILLEGAL_LINE_TERMINATOR: 401,
+		OPEN_RESTRICTED_COMMENT: 401,
+		COMMENT_CONTENT: 402,
+		ILLEGAL_LINE_TERMINATOR: 403,
 		TEMPLATE_CONTENT: 500,
 		TEMPLATE_PARAMETER: 501,
 		TEMPLATE_SPECIAL_CONTENT: 501,
@@ -829,109 +830,6 @@ this.FileEndTag = function(FileEndExpression){
 	Rexjs.FilePositionTag
 );
 
-
-// 注释标签
-void function(CommentTag, tags){
-
-this.SingleLineCommentTag = function(){
-	/**
-	 * 单行注释标签
-	 * @param {Number} _type - 标签类型
-	 */
-	function SingleLineCommentTag(_type){
-		CommentTag.call(this, _type);
-	};
-	SingleLineCommentTag = new Rexjs(SingleLineCommentTag, CommentTag);
-	
-	SingleLineCommentTag.props({
-		regexp: /\/\/.*/
-	});
-	
-	return SingleLineCommentTag;
-}();
-
-this.OpenMultiLineCommentTag = function(){
-	/**
-	 * 多行注释起始标签
-	 * @param {Number} _type - 标签类型
-	 */
-	function OpenMultiLineCommentTag(_type){
-		CommentTag.call(this, _type);
-	};
-	OpenMultiLineCommentTag = new Rexjs(OpenMultiLineCommentTag, CommentTag);
-	
-	OpenMultiLineCommentTag.props({
-		regexp: /\/\*/,
-		/**
-		 * 获取此标签接下来所需匹配的标签列表
-		 * @param {TagsMap} tagsMap - 标签集合映射
-		 */
-		require: function(tagsMap, currentTags){
-			// 记录 currentTags
-			tags = currentTags;
-			return tagsMap.commentContextTags;
-		}
-	});
-	
-	return OpenMultiLineCommentTag;
-}();
-
-this.CommentContentTag = function(){
-	/**
-	 * 注释内容标签
-	 * @param {Number} _type - 标签类型
-	 */
-	function CommentContentTag(_type){
-		CommentTag.call(this, _type);
-	};
-	CommentContentTag = new Rexjs(CommentContentTag, CommentTag);
-	
-	CommentContentTag.props({
-		// 防止与单行注释标签或多行注释起始标签冲突
-		order: ECMAScriptOrders.COMMENT_CONTENT,
-		regexp: /(?:[^*\r\n\u2028\u2029]|\*(?!\/))+/,
-		/**
-		 * 获取此标签接下来所需匹配的标签列表
-		 * @param {TagsMap} tagsMap - 标签集合映射
-		 */
-		require: function(tagsMap, currentTags){
-			return currentTags;
-		}
-	});
-	
-	return CommentContentTag;
-}();
-
-this.CloseMultiLineCommentTag = function(){
-	/**
-	 * 多行注释结束标签
-	 * @param {Number} _type - 标签类型
-	 */
-	function CloseMultiLineCommentTag(_type){
-		CommentTag.call(this, _type);
-	};
-	CloseMultiLineCommentTag = new Rexjs(CloseMultiLineCommentTag, CommentTag);
-	
-	CloseMultiLineCommentTag.props({
-		regexp: /\*\//,
-		/**
-		 * 获取此标签接下来所需匹配的标签列表
-		 * @param {TagsMap} tagsMap - 标签集合映射
-		 */
-		require: function(){
-			return tags;
-		}
-	});
-	
-	return CloseMultiLineCommentTag;
-}();
-
-}.call(
-	this,
-	this.CommentTag,
-	// tags
-	null
-);
 
 // 字面量标签相关
 void function(){
@@ -1731,7 +1629,7 @@ this.ExpressionBreakTag = function(){
 		 * @param {TagsMap} tagsMap - 标签集合映射
 		 */
 		require: function(tagsMap){
-			return tagsMap.nonpostfixExpressionContextTags;
+			return tagsMap.restrictedExpressionContextTags;
 		},
 		/**
 		 * 标签访问器
@@ -1755,6 +1653,164 @@ this.ExpressionBreakTag = function(){
 	this,
 	this.SpecialLineTerminatorTag,
 	this.SpecialLineTerminatorTag.prototype.visitor
+);
+
+
+// 注释标签
+void function(CommentTag, tags){
+
+this.SingleLineCommentTag = function(){
+	/**
+	 * 单行注释标签
+	 * @param {Number} _type - 标签类型
+	 */
+	function SingleLineCommentTag(_type){
+		CommentTag.call(this, _type);
+	};
+	SingleLineCommentTag = new Rexjs(SingleLineCommentTag, CommentTag);
+	
+	SingleLineCommentTag.props({
+		regexp: /\/\/.*/
+	});
+	
+	return SingleLineCommentTag;
+}();
+
+this.OpenMultiLineCommentTag = function(){
+	/**
+	 * 多行注释起始标签
+	 * @param {Number} _type - 标签类型
+	 */
+	function OpenMultiLineCommentTag(_type){
+		CommentTag.call(this, _type);
+	};
+	OpenMultiLineCommentTag = new Rexjs(OpenMultiLineCommentTag, CommentTag);
+	
+	OpenMultiLineCommentTag.props({
+		regexp: /\/\*/,
+		/**
+		 * 获取此标签接下来所需匹配的标签列表
+		 * @param {TagsMap} tagsMap - 标签集合映射
+		 */
+		require: function(tagsMap, currentTags){
+			// 记录 currentTags
+			tags = currentTags;
+			return tagsMap.openMultiLineCommentContextTags;
+		}
+	});
+	
+	return OpenMultiLineCommentTag;
+}();
+
+this.OpenRestrictedCommentTag = function(OpenMultiLineCommentTag){
+	/**
+	 * 受限制的多行注释起始标签，一般使用在表达式上下文中
+	 * @param {Number} _type - 标签类型
+	 */
+	function OpenRestrictedCommentTag(_type){
+		OpenMultiLineCommentTag.call(this, _type);
+	};
+	OpenRestrictedCommentTag = new Rexjs(OpenRestrictedCommentTag, OpenMultiLineCommentTag);
+
+	OpenRestrictedCommentTag.props({
+		order: ECMAScriptOrders.OPEN_RESTRICTED_COMMENT,
+		/**
+		 * 获取此标签接下来所需匹配的标签列表
+		 * @param {TagsMap} tagsMap - 标签集合映射
+		 */
+		require: function(tagsMap, currentTags){
+			// 记录 currentTags
+			tags = currentTags;
+			return tagsMap.openRestrictedCommentContextTags;
+		}
+	});
+	
+	return OpenRestrictedCommentTag;
+}(
+	this.OpenMultiLineCommentTag
+);
+
+this.CommentBreakTag = function(ExpressionBreakTag){
+	/**
+	 * 注释行结束符标签
+	 */
+	function CommentBreakTag(){
+		ExpressionBreakTag.call(this);
+	};
+	CommentBreakTag = new Rexjs(CommentBreakTag, ExpressionBreakTag);
+	
+	CommentBreakTag.props({
+		/**
+		 * 获取此标签接下来所需匹配的标签列表
+		 * @param {TagsMap} tagsMap - 标签集合映射
+		 */
+		require: function(tagsMap, currentTags){
+			// 记录 currentTags
+			tags = tagsMap.restrictedExpressionContextTags;
+			return currentTags;
+		}
+	});
+	
+	return CommentBreakTag;
+}(
+	this.ExpressionBreakTag
+);
+
+this.CommentContentTag = function(){
+	/**
+	 * 注释内容标签
+	 * @param {Number} _type - 标签类型
+	 */
+	function CommentContentTag(_type){
+		CommentTag.call(this, _type);
+	};
+	CommentContentTag = new Rexjs(CommentContentTag, CommentTag);
+	
+	CommentContentTag.props({
+		// 防止与单行注释标签或多行注释起始标签冲突
+		order: ECMAScriptOrders.COMMENT_CONTENT,
+		regexp: /(?:[^*\r\n\u2028\u2029]|\*(?!\/))+/,
+		/**
+		 * 获取此标签接下来所需匹配的标签列表
+		 * @param {TagsMap} tagsMap - 标签集合映射
+		 */
+		require: function(tagsMap, currentTags){
+			return currentTags;
+		}
+	});
+	
+	return CommentContentTag;
+}();
+
+this.CloseMultiLineCommentTag = function(){
+	/**
+	 * 多行注释结束标签
+	 * @param {Number} _type - 标签类型
+	 */
+	function CloseMultiLineCommentTag(_type){
+		CommentTag.call(this, _type);
+	};
+	CloseMultiLineCommentTag = new Rexjs(CloseMultiLineCommentTag, CommentTag);
+	
+	CloseMultiLineCommentTag.props({
+		regexp: /\*\//,
+		/**
+		 * 获取此标签接下来所需匹配的标签列表
+		 * @param {TagsMap} tagsMap - 标签集合映射
+		 */
+		require: function(){
+			return tags;
+		}
+	});
+	
+	return CloseMultiLineCommentTag;
+}();
+
+}.call(
+	this,
+	this.CommentTag,
+	// tags
+	null
 );
 
 
@@ -2733,7 +2789,7 @@ this.PostfixUnaryAssignmentTag = function(UnaryAssignmentTag, PostfixUnaryExpres
 		 * @param {TagsMap} tagsMap - 标签集合映射
 		 */
 		require: function(tagsMap){
-			return tagsMap.expressionContextTags;
+			return tagsMap.restrictedExpressionContextTags;
 		},
 		/**
 		 * 标签访问器
@@ -2900,6 +2956,23 @@ this.DecrementSiblingTag = function(DecrementTag){
 }(
 	this.DecrementTag
 );
+
+this.PostfixDecrementTag = function(){
+	/**
+	 * 后置递减标签
+	 * @param {Number} _type - 标签类型
+	 */
+	function PostfixDecrementTag(_type){
+		PostfixUnaryAssignmentTag.call(this, _type);
+	};
+	PostfixDecrementTag = new Rexjs(PostfixDecrementTag, PostfixUnaryAssignmentTag);
+	
+	PostfixDecrementTag.props({
+		regexp: /--/
+	});
+	
+	return PostfixDecrementTag;
+}();
 
 }.call(
 	this,
@@ -13943,12 +14016,12 @@ this.DefaultConstructorExpression = function(ClassPropertyExpression){
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
 		 */
 		compileTo: function(contentBuilder){
-			var content = this.name.content;
+			var name = this.name;
 
 			// 追加构造函数
 			contentBuilder.appendString(
 				'new ClassProperty("constructor",function' +
-				(content.length === 0 ? "" : " " + content) +
+				(name === null ? "" : " " + name.content) +
 				"(){" + 
 					(
 						// 如果该类存在继承
@@ -16890,6 +16963,8 @@ this.ExpressionContextTags = function(list){
 		this.OnlyStatementEndTags,
 		this.OpenBracketAccessorTag,
 		this.OpenCallTag,
+		this.OpenRestrictedCommentTag,
+		this.PostfixDecrementTag,
 		this.PostfixIncrementTag,
 		this.SubtractionTag,
 		this.OpenTemplateParameterTag
@@ -17280,32 +17355,6 @@ this.ClosureVariableContextTags = function(BasicAssignmentTag, IllegalShorthandA
 }(
 	this.BasicAssignmentTag,
 	this.IllegalShorthandAssignmentTag
-);
-
-this.CommentContextTags = function(LineTerminatorTag, CommentContentTag, CloseMultiLineCommentTag){
-	/**
-	 * 注释上下文标签列表
-	 */
-	function CommentContextTags(){
-		IllegalTags.call(this);
-		
-		this.register(
-			new LineTerminatorTag(),
-			new CommentContentTag(),
-			new CloseMultiLineCommentTag()
-		);
-	};
-	CommentContextTags = new Rexjs(CommentContextTags, IllegalTags);
-
-	CommentContextTags.props({
-		id: "commentContextTags"
-	});
-	
-	return CommentContextTags;
-}(
-	Rexjs.LineTerminatorTag,
-	this.CommentContentTag,
-	this.CloseMultiLineCommentTag
 );
 
 this.ConstContextTags = function(ConstVariableTag){
@@ -18006,40 +18055,6 @@ this.NewContextTags = function(ExtendsContextTags, TargetAccessorTag, SuperTag, 
 	this.ExtendsContextTags.prototype.filter
 );
 
-this.NonpostfixExpressionContextTags = function(PostfixUnaryAssignmentTag, filter){
-	/**
-	 * 表达式上下文标签列表
-	 */
-	function NonpostfixExpressionContextTags(){
-		ExpressionContextTags.call(this);
-	};
-	NonpostfixExpressionContextTags = new Rexjs(NonpostfixExpressionContextTags, ExpressionContextTags);
-	
-	NonpostfixExpressionContextTags.props({
-		/**
-		 * 标签过滤处理
-		 * @param {SyntaxTag} tag - 语法标签
-		 */
-		filter: function(tag){
-			if(tag instanceof PostfixUnaryAssignmentTag){
-				return true;
-			}
-
-			if(tag instanceof Rexjs.UnaryAssignmentTag){
-				tag.type = new TagType(TYPE_MISTAKABLE);
-			}
-
-			return filter.call(this, tag);
-		},
-		id: "nonpostfixExpressionContextTags"
-	});
-	
-	return NonpostfixExpressionContextTags;
-}(
-	this.PostfixUnaryAssignmentTag,
-	ExpressionContextTags.prototype.filter
-);
-
 this.OpenArgumentsContextTags = function(ArgumentSeparatorContextTags, CloseArgumentsTag){
 	/**
 	 * 参数起始上下文标签列表
@@ -18063,6 +18078,30 @@ this.OpenArgumentsContextTags = function(ArgumentSeparatorContextTags, CloseArgu
 	this.CloseArgumentsTag
 );
 
+this.OpenMultiLineCommentContextTags = function(CommentContentTag, CloseMultiLineCommentTag){
+	/**
+	 * 起始多行注释上下文标签列表
+	 */
+	function OpenMultiLineCommentContextTags(){
+		IllegalTags.call(this);
+
+		this.register(
+			new CommentContentTag(),
+			new CloseMultiLineCommentTag()
+		);
+	};
+	OpenMultiLineCommentContextTags = new Rexjs(OpenMultiLineCommentContextTags, IllegalTags);
+
+	OpenMultiLineCommentContextTags.props({
+		id: "openMultiLineCommentContextTags"
+	});
+	
+	return OpenMultiLineCommentContextTags;
+}(
+	this.CommentContentTag,
+	this.CloseMultiLineCommentTag
+);
+
 this.OpenGroupingContextTags = function(IllegibleRestTag){
 	/**
 	 * 起始分组小括号上下文标签列表
@@ -18083,6 +18122,29 @@ this.OpenGroupingContextTags = function(IllegibleRestTag){
 	return OpenGroupingContextTags;
 }(
 	this.IllegibleRestTag
+);
+
+this.OpenRestrictedCommentContextTags = function(OpenMultiLineCommentContextTags, CommentBreakTag){
+	/**
+	 * 起始多行注释上下文标签列表
+	 */
+	function OpenRestrictedCommentContextTags(){
+		OpenMultiLineCommentContextTags.call(this);
+
+		this.register(
+			new CommentBreakTag()
+		);
+	};
+	OpenRestrictedCommentContextTags = new Rexjs(OpenRestrictedCommentContextTags, OpenMultiLineCommentContextTags);
+
+	OpenRestrictedCommentContextTags.props({
+		id: "openRestrictedCommentContextTags"
+	});
+	
+	return OpenRestrictedCommentContextTags;
+}(
+	this.OpenMultiLineCommentContextTags,
+	this.CommentBreakTag
 );
 
 this.OpenSwitchBodyContextTags = function(CaseTag, DefaultTag, CloseBlockComponentTag){
@@ -18316,6 +18378,45 @@ this.RestArgumentNameContextTags = function(RestArgumentSeparatorTag){
 	return RestArgumentNameContextTags;
 }(
 	this.RestArgumentSeparatorTag
+);
+
+this.RestrictedExpressionContextTags = function(PostfixUnaryAssignmentTag, UnaryAssignmentTag, filter){
+	/**
+	 * 受限制的表达式上下文标签列表
+	 */
+	function RestrictedExpressionContextTags(){
+		ExpressionContextTags.call(this);
+	};
+	RestrictedExpressionContextTags = new Rexjs(RestrictedExpressionContextTags, ExpressionContextTags);
+	
+	RestrictedExpressionContextTags.props({
+		/**
+		 * 标签过滤处理
+		 * @param {SyntaxTag} tag - 语法标签
+		 */
+		filter: function(tag){
+			// 如果是后置一元赋值标签
+			if(tag instanceof PostfixUnaryAssignmentTag){
+				// 过滤掉
+				return true;
+			}
+
+			// 如果是其他的一元赋值标签
+			if(tag instanceof UnaryAssignmentTag){
+				// 设置为可误解的，目的是报错
+				tag.type = new TagType(TYPE_MISTAKABLE);
+			}
+
+			return filter.call(this, tag);
+		},
+		id: "restrictedExpressionContextTags"
+	});
+	
+	return RestrictedExpressionContextTags;
+}(
+	this.PostfixUnaryAssignmentTag,
+	this.UnaryAssignmentTag,
+	ExpressionContextTags.prototype.filter
 );
 
 this.ReturnContextTags = function(OnlyStatementEndTags){
@@ -18917,7 +19018,6 @@ this.ECMAScriptTagsMap = function(SyntaxTagsMap, tagsArray){
 		this.CloseArrowFunctionBodyContextTags,
 		this.CloseCatchedExceptionTags,
 		this.ClosureVariableContextTags,
-		this.CommentContextTags,
 		this.ConstContextTags,
 		this.ConstructorArgumentsTags,
 		this.ConstructorBodyTags,
@@ -18948,10 +19048,11 @@ this.ECMAScriptTagsMap = function(SyntaxTagsMap, tagsArray){
 		this.ModuleVariableTags,
 		this.NegationContextTags,
 		this.NewContextTags,
-		this.NonpostfixExpressionContextTags,
 		this.OpenArgumentsContextTags,
 		this.OpenClassBodyContextTags,
+		this.OpenMultiLineCommentContextTags,
 		this.OpenGroupingContextTags,
+		this.OpenRestrictedCommentContextTags,
 		this.OpenSwitchBodyContextTags,
 		this.ParameterTags,
 		this.PlusContextTags,
@@ -18961,6 +19062,7 @@ this.ECMAScriptTagsMap = function(SyntaxTagsMap, tagsArray){
 		this.PropertySeparatorTags,
 		this.RestArgumentNameTags,
 		this.RestArgumentNameContextTags,
+		this.RestrictedExpressionContextTags,
 		this.ReturnContextTags,
 		this.ShorthandMethodArgumentsTags,
 		this.ShorthandMethodBodyTags,

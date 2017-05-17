@@ -12,7 +12,7 @@ import "export.js"
 	}
 })
 
-if(MyClass !== Module.default){
+if(ExportedClass !== Module.default){
 	console.error("默认输出不一致")
 }
 
@@ -26,6 +26,10 @@ if(Module.i !== 1){
 
 if(typeof Module.MyClass !== "function"){
 	console.error("没有输出类")
+}
+
+if(Module.MyClass !== MC){
+	console.error("输出不对应")
 }
 
 if(typeof Module.myFunction !== "function"){
