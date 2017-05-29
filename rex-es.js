@@ -124,6 +124,7 @@ this.ECMAScriptOrders = ECMAScriptOrders = function(){
 		LOGICAL_OR: 301,
 		RIGHT_SHIFT: 301,
 		EQUALITY: 302,
+		EXPONENTIATION: 302,
 		UNARY_ASSIGNMENT: 302,
 		POSTFIX_UNARY_ASSIGNMENT: 303,
 		INEQUALITY: 302,
@@ -2988,26 +2989,37 @@ this.BinaryExpression = function(){
 	/**
 	 * 二元表达式
 	 * @param {Context} context - 语法标签上下文
+	 * @param {Expression} left - 该二元表达式左侧运算的表达式
 	 */
-	function BinaryExpression(context){
-		ListExpression.call(this, context, "");
+	function BinaryExpression(context, left){
+		Expression.call(this, context);
+
+		this.left = left;
 	};
-	BinaryExpression = new Rexjs(BinaryExpression, ListExpression);
+	BinaryExpression = new Rexjs(BinaryExpression, Expression);
 
 	BinaryExpression.props({
 		/**
-		 * 用指定表达式替换最近添加的表达式
-		 * @param {Expression} expression - 指定的表达式
+		 * 提取表达式文本内容
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
 		 */
-		replace: function(expression){
-			this.latest = this[this.length - 1] = expression;
-		}
+		extractTo: function(contentBuilder){
+			// 先提取左侧表达式
+			this.left.extractTo(contentBuilder);
+			// 追加运算符
+			contentBuilder.appendContext(this.context);
+			// 提取右侧表达式
+			this.right.extractTo(contentBuilder);
+		},
+		last: null,
+		left: null,
+		right: null
 	});
 
 	return BinaryExpression;
 }();
 
-this.BinaryStatement = function(){
+this.BinaryStatement = function(setRight){
 	/**
 	 * 二元语句
 	 * @param {Statements} statements - 该语句将要所处的语句块
@@ -3024,8 +3036,7 @@ this.BinaryStatement = function(){
 		 * @param {Context} context - 语法标签上下文
 		 */
 		catch: function(parser, context){
-			// 跳出语句并添加表达式
-			this.out().add(this.expression);
+			setRight(this);
 		},
 		/**
 		 * 尝试处理异常
@@ -3034,15 +3045,20 @@ this.BinaryStatement = function(){
 		 */
 		try: function(parser, context){
 			// 如果是表达式分隔符标签
-			if(this.target.expression.latest.context.tag.isSeparator(context)){
-				// 跳出语句并添加表达式
-				this.out().add(this.expression);
+			if(this.target.expression.context.tag.isSeparator(context)){
+				setRight(this);
 			}
 		}
 	});
 	
 	return BinaryStatement;
-}();
+}(
+	// setRight
+	function(statement){
+		// 跳出语句并给最后一个二元表达式设置 right
+		statement.out().last.right = statement.expression;
+	}
+);
 
 this.BinaryTag = function(ExpressionSeparatorTag, BinaryExpression, BinaryStatement){
 	/**
@@ -3079,24 +3095,33 @@ this.BinaryTag = function(ExpressionSeparatorTag, BinaryExpression, BinaryStatem
 		 * @param {Statements} statements - 当前语句块
 		 */
 		visitor: function(parser, context, statement, statements){
-			var expression = statement.expression;
+			var expression = statement.expression, precedence = this.precedence;
 
-			// 如果当前表达式是二元表达式
-			if(expression instanceof BinaryExpression){
-				// 替换最近添加的表达式
-				expression.replace(
-					new LeftHandSideExpression(expression.latest, context)
-				);
+			// 如果当前表达式是二元表达式而且该二元表达式的运算符优先级小于当前运算符的优先级
+			if(expression instanceof BinaryExpression && expression.context.tag.precedence < precedence){
+				var exp = expression, right = expression.right;
+
+				// 如果右侧表达式也是二元表达式
+				while(right instanceof BinaryExpression){
+					// 如果当前二元运算符的优先级小于等于该表达式的运算符优先级
+					if(precedence <= right.context.tag.precedence){
+						break;
+					}
+
+					// 记录上一个表达式
+					exp = right;
+					// 再获取右侧表达式
+					right = right.right;
+				}
+
+				// 设置新的右侧表达式
+				exp.right = expression.last = new BinaryExpression(context, right);
 			}
 			else {
-				(
-					// 设置当前表达式
-					statement.expression = new BinaryExpression(context)
-				)
-				// 添加表达式
-				.add(
-					new LeftHandSideExpression(expression, context)
-				);
+				var binaryExpression = new BinaryExpression(context, expression);
+
+				// 设置当前表达式并将最后的二元表达式为自己
+				statement.expression = binaryExpression.last = binaryExpression;
 			}
 
 			// 设置当前语句
@@ -3117,9 +3142,9 @@ this.BinaryTag = function(ExpressionSeparatorTag, BinaryExpression, BinaryStatem
 
 
 // 特殊的二元标签
-void function(BinaryTag){
+void function(BinaryTag, IdentifierExpression, VariableDeclarationTag){
 
-this.AssignmentTag = function(BinaryExpression, AssignableExpression, IdentifierExpression, VariableDeclarationTag, isSeparator, visitor){
+this.AssignmentTag = function(BinaryExpression, BinaryStatement, AssignableExpression, isSeparator, assginable){
 	/**
 	 * 二元赋值运算符标签
 	 * @param {Number} _type - 标签类型
@@ -3151,13 +3176,24 @@ this.AssignmentTag = function(BinaryExpression, AssignableExpression, Identifier
 			switch(true){
 				// 如果表达式是可赋值表达式
 				case expression instanceof AssignableExpression:
+					// 如果可赋值
+					if(assginable(parser, expression)){
+						var binaryExpression = new BinaryExpression(context, expression);
+
+						// 设置当前表达式并将最后的二元表达式为自己
+						statement.expression = binaryExpression.last = binaryExpression;
+					}
+
 					break;
 
 				// 如果表达式是二元表达式
 				case expression instanceof BinaryExpression:
-					// 如果上一个表达式也属于赋值表达式
-					if(expression[expression.length - 2].context.tag.precedence === 0){
-						expression = expression[expression.length - 1];
+					var last = expression.last, right = last.right;
+
+					// 如果该二元表达式是“赋值表达式”，而且其值也是“可赋值表达式”
+					if(last.context.tag.precedence === 0 && assginable(parser, right)){
+						// 设置右侧表达式及记录为最后一个二元表达式
+						last.right = expression.last = new BinaryExpression(context, right);
 						break;
 					}
 
@@ -3167,34 +3203,36 @@ this.AssignmentTag = function(BinaryExpression, AssignableExpression, Identifier
 					return;
 			}
 
-			// 如果是标识符表达式，那么需要验证是否为常量赋值
-			if(expression instanceof IdentifierExpression){
-				var ctx = expression.context, tag = ctx.tag;
-
-				switch(true){
-					// 如果当前是声明变量名标签，则不判断是否被收集，因为在声明中，已经判断，再判断的话，100% 由于重复定义，而报错
-					case tag instanceof VariableDeclarationTag:
-						break;
-
-					// 如果已经被收集，会导致报错
-					case tag.collected(parser, ctx, parser.statements):
-						return;
-				}
-			}
-
-			// 调用父类方法
-			visitor.call(this, parser, context, statement, statements);
+			// 设置当前语句
+			statements.statement = new BinaryStatement(statements);
 		}
 	});
 	
 	return AssignmentTag;
 }(
 	this.BinaryExpression,
+	this.BinaryStatement,
 	this.AssignableExpression,
-	this.IdentifierExpression,
-	this.VariableDeclarationTag,
 	BinaryTag.prototype.isSeparator,
-	BinaryTag.prototype.visitor
+	// assginable
+	function(parser, expression){
+		// 如果是标识符表达式，那么需要验证是否为常量赋值
+		if(expression instanceof IdentifierExpression){
+			var ctx = expression.context, tag = ctx.tag;
+
+			switch(true){
+				// 如果当前是声明变量名标签，则不判断是否被收集，因为在声明中，已经判断，再判断的话，100% 由于重复定义，而报错
+				case tag instanceof VariableDeclarationTag:
+					break;
+
+				// 如果已经被收集，会导致报错
+				case tag.collected(parser, ctx, parser.statements):
+					return false;
+			}
+		}
+
+		return true;
+	}
 );
 
 this.BinaryKeywordTag = function(){
@@ -3228,7 +3266,9 @@ this.BinaryKeywordTag = function(){
 
 }.call(
 	this,
-	this.BinaryTag
+	this.BinaryTag,
+	this.IdentifierExpression,
+	this.VariableDeclarationTag
 );
 
 
@@ -3750,6 +3790,87 @@ this.RemainderTag = function(){
 	this.BinaryTag,
 	this.AssignmentTag,
 	this.BinaryKeywordTag
+);
+
+
+// 幂运算表达式相关
+void function(BinaryTag){
+
+this.ExponentiationExpression = function(){
+	/**
+	 * 幂运算表达式
+	 * @param {Expression} left - 左侧表达式
+	 * @param {Context} context - 语法标签上下文
+	 */
+	function ExponentiationExpression(left, context){
+		LeftHandSideExpression.call(this, left, context);
+	};
+	ExponentiationExpression = new Rexjs(ExponentiationExpression, LeftHandSideExpression);
+
+	ExponentiationExpression.props({
+		/**
+		 * 提取表达式文本内容
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 */
+		extractTo: function(contentBuilder){
+			debugger
+		}
+	});
+
+	return ExponentiationExpression;
+}();
+
+this.ExponentiationTag = function(ExponentiationExpression, visitor){
+	/**
+	 * 幂运算标签
+	 * @param {Number} _type - 标签类型
+	 */
+	function ExponentiationTag(_type){
+		BinaryTag.call(this, _type);
+	};
+	ExponentiationTag = new Rexjs(ExponentiationTag, BinaryTag);
+	
+	ExponentiationTag.props({
+		// 防止与 "*" 冲突
+		order: ECMAScriptOrders.EXPONENTIATION,
+		precedence: 11,
+		regexp: /\*\*/,
+		/**
+		 * 标签访问器
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 标签上下文
+		 * @param {Statement} statement - 当前语句
+		 * @param {Statements} statements - 当前语句块
+		 */
+		visitor: function(parser, context, statement, statements){
+			var binaryExpression, leftHandSideExpression;
+
+			// 先调用父类方法，确保 binaryExpression 的存在
+			visitor.call(this, parser, context, statement, statements);
+
+
+			binaryExpression = statement.expression;
+			leftHandSideExpression = binaryExpression.latest;
+
+			// 用幂运算表达式替换父类中生成的左侧表达式
+			binaryExpression.replace(
+				new ExponentiationExpression(
+					leftHandSideExpression.left,
+					leftHandSideExpression.context
+				)
+			);
+		}
+	});
+	
+	return ExponentiationTag;
+}(
+	this.ExponentiationExpression,
+	BinaryTag.prototype.visitor
+);
+
+}.call(
+	this,
+	this.BinaryTag
 );
 
 
@@ -6539,7 +6660,7 @@ this.GroupingContextStatement = function(ArgumentsExpression, BinaryExpression, 
 	},
 	// ifBinary
 	function(parser, expression, argumentsExpression, i, j){
-		var leftHandSideExpression = expression[0], left = leftHandSideExpression.left, context = left.context;
+		var left = expression.left, context = left.context;
 
 		switch(false){
 			// 如果左侧表达式不是标识符表达式
@@ -6549,9 +6670,9 @@ this.GroupingContextStatement = function(ArgumentsExpression, BinaryExpression, 
 				return j;
 
 			// 如果不是等于号
-			case leftHandSideExpression.context.content === "=":
+			case expression.context.content === "=":
 				// 报错
-				parser.error(leftHandSideExpression.context);
+				parser.error(expression.context);
 				return j;
 
 			// 默认，即默认值参数表达式
@@ -10869,7 +10990,7 @@ this.ForExpression = function(ConditionalExpression, config, compileOf){
 		contentBuilder.appendString(variable + "=new Rexjs.Generator(");
 
 		// 追加生成器的对象
-		inner[1].extractTo(contentBuilder);
+		inner.right.extractTo(contentBuilder);
 
 		// 追加 for 循环的逻辑条件
 		contentBuilder.appendString(");!" + variable + ".iterator.closed;");
@@ -10879,7 +11000,7 @@ this.ForExpression = function(ConditionalExpression, config, compileOf){
 		contentBuilder.appendString("{");
 
 		// 将对象值的初始化表达式提取到新的内容生成器里，目的是防止文档位置（position）的错乱，导致 mappings 不可用 
-		inner[0].left.extractTo(builder);
+		inner.left.extractTo(builder);
 
 		// 追加对象值的初始化
 		contentBuilder.appendString(
@@ -10981,8 +11102,8 @@ this.IterationStatement = function(BinaryStatement){
 		 * @param {Context} context - 语法标签上下文
 		 */
 		catch: function(parser, context){
-			// 跳出当前语句并添加表达式
-			this.out().add(this.expression);
+			// 跳出当前语句并设置 right
+			this.out().right = this.expression;
 		},
 		/**
 		 * 尝试处理异常
@@ -10999,7 +11120,7 @@ this.IterationStatement = function(BinaryStatement){
 	this.BinaryStatement
 );
 
-this.IteratorTag = function(BinaryKeywordTag, BinaryExpression, LeftHandSideExpression, IterationStatement, visitor){
+this.IteratorTag = function(BinaryKeywordTag, BinaryExpression, IterationStatement, visitor){
 	/**
 	 * for 循环迭代符标签
 	 * @param {Number} _type - 标签类型
@@ -11018,17 +11139,10 @@ this.IteratorTag = function(BinaryKeywordTag, BinaryExpression, LeftHandSideExpr
 		 * @param {Statements} statements - 当前语句块
 		 */
 		visitor: function(parser, context, statement, statements){
-			var binaryExpression = new BinaryExpression(context);
-
-			// 添加表达式
-			binaryExpression.add(
-				new LeftHandSideExpression(statement.expression, context)
-			);
-
 			// 设置 for 表达式的 iterator 属性
 			statement.target.expression.iterator = context.content;
 			// 设置当前表达式
-			statement.expression = binaryExpression;
+			statement.expression = new BinaryExpression(context, statement.expression);
 			// 设置当前语句
 			statements.statement = new IterationStatement(statements);
 		}
@@ -11038,7 +11152,6 @@ this.IteratorTag = function(BinaryKeywordTag, BinaryExpression, LeftHandSideExpr
 }(
 	this.BinaryKeywordTag,
 	this.BinaryExpression,
-	Rexjs.LeftHandSideExpression,
 	this.IterationStatement
 );
 
@@ -16811,6 +16924,7 @@ this.ECMAScriptTags = function(DefaultTags, list){
 		this.ElseTag,
 		this.EmptyStatementTag,
 		this.EqualityTag,
+		this.ExponentiationTag,
 		this.ExportTag,
 		this.ExtendsTag,
 		this.FileEndTag,

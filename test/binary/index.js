@@ -15,10 +15,7 @@ test.unit(
 				return parser.statements[1].expression instanceof Rexjs.BinaryExpression ? "" : "没有识别出二元表达式";
 			},
 			function(parser){
-				return parser.statements[1].expression.length === 3 ? "" : "没有正确解析出二元表达式的长度";
-			},
-			function(parser){
-				return parser.statements[1].expression[1].left instanceof Rexjs.UnaryExpression ? "" : "没有识别出其中的一元表达式";
+				return parser.statements[1].expression.left.right instanceof Rexjs.UnaryExpression ? "" : "没有识别出其中的一元表达式";
 			}
 		);
 

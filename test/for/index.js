@@ -36,21 +36,21 @@ test.unit(
 				}
 
 				if(
-					inner.length !== 2
+					inner.left instanceof Rexjs.VarExpression === false
 				){
-					return "条件表达式长度不对";
+					return "条件的左侧应该为声明表达式"
 				}
 
 				if(
-					inner[0] instanceof Rexjs.LeftHandSideExpression === false
-				){
-					return "条件表达式的列表第一项表达式应该是左侧表达式";
-				}
-
-				if(
-					inner[1] instanceof Rexjs.CommaExpression === false
+					inner.right instanceof Rexjs.CommaExpression === false
 				){
 					return "条件表达式的列表第二项表达式应该是逗号表达式";
+				}
+
+				if(
+					inner.right.length !== 3
+				){
+					return "逗号表达式长度不正确";
 				}
 			}
 		);

@@ -34,10 +34,10 @@ test.unit(
 				return parser.statements[1].expression instanceof Rexjs.BinaryExpression ? "" : "没有识别出最外层的二元表达式";
 			},
 			function(parser){
-				return parser.statements[1].expression[0].left instanceof Rexjs.CallExpression ? "" : "没有识别出函数啊用的正确位置";
+				return parser.statements[1].expression.left instanceof Rexjs.CallExpression ? "" : "没有识别出函数啊用的正确位置";
 			},
 			function(parser){
-				return parser.statements[1].expression[0].left.operand instanceof Rexjs.UnaryExpression ? "" : "没有正确识别出 new 一元操作符关键字";
+				return parser.statements[1].expression.left.operand instanceof Rexjs.UnaryExpression ? "" : "没有正确识别出 new 一元操作符关键字";
 			}
 		)
 
