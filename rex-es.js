@@ -3088,6 +3088,14 @@ this.BinaryTag = function(ExpressionSeparatorTag, BinaryExpression, BinaryStatem
 			return tagsMap.expressionTags;
 		},
 		/**
+		 * 将该二元标签转换为二元表达式
+		 * @param {Context} context - 相关的语法标签上下文
+		 * @param {Expression} left - 该二元表达式左侧运算的表达式
+		 */
+		toExpression: function(context, left){
+			return new BinaryExpression(context, left);
+		},
+		/**
 		 * 标签访问器
 		 * @param {SyntaxParser} parser - 语法解析器
 		 * @param {Context} context - 标签上下文
@@ -3115,10 +3123,10 @@ this.BinaryTag = function(ExpressionSeparatorTag, BinaryExpression, BinaryStatem
 				}
 
 				// 设置新的右侧表达式
-				exp.right = expression.last = new BinaryExpression(context, right);
+				exp.right = expression.last = this.toExpression(context, right);
 			}
 			else {
-				var binaryExpression = new BinaryExpression(context, expression);
+				var binaryExpression = this.toExpression(context, expression);
 
 				// 设置当前表达式并将最后的二元表达式为自己
 				statement.expression = binaryExpression.last = binaryExpression;
@@ -3794,18 +3802,27 @@ this.RemainderTag = function(){
 
 
 // 幂运算表达式相关
-void function(BinaryTag){
+void function(BinaryExpression){
 
-this.ExponentiationExpression = function(){
+this.ExponentiationExpression = function(config, extractTo){
 	/**
 	 * 幂运算表达式
-	 * @param {Expression} left - 左侧表达式
 	 * @param {Context} context - 语法标签上下文
+	 * @param {Expression} left - 左侧表达式
 	 */
-	function ExponentiationExpression(left, context){
-		LeftHandSideExpression.call(this, left, context);
+	function ExponentiationExpression(context, left){
+		BinaryExpression.call(this, context, left);
 	};
-	ExponentiationExpression = new Rexjs(ExponentiationExpression, LeftHandSideExpression);
+	ExponentiationExpression = new Rexjs(ExponentiationExpression, BinaryExpression);
+
+	ExponentiationExpression.static({
+		/**
+		 * 获取表达式编译配置
+		 */
+		get config(){
+			return config;
+		}
+	});
 
 	ExponentiationExpression.props({
 		/**
@@ -3813,14 +3830,34 @@ this.ExponentiationExpression = function(){
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
 		 */
 		extractTo: function(contentBuilder){
-			debugger
+			// 如果需要解析幂运算
+			if(config.exponentiation){
+				// 追加算数方法
+				contentBuilder.appendString("Math.pow(");
+				// 提取左侧的算数底值
+				this.left.extractTo(contentBuilder);
+				// 追加参数分隔符
+				contentBuilder.appendString(",");
+				// 提取幂
+				this.right.extractTo(contentBuilder);
+				// 追加方法结束小括号
+				contentBuilder.appendString(")");
+				return;
+			}
+
+			// 调用父类方法
+			extractTo.call(this, contentBuilder);
 		}
 	});
 
 	return ExponentiationExpression;
-}();
+}(
+	// config
+	new SyntaxConfig("exponentiation"),
+	BinaryExpression.prototype.extractTo
+);
 
-this.ExponentiationTag = function(ExponentiationExpression, visitor){
+this.ExponentiationTag = function(BinaryTag, ExponentiationExpression){
 	/**
 	 * 幂运算标签
 	 * @param {Number} _type - 标签类型
@@ -3836,41 +3873,24 @@ this.ExponentiationTag = function(ExponentiationExpression, visitor){
 		precedence: 11,
 		regexp: /\*\*/,
 		/**
-		 * 标签访问器
-		 * @param {SyntaxParser} parser - 语法解析器
-		 * @param {Context} context - 标签上下文
-		 * @param {Statement} statement - 当前语句
-		 * @param {Statements} statements - 当前语句块
+		 * 将该二元标签转换为二元表达式
+		 * @param {Context} context - 相关的语法标签上下文
+		 * @param {Expression} left - 该二元表达式左侧运算的表达式
 		 */
-		visitor: function(parser, context, statement, statements){
-			var binaryExpression, leftHandSideExpression;
-
-			// 先调用父类方法，确保 binaryExpression 的存在
-			visitor.call(this, parser, context, statement, statements);
-
-
-			binaryExpression = statement.expression;
-			leftHandSideExpression = binaryExpression.latest;
-
-			// 用幂运算表达式替换父类中生成的左侧表达式
-			binaryExpression.replace(
-				new ExponentiationExpression(
-					leftHandSideExpression.left,
-					leftHandSideExpression.context
-				)
-			);
+		toExpression: function(context, left){
+			return new ExponentiationExpression(context, left);
 		}
 	});
 	
 	return ExponentiationTag;
 }(
-	this.ExponentiationExpression,
-	BinaryTag.prototype.visitor
+	this.BinaryTag,
+	this.ExponentiationExpression
 );
 
 }.call(
 	this,
-	this.BinaryTag
+	this.BinaryExpression
 );
 
 
@@ -19062,6 +19082,7 @@ this.ECMAScript6Config = function(configs, forEach, every, defineProperty){
 	// configs
 	[
 		this.CallExpression,
+		this.ExponentiationExpression,
 		this.ExportExpression,
 		this.ForExpression,
 		this.FunctionExpression,
