@@ -1,12 +1,15 @@
 ------
 功能缺失
 ------
-enum
 yield
-**
 await
 async
 解构赋值
+拓展数组：[...[1,2,3]]
+拓展对象：{ ...window.location }
+
+
+
 可省略 super
 可选参数
 目录别名、文件别名

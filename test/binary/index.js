@@ -37,6 +37,14 @@ test.unit(
 			}
 		);
 
+		this.false(
+			"错误的连续赋值",
+			"a = 1 += 2",
+			function(parser, err){
+				return err.context.content === "+=" ? "" : "没有识别出不可赋值的字面量";
+			}
+		);
+
 		this.groupEnd();
 	}
 );
