@@ -1644,7 +1644,7 @@ this.ListExpression = function(DefaultExpression, extractItem){
 		forEach: function(callback, _contentBuilder, _anotherBuilder){
 			for(var i = this.min, j = this.length;i < j;i++){
 				// 执行回调
-				callback(this[i], _contentBuilder, _anotherBuilder);
+				callback(this[i], _contentBuilder, _anotherBuilder, i);
 			}
 		},
 		join: "",

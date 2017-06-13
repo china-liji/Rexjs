@@ -4607,10 +4607,166 @@ this.SpreadTag = function(SpreadExpression, SpreadStatement, AccessorExpression)
 );
 
 
-// 数组相关
-void function(IdentifierExpression, BinaryExpression, BasicAssignmentTag, closeArrayTag, arrayItemSeparatorTag){
+// 解构表达式相关
+void function(){
 
-this.ArrayExpression = function(every, validate){
+this.DestructuringExpression = function(AssignableExpression, config){
+	/**
+	 * 解构表达式
+	 * @param {Expression} origin - 解构赋值源表达式
+	 */
+	function DestructuringExpression(origin){
+		AssignableExpression.call(this, origin.open);
+
+		this.origin = origin;
+	};
+	DestructuringExpression = new Rexjs(DestructuringExpression, AssignableExpression);
+
+	DestructuringExpression.static({
+		/**
+		 * 获取表达式编译配置
+		 */
+		get config(){
+			return config;
+		}
+	});
+
+	DestructuringExpression.props({
+		/**
+		 * 提取解构项文本内容
+		 * @param {Expression} expression - 解构当前项
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 * @param {ContentBuilder} anotherBuilder - 另一个内容生成器，一般用于副内容的生成或记录
+		 */
+		destructTo: function(){},
+		/**
+		 * 提取表达式文本内容
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 * @param {ContentBuilder} anotherBuilder - 另一个内容生成器，一般用于副内容的生成或记录
+		 */
+		extractTo: function(contentBuilder, anotherBuilder){
+			// 直接提取源表达式
+			this.origin.extractTo(contentBuilder);
+		},
+		origin: null
+	});
+
+	return DestructuringExpression;
+}(
+	this.AssignableExpression,
+	// config
+	new SyntaxConfig("destructuring")
+);
+
+this.DestructuringItemExpression = function(DestructuringExpression){
+	/**
+	 * 解构项表达式
+	 * @param {Expression} origin - 解构赋值源表达式
+	 */
+	function DestructuringItemExpression(origin){
+		DestructuringExpression.call(this, origin);
+	};
+	DestructuringItemExpression = new Rexjs(DestructuringItemExpression, DestructuringExpression);
+
+	DestructuringItemExpression.props({
+		/**
+		 * 以解构方式提取表达式文本内容
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 * @param {ContentBuilder} anotherBuilder - 另一个内容生成器，一般用于副内容的生成或记录
+		 */
+		destructTo: function(contentBuilder, anotherBuilder){
+			var builder = new ContentBuilder();
+
+			this.origin.extractTo(builder);
+			contentBuilder.appendString("," + builder.result + "=" + anotherBuilder.result)
+		}
+	});
+
+	return DestructuringItemExpression;
+}(
+	this.DestructuringExpression
+);
+
+}.call(
+	this
+);
+
+
+// 数组相关
+void function(DestructuringExpression, DestructuringItemExpression, AssignableExpression, BinaryExpression, ArrayExpression, BasicAssignmentTag, closeArrayTag, arrayItemSeparatorTag){
+
+this.ArrayDestructuringExpression = function(){
+	/**
+	 * 数组解构表达式
+	 * @param {Expression} origin - 解构赋值源表达式
+	 */
+	function ArrayDestructuringExpression(origin){
+		DestructuringExpression.call(this, origin);
+	};
+	ArrayDestructuringExpression = new Rexjs(ArrayDestructuringExpression, DestructuringExpression);
+
+	ArrayDestructuringExpression.props({
+		/**
+		 * 以解构方式提取表达式文本内容
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 * @param {ContentBuilder} anotherBuilder - 另一个内容生成器，一般用于副内容的生成或记录
+		 */
+		destructTo: function(contentBuilder, anotherBuilder){
+			this.origin.inner.forEach(function(expression, contentBuilder, anotherBuilder, index){
+				var builder = new ContentBuilder();
+
+				builder.appendString(anotherBuilder.result + "[" + index + "]");
+				expression.destructTo(contentBuilder, builder);
+			}, contentBuilder, anotherBuilder);
+		}
+	});
+
+	return ArrayDestructuringExpression;
+}();
+
+this.ArrayDestructuringItemExpression = function(){
+	function ArrayDestructuringItemExpression(origin){
+		DestructuringItemExpression.call(this, origin);
+	};
+	ArrayDestructuringItemExpression = new Rexjs(ArrayDestructuringItemExpression, DestructuringItemExpression);
+
+	ArrayDestructuringItemExpression.props({
+		/**
+		 * 以解构方式提取表达式文本内容
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 * @param {ContentBuilder} anotherBuilder - 另一个内容生成器，一般用于副内容的生成或记录
+		 */
+		destructTo: function(contentBuilder, anotherBuilder){
+			var inner = this.origin.inner;
+
+			if(inner.length === 0){
+				return;
+			}
+
+			var variable = this.variable;
+
+			contentBuilder.appendString(
+				"," + variable + "=" + anotherBuilder.result
+			);
+
+			var builder = new ContentBuilder();
+
+			builder.appendString(variable);
+
+			this.origin.inner.forEach(function(expression, contentBuilder, anotherBuilder, index){
+				var builder = new ContentBuilder();
+
+				builder.appendString(anotherBuilder.result + "[" + index + "]");
+				expression.destructTo(contentBuilder, builder);
+			}, contentBuilder, builder);
+		},
+		variable: ""
+	});
+
+	return ArrayDestructuringItemExpression;
+}();
+
+this.ArrayExpression = ArrayExpression = function(ArrayDestructuringExpression, ArrayDestructuringItemExpression, config, every, transform){
 	/**
 	 * 数组表达式
 	 * @param {Context} open - 起始标签上下文
@@ -4624,43 +4780,73 @@ this.ArrayExpression = function(every, validate){
 
 	ArrayExpression.props({
 		/**
-		 * 以解构形式提取表达式文本内容
-		 * @param {ContentBuilder} contentBuilder - 内容生成器
-		 */
-		destructTo: function(contentBuilder){
-			debugger
-		},
-		/**
-		 * 判断该数组是否符合解构形式
+		 * 转换为解构表达式
 		 * @param {SyntaxParser} parser - 语法解析器
 		 */
-		destructible: function(parser){
-			// 返回验证结果
-			return every(this.inner, validate, parser, true);
+		toDestructuring: function(parser){
+			// 转换内部表达式
+			transform(parser, this.inner);
+			return new ArrayDestructuringExpression(this);
+		},
+		/**
+		 * 转换为解构项表达式
+		 * @param {SyntaxParser} parser - 语法解析器
+		 */
+		toDestructuringItem: function(parser){
+			var inner = this.inner, expression = new ArrayDestructuringItemExpression(this);
+
+			// 如果需要解析解构表达式 而且 长度大于 0
+			if(config.destructuring && inner.length > 0){
+				// // 生成临时变量名
+				expression.variable = parser.statements.collections.generate();
+			}
+
+			// 转换内部表达式
+			transform(parser, inner);
+			return expression;
 		}
 	});
 
 	return ArrayExpression;
 }(
+	this.ArrayDestructuringExpression,
+	this.ArrayDestructuringItemExpression,
+	DestructuringExpression.config,
 	Rexjs.every,
-	// validate
-	function(expression){
-		// 如果是标识符表达式
-		if(expression instanceof IdentifierExpression){
-			return true;
-		}
+	// transform
+	function(parser, inner){
+		for(var i = inner.min, j = inner.length;i < j;i++){
+			var expression = inner[i];
 
-		// 如果是二元运算表达式
-		if(expression instanceof BinaryExpression){
-			// 如果二元运算表达式的标签是赋值符号
-			if(expression.context.tag instanceof BasicAssignmentTag){
-				return true;
+			switch(true){
+				// 如果是标识符表达式
+				case expression instanceof AssignableExpression:
+					break;
+
+				// 如果是二元运算表达式
+				case expression instanceof BinaryExpression:
+					// 如果二元运算表达式的标签是赋值符号
+					if(expression.context.tag instanceof BasicAssignmentTag){
+						break;
+					}
+
+					// 报错
+					parser.error(expression.context);
+					return;
+
+				// 如果是数组表达式
+				case expression instanceof ArrayExpression:
+					inner[i] = expression.toDestructuringItem(parser);
+					continue;
+
+				default:
+					// 报错
+					parser.error(expression.context);
+					return;
 			}
-		}
 
-		// 报错
-		this.error(expression.context);
-		return false;
+			inner[i] = new DestructuringItemExpression(expression);
+		}
 	}
 );
 
@@ -4849,8 +5035,12 @@ closeArrayTag = new this.CloseArrayTag();
 
 }.call(
 	this,
-	this.IdentifierExpression,
+	this.DestructuringExpression,
+	this.DestructuringItemExpression,
+	this.AssignableExpression,
 	this.BinaryExpression,
+	// ArrayExpression
+	null,
 	this.BasicAssignmentTag,
 	// closeArrayTag
 	NULL,
@@ -16933,45 +17123,7 @@ this.ExportAllMembersTag = function(AllMembersTag, ExportAllMembersExpression){
 // 解构赋值表达式相关
 void function(BinaryExpression, ArrayExpression, ObjectExpression, BasicAssignmentTag, config){
 
-this.DestructuringExpression = function(AssignableExpression){
-	/**
-	 * 解构赋值表达式
-	 * @param {Expression} origin - 解构赋值源表达式
-	 */
-	function DestructuringExpression(origin){
-		AssignableExpression.call(this, origin.open);
-
-		this.origin = origin;
-	};
-	DestructuringExpression = new Rexjs(DestructuringExpression, AssignableExpression);
-
-	DestructuringExpression.props({
-		/**
-		 * 提取表达式文本内容
-		 * @param {ContentBuilder} contentBuilder - 内容生成器
-		 */
-		extractTo: function(contentBuilder){debugger
-			// 如果需要编译解构赋值
-			if(config.destructuringAssignment){
-				contentBuilder.appendString(this.variables);
-
-				// 解构形式提取源表达式
-				this.origin.destructTo(contentBuilder);
-				return;
-			}
-
-			// 直接提取内容
-			this.origin.extractTo(contentBuilder);
-		},
-		origin: null
-	});
-
-	return DestructuringExpression;
-}(
-	this.AssignableExpression
-);
-
-this.DestructuringAssignmentExpression = function(){
+this.DestructuringAssignmentExpression = function(extractTo){
 	/**
 	 * 解构赋值表达式
 	 * @param {Context} context - 语法标签上下文
@@ -16982,15 +17134,6 @@ this.DestructuringAssignmentExpression = function(){
 	};
 	DestructuringAssignmentExpression = new Rexjs(DestructuringAssignmentExpression, BinaryExpression);
 
-	DestructuringAssignmentExpression.static({
-		/**
-		 * 获取表达式编译配置
-		 */
-		get config(){
-			return config;
-		}
-	});
-
 	DestructuringAssignmentExpression.props({
 		/**
 		 * 提取表达式文本内容
@@ -16998,26 +17141,30 @@ this.DestructuringAssignmentExpression = function(){
 		 */
 		extractTo: function(contentBuilder){
 			// 如果需要编译解构赋值
-			if(config.destructuringAssignment){
-				var variable = this.variable;
+			if(config.destructuring){
+				var variable = this.variable, builder = new ContentBuilder();
+
+				builder.appendString(variable);
 
 				contentBuilder.appendString("(" + variable);
 				contentBuilder.appendContext(this.context);
 				this.right.extractTo(contentBuilder);
+				this.left.destructTo(contentBuilder, builder);
 				contentBuilder.appendString("," + variable + ")");
 				return;
 			}
 
-			// 直接提取内容
-			this.origin.extractTo(contentBuilder);
+			extractTo.call(this, contentBuilder);
 		},
 		variable: ""
 	});
 
 	return DestructuringAssignmentExpression;
-}();
+}(
+	BinaryExpression.prototype.extractTo
+);
 
-this.DestructuringAssignmentTag = function(DestructuringExpression, DestructuringAssignmentExpression, visitor, destructible){
+this.DestructuringAssignmentTag = function(DestructuringAssignmentExpression, visitor, destructible){
 	/**
 	 * 解构赋值标签
 	 * @param {Number} _type - 标签类型
@@ -17053,22 +17200,22 @@ this.DestructuringAssignmentTag = function(DestructuringExpression, Destructurin
 				var last = expression.last, right = last.right;
 
 				// 判断最后一个二元表达式的右侧表达式是否满足解构条件
-				if(destructible(parser, right)){
+				if(destructible(right)){
 					// 重新设置右侧表达式为解构表达式
-					last.right = new DestructuringExpression(right);
+					last.right = right.toDestructuring(parser);
 				}
 			}
 			// 判断当前表达式的右侧表达式是否满足解构条件
-			else if(destructible(parser, expression)){
+			else if(destructible(expression)){
 				// 重新当前表达式为解构表达式
-				statement.expression = new DestructuringExpression(expression);
+				statement.expression = expression.toDestructuring(parser);
 			}
 
 			// 调用父类方法
 			visitor.call(this, parser, context, statement, statements);
 
 			// 如果需要解析解构赋值
-			if(config.destructuringAssignment){
+			if(config.destructuring){
 				// 给刚生成的解构赋值表达式设置变量名
 				statement.expression.last.variable = statements.collections.generate();
 			}
@@ -17077,12 +17224,11 @@ this.DestructuringAssignmentTag = function(DestructuringExpression, Destructurin
 
 	return DestructuringAssignmentTag;
 }(
-	this.DestructuringExpression,
 	this.DestructuringAssignmentExpression,
 	BasicAssignmentTag.prototype.visitor,
 	// destructible
-	function(parser, expression){
-		return (expression instanceof ArrayExpression || expression instanceof ObjectExpression) && expression.destructible(parser);
+	function(expression){
+		return expression instanceof ArrayExpression || expression instanceof ObjectExpression;
 	}
 );
 
@@ -17092,8 +17238,7 @@ this.DestructuringAssignmentTag = function(DestructuringExpression, Destructurin
 	this.ArrayExpression,
 	this.ObjectExpression,
 	this.BasicAssignmentTag,
-	// config
-	new SyntaxConfig("destructuringAssignment")
+	this.DestructuringExpression.config
 );
 
 
@@ -19338,7 +19483,7 @@ this.ECMAScript6Config = function(configs, forEach, every, defineProperty){
 	// configs
 	[
 		this.CallExpression,
-		this.DestructuringAssignmentExpression,
+		this.DestructuringExpression,
 		this.ExponentiationExpression,
 		this.ExportExpression,
 		this.ForExpression,
