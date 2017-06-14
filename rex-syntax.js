@@ -3,7 +3,7 @@ new function(Rexjs, forEach){
 "use strict";
 
 // 列表相关
-void function(isNaN){
+~function(isNaN){
 
 this.List = function(Array, Object, toArray){
 	/**
@@ -95,7 +95,7 @@ this.List = function(Array, Object, toArray){
 
 
 // 变量名集合相关
-void function(){
+~function(){
 
 this.VariableIndex = function(){
 	/**
@@ -228,7 +228,7 @@ this.VariableCollections = function(PREFIX){
 
 
 // 文件相关
-void function(){
+~function(){
 
 this.File = function(){
 	/**
@@ -346,7 +346,7 @@ this.ContentBuilder = function(){
 
 
 // 映射生成器相关
-void function(ContentBuilder){
+~function(ContentBuilder){
 
 this.Base64VLQ = function(base64, parseInt){
 	/**
@@ -578,7 +578,7 @@ this.MappingBuilder = function(MappingPosition, Base64VLQ, JSON, appendContext, 
 
 
 // 语法相关
-void function(){
+~function(){
 
 this.SyntaxElement = function(){
 	/**
@@ -746,7 +746,7 @@ this.SyntaxRegExp = function(RegExp, Infinity){
 
 
 // 标签数据相关
-void function(){
+~function(){
 
 this.TagData = function(){
 	/**
@@ -771,7 +771,7 @@ this.TagData = function(){
 
 
 // 标签数据子类相关
-void function(TagData, parseInt){
+~function(TagData, parseInt){
 
 this.TagClass = function(CLASS_NONE, CLASS_STATEMENT, CLASS_STATEMENT_BEGIN, CLASS_STATEMENT_END, CLASS_EXPRESSION, CLASS_EXPRESSION_CONTEXT){
 	/**
@@ -942,7 +942,7 @@ this.SyntaxTag = function(SyntaxElement, TagClass, TagType){
 
 
 // 子类标签相关
-void function(SyntaxTag){
+~function(SyntaxTag){
 
 this.FilePositionTag = function(CLASS_STATEMENT_BEGIN){
 	/**
@@ -1043,7 +1043,7 @@ this.LineTerminatorTag = function(WhitespaceTag){
 
 
 // 标签列表相关
-void function(SyntaxTag, RegExp){
+~function(SyntaxTag, RegExp){
 
 this.SyntaxTags = function(List, getSortedValue, distinct){
 	/**
@@ -1289,7 +1289,7 @@ this.SyntaxTagsMap = function(){
 
 
 // 语法解析相关
-void function(SyntaxElement, SyntaxTag, SyntaxConfig){
+~function(SyntaxElement, SyntaxTag, SyntaxConfig){
 
 this.Expression = function(config, parseInt){
 	/**
@@ -1525,7 +1525,7 @@ this.Statements = function(Statement, STATE_STATEMENT_ENDED, parseInt){
 
 
 // 其他表达式
-void function(Expression){
+~function(Expression){
 
 this.EmptyExpression = function(){
 	/**
@@ -1796,7 +1796,7 @@ this.FileEndExpression = function(FilePositionExpression){
 
 
 // 语法解析相关
-void function(Expression, ListExpression, LeftHandSideExpression, STATE_STATEMENT_ENDABLE){
+~function(Expression, ListExpression, LeftHandSideExpression, STATE_STATEMENT_ENDABLE){
 
 this.SyntaxError = function(MappingBuilder, e, contextOf){
 	/**

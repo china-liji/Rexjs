@@ -23,7 +23,7 @@ new function(
 
 
 //ECMAScript 辅助类
-void function(){
+~function(){
 
 this.ECMAScriptErrors = ECMAScriptErrors = function(REGEXP){
 	/**
@@ -153,7 +153,7 @@ this.ECMAScriptOrders = ECMAScriptOrders = function(){
 
 
 // 公用的表达式
-void function(){
+~function(){
 
 this.AssignableExpression = function(){
 	/**
@@ -191,7 +191,7 @@ this.ConditionalExpression = function(){
 
 
 // 语句相关
-void function(){
+~function(){
 
 this.ECMAScriptStatement = ECMAScriptStatement = function(Statement){
 	/**
@@ -253,7 +253,7 @@ this.ConditionStatement = function(){
 
 
 // 语句块相关
-void function(Statements, VariableCollections){
+~function(Statements, VariableCollections){
 
 this.ECMAScriptVariableCollections = function(VariableCollection, generate){
 	/**
@@ -434,7 +434,7 @@ this.GlobalStatements = function(ECMAScriptStatements, ECMAScriptVariableCollect
 
 
 // 一些 基类 或 独立的 标签
-void function(RegExp){
+~function(RegExp){
 	
 this.AsTag = function(AsExpression){
 	/**
@@ -759,7 +759,7 @@ this.WithTag = function(){
 
 
 // 文件位置标签相关
-void function(FilePositionTag){
+~function(FilePositionTag){
 
 this.FileStartTag = function(FileStartExpression){
 	/**
@@ -834,7 +834,7 @@ this.FileEndTag = function(FileEndExpression){
 
 
 // 字面量标签相关
-void function(){
+~function(){
 
 this.LiteralExpression = function(config){
 	/**
@@ -905,7 +905,7 @@ this.LiteralTag = function(LiteralExpression){
 
 
 // 字面量子类标签相关
-void function(LiteralTag){
+~function(LiteralTag){
 
 this.BooleanTag = function(){
 	/**
@@ -1090,7 +1090,7 @@ this.StringTag = function(){
 
 
 // 算数标签相关
-void function(){
+~function(){
 
 this.MathematicalNumberTag = function(NumberTag){
 	/**
@@ -1139,7 +1139,7 @@ this.MathematicalNumberTag = function(NumberTag){
 
 
 // 算数子标签相关
-void function(MathematicalNumberTag, config){
+~function(MathematicalNumberTag, config){
 
 this.BinaryNumberTag = function(){
 	/**
@@ -1197,7 +1197,7 @@ this.OctalNumberTag = function(){
 
 
 // 标识符标签相关
-void function(){
+~function(){
 
 this.IdentifierExpression = function(AssignableExpression){
 	/**
@@ -1319,7 +1319,7 @@ this.IdentifierTag = function(IdentifierExpression, RegExg, keywords, regexp){
 
 
 // 变量标签相关
-void function(){
+~function(){
 
 this.VariableTag = function(IdentifierTag){
 	/**
@@ -1441,7 +1441,7 @@ this.VariableDeclarationTag = function(VariableTag, visitor){
 
 
 // 分号标签
-void function(SemicolonTag){
+~function(SemicolonTag){
 
 this.EmptyStatementTag = function(){
 	/**
@@ -1548,7 +1548,7 @@ this.LastStatementEndTag = function(StatementEndTag){
 
 
 // 行结束符标签
-void function(SpecialLineTerminatorTag, visitor){
+~function(SpecialLineTerminatorTag, visitor){
 
 this.IllegalLineTerminatorTag = function(){
 	/**
@@ -1659,7 +1659,7 @@ this.ExpressionBreakTag = function(){
 
 
 // 注释标签
-void function(CommentTag, tags){
+~function(CommentTag, tags){
 
 this.SingleLineCommentTag = function(){
 	/**
@@ -1817,7 +1817,7 @@ this.CloseMultiLineCommentTag = function(){
 
 
 // 点属性访问器相关
-void function(){
+~function(){
 
 this.AccessorExpression = function(AssignableExpression){
 	/**
@@ -1931,7 +1931,7 @@ this.PropertyNameTag = function(IdentifierTag, RegExp){
 
 
 // 中括号属性访问器
-void function(closeBracketAccessorTag){
+~function(closeBracketAccessorTag){
 	
 this.BracketAccessorExpression = function(AccessorExpression){
 	/**
@@ -2095,7 +2095,7 @@ closeBracketAccessorTag = new this.CloseBracketAccessorTag();
 
 
 // 逗号相关
-void function(commaSiblingTag){
+~function(commaSiblingTag){
 
 this.CommaExpression = function(){
 	/**
@@ -2242,7 +2242,7 @@ commaSiblingTag = new this.CommaSiblingTag();
 
 
 // 一元标签基类
-void function(){
+~function(){
 	
 this.UnaryExpression = function(){
 	/**
@@ -2419,7 +2419,7 @@ this.UnaryKeywordTag = function(UnaryTag){
 
 
 // 非赋值一元标签
-void function(UnaryTag, UnaryKeywordTag){
+~function(UnaryTag, UnaryKeywordTag){
 
 this.DeleteTag = function(){
 	/**
@@ -2661,7 +2661,7 @@ this.LogicalNOTTag = function(){
 
 
 // 一元赋值标签
-void function(UnaryStatement, VariableTag){
+~function(UnaryStatement, VariableTag){
 
 this.UnaryAssignmentStatement = function(catchMethod, tryMethod, checkExpression){
 	/**
@@ -2834,7 +2834,7 @@ this.PostfixUnaryAssignmentTag = function(UnaryAssignmentTag, PostfixUnaryExpres
 
 
 // 一元赋值标签
-void function(UnaryAssignmentTag, PostfixUnaryAssignmentTag){
+~function(UnaryAssignmentTag, PostfixUnaryAssignmentTag){
 
 this.IncrementTag = function(){
 	/**
@@ -2984,7 +2984,7 @@ this.PostfixDecrementTag = function(){
 
 
 // 二元标签基类
-void function(){
+~function(){
 
 this.BinaryExpression = function(){
 	/**
@@ -3151,7 +3151,7 @@ this.BinaryTag = function(ExpressionSeparatorTag, BinaryExpression, BinaryStatem
 
 
 // 特殊的二元标签
-void function(BinaryTag, AssignableExpression, IdentifierExpression, VariableDeclarationTag){
+~function(BinaryTag, AssignableExpression, IdentifierExpression, VariableDeclarationTag){
 
 this.AssignmentTag = function(BinaryExpression, BinaryStatement, isSeparator, assignable){
 	/**
@@ -3283,7 +3283,7 @@ this.BinaryKeywordTag = function(){
 
 
 // 所有具体的二元标签
-void function(BinaryTag, AssignmentTag, BinaryKeywordTag){
+~function(BinaryTag, AssignmentTag, BinaryKeywordTag){
 
 this.BasicAssignmentTag = function(){
 	/**
@@ -3804,7 +3804,7 @@ this.RemainderTag = function(){
 
 
 // 幂运算表达式相关
-void function(BinaryExpression){
+~function(BinaryExpression){
 
 this.ExponentiationExpression = function(config, extractTo){
 	/**
@@ -3897,7 +3897,7 @@ this.ExponentiationTag = function(BinaryTag, ExponentiationExpression){
 
 
 // 三元表达式相关
-void function(colonTag){
+~function(colonTag){
 
 this.TernaryExpression = function(){
 	/**
@@ -4117,7 +4117,7 @@ colonTag = new this.ColonTag();
 
 
 // 函数调用相关
-void function(BracketAccessorExpression, UnaryKeywordTag, parameterSeparatorTag, closeCallTag, extractTo){
+~function(BracketAccessorExpression, UnaryKeywordTag, parameterSeparatorTag, closeCallTag, extractTo){
 
 this.CallExpression = function(UnaryExpression, AccessorExpression, config, compileWithAccessor, compileWithNew, compileDefault){
 	/**
@@ -4455,7 +4455,7 @@ closeCallTag = new this.CloseCallTag();
 
 
 // 拓展参数相关
-void function(){
+~function(){
 
 this.SpreadExpression = function(config){
 	/**
@@ -4608,7 +4608,7 @@ this.SpreadTag = function(SpreadExpression, SpreadStatement, AccessorExpression)
 
 
 // 解构表达式相关
-void function(){
+~function(){
 
 this.DestructuringExpression = function(AssignableExpression, config){
 	/**
@@ -4677,7 +4677,9 @@ this.DestructuringItemExpression = function(DestructuringExpression){
 		destructTo: function(contentBuilder, anotherBuilder){
 			var builder = new ContentBuilder();
 
+			// 提取源表达式到临时内容生成器
 			this.origin.extractTo(builder);
+			// 追加赋值操作
 			contentBuilder.appendString("," + builder.result + "=" + anotherBuilder.result)
 		}
 	});
@@ -4693,7 +4695,7 @@ this.DestructuringItemExpression = function(DestructuringExpression){
 
 
 // 数组相关
-void function(DestructuringExpression, DestructuringItemExpression, AssignableExpression, BinaryExpression, ArrayExpression, BasicAssignmentTag, closeArrayTag, arrayItemSeparatorTag){
+~function(DestructuringExpression, DestructuringItemExpression, AssignableExpression, BinaryExpression, ArrayExpression, BasicAssignmentTag, closeArrayTag, arrayItemSeparatorTag, destructItem){
 
 this.ArrayDestructuringExpression = function(){
 	/**
@@ -4712,12 +4714,8 @@ this.ArrayDestructuringExpression = function(){
 		 * @param {ContentBuilder} anotherBuilder - 另一个内容生成器，一般用于副内容的生成或记录
 		 */
 		destructTo: function(contentBuilder, anotherBuilder){
-			this.origin.inner.forEach(function(expression, contentBuilder, anotherBuilder, index){
-				var builder = new ContentBuilder();
-
-				builder.appendString(anotherBuilder.result + "[" + index + "]");
-				expression.destructTo(contentBuilder, builder);
-			}, contentBuilder, anotherBuilder);
+			// 遍历的提取每一项
+			this.origin.inner.forEach(destructItem, contentBuilder, anotherBuilder);
 		}
 	});
 
@@ -4725,6 +4723,10 @@ this.ArrayDestructuringExpression = function(){
 }();
 
 this.ArrayDestructuringItemExpression = function(){
+	/**
+	 * 数组解构项表达式
+	 * @param {Expression} origin - 解构赋值源表达式
+	 */
 	function ArrayDestructuringItemExpression(origin){
 		DestructuringItemExpression.call(this, origin);
 	};
@@ -4737,28 +4739,38 @@ this.ArrayDestructuringItemExpression = function(){
 		 * @param {ContentBuilder} anotherBuilder - 另一个内容生成器，一般用于副内容的生成或记录
 		 */
 		destructTo: function(contentBuilder, anotherBuilder){
-			var inner = this.origin.inner;
+			var builder, inner = this.origin.inner;
 
-			if(inner.length === 0){
-				return;
+			// 根据长度判断
+			switch(inner.length){
+				// 如果是 0，说明没有解构内容，不需要解构
+				case 0:
+					return;
+
+				// 如果是 1，说明可以直接用 $Rexjs_0[0] 形式直接使用，不需要单独使用变量名记录
+				case 1:
+					builder = anotherBuilder;
+					break;
+
+				// 多项情况
+				default:
+					var variable = this.variable;
+
+					// 初始化内容生成器
+					builder = new ContentBuilder();
+
+					// 追加变量名到临时内容生成器
+					builder.appendString(variable);
+
+					// 追加变量名的赋值操作
+					contentBuilder.appendString(
+						"," + variable + "=" + anotherBuilder.result
+					);
+					break;
 			}
 
-			var variable = this.variable;
-
-			contentBuilder.appendString(
-				"," + variable + "=" + anotherBuilder.result
-			);
-
-			var builder = new ContentBuilder();
-
-			builder.appendString(variable);
-
-			this.origin.inner.forEach(function(expression, contentBuilder, anotherBuilder, index){
-				var builder = new ContentBuilder();
-
-				builder.appendString(anotherBuilder.result + "[" + index + "]");
-				expression.destructTo(contentBuilder, builder);
-			}, contentBuilder, builder);
+			// 遍历的提取每一项
+			inner.forEach(destructItem, contentBuilder, builder);
 		},
 		variable: ""
 	});
@@ -4766,7 +4778,7 @@ this.ArrayDestructuringItemExpression = function(){
 	return ArrayDestructuringItemExpression;
 }();
 
-this.ArrayExpression = ArrayExpression = function(ArrayDestructuringExpression, ArrayDestructuringItemExpression, config, every, transform){
+this.ArrayExpression = ArrayExpression = function(ArrayDestructuringExpression, ArrayDestructuringItemExpression, config, every, covert){
 	/**
 	 * 数组表达式
 	 * @param {Context} open - 起始标签上下文
@@ -4785,7 +4797,7 @@ this.ArrayExpression = ArrayExpression = function(ArrayDestructuringExpression, 
 		 */
 		toDestructuring: function(parser){
 			// 转换内部表达式
-			transform(parser, this.inner);
+			covert(parser, this.inner);
 			return new ArrayDestructuringExpression(this);
 		},
 		/**
@@ -4795,14 +4807,14 @@ this.ArrayExpression = ArrayExpression = function(ArrayDestructuringExpression, 
 		toDestructuringItem: function(parser){
 			var inner = this.inner, expression = new ArrayDestructuringItemExpression(this);
 
-			// 如果需要解析解构表达式 而且 长度大于 0
-			if(config.destructuring && inner.length > 0){
+			// 如果需要解析解构表达式 而且 长度大于 1（长度为 0 不解析，长度为 1，只需取一次对象，所以都不需要生成变量名）
+			if(config.destructuring && inner.length > 1){
 				// // 生成临时变量名
 				expression.variable = parser.statements.collections.generate();
 			}
 
 			// 转换内部表达式
-			transform(parser, inner);
+			covert(parser, inner);
 			return expression;
 		}
 	});
@@ -4813,7 +4825,7 @@ this.ArrayExpression = ArrayExpression = function(ArrayDestructuringExpression, 
 	this.ArrayDestructuringItemExpression,
 	DestructuringExpression.config,
 	Rexjs.every,
-	// transform
+	// covert
 	function(parser, inner){
 		for(var i = inner.min, j = inner.length;i < j;i++){
 			var expression = inner[i];
@@ -5045,12 +5057,166 @@ closeArrayTag = new this.CloseArrayTag();
 	// closeArrayTag
 	NULL,
 	// arrayItemSeparatorTag
+	NULL,
+	// destructItem
+	function(expression, contentBuilder, anotherBuilder, index){
+		// 初始化变量名内容生成器
+		var builder = new ContentBuilder();
+
+		// 追加当前项的变量名
+		builder.appendString(anotherBuilder.result + "[" + index + "]");
+		// 解构形式提取单项
+		expression.destructTo(contentBuilder, builder);
+	}
+);
+
+
+// 数组解构赋值相关
+~function(CloseArrayTag, addistag, closeADDTag){
+
+this.ADDExpression = function(ArrayDestructuringExpression){
+	/**
+	 * 数组解构声明表达式（Array Destructuring Declaration Expression）
+	 * @param {Expression} origin - 解构赋值源表达式
+	 */
+	function ADDExpression(origin){
+		ArrayDestructuringExpression.call(this, origin);
+	};
+	ADDExpression = new Rexjs(ADDExpression, ArrayDestructuringExpression);
+
+	ADDExpression.props({
+		/**
+		 * 以解构方式提取表达式文本内容
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 * @param {ContentBuilder} anotherBuilder - 另一个内容生成器，一般用于副内容的生成或记录
+		 */
+		destructTo: function(contentBuilder, anotherBuilder){debugger
+			// 遍历的提取每一项
+			this.origin.inner.forEach(destructItem, contentBuilder, anotherBuilder);
+		}
+	});
+
+	return ADDExpression;
+}(
+	this.ArrayDestructuringExpression
+);
+
+this.OpenADDTag = function(OpenArrayTag){
+	/**
+	 * 起始数组解构声明标签（Open Array Destructuring Declaration Tag）
+	 * @param {Number} _type - 标签类型
+	 */
+	function OpenADDTag(_type){
+		OpenArrayTag.call(this, _type);
+	};
+	OpenADDTag = new Rexjs(OpenADDTag, OpenArrayTag);
+	
+	OpenADDTag.props({
+		/**
+		 * 获取绑定的标签，该标签一般是用于语句的 try、catch 的返回值
+		 */
+		get binding(){
+			return closeADDTag;
+		},
+		/**
+		 * 获取绑定的分隔符标签，该标签一般是用于语句的 try、catch 的返回值
+		 */
+		get separator(){
+			return addistag;
+		},
+		/**
+		 * 获取此标签接下来所需匹配的标签列表
+		 * @param {TagsMap} tagsMap - 标签集合映射
+		 */
+		require: function(tagsMap, currentTags){
+			return currentTags;
+		},
+		visitor: function(){
+			debugger
+		}
+	});
+
+	return OpenADDTag;
+}(
+	this.OpenArrayTag
+);
+
+this.ADDIStag = function(ArrayItemSeparatorTag){
+	/**
+	 * 数组解构声明项分隔符标签（Array Destructuring Declaration Item Separator Tag）
+	 * @param {Number} _type - 标签类型
+	 */
+	function ADDIStag(_type){
+		ArrayItemSeparatorTag.call(this, _type);
+	};
+	ADDIStag = new Rexjs(ADDIStag, ArrayItemSeparatorTag);
+	
+	ADDIStag.props({
+		/**
+		 * 获取此标签接下来所需匹配的标签列表
+		 * @param {TagsMap} tagsMap - 标签集合映射
+		 */
+		require: function(tagsMap, currentTags){
+			return currentTags;
+		}
+	});
+
+	return ADDIStag;
+}(
+	this.ArrayItemSeparatorTag
+);
+
+this.CloseADDTag = function(ADDExpression, visitor){
+	/**
+	 * 结束数组解构声明标签（Close Array Destructuring Declaration Tag）
+	 * @param {Number} _type - 标签类型
+	 */
+	function CloseADDTag(_type){
+		CloseArrayTag.call(this, _type);
+	};
+	CloseADDTag = new Rexjs(CloseADDTag, CloseArrayTag);
+	
+	CloseADDTag.props({
+		/**
+		 * 获取此标签接下来所需匹配的标签列表
+		 * @param {TagsMap} tagsMap - 标签集合映射
+		 */
+		require: function(tagsMap){
+			return tagsMap.destructuringAssignmentTags;
+		},
+		/**
+		 * 标签访问器
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 标签上下文
+		 * @param {Statement} statement - 当前语句
+		 * @param {Statements} statements - 当前语句块
+		 */
+		visitor: function(parser, context, statement, statements){
+			visitor.call(this, parser, context, statement, statements);
+		}
+	});
+	
+	return CloseADDTag;
+}(
+	this.ADDExpression,
+	CloseArrayTag.prototype.visitor
+);
+
+addistag = new this.ADDIStag();
+closeADDTag = new this.CloseADDTag();
+
+}.call(
+	this,
+	this.CloseArrayTag,
+	// addistag
+	NULL,
+	// closeADDTag
 	NULL
 );
 
 
 // 语句块相关
-void function(closeBlockTag){
+~function(closeBlockTag){
 
 this.BlockExpression = function(){
 	/**
@@ -5314,7 +5480,7 @@ closeBlockTag = new this.CloseBlockTag();
 
 
 // 语句块组件相关
-void function(OpenBlockTag, CloseBlockTag, closeBlockComponentTag){
+~function(OpenBlockTag, CloseBlockTag, closeBlockComponentTag){
 
 this.BlockComponentStatement = function(){
 	/**
@@ -5434,7 +5600,7 @@ closeBlockComponentTag = new this.CloseBlockComponentTag();
 
 
 // 函数表达式相关
-void function(){
+~function(){
 
 this.FunctionExpression = function(config){
 	/**
@@ -5593,7 +5759,7 @@ this.FunctionNameTag = function(VariableDeclarationTag, FunctionDeclarationExpre
 
 
 // 函数声明标签相关
-void function(FunctionNameTag){
+~function(FunctionNameTag){
 
 this.FunctionDeclarationExpression = function(FunctionExpression){
 	/**
@@ -5703,7 +5869,7 @@ this.FunctionVariableTag = function(visitor){
 
 
 // 函数参数表达式相关
-void function(argumentSeparatorTag, closeArgumentsTag){
+~function(argumentSeparatorTag, closeArgumentsTag){
 
 this.ArgumentsExpression = function(VariableCollection){
 	/**
@@ -6008,7 +6174,7 @@ closeArgumentsTag = new this.CloseArgumentsTag();
 
 
 // 默认函数参数相关
-void function(BasicAssignmentTag){
+~function(BasicAssignmentTag){
 
 this.DefaultArgumentExpression = function(ArgumentExpression, config){
 	/**
@@ -6145,7 +6311,7 @@ this.ArgumentAssignmentTag = function(DefaultArgumentExpression, ArgumentAssignm
 
 
 // 函数省略参数相关
-void function(){
+~function(){
 
 this.RestArgumentExpression = function(ArgumentExpression, config){
 	/**
@@ -6307,7 +6473,7 @@ this.RestArgumentSeparatorTag = function(ArgumentSeparatorTag){
 
 
 // 函数主体表达式相关
-void function(BlockExpression, closeFunctionBodyTag){
+~function(BlockExpression, closeFunctionBodyTag){
 
 this.FunctionBodyExpression = function(extractTo, insertDefaults){
 	/**
@@ -6521,7 +6687,7 @@ closeFunctionBodyTag = new this.CloseFunctionBodyTag();
 
 
 // new.target 表达式相关
-void function(ECMAScriptStatements, PropertyNameTag){
+~function(ECMAScriptStatements, PropertyNameTag){
 
 this.TargetExpression = function(AccessorExpression){
 	/**
@@ -6659,7 +6825,7 @@ this.TargetTag = function(SCOPE_CLOSURE, SCOPE_LAZY, visitor){
 
 
 // 分组小括号标签相关
-void function(IdentifierExpression, ArgumentExpression, DefaultArgumentExpression, RestArgumentExpression, groupingSeparatorTag, closeGroupingTag, collectTo){
+~function(IdentifierExpression, ArgumentExpression, DefaultArgumentExpression, RestArgumentExpression, groupingSeparatorTag, closeGroupingTag, collectTo){
 
 this.GroupingExpression = function(){
 	/**
@@ -7154,7 +7320,7 @@ closeGroupingTag = new this.CloseGroupingTag();
 
 
 // 箭头函数相关
-void function(FunctionExpression, ArgumentsExpression, OpenFunctionBodyTag, CloseFunctionBodyTag, config, closeArrowFunctionBodyTag){
+~function(FunctionExpression, ArgumentsExpression, OpenFunctionBodyTag, CloseFunctionBodyTag, config, closeArrowFunctionBodyTag){
 
 this.ArrowFunctionExpression = function(){
 	/**
@@ -7521,7 +7687,7 @@ closeArrowFunctionBodyTag = new this.CloseArrowFunctionBodyTag();
 
 
 // 对象属性相关
-void function(){
+~function(){
 
 this.PropertyExpression = function(ShorthandPropertyValueExpression, config){
 	/**
@@ -7893,7 +8059,7 @@ this.PropertyNameSeparatorTag = function(ColonTag, PropertyValueExpression, Prop
 
 
 // 对象字面量属性名相关
-void function(require, requireOfMethodName, visitor, visitorOfMathematicalNumeral){
+~function(require, requireOfMethodName, visitor, visitorOfMathematicalNumeral){
 
 require = function(){
 	/**
@@ -8120,7 +8286,7 @@ this.OctalNumberMethodNameTag = function(OctalNumberPropertyNameTag){
 
 
 // 对象标识符属性名相关
-void function(PropertySeparatorTag, RegExp){
+~function(PropertySeparatorTag, RegExp){
 
 this.IdentifierPropertyNameExpression = function(LiteralPropertyNameExpression){
 	/**
@@ -8380,7 +8546,7 @@ this.KeywordPropertyNameTag = function(WordPropertyNameTag, IdentifierPropertyNa
 
 
 // 属性初始值标签相关
-void function(){
+~function(){
 
 this.PropertyInitializerTag = function(BasicAssignmentTag){
 	/**
@@ -8403,7 +8569,7 @@ this.PropertyInitializerTag = function(BasicAssignmentTag){
 
 
 // 对象计算式属性相关
-void function(closeComputedPropertyNameTag, closeComputedMethodNameTag){
+~function(closeComputedPropertyNameTag, closeComputedMethodNameTag){
 
 this.ComputedPropertyNameExpression = function(){
 	/**
@@ -8638,7 +8804,7 @@ closeComputedMethodNameTag = new this.CloseComputedMethodNameTag();
 
 
 // 对象简写方法相关
-void function(OpenArgumentsTag, closeShorthandMethodArgumentsTag, closeShorthandMethodBodyTag){
+~function(OpenArgumentsTag, closeShorthandMethodArgumentsTag, closeShorthandMethodBodyTag){
 
 this.ShorthandMethodExpression = function(FunctionExpression){
 	/**
@@ -8927,7 +9093,7 @@ closeShorthandMethodBodyTag = new this.CloseShorthandMethodBodyTag();
 
 
 // 对象属性访问器相关
-void function(WordPropertyNameTag){
+~function(WordPropertyNameTag){
 
 this.PropertyAccessorTag = function(FunctionExpression, AccessorStatement, visitor){
 	/**
@@ -9069,7 +9235,7 @@ this.SetTag = function(PropertyAccessorTag){
 
 
 // 对象相关
-void function(IdentifierTag, propertySeparatorTag, closeObjectTag){
+~function(IdentifierTag, propertySeparatorTag, closeObjectTag){
 
 this.ObjectExpression = function(extractTo, compileItem){
 	/**
@@ -9255,7 +9421,7 @@ closeObjectTag = new this.CloseObjectTag();
 
 
 // 标记标签相关
-void function(){
+~function(){
 
 this.LabelledExpression = function(){
 	/**
@@ -9383,7 +9549,7 @@ this.LabelColonTag = function(ColonTag, LabelledExpression, LabelledStatement){
 
 
 // 中断流相关
-void function(){
+~function(){
 
 this.TerminatedFlowExpression = function(){
 	/**
@@ -9487,7 +9653,7 @@ this.TerminatedFlowTag = function(TerminatedFlowExpression, TerminatedFlowStatem
 
 
 // 中断流标签子类相关
-void function(TerminatedFlowTag, ECMAScriptStatements){
+~function(TerminatedFlowTag, ECMAScriptStatements){
 
 this.ReturnTag = function(SCOPE_CLOSURE, visitor){
 	/**
@@ -9611,7 +9777,7 @@ this.ThrowContextLineTerminatorTag = function(IllegalLineTerminatorTag){
 
 
 // 迭代中断流类相关
-void function(TerminatedFlowStatement, LabelledStatement, SCOPE_CLOSURE){
+~function(TerminatedFlowStatement, LabelledStatement, SCOPE_CLOSURE){
 
 this.TerminatedBranchFlowStatement = function(catchMethod, withoutAnyFlow){
 	/**
@@ -9827,7 +9993,7 @@ this.LabelledIdentifierTag = function(LabelTag, withoutAnyFlow){
 
 
 // 迭代中断流子类相关
-void function(TerminatedBranchFlowTag){
+~function(TerminatedBranchFlowTag){
 
 this.BreakTag = function(){
 	/**
@@ -9881,7 +10047,7 @@ this.ContinueTag = function(FLOW_CIRCULAR){
 
 
 // var 语句相关
-void function(VariableDeclarationTag, vdsTag){
+~function(VariableDeclarationTag, vdsTag){
 
 this.VarExpression = function(IdentifierExpression, config){
 	/**
@@ -10112,7 +10278,7 @@ vdsTag = new this.VDSTag();
 
 
 // let 语句相关
-void function(ClosureVariableTag, ldsTag){
+~function(ClosureVariableTag, ldsTag){
 
 this.LetTag = function(VarTag, config){
 	/**
@@ -10230,7 +10396,7 @@ ldsTag = new this.LDSTag();
 
 
 // const 语句相关
-void function(VarExpression, IdentifierExpression, VarStatement, LocalVariableTag, cdsTag){
+~function(VarExpression, IdentifierExpression, VarStatement, LocalVariableTag, cdsTag){
 
 this.ConstStatement = function(catchMethod, tryMethod){
 	/**
@@ -10420,7 +10586,7 @@ cdsTag = new this.CDSTag();
 
 
 // if 语句相关
-void function(closeIfConditionTag, elseTag){
+~function(closeIfConditionTag, elseTag){
 
 this.IfExpression = function(ConditionalExpression){
 	/**
@@ -10733,7 +10899,7 @@ elseTag = new this.ElseTag();
 
 
 // while 语句相关
-void function(closeWhileConditionTag){
+~function(closeWhileConditionTag){
 
 this.WhileExpression = function(ConditionalExpression){
 	/**
@@ -10925,7 +11091,7 @@ closeWhileConditionTag = new this.CloseWhileConditionTag();
 
 
 // do while 语句相关
-void function(doWhileTag, closeDoWhileConditionTag){
+~function(doWhileTag, closeDoWhileConditionTag){
 	
 this.DoExpression = function(ConditionalExpression){
 	/**
@@ -11198,7 +11364,7 @@ closeDoWhileConditionTag = new this.CloseDoWhileConditionTag();
 
 
 // for 语句相关
-void function(){
+~function(){
 
 this.ForExpression = function(ConditionalExpression, config, compileOf){
 	/**
@@ -11360,7 +11526,7 @@ this.ForTag = function(ForExpression){
 
 
 // for 循环迭代符表达式相关
-void function(){
+~function(){
 
 this.IterationStatement = function(BinaryStatement){
 	/**
@@ -11495,7 +11661,7 @@ this.ForOfTag = function(IteratorTag, config, visitor){
 
 
 // for 循环条件表达式相关
-void function(IdentifierExpression, VarExpression, CommaStatement, closeForConditionTag, fcicTag, forInTag, forOfTag, fcisTag, fclsTag, getOpenConditionTag){
+~function(IdentifierExpression, VarExpression, CommaStatement, closeForConditionTag, fcicTag, forInTag, forOfTag, fcisTag, fclsTag, getOpenConditionTag){
 
 this.ForConditionInnerStatement = function(){
 	/**
@@ -12018,7 +12184,7 @@ fclsTag = new this.FCLSTag();
 
 
 // try catch 语句相关
-void function(catchTag, finallyTag){
+~function(catchTag, finallyTag){
 	
 this.TryExpression = function(){
 	/**
@@ -12424,7 +12590,7 @@ finallyTag = new this.FinallyTag();
 
 
 // switch 语句相关
-void function(closeSwitchConditionTag){
+~function(closeSwitchConditionTag){
 
 this.SwitchVariableCollections = function(ECMAScriptVariableCollections){
 	/**
@@ -12750,7 +12916,7 @@ closeSwitchConditionTag = new this.CloseSwitchConditionTag();
 
 
 // case 表达式相关
-void function(caseTag, defaultTag, caseValueSeparatorTag){
+~function(caseTag, defaultTag, caseValueSeparatorTag){
 
 this.CaseExpression = function(){
 	/**
@@ -13152,7 +13318,7 @@ caseValueSeparatorTag = new this.CaseValueSeparatorTag();
 
 
 // 模板相关
-void function(closeTemplateTag){
+~function(closeTemplateTag){
 
 this.TemplateExpression = function(config, extractTo, compileItem){
 	/**
@@ -13342,7 +13508,7 @@ closeTemplateTag = new this.CloseTemplateTag();
 
 
 // 模板内容标签相关
-void function(LineTerminatorTag, getUnicode){
+~function(LineTerminatorTag, getUnicode){
 
 this.TemplateUnicodeExpression = function(){
 	/**
@@ -13500,7 +13666,7 @@ this.TemplateQouteTag = function(TemplateUnicodeExpression, UNICODE){
 
 
 // 模板占位符（模板参数）标签相关
-void function(closePlaceHolderTag){
+~function(closePlaceHolderTag){
 
 this.PlaceHolderExpression = function(){
 	/**
@@ -13688,7 +13854,7 @@ closePlaceHolderTag = new this.ClosePlaceHolderTag();
 
 
 // 模板参数相关
-void function(TemplateExpression, PlaceHolderExpression){
+~function(TemplateExpression, PlaceHolderExpression){
 
 this.TemplateParameterExpression = function(config, extractTo, compileInner){
 	/**
@@ -13819,7 +13985,7 @@ this.OpenTemplateParameterTag = function(OpenTemplateTag, TemplateParameterExpre
 
 
 // 静态标签相关
-void function(){
+~function(){
 
 this.StaticTag = function(){
 	/**
@@ -13862,7 +14028,7 @@ this.StaticTag = function(){
 
 
 // 一些类的辅助表达式相关
-void function(PropertyExpression){
+~function(PropertyExpression){
 
 this.ExtendsExpression = function(){
 	/**
@@ -14011,7 +14177,7 @@ this.ClassPropertyExpression = function(extractTo){
 
 
 // 类标签相关
-void function(){
+~function(){
 
 this.ClassExpression = function(DefaultExtendsExpression, config){
 	/**
@@ -14166,7 +14332,7 @@ this.ClassNameTag = function(VariableDeclarationTag){
 
 
 // 类声明标签相关
-void function(ClassExpression, ClassNameTag){
+~function(ClassExpression, ClassNameTag){
 
 this.ClassDeclarationExpression = function(config, extractTo){
 	/**
@@ -14297,7 +14463,7 @@ this.ClassVariableTag = function(visitor){
 
 
 // 修饰符表达式相关
-void function(){
+~function(){
 
 this.StaticModifierTag = function(StaticTag, StaticModifierExpression, IdentifierPropertyNameExpression){
 	/**
@@ -14348,7 +14514,7 @@ this.StaticModifierTag = function(StaticTag, StaticModifierExpression, Identifie
 
 
 // 构造函数标签相关
-void function(OpenShorthandMethodArgumentsTag, CloseShorthandMethodBodyTag, PHASE_NONE, PHASE_WAITING_CALL, PHASE_CALLED, closeConstructorArgumentsTag, closeConstructorBodyTag, getClassPropertyStatement){
+~function(OpenShorthandMethodArgumentsTag, CloseShorthandMethodBodyTag, PHASE_NONE, PHASE_WAITING_CALL, PHASE_CALLED, closeConstructorArgumentsTag, closeConstructorBodyTag, getClassPropertyStatement){
 
 this.ConstructorNameExpression = function(config){
 	/**
@@ -14733,7 +14899,7 @@ closeConstructorBodyTag = new this.CloseConstructorBodyTag();
 
 
 // 类属性访问器标签相关
-void function(require){
+~function(require){
 
 this.GetDescriptorTag = function(GetTag){
 	/**
@@ -14783,7 +14949,7 @@ this.SetDescriptorTag = function(SetTag){
 
 
 // 类主体标签相关
-void function(DefaultConstructorExpression, BinaryNumberTag, OctalNumberTag, config, classPropertySeparatorTag, closeClassBodyTag){
+~function(DefaultConstructorExpression, BinaryNumberTag, OctalNumberTag, config, classPropertySeparatorTag, closeClassBodyTag){
 
 this.ClassBodyExpression = function(ObjectExpression, extractTo, compileItem){
 	/**
@@ -15283,7 +15449,7 @@ closeClassBodyTag = new this.CloseClassBodyTag();
 
 
 // 继承标签相关
-void function(){
+~function(){
 
 this.ExtendsStatement = function(){
 	function ExtendsStatement(statements){
@@ -15405,7 +15571,7 @@ this.ExtendsTag = function(ExtendsExpression, ExtendsStatement, openClassBodyTag
 
 
 // 父类相关
-void function(){
+~function(){
 
 this.SuperExpression = function(LiteralExpression, config){
 	/**
@@ -15559,7 +15725,7 @@ this.SuperTag = function(LiteralTag, SuperExpression, SuperStatement){
 
 
 // import 关键字相关
-void function(ModuleTag, config){
+~function(ModuleTag, config){
 
 this.ImportExpression = function(compileMember){
 	/**
@@ -15817,7 +15983,7 @@ this.ModuleNameTag = function(StringTag){
 
 
 // 模块多成员表达式相关
-void function(multipleMembersSeparatorTag, closeMultipleMembersTag){
+~function(multipleMembersSeparatorTag, closeMultipleMembersTag){
 
 this.MultipleMembersExpression = function(importMember, exportMember, exportMemberAs){
 	/**
@@ -16321,7 +16487,7 @@ closeMultipleMembersTag = new this.CloseMultipleMembersTag();
 
 
 // 模块默认成员标签相关
-void function(){
+~function(){
 
 this.DefaultMemberExpression = function(MemberExpression){
 	/**
@@ -16405,7 +16571,7 @@ this.DefaultMemberTag = function(MemberVariableTag, DefaultMemberExpression){
 
 
 // 所有模块成员表达式相关
-void function(){
+~function(){
 
 this.AllMembersExpression = function(MemberAliasExpression){
 	/**
@@ -16560,7 +16726,7 @@ this.ModuleVariableTag = function(ConstVariableTag){
 
 
 // export 标签相关
-void function(ModuleTag, VarExpression, FunctionDeclarationExpression, ClassDeclarationExpression, exportVariable){
+~function(ModuleTag, VarExpression, FunctionDeclarationExpression, ClassDeclarationExpression, exportVariable){
 
 this.ExportExpression = function(config, compile){
 	/**
@@ -16771,7 +16937,7 @@ this.ExportTag = function(ExportExpression, ExportStatement, fromTag, visitor){
 
 
 // export default 标签相关
-void function(){
+~function(){
 
 this.DefaultExportExpression = function(ExportExpression){
 	/**
@@ -16895,7 +17061,7 @@ this.DefaultExportTag = function(DefaultTag, DefaultExportExpression, DefaultExp
 
 
 // 模块输出多成员表达式相关
-void function(CloseMultipleMembersTag, closeExportMultipleMembersTag){
+~function(CloseMultipleMembersTag, closeExportMultipleMembersTag){
 
 this.PseudoImportExpression = function(ImportExpression){
 	/**
@@ -17039,7 +17205,7 @@ closeExportMultipleMembersTag = new this.CloseExportMultipleMembersTag();
 
 
 // 输出所有成员符号标签相关
-void function(){
+~function(){
 
 this.ExportAllMembersExpression = function(){
 	/**
@@ -17121,7 +17287,7 @@ this.ExportAllMembersTag = function(AllMembersTag, ExportAllMembersExpression){
 
 
 // 解构赋值表达式相关
-void function(BinaryExpression, ArrayExpression, ObjectExpression, BasicAssignmentTag, config){
+~function(BinaryExpression, ArrayExpression, ObjectExpression, BasicAssignmentTag, config){
 
 this.DestructuringAssignmentExpression = function(extractTo){
 	/**
@@ -17243,7 +17409,7 @@ this.DestructuringAssignmentTag = function(DestructuringAssignmentExpression, vi
 
 
 // 辅助性的标签列表相关
-void function(SyntaxTags){
+~function(SyntaxTags){
 
 this.OnlyStatementEndTags = function(LastStatementEndTag, StatementBreakTag, StatementEndTag){
 	/**
@@ -17274,7 +17440,7 @@ this.OnlyStatementEndTags = function(LastStatementEndTag, StatementBreakTag, Sta
 
 
 // ECMAScript 标签列表相关
-void function(){
+~function(){
 
 this.ECMAScriptTags = function(DefaultTags, list){
 	/**
@@ -17389,7 +17555,7 @@ this.ECMAScriptTags = function(DefaultTags, list){
 
 
 // 基类标签列表相关
-void function(ECMAScriptTags, OnlyStatementEndTags){
+~function(ECMAScriptTags, OnlyStatementEndTags){
 
 this.ExpressionTags = function(FunctionTag, ClassTag, OpenObjectTag, VariableTag){
 	/**
@@ -17592,7 +17758,7 @@ this.IllegalTags = function(){
 
 
 // 其他标签列表
-void function(ECMAScriptTags, ExpressionTags, ExpressionContextTags, MistakableTags, StatementTags, StatementEndTags, IllegalTags){
+~function(ECMAScriptTags, ExpressionTags, ExpressionContextTags, MistakableTags, StatementTags, StatementEndTags, IllegalTags){
 
 this.ArgumentNameContextTags = function(ArgumentAssignmentTag){
 	/**
@@ -17954,6 +18120,28 @@ this.DestructibleExpressionContextTags = function(DestructuringAssignmentTag){
 	});
 
 	return DestructibleExpressionContextTags;
+}(
+	this.DestructuringAssignmentTag
+);
+
+this.DestructuringAssignmentTags = function(DestructuringAssignmentTag){
+	/**
+	 * 解构赋值标签列表
+	 */
+	function DestructuringAssignmentTags(){
+		IllegalTags.call(this);
+
+		this.register(
+			new DestructuringAssignmentTag()
+		);
+	};
+	DestructuringAssignmentTags = new Rexjs(DestructuringAssignmentTags, IllegalTags);
+
+	DestructuringAssignmentTags.props({
+		id: "destructuringAssignmentTags"
+	});
+
+	return DestructuringAssignmentTags;
 }(
 	this.DestructuringAssignmentTag
 );
@@ -19353,7 +19541,7 @@ this.UnexpectedTags = function(){
 	return UnexpectedTags;
 }();
 
-this.VarContextTags = function(ClosureVariableTag){
+this.VarContextTags = function(ClosureVariableTag, OpenADDTag){
 	/**
 	 * var 关键字上下文标签列表
 	 */
@@ -19361,7 +19549,8 @@ this.VarContextTags = function(ClosureVariableTag){
 		IllegalTags.call(this);
 		
 		this.register(
-			new ClosureVariableTag()
+			new ClosureVariableTag(),
+			new OpenADDTag()
 		);
 	};
 	VarContextTags = new Rexjs(VarContextTags, IllegalTags);
@@ -19372,7 +19561,8 @@ this.VarContextTags = function(ClosureVariableTag){
 	
 	return VarContextTags;
 }(
-	this.ClosureVariableTag
+	this.ClosureVariableTag,
+	this.OpenADDTag
 );
 
 this.WhileConditionTags = function(OpenWhileConditionTag){
@@ -19410,7 +19600,7 @@ this.WhileConditionTags = function(OpenWhileConditionTag){
 
 
 // 语法配置相关
-void function(){
+~function(){
 
 this.ECMAScript6Config = function(configs, forEach, every, defineProperty){
 	/**
@@ -19509,7 +19699,7 @@ this.ECMAScript6Config = function(configs, forEach, every, defineProperty){
 
 
 // ECMAScript 解析器相关
-void function(SyntaxParser){
+~function(SyntaxParser){
 
 this.ECMAScriptTagsMap = function(SyntaxTagsMap, tagsArray){
 	/**
@@ -19559,6 +19749,7 @@ this.ECMAScriptTagsMap = function(SyntaxTagsMap, tagsArray){
 		this.ConstructorArgumentsTags,
 		this.ConstructorBodyTags,
 		this.DestructibleExpressionContextTags,
+		this.DestructuringAssignmentTags,
 		this.DoWhileConditionTags,
 		this.DotAccessorContextTags,
 		this.ExceptionVariableTags,
@@ -19638,7 +19829,7 @@ this.ECMAScriptParser = function(ECMAScriptTagsMap, GlobalStatements, tagsMap, p
 			var contentBuilder = _contentBuilder || new ContentBuilder();
 			
 			// 追加闭包函数起始部分
-			contentBuilder.appendString("void function(){");
+			contentBuilder.appendString("~function(){");
 			// 创建新行
 			contentBuilder.newline();
 			// 追加严格表达式字符串
