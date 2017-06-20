@@ -204,16 +204,16 @@ this.VariableCollections = function(PREFIX){
 	});
 
 	VariableCollections.props({
+		index: 0,
 		/**
-		 * 生成一个变量名
+		 * 提供一个变量名
 		 */
-		generate: function(){
+		provide: function(){
 			var index = this.index, variable = PREFIX + index.value;
 
 			index.increase();
 			return variable;
-		},
-		index: 0
+		}
 	});
 
 	return VariableCollections;
