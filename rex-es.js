@@ -4614,13 +4614,11 @@ this.DestructuringExpression = function(AssignableExpression, config){
 	 * 解构表达式
 	 * @param {Context} context - 标签上下文
 	 * @param {Expression} origin - 解构赋值源表达式
-	 * @param {Boolean} declaration - 是否为声明解构
 	 */
-	function DestructuringExpression(context, origin, declaration){
+	function DestructuringExpression(context, origin){
 		AssignableExpression.call(this, context);
 
 		this.origin = origin;
-		this.declaration = declaration;
 	};
 	DestructuringExpression = new Rexjs(DestructuringExpression, AssignableExpression);
 
@@ -4634,7 +4632,6 @@ this.DestructuringExpression = function(AssignableExpression, config){
 	});
 
 	DestructuringExpression.props({
-		declaration: false,
 		/**
 		 * 提取解构项文本内容
 		 * @param {Expression} expression - 解构当前项
@@ -4661,15 +4658,30 @@ this.DestructuringExpression = function(AssignableExpression, config){
 	new SyntaxConfig("destructuring")
 );
 
-this.DestructuringItemExpression = function(DestructuringExpression){
+this.EmptyDestructuringItemExpression = function(DestructuringExpression){
+	/**
+	 * 空解构项表达式
+	 * @param {Expression} origin - 解构赋值源表达式
+	 */
+	function EmptyDestructuringItemExpression(origin){
+		DestructuringExpression.call(this, origin.context, origin);
+	};
+	EmptyDestructuringItemExpression = new Rexjs(EmptyDestructuringItemExpression, DestructuringExpression);
+
+	return EmptyDestructuringItemExpression;
+}(
+	this.DestructuringExpression
+);
+
+this.DestructuringItemExpression = function(EmptyDestructuringItemExpression){
 	/**
 	 * 解构项表达式
 	 * @param {Expression} origin - 解构赋值源表达式
 	 */
 	function DestructuringItemExpression(origin){
-		DestructuringExpression.call(this, origin.context, origin, false);
+		EmptyDestructuringItemExpression.call(this, origin);
 	};
-	DestructuringItemExpression = new Rexjs(DestructuringItemExpression, DestructuringExpression);
+	DestructuringItemExpression = new Rexjs(DestructuringItemExpression, EmptyDestructuringItemExpression);
 
 	DestructuringItemExpression.props({
 		/**
@@ -4689,7 +4701,7 @@ this.DestructuringItemExpression = function(DestructuringExpression){
 
 	return DestructuringItemExpression;
 }(
-	this.DestructuringExpression
+	this.EmptyDestructuringItemExpression
 );
 
 }.call(
@@ -4704,10 +4716,9 @@ this.ArrayDestructuringExpression = function(){
 	/**
 	 * 数组解构表达式
 	 * @param {Expression} origin - 解构赋值源表达式
-	 * @param {Boolean} declaration - 是否为声明解构
 	 */
-	function ArrayDestructuringExpression(origin, declaration){
-		DestructuringExpression.call(this, origin.open, origin, declaration);
+	function ArrayDestructuringExpression(origin){
+		DestructuringExpression.call(this, origin.open, origin);
 	};
 	ArrayDestructuringExpression = new Rexjs(ArrayDestructuringExpression, DestructuringExpression);
 
@@ -4782,7 +4793,7 @@ this.ArrayDestructuringItemExpression = function(){
 	return ArrayDestructuringItemExpression;
 }();
 
-this.ArrayExpression = ArrayExpression = function(ArrayDestructuringExpression, ArrayDestructuringItemExpression, config, every, covert){
+this.ArrayExpression = ArrayExpression = function(ArrayDestructuringExpression, EmptyDestructuringItemExpression, ArrayDestructuringItemExpression, config){
 	/**
 	 * 数组表达式
 	 * @param {Context} open - 起始标签上下文
@@ -4796,13 +4807,59 @@ this.ArrayExpression = ArrayExpression = function(ArrayDestructuringExpression, 
 
 	ArrayExpression.props({
 		/**
+		 * 将数组每一项转换为解构项表达式
+		 * @param {SyntaxParser} parser - 语法解析器
+		 */
+		convert: function(parser){
+			var inner = this.inner;
+
+			// 遍历
+			for(var i = inner.min, j = inner.length;i < j;i++){
+				var expression = inner[i];
+
+				switch(true){
+					// 如果是标识符表达式
+					case expression instanceof AssignableExpression:
+						expression = new DestructuringItemExpression(expression);
+						break;
+
+					// 如果是数组表达式
+					case expression instanceof ArrayExpression:
+						expression = expression.toDestructuringItem(parser);
+						break;
+
+					// 如果是空表达式
+					case expression instanceof EmptyExpression:
+						expression = new EmptyDestructuringItemExpression(expression);
+						break;
+					
+					// 如果是二元运算表达式
+					case expression instanceof BinaryExpression:
+						// 如果二元运算表达式的标签是赋值符号
+						if(expression.context.tag instanceof BasicAssignmentTag){
+							expression = new DestructuringItemExpression(expression);
+							break;
+						}
+
+					default:
+						// 报错
+						parser.error(expression.context);
+						return;
+				}
+
+				// 重新设置表达式
+				inner[i] = inner.latest = expression;
+			}
+		},
+		declaration: false,
+		/**
 		 * 转换为解构表达式
 		 * @param {SyntaxParser} parser - 语法解析器
 		 */
 		toDestructuring: function(parser){
 			// 转换内部表达式
-			covert(parser, this.inner);
-			return new ArrayDestructuringExpression(this, false);
+			this.convert(parser, this.inner);
+			return new ArrayDestructuringExpression(this);
 		},
 		/**
 		 * 转换为解构项表达式
@@ -4813,12 +4870,21 @@ this.ArrayExpression = ArrayExpression = function(ArrayDestructuringExpression, 
 
 			// 如果需要解析解构表达式 而且 长度大于 1（长度为 0 不解析，长度为 1，只需取一次对象，所以都不需要生成变量名）
 			if(config.destructuring && inner.length > 1){
-				// // 生成临时变量名
-				expression.variable = parser.statements.collections.generate();
+				var collections = parser.statements.collections;
+
+				// 给刚生成的解构赋值表达式设置变量名
+				expression.variable = (
+					// 如果是声明形式的解构赋值
+					this.declaration ?
+						// 只需提供，不用在语句块进行定义
+						collections.provide() :
+						// 需要提供并定义
+						collections.generate()
+				);
 			}
 
 			// 转换内部表达式
-			covert(parser, inner);
+			this.convert(parser, this.inner);
 			return expression;
 		}
 	});
@@ -4826,44 +4892,9 @@ this.ArrayExpression = ArrayExpression = function(ArrayDestructuringExpression, 
 	return ArrayExpression;
 }(
 	this.ArrayDestructuringExpression,
+	this.EmptyDestructuringItemExpression,
 	this.ArrayDestructuringItemExpression,
-	DestructuringExpression.config,
-	Rexjs.every,
-	// covert
-	function(parser, inner){
-		for(var i = inner.min, j = inner.length;i < j;i++){
-			var expression = inner[i];
-
-			switch(true){
-				// 如果是标识符表达式
-				case expression instanceof AssignableExpression:
-					break;
-
-				// 如果是二元运算表达式
-				case expression instanceof BinaryExpression:
-					// 如果二元运算表达式的标签是赋值符号
-					if(expression.context.tag instanceof BasicAssignmentTag){
-						break;
-					}
-
-					// 报错
-					parser.error(expression.context);
-					return;
-
-				// 如果是数组表达式
-				case expression instanceof ArrayExpression:
-					inner[i] = expression.toDestructuringItem(parser);
-					continue;
-
-				default:
-					// 报错
-					parser.error(expression.context);
-					return;
-			}
-
-			inner[i] = inner.latest = new DestructuringItemExpression(expression);
-		}
-	}
+	DestructuringExpression.config
 );
 
 this.ArrayStatement = function(){
@@ -4999,7 +5030,7 @@ this.ArrayItemSeparatorTag = function(CommaTag, ArrayStatement){
 			(
 				statements.statement = new ArrayStatement(statements)
 			)
-			// 设置语句表达式
+			// 设置语句表达式为空表达式，目的是与默认表达式区分，因为空数组是默认表达式，可以使用 set 来过滤，而其他空项不应该被过滤，所以使用空表达式
 			.expression = new EmptyExpression(NULL);
 		}
 	});
@@ -5082,26 +5113,23 @@ this.VariableDeclarationArrayExpression = function(ArrayExpression, ArrayDestruc
 	/**
 	 * 变量声明数组表达式
 	 * @param {Context} open - 起始标签上下文
+	 * @param {Expression} arrayOf - 该数组所属的声明表达式
 	 */
-	function VariableDeclarationArrayExpression(open){
+	function VariableDeclarationArrayExpression(open, arrayOf){
 		ArrayExpression.call(this, open);
+
+		this.arrayOf = arrayOf;
 	};
 	VariableDeclarationArrayExpression = new Rexjs(VariableDeclarationArrayExpression, ArrayExpression);
 
 	VariableDeclarationArrayExpression.props({
+		arrayOf: null,
+		declaration: true,
 		/**
-		 * 转换为解构表达式
+		 * 将数组每一项转换为解构项表达式
 		 * @param {SyntaxParser} parser - 语法解析器
 		 */
-		toDestructuring: function(parser){
-			return new ArrayDestructuringExpression(this, true);
-		},
-		/**
-		 * 转换为解构项表达式
-		 * @param {SyntaxParser} parser - 语法解析器
-		 */
-		toDestructuringItem: function(parser){debugger
-		}
+		convert: function(){}
 	});
 
 	return VariableDeclarationArrayExpression;
@@ -5149,7 +5177,7 @@ this.OpenVariableDeclarationArrayTag = function(OpenArrayTag, VariableDeclaratio
 		 */
 		visitor: function(parser, context, statement, statements){
 			// 设置当前表达式
-			statement.expression = new VariableDeclarationArrayExpression(context);
+			statement.expression = new VariableDeclarationArrayExpression(context, statement.target.expression);
 			// 设置当前语句
 			statements.statement = new ArrayStatement(statements);
 		}
@@ -5174,13 +5202,6 @@ this.VariableDeclarationArrayItemTag = function(VariableDeclarationTag, Destruct
 	
 	VariableDeclarationArrayItemTag.props({
 		/**
-		 * 获取此标签接下来所需匹配的标签列表
-		 * @param {TagsMap} tagsMap - 标签集合映射
-		 */
-		require: function(tagsMap){
-			return tagsMap.closureVariableContextTags;
-		},
-		/**
 		 * 标签访问器
 		 * @param {SyntaxParser} parser - 语法解析器
 		 * @param {Context} context - 标签上下文
@@ -5188,8 +5209,16 @@ this.VariableDeclarationArrayItemTag = function(VariableDeclarationTag, Destruct
 		 * @param {Statements} statements - 当前语句块
 		 */
 		visitor: function(parser, context, statement, statements){
-			statement.target.target.expression.context.tag.variable.visitor(parser, context, statement, statements);
+			// 获取声明语句的变量名标签
+			var variable = statement.target.expression.arrayOf.context.tag.variable;
 
+			// 修改上下文标签，因为当前标签（即 this）的功能只能替代匹配，而不能替代解析
+			context.tag = variable;
+
+			// 调用变量名标签的访问器，以验证是否可以进行声明
+			variable.visitor(parser, context, statement, statements);
+
+			// 设置当前表达式
 			statement.expression = new DestructuringItemExpression(statement.expression);
 		}
 	});
@@ -5225,7 +5254,7 @@ this.VariableDeclarationArrayItemSeparatorTag = function(ArrayItemSeparatorTag){
 	this.ArrayItemSeparatorTag
 );
 
-this.CloseVariableDeclarationArrayTag = function(CloseArrayTag, ArrayDestructuringDeclarationExpression, visitor){
+this.CloseVariableDeclarationArrayTag = function(CloseArrayTag){
 	/**
 	 * 标签变量声明数组结束标签
 	 * @param {Number} _type - 标签类型
@@ -5248,8 +5277,7 @@ this.CloseVariableDeclarationArrayTag = function(CloseArrayTag, ArrayDestructuri
 	
 	return CloseVariableDeclarationArrayTag;
 }(
-	this.CloseArrayTag,
-	this.ArrayDestructuringDeclarationExpression
+	this.CloseArrayTag
 );
 
 variableDeclarationArrayItemSeparatorTag = new this.VariableDeclarationArrayItemSeparatorTag();
@@ -5260,6 +5288,101 @@ closeVariableDeclarationArrayTag = new this.CloseVariableDeclarationArrayTag();
 	// variableDeclarationArrayItemSeparatorTag
 	NULL,
 	// closeVariableDeclarationArrayTag
+	NULL
+);
+
+
+// 变量声明数组项标签相关
+~function(CloseVariableDeclarationArrayTag, closeNestedVariableDeclarationArrayTag){
+
+this.OpenNestedVariableDeclarationArrayTag = function(OpenVariableDeclarationArrayTag, VariableDeclarationArrayExpression, ArrayStatement){
+	/**
+	 * 嵌套的变量声明数组起始标签
+	 * @param {Number} _type - 标签类型
+	 */
+	function OpenNestedVariableDeclarationArrayTag(_type){
+		OpenVariableDeclarationArrayTag.call(this, _type);
+	};
+	OpenNestedVariableDeclarationArrayTag = new Rexjs(OpenNestedVariableDeclarationArrayTag, OpenVariableDeclarationArrayTag);
+	
+	OpenNestedVariableDeclarationArrayTag.props({
+		/**
+		 * 获取绑定的标签，该标签一般是用于语句的 try、catch 的返回值
+		 */
+		get binding(){
+			return closeNestedVariableDeclarationArrayTag;
+		},
+		/**
+		 * 标签访问器
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 标签上下文
+		 * @param {Statement} statement - 当前语句
+		 * @param {Statements} statements - 当前语句块
+		 */
+		visitor: function(parser, context, statement, statements){
+			// 设置当前表达式
+			statement.expression = new VariableDeclarationArrayExpression(
+				context,
+				statement.target.expression.arrayOf
+			);
+
+			// 设置当前语句
+			statements.statement = new ArrayStatement(statements);
+		}
+	});
+
+	return OpenNestedVariableDeclarationArrayTag;
+}(
+	this.OpenVariableDeclarationArrayTag,
+	this.VariableDeclarationArrayExpression,
+	this.ArrayStatement
+);
+
+this.CloseNestedVariableDeclarationArrayTag = function(visitor){
+	/**
+	 * 标签变量声明数组结束标签
+	 * @param {Number} _type - 标签类型
+	 */
+	function CloseNestedVariableDeclarationArrayTag(_type){
+		CloseVariableDeclarationArrayTag.call(this, _type);
+	};
+	CloseNestedVariableDeclarationArrayTag = new Rexjs(CloseNestedVariableDeclarationArrayTag, CloseVariableDeclarationArrayTag);
+	
+	CloseNestedVariableDeclarationArrayTag.props({
+		/**
+		 * 获取此标签接下来所需匹配的标签列表
+		 * @param {TagsMap} tagsMap - 标签集合映射
+		 */
+		require: function(tagsMap){
+			return tagsMap.expressionContextTags;
+		},
+		/**
+		 * 标签访问器
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 标签上下文
+		 * @param {Statement} statement - 当前语句
+		 * @param {Statements} statements - 当前语句块
+		 */
+		visitor: function(parser, context, statement, statements){
+			// 调用父类访问器
+			visitor.call(this, parser, context, statement, statements);
+
+			// 将表达式转化为解构项
+			statement.expression = statement.expression.toDestructuringItem(parser);
+		}
+	});
+	
+	return CloseNestedVariableDeclarationArrayTag;
+}(
+	CloseVariableDeclarationArrayTag.prototype.visitor
+);
+
+closeNestedVariableDeclarationArrayTag = new this.CloseNestedVariableDeclarationArrayTag();
+
+}.call(
+	this,
+	this.CloseVariableDeclarationArrayTag,
+	// closeNestedVariableDeclarationArrayTag
 	NULL
 );
 
@@ -17390,7 +17513,7 @@ this.DestructuringAssignmentExpression = function(extractTo){
 				builder.appendString(variable);
 
 				// 如果是声明形式的解构赋值
-				if(left.declaration){
+				if(left.origin.declaration){
 					// 追加变量名
 					contentBuilder.appendString(variable);
 					// 追加等于号上下文
@@ -17496,7 +17619,7 @@ this.DestructuringAssignmentTag = function(DestructuringAssignmentExpression, vi
 		// 给刚生成的解构赋值表达式设置变量名
 		destructuringAssignmentExpression.variable = (
 			// 如果是声明形式的解构赋值
-			destructuringAssignmentExpression.left.declaration ?
+			destructuringAssignmentExpression.left.origin.declaration ?
 				// 只需提供，不用在语句块进行定义
 				collections.provide() :
 				// 需要提供并定义
@@ -19003,7 +19126,7 @@ this.OpenSwitchBodyContextTags = function(CaseTag, DefaultTag, CloseBlockCompone
 	this.CloseBlockComponentTag
 );
 
-this.VariableDeclarationArrayItemTags = function(VariableDeclarationArrayItemTag){
+this.VariableDeclarationArrayItemTags = function(VariableDeclarationArrayItemTag, OpenNestedVariableDeclarationArrayTag){
 	/**
 	 * 变量声明数组项标签列表
 	 */
@@ -19011,7 +19134,8 @@ this.VariableDeclarationArrayItemTags = function(VariableDeclarationArrayItemTag
 		IllegalTags.call(this);
 		
 		this.register(
-			new VariableDeclarationArrayItemTag()
+			new VariableDeclarationArrayItemTag(),
+			new OpenNestedVariableDeclarationArrayTag()
 		);
 	};
 	VariableDeclarationArrayItemTags = new Rexjs(VariableDeclarationArrayItemTags, IllegalTags);
@@ -19020,9 +19144,10 @@ this.VariableDeclarationArrayItemTags = function(VariableDeclarationArrayItemTag
 		id: "variableDeclarationArrayItemTags"
 	});
 	
-	return VariableDeclarationArrayItemTags; 
+	return VariableDeclarationArrayItemTags;
 }(
-	this.VariableDeclarationArrayItemTag
+	this.VariableDeclarationArrayItemTag,
+	this.OpenNestedVariableDeclarationArrayTag
 );
 
 this.OpenVariableDeclarationArrayContextTags = function(VariableDeclarationArrayItemTags, CloseVariableDeclarationArrayTag){
