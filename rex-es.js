@@ -4633,12 +4633,12 @@ this.DestructuringExpression = function(AssignableExpression, config){
 
 	DestructuringExpression.props({
 		/**
-		 * 提取解构项文本内容
+		 * 提取并编译表达式文本内容
 		 * @param {Expression} expression - 解构当前项
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
 		 * @param {ContentBuilder} anotherBuilder - 另一个内容生成器，一般用于副内容的生成或记录
 		 */
-		destructTo: function(){},
+		compileTo: function(){},
 		/**
 		 * 提取表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
@@ -4658,38 +4658,24 @@ this.DestructuringExpression = function(AssignableExpression, config){
 	new SyntaxConfig("destructuring")
 );
 
-this.EmptyDestructuringItemExpression = function(DestructuringExpression){
-	/**
-	 * 空解构项表达式
-	 * @param {Expression} origin - 解构赋值源表达式
-	 */
-	function EmptyDestructuringItemExpression(origin){
-		DestructuringExpression.call(this, origin.context, origin);
-	};
-	EmptyDestructuringItemExpression = new Rexjs(EmptyDestructuringItemExpression, DestructuringExpression);
-
-	return EmptyDestructuringItemExpression;
-}(
-	this.DestructuringExpression
-);
-
-this.DestructuringItemExpression = function(EmptyDestructuringItemExpression){
+this.DestructuringItemExpression = function(DestructuringExpression){
 	/**
 	 * 解构项表达式
 	 * @param {Expression} origin - 解构赋值源表达式
+	 * @param {Expression} origin - 解构赋值源表达式
 	 */
 	function DestructuringItemExpression(origin){
-		EmptyDestructuringItemExpression.call(this, origin);
+		DestructuringExpression.call(this, origin.context, origin);
 	};
-	DestructuringItemExpression = new Rexjs(DestructuringItemExpression, EmptyDestructuringItemExpression);
+	DestructuringItemExpression = new Rexjs(DestructuringItemExpression, DestructuringExpression);
 
 	DestructuringItemExpression.props({
 		/**
-		 * 以解构方式提取表达式文本内容
+		 * 提取并编译表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
 		 * @param {ContentBuilder} anotherBuilder - 另一个内容生成器，一般用于副内容的生成或记录
 		 */
-		destructTo: function(contentBuilder, anotherBuilder){
+		compileTo: function(contentBuilder, anotherBuilder){
 			var builder = new ContentBuilder();
 
 			// 提取源表达式到临时内容生成器
@@ -4701,7 +4687,7 @@ this.DestructuringItemExpression = function(EmptyDestructuringItemExpression){
 
 	return DestructuringItemExpression;
 }(
-	this.EmptyDestructuringItemExpression
+	this.DestructuringExpression
 );
 
 }.call(
@@ -4724,11 +4710,11 @@ this.ArrayDestructuringExpression = function(){
 
 	ArrayDestructuringExpression.props({
 		/**
-		 * 以解构方式提取表达式文本内容
+		 * 提取并编译表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
 		 * @param {ContentBuilder} anotherBuilder - 另一个内容生成器，一般用于副内容的生成或记录
 		 */
-		destructTo: function(contentBuilder, anotherBuilder){
+		compileTo: function(contentBuilder, anotherBuilder){
 			// 遍历的提取每一项
 			this.origin.inner.forEach(destructItem, contentBuilder, anotherBuilder);
 		}
@@ -4749,11 +4735,11 @@ this.ArrayDestructuringItemExpression = function(){
 
 	ArrayDestructuringItemExpression.props({
 		/**
-		 * 以解构方式提取表达式文本内容
+		 * 提取并编译表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
 		 * @param {ContentBuilder} anotherBuilder - 另一个内容生成器，一般用于副内容的生成或记录
 		 */
-		destructTo: function(contentBuilder, anotherBuilder){
+		compileTo: function(contentBuilder, anotherBuilder){
 			var builder, inner = this.origin.inner;
 
 			// 根据长度判断
@@ -4793,7 +4779,7 @@ this.ArrayDestructuringItemExpression = function(){
 	return ArrayDestructuringItemExpression;
 }();
 
-this.ArrayExpression = ArrayExpression = function(ArrayDestructuringExpression, EmptyDestructuringItemExpression, ArrayDestructuringItemExpression, config){
+this.ArrayExpression = ArrayExpression = function(ArrayDestructuringExpression, ArrayDestructuringItemExpression, config){
 	/**
 	 * 数组表达式
 	 * @param {Context} open - 起始标签上下文
@@ -4820,24 +4806,21 @@ this.ArrayExpression = ArrayExpression = function(ArrayDestructuringExpression, 
 				switch(true){
 					// 如果是标识符表达式
 					case expression instanceof AssignableExpression:
-						expression = new DestructuringItemExpression(expression);
 						break;
 
 					// 如果是数组表达式
 					case expression instanceof ArrayExpression:
-						expression = expression.toDestructuringItem(parser);
+						inner[i] = inner.latest = expression.toDestructuringItem(parser);
 						break;
 
 					// 如果是空表达式
 					case expression instanceof EmptyExpression:
-						expression = new EmptyDestructuringItemExpression(expression);
-						break;
+						continue;
 					
 					// 如果是二元运算表达式
 					case expression instanceof BinaryExpression:
 						// 如果二元运算表达式的标签是赋值符号
 						if(expression.context.tag instanceof BasicAssignmentTag){
-							expression = new DestructuringItemExpression(expression);
 							break;
 						}
 
@@ -4848,7 +4831,7 @@ this.ArrayExpression = ArrayExpression = function(ArrayDestructuringExpression, 
 				}
 
 				// 重新设置表达式
-				inner[i] = inner.latest = expression;
+				inner[i] = inner.latest = new DestructuringItemExpression(expression);
 			}
 		},
 		declaration: false,
@@ -4892,7 +4875,6 @@ this.ArrayExpression = ArrayExpression = function(ArrayDestructuringExpression, 
 	return ArrayExpression;
 }(
 	this.ArrayDestructuringExpression,
-	this.EmptyDestructuringItemExpression,
 	this.ArrayDestructuringItemExpression,
 	DestructuringExpression.config
 );
@@ -5100,8 +5082,8 @@ closeArrayTag = new this.CloseArrayTag();
 
 		// 追加当前项的变量名
 		builder.appendString(anotherBuilder.result + "[" + index + "]");
-		// 解构形式提取单项
-		expression.destructTo(contentBuilder, builder);
+		// 提取并编译表达式文本内容
+		expression.compileTo(contentBuilder, builder);
 	}
 );
 
@@ -5202,6 +5184,13 @@ this.VariableDeclarationArrayItemTag = function(VariableDeclarationTag, Destruct
 	
 	VariableDeclarationArrayItemTag.props({
 		/**
+		 * 获取此标签接下来所需匹配的标签列表
+		 * @param {TagsMap} tagsMap - 标签集合映射
+		 */
+		require: function(tagsMap){
+			return tagsMap.unexpectedTags;
+		},
+		/**
 		 * 标签访问器
 		 * @param {SyntaxParser} parser - 语法解析器
 		 * @param {Context} context - 标签上下文
@@ -5245,7 +5234,7 @@ this.VariableDeclarationArrayItemSeparatorTag = function(ArrayItemSeparatorTag){
 		 * @param {TagsMap} tagsMap - 标签集合映射
 		 */
 		require: function(tagsMap){
-			return tagsMap.variableDeclarationArrayItemTags;
+			return tagsMap.openVariableDeclarationArrayContextTags;
 		}
 	});
 
@@ -17520,8 +17509,8 @@ this.DestructuringAssignmentExpression = function(extractTo){
 					contentBuilder.appendContext(this.context);
 					// 提取右侧表达式
 					this.right.extractTo(contentBuilder);
-					// 以解构形式提取左侧表达式
-					left.destructTo(contentBuilder, builder);
+					// 提取并编译表达式文本内容
+					left.compileTo(contentBuilder, builder);
 					return;
 				}
 
@@ -17531,8 +17520,8 @@ this.DestructuringAssignmentExpression = function(extractTo){
 				contentBuilder.appendContext(this.context);
 				// 提取右侧表达式
 				this.right.extractTo(contentBuilder);
-				// 以解构形式提取左侧表达式
-				left.destructTo(contentBuilder, builder);
+				// 提取并编译表达式文本内容
+				left.compileTo(contentBuilder, builder);
 				// 追加逗号与变量名及结束小括号
 				contentBuilder.appendString("," + variable + ")");
 				return;
@@ -18266,18 +18255,40 @@ this.ClosureVariableContextTags = function(BasicAssignmentTag, IllegalShorthandA
 	this.IllegalShorthandAssignmentTag
 );
 
-this.ConstContextTags = function(ConstVariableTag){
+this.VariableDeclarationTags = function(OpenVariableDeclarationArrayTag){
+	/**
+	 * 变量声明标签列表
+	 */
+	function VariableDeclarationTags(){
+		IllegalTags.call(this);
+		
+		this.register(
+			new OpenVariableDeclarationArrayTag()
+		);
+	};
+	VariableDeclarationTags = new Rexjs(VariableDeclarationTags, IllegalTags);
+
+	VariableDeclarationTags.props({
+		id: "variableDeclarationTags"
+	});
+	
+	return VariableDeclarationTags;
+}(
+	this.OpenVariableDeclarationArrayTag
+);
+
+this.ConstContextTags = function(VariableDeclarationTags, ConstVariableTag){
 	/**
 	 * const 关键字上下文标签列表
 	 */
 	function ConstContextTags(){
-		IllegalTags.call(this);
+		VariableDeclarationTags.call(this);
 		
 		this.register(
 			new ConstVariableTag()
 		);
 	};
-	ConstContextTags = new Rexjs(ConstContextTags, IllegalTags);
+	ConstContextTags = new Rexjs(ConstContextTags, VariableDeclarationTags);
 
 	ConstContextTags.props({
 		id: "constContextTags"
@@ -18285,6 +18296,7 @@ this.ConstContextTags = function(ConstVariableTag){
 	
 	return ConstContextTags;
 }(
+	this.VariableDeclarationTags,
 	this.ConstVariableTag
 );
 
@@ -18720,18 +18732,18 @@ this.LabelContextTags = function(LabelColonTag){
 	this.LabelColonTag
 );
 
-this.LetContextTags = function(LocalVariableTag){
+this.LetContextTags = function(VariableDeclarationTags, LocalVariableTag){
 	/**
 	 * let 关键字上下文标签列表
 	 */
 	function LetContextTags(){
-		IllegalTags.call(this);
+		VariableDeclarationTags.call(this);
 		
 		this.register(
 			new LocalVariableTag()
 		);
 	};
-	LetContextTags = new Rexjs(LetContextTags, IllegalTags);
+	LetContextTags = new Rexjs(LetContextTags, VariableDeclarationTags);
 
 	LetContextTags.props({
 		id: "letContextTags"
@@ -18739,6 +18751,7 @@ this.LetContextTags = function(LocalVariableTag){
 	
 	return LetContextTags;
 }(
+	this.VariableDeclarationTags,
 	this.LocalVariableTag
 );
 
@@ -19126,42 +19139,21 @@ this.OpenSwitchBodyContextTags = function(CaseTag, DefaultTag, CloseBlockCompone
 	this.CloseBlockComponentTag
 );
 
-this.VariableDeclarationArrayItemTags = function(VariableDeclarationArrayItemTag, OpenNestedVariableDeclarationArrayTag){
-	/**
-	 * 变量声明数组项标签列表
-	 */
-	function VariableDeclarationArrayItemTags(){
-		IllegalTags.call(this);
-		
-		this.register(
-			new VariableDeclarationArrayItemTag(),
-			new OpenNestedVariableDeclarationArrayTag()
-		);
-	};
-	VariableDeclarationArrayItemTags = new Rexjs(VariableDeclarationArrayItemTags, IllegalTags);
-
-	VariableDeclarationArrayItemTags.props({
-		id: "variableDeclarationArrayItemTags"
-	});
-	
-	return VariableDeclarationArrayItemTags;
-}(
-	this.VariableDeclarationArrayItemTag,
-	this.OpenNestedVariableDeclarationArrayTag
-);
-
-this.OpenVariableDeclarationArrayContextTags = function(VariableDeclarationArrayItemTags, CloseVariableDeclarationArrayTag){
+this.OpenVariableDeclarationArrayContextTags = function(VariableDeclarationArrayItemTag, VariableDeclarationArrayItemSeparatorTag, OpenNestedVariableDeclarationArrayTag, CloseVariableDeclarationArrayTag){
 	/**
 	 * 起始变量声明数组上下文标签列表
 	 */
 	function OpenVariableDeclarationArrayContextTags(){
-		VariableDeclarationArrayItemTags.call(this);
+		IllegalTags.call(this);
 
 		this.register(
+			new VariableDeclarationArrayItemTag(),
+			new VariableDeclarationArrayItemSeparatorTag(),
+			new OpenNestedVariableDeclarationArrayTag(),
 			new CloseVariableDeclarationArrayTag()
 		);
 	};
-	OpenVariableDeclarationArrayContextTags = new Rexjs(OpenVariableDeclarationArrayContextTags, VariableDeclarationArrayItemTags);
+	OpenVariableDeclarationArrayContextTags = new Rexjs(OpenVariableDeclarationArrayContextTags, IllegalTags);
 
 	OpenVariableDeclarationArrayContextTags.props({
 		id: "openVariableDeclarationArrayContextTags"
@@ -19169,7 +19161,9 @@ this.OpenVariableDeclarationArrayContextTags = function(VariableDeclarationArray
 	
 	return OpenVariableDeclarationArrayContextTags; 
 }(
-	this.VariableDeclarationArrayItemTags,
+	this.VariableDeclarationArrayItemTag,
+	this.VariableDeclarationArrayItemSeparatorTag,
+	this.OpenNestedVariableDeclarationArrayTag,
 	this.CloseVariableDeclarationArrayTag
 );
 
@@ -19818,19 +19812,18 @@ this.UnexpectedTags = function(){
 	return UnexpectedTags;
 }();
 
-this.VarContextTags = function(ClosureVariableTag, OpenVariableDeclarationArrayTag){
+this.VarContextTags = function(VariableDeclarationTags, ClosureVariableTag){
 	/**
 	 * var 关键字上下文标签列表
 	 */
 	function VarContextTags(){
-		IllegalTags.call(this);
+		VariableDeclarationTags.call(this);
 		
 		this.register(
-			new ClosureVariableTag(),
-			new OpenVariableDeclarationArrayTag()
+			new ClosureVariableTag()
 		);
 	};
-	VarContextTags = new Rexjs(VarContextTags, IllegalTags);
+	VarContextTags = new Rexjs(VarContextTags, VariableDeclarationTags);
 
 	VarContextTags.props({
 		id: "varContextTags"
@@ -19838,8 +19831,8 @@ this.VarContextTags = function(ClosureVariableTag, OpenVariableDeclarationArrayT
 	
 	return VarContextTags;
 }(
-	this.ClosureVariableTag,
-	this.OpenVariableDeclarationArrayTag
+	this.VariableDeclarationTags,
+	this.ClosureVariableTag
 );
 
 this.WhileConditionTags = function(OpenWhileConditionTag){
@@ -20083,7 +20076,7 @@ this.ECMAScriptTagsMap = function(SyntaxTagsMap, tagsArray){
 		this.ThrowContextTags,
 		this.UnexpectedTags,
 		this.VarContextTags,
-		this.VariableDeclarationArrayItemTags,
+		this.VariableDeclarationTags,
 		this.WhileConditionTags
 	]
 );
