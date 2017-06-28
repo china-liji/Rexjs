@@ -4607,9 +4607,9 @@ this.SpreadTag = function(SpreadExpression, SpreadStatement, AccessorExpression)
 
 
 // 解构表达式相关
-~function(){
+~function(config){
 
-this.DestructuringExpression = function(AssignableExpression, config){
+this.DestructuringExpression = function(AssignableExpression){
 	/**
 	 * 解构表达式
 	 * @param {Context} context - 标签上下文
@@ -4653,15 +4653,12 @@ this.DestructuringExpression = function(AssignableExpression, config){
 
 	return DestructuringExpression;
 }(
-	this.AssignableExpression,
-	// config
-	new SyntaxConfig("destructuring")
+	this.AssignableExpression
 );
 
 this.DestructuringItemExpression = function(DestructuringExpression){
 	/**
 	 * 解构项表达式
-	 * @param {Expression} origin - 解构赋值源表达式
 	 * @param {Expression} origin - 解构赋值源表达式
 	 */
 	function DestructuringItemExpression(origin){
@@ -4682,7 +4679,8 @@ this.DestructuringItemExpression = function(DestructuringExpression){
 			this.origin.extractTo(builder);
 			// 追加赋值操作
 			contentBuilder.appendString("," + builder.result + "=" + anotherBuilder.result)
-		}
+		},
+		variable: ""
 	});
 
 	return DestructuringItemExpression;
@@ -4690,13 +4688,63 @@ this.DestructuringItemExpression = function(DestructuringExpression){
 	this.DestructuringExpression
 );
 
+this.DestructuringDefaultItemExpression = function(DestructuringItemExpression){
+	/**
+	 * 解构默认项表达式
+	 * @param {Expression} origin - 解构赋值源表达式
+	 */
+	function DestructuringDefaultItemExpression(origin, statements){
+		DestructuringItemExpression.call(this, origin);
+
+		// 如果需要解析解构表达式
+		if(config.destructuring){
+			// 给刚生成的解构赋值表达式设置变量名
+			this.variable = statements.collections.generate();
+		}
+	};
+	DestructuringDefaultItemExpression = new Rexjs(DestructuringDefaultItemExpression, DestructuringItemExpression);
+
+	DestructuringDefaultItemExpression.props({
+		/**
+		 * 提取并编译表达式文本内容
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 * @param {ContentBuilder} anotherBuilder - 另一个内容生成器，一般用于副内容的生成或记录
+		 */
+		compileTo: function(contentBuilder, anotherBuilder){
+			var origin = this.origin, variable = this.variable, leftBuilder = new ContentBuilder(), rightBuilder = new ContentBuilder();
+
+			// 提取左侧表达式到临时内容生成器
+			origin.left.extractTo(leftBuilder);
+			// 提取右侧表达式到临时内容生成器
+			origin.right.extractTo(rightBuilder);
+
+			// 追加赋值操作
+			contentBuilder.appendString(
+				"," + leftBuilder.result + "=(" +
+					variable + "=" + anotherBuilder.result + "," +
+					// 三元表达式，判断是否为 undefined
+					variable + "===void 0?" +
+						rightBuilder.result +
+						":" + variable +
+				")"
+			);
+		}
+	});
+
+	return DestructuringDefaultItemExpression;
+}(
+	this.DestructuringItemExpression
+);
+
 }.call(
-	this
+	this,
+	// config
+	new SyntaxConfig("destructuring")
 );
 
 
 // 数组相关
-~function(DestructuringExpression, DestructuringItemExpression, AssignableExpression, BinaryExpression, ArrayExpression, BasicAssignmentTag, closeArrayTag, arrayItemSeparatorTag, destructItem){
+~function(DestructuringExpression, DestructuringItemExpression, DestructuringDefaultItemExpression, IdentifierExpression, AssignableExpression, BinaryExpression, ArrayExpression, BasicAssignmentTag, closeArrayTag, arrayItemSeparatorTag, destructItem){
 
 this.ArrayDestructuringExpression = function(){
 	/**
@@ -4772,14 +4820,13 @@ this.ArrayDestructuringItemExpression = function(){
 
 			// 遍历的提取每一项
 			inner.forEach(destructItem, contentBuilder, builder);
-		},
-		variable: ""
+		}
 	});
 
 	return ArrayDestructuringItemExpression;
 }();
 
-this.ArrayExpression = ArrayExpression = function(ArrayDestructuringExpression, ArrayDestructuringItemExpression, config){
+this.ArrayExpression = ArrayExpression = function(ArrayDestructuringExpression, ArrayDestructuringItemExpression, config, collected){
 	/**
 	 * 数组表达式
 	 * @param {Context} open - 起始标签上下文
@@ -4797,42 +4844,59 @@ this.ArrayExpression = ArrayExpression = function(ArrayDestructuringExpression, 
 		 * @param {SyntaxParser} parser - 语法解析器
 		 */
 		convert: function(parser){
-			var inner = this.inner;
+			var expression, inner = this.inner;
 
-			// 遍历
-			for(var i = inner.min, j = inner.length;i < j;i++){
-				var expression = inner[i];
+			outerBlock:
+			{
+				// 遍历
+				for(var i = inner.min, j = inner.length;i < j;i++){
+					expression = inner[i];
 
-				switch(true){
-					// 如果是标识符表达式
-					case expression instanceof AssignableExpression:
-						break;
+					switch(true){
+						// 如果是标识符表达式
+						case expression instanceof AssignableExpression:
+							// 如果已经被收集到常量内
+							if(collected(parser, expression)){
+								break outerBlock;
+							}
 
-					// 如果是数组表达式
-					case expression instanceof ArrayExpression:
-						inner[i] = inner.latest = expression.toDestructuringItem(parser);
-						break;
-
-					// 如果是空表达式
-					case expression instanceof EmptyExpression:
-						continue;
-					
-					// 如果是二元运算表达式
-					case expression instanceof BinaryExpression:
-						// 如果二元运算表达式的标签是赋值符号
-						if(expression.context.tag instanceof BasicAssignmentTag){
+							// 转化表达式
+							expression = new DestructuringItemExpression(expression);
 							break;
-						}
 
-					default:
-						// 报错
-						parser.error(expression.context);
-						return;
+						// 如果是数组表达式
+						case expression instanceof ArrayExpression:
+							expression = expression.toDestructuringItem(parser);
+							break;
+
+						// 如果是空表达式
+						case expression instanceof EmptyExpression:
+							continue;
+						
+						// 如果是二元运算表达式
+						case expression instanceof BinaryExpression:
+							// 如果二元运算表达式的标签是赋值符号
+							if(expression.context.tag instanceof BasicAssignmentTag){
+								// 转化表达式
+								expression = new DestructuringDefaultItemExpression(expression, parser.statements);
+								break;
+							}
+
+							break outerBlock;
+
+						default:
+							break outerBlock;
+					}
+
+					// 重新设置表达式
+					inner[i] = inner.latest = expression;
 				}
 
-				// 重新设置表达式
-				inner[i] = inner.latest = new DestructuringItemExpression(expression);
+				return;
 			}
+
+			// 报错
+			parser.error(expression.context);
 		},
 		declaration: false,
 		/**
@@ -4876,7 +4940,19 @@ this.ArrayExpression = ArrayExpression = function(ArrayDestructuringExpression, 
 }(
 	this.ArrayDestructuringExpression,
 	this.ArrayDestructuringItemExpression,
-	DestructuringExpression.config
+	this.DestructuringExpression.config,
+	// collected
+	function(parser, expression){
+		// 如果是标识符表达式
+		if(expression instanceof IdentifierExpression){
+			var context = expression.context;
+
+			// 判断是否收集到常量中
+			return context.tag.collected(parser, context, parser.statements);
+		}
+
+		return false;
+	}
 );
 
 this.ArrayStatement = function(){
@@ -5066,6 +5142,8 @@ closeArrayTag = new this.CloseArrayTag();
 	this,
 	this.DestructuringExpression,
 	this.DestructuringItemExpression,
+	this.DestructuringDefaultItemExpression,
+	this.IdentifierExpression,
 	this.AssignableExpression,
 	this.BinaryExpression,
 	// ArrayExpression

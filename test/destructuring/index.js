@@ -5,15 +5,17 @@ test.unit(
 
 		this.true("空的数组解构", "[] = arr");
 		this.true("单项数组解构", "[a] = arr");
+		this.true("默认值数组解构", "[a = 1] = arr");
 		this.true("访问器项数组解构", "[function(){}.a, window.b] = arr");
 		this.true("多项数组解构", "[a, b, c, d] = arr");
 		this.true("带空项的数组解构", "[, a, , b, c, ,] = arr");
 		this.true("全空项的数组解构", "[,,,,] = arr");
 		this.true("多层数组解构", "[a, [window.b, [c], ], window.d, ] = arr");
-		this.true("连等解构", "[] = [a, [window.b, [c], ], window.d, ] = $ = [x, [y, ], , z, ] = arr");
+		this.true("连等解构", "[] = [a, [window.b, [c = 100], ], window.d, ] = $ = [x, [y, ], , z, ] = arr");
 		
 		this.true("声明解构 - 空的数组解构", "var [] = arr");
 		this.true("声明解构 - 单项数组解构", "var [a] = arr");
+		this.true("声明解构 - 默认值数组解构", "var [a = 1] = arr");
 		this.true("声明解构 - 多项数组解构", "var [a, b, c, d] = arr");
 		this.true("声明解构 - 带空项的数组解构", "var [, a, , b, c, ,] = arr");
 		this.true("声明解构 - 全空项的数组解构", "var [,,,,] = arr");
@@ -179,6 +181,17 @@ test.unit(
 			},
 			function(parser, err){
 				return err.context.position.column === 16 ? "" : "没有找到正确的错误地方";
+			}
+		);
+
+		this.false(
+			"声明解构 - 常量变量名作为解构项",
+			"const a = 1;[a] = [];",
+			function(parser, err){
+				return err.context.content === "a" ? "" : "没有识别出重复定义的 a";
+			},
+			function(parser, err){
+				return err.context.position.column === 13 ? "" : "没有找到正确的错误地方";
 			}
 		);
 
