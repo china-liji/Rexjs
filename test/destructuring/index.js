@@ -5,24 +5,24 @@ test.unit(
 
 		this.true("空的数组解构", "[] = arr");
 		this.true("单项数组解构", "[a] = arr");
-		this.true("默认值数组解构", "[a = 1] = arr");
+		this.true("默认值数组解构", "[,a = 1,,, b = 2 + 3 + window.c, c = 100, ] = arr");
 		this.true("访问器项数组解构", "[function(){}.a, window.b] = arr");
 		this.true("多项数组解构", "[a, b, c, d] = arr");
 		this.true("带空项的数组解构", "[, a, , b, c, ,] = arr");
 		this.true("全空项的数组解构", "[,,,,] = arr");
 		this.true("多层数组解构", "[a, [window.b, [c], ], window.d, ] = arr");
-		this.true("连等解构", "[] = [a, [window.b, [c = 100], ], window.d, ] = $ = [x, [y, ], , z, ] = arr");
+		this.true("连等解构", "[] = [a, [window.b, [c = 100,], ], window.d, ] = $ = [x, [y, ], , z, ] = arr");
 		
 		this.true("声明解构 - 空的数组解构", "var [] = arr");
 		this.true("声明解构 - 单项数组解构", "var [a] = arr");
-		this.true("声明解构 - 默认值数组解构", "var [a = 1] = arr");
+		this.true("声明解构 - 默认值数组解构", "[,a = 1,,, b = 2 + 3 + window.c, c = 100, ] = arr");
 		this.true("声明解构 - 多项数组解构", "var [a, b, c, d] = arr");
 		this.true("声明解构 - 带空项的数组解构", "var [, a, , b, c, ,] = arr");
 		this.true("声明解构 - 全空项的数组解构", "var [,,,,] = arr");
 		this.true("声明解构 - 多层数组解构", "var [a, [b, [c], ], d, ] = arr");
 		this.true("var 声明解构 - 连等解构", "var [a, [, [c], ], , ] = $ = [, window.b, x, [y, window.d], , z, ] = arr");
 		this.true("let 声明解构 - 连等解构", "let [a, [, [c], ], , ] = $ = [, window.b, x, [y, window.d], , z, ] = arr");
-		this.true("const 声明解构 - 连等解构", "const [a, [, [c], ], , ] = $ = [, window.b, x, [y, window.d], , z, ] = arr");
+		this.true("const 声明解构 - 连等解构", "const [a, [, [c = 100,], ], d = 4, ] = $ = [, window.b, x, [y, window.d], , z, ] = arr");
 		
 		this.true("运算结果测试", source, true);
 
@@ -75,7 +75,18 @@ test.unit(
 		);
 
 		this.false(
-			"带运算的解构项",
+			"带默认值的多层解构",
+			"[[a] = 1] = b",
+			function(parser, err){
+				return err.context.content === "=" ? "" : "没有识别出错误的赋值符号";
+			},
+			function(parser, err){
+				return err.context.position.column === 5 ? "" : "没有正确识别出错误位置";
+			}
+		);
+
+		this.false(
+			"带非赋值运算的解构项",
 			"[a + 1] = arr",
 			function(parser, err){
 				return err.context.content === "+" ? "" : "没有识别出运算符";
@@ -149,6 +160,25 @@ test.unit(
 		this.false(
 			"声明解构 - 带运算的解构项",
 			"var [a + 1] = arr",
+			function(parser, err){
+				return err.context.content === "+" ? "" : "没有识别出运算符";
+			}
+		);
+
+		this.false(
+			"声明解构 - 带赋值运算的多层解构项",
+			"var [[a] = 1] = arr",
+			function(parser, err){
+				return err.context.content === "=" ? "" : "没有识别出运算符";
+			},
+			function(parser, err){
+				return err.context.position.column === 9 ? "" : "没有识别出位置";
+			}
+		);
+
+		this.false(
+			"声明解构 - 带非赋值运算的多层解构项",
+			"var [[a] + 1] = arr",
 			function(parser, err){
 				return err.context.content === "+" ? "" : "没有识别出运算符";
 			}
