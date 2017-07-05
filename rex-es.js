@@ -4744,7 +4744,7 @@ this.DestructuringDefaultItemExpression = function(DestructuringItemExpression){
 
 
 // 数组相关
-~function(DestructuringExpression, DestructuringItemExpression, DestructuringDefaultItemExpression, IdentifierExpression, AssignableExpression, BinaryExpression, ArrayExpression, BasicAssignmentTag, closeArrayTag, arrayItemSeparatorTag, destructItem){
+~function(DestructuringExpression, DestructuringItemExpression, DestructuringDefaultItemExpression, IdentifierExpression, AssignableExpression, BinaryExpression, BasicAssignmentTag, closeArrayTag, arrayItemSeparatorTag, destructItem){
 
 this.ArrayDestructuringExpression = function(){
 	/**
@@ -4826,7 +4826,7 @@ this.ArrayDestructuringItemExpression = function(){
 	return ArrayDestructuringItemExpression;
 }();
 
-this.ArrayExpression = ArrayExpression = function(ArrayDestructuringExpression, ArrayDestructuringItemExpression, config, collected){
+this.ArrayExpression = function(ArrayDestructuringExpression, ArrayDestructuringItemExpression, config, collected){
 	/**
 	 * 数组表达式
 	 * @param {Context} open - 起始标签上下文
@@ -5151,8 +5151,6 @@ closeArrayTag = new this.CloseArrayTag();
 	this.IdentifierExpression,
 	this.AssignableExpression,
 	this.BinaryExpression,
-	// ArrayExpression
-	null,
 	this.BasicAssignmentTag,
 	// closeArrayTag
 	NULL,
@@ -9565,7 +9563,7 @@ this.SetTag = function(PropertyAccessorTag){
 // 对象相关
 ~function(IdentifierTag, propertySeparatorTag, closeObjectTag){
 
-this.ObjectExpression = function(extractTo, compileItem){
+this.ObjectExpression = function(LiteralPropertyNameExpression, ComputedPropertyNameExpression, AssignableExpression, ArrayExpression, BasicAssignmentTag, DestructuringExpression, extractTo, compileItem){
 	/**
 	 * 对象表达式
 	 * @param {Context} open - 起始标签上下文
@@ -9578,6 +9576,69 @@ this.ObjectExpression = function(extractTo, compileItem){
 	ObjectExpression = new Rexjs(ObjectExpression, PartnerExpression);
 
 	ObjectExpression.props({
+		/**
+		 * 将数组每一项转换为解构项表达式
+		 * @param {SyntaxParser} parser - 语法解析器
+		 */
+		convert: function(parser){
+			var expression, name, operand, inner = this.inner;
+
+			outerBlock:
+			{
+				// 遍历
+				for(var i = inner.min, j = inner.length;i < j;i++){
+					expression = inner[i];
+					name = expression.name;
+					operand = expression.value.operand;
+					
+					switch(true){
+						case name instanceof LiteralPropertyNameExpression:
+						case name instanceof ComputedPropertyNameExpression:
+							switch(true){
+								case operand === null:
+									break;
+
+								case operand instanceof AssignableExpression:
+									break;
+
+								case operand instanceof BinaryExpression:
+									// 如果二元运算表达式的标签是赋值符号
+									if(operand.context.tag instanceof BasicAssignmentTag){
+										// 如果二元表达式左侧是解构表达式
+										if(operand.left instanceof DestructuringExpression){
+											break outerBlock;
+										}
+
+										break;
+									}
+
+									break;
+
+								case operand instanceof ArrayExpression:
+									break;
+
+								case operand instanceof ObjectExpression:
+									break;
+
+								default:
+									debugger
+									break;
+							}
+
+							break;
+
+						default:
+							debugger
+							break;
+					}
+				}
+
+				return;
+			}
+
+			// 报错
+			parser.error(expression.context);
+		},
 		/**
 		 * 提取表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
@@ -9597,11 +9658,33 @@ this.ObjectExpression = function(extractTo, compileItem){
 			// 调用父类方法
 			extractTo.call(this, contentBuilder);
 		},
-		useFunction: false
+		useFunction: false,
+		/**
+		 * 转换为解构表达式
+		 * @param {SyntaxParser} parser - 语法解析器
+		 */
+		toDestructuring: function(parser){
+			// 转换内部表达式
+			this.convert(parser, this.inner);
+			return new ArrayDestructuringExpression(this);
+		},
+		/**
+		 * 转换为解构项表达式
+		 * @param {SyntaxParser} parser - 语法解析器
+		 */
+		toDestructuringItem: function(parser){
+
+		}
 	});
 
 	return ObjectExpression;
 }(
+	this.LiteralPropertyNameExpression,
+	this.ComputedPropertyNameExpression,
+	this.AssignableExpression,
+	this.ArrayExpression,
+	this.BasicAssignmentTag,
+	this.DestructuringExpression,
 	PartnerExpression.prototype.extractTo,
 	// compileItem
 	function(item, contentBuilder){
@@ -9716,7 +9799,7 @@ this.CloseObjectTag = function(CloseBraceTag){
 		 * @param {TagsMap} tagsMap - 标签集合映射
 		 */
 		require: function(tagsMap){
-			return tagsMap.expressionContextTags;
+			return tagsMap.destructibleExpressionContextTags;
 		},
 		/**
 		 * 标签访问器

@@ -161,6 +161,14 @@ test.unit(
 		);
 
 		this.false(
+			"计算式缺少值",
+			"({[a]})",
+			function(parser, err){
+				return err.context.content === "}" ? "" : "计算式缺少值";
+			}
+		);
+
+		this.false(
 			"多个逗号",
 			"!{ a,, }",
 			function(parser, err){
