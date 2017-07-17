@@ -1333,6 +1333,18 @@ this.Expression = function(config, parseInt){
 		},
 		context: null,
 		/**
+		 * 获取是否为默认表达式
+		 */
+		get default(){
+			return false;
+		},
+		/**
+		 * 获取是否为空表达式
+		 */
+		get empty(){
+			return false;
+		},
+		/**
 		 * 提取表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
 		 */
@@ -1539,6 +1551,12 @@ this.EmptyExpression = function(){
 	
 	EmptyExpression.props({
 		/**
+		 * 获取是否为空表达式
+		 */
+		get empty(){
+			return true;
+		},
+		/**
 		 * 提取文本内容，空函数，不做任何处理
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
 		 */
@@ -1559,6 +1577,12 @@ this.DefaultExpression = function(EmptyExpression, STATE_NONE){
 
 	DefaultExpression.props({
 		/**
+		 * 获取是否为默认表达式
+		 */
+		get default(){
+			return true;
+		},
+		/**
 		 * 获取表达式状态
 		 */
 		get state(){
@@ -1577,7 +1601,7 @@ this.DefaultExpression = function(EmptyExpression, STATE_NONE){
 	this.EmptyExpression.STATE_NONE
 );
 
-this.ListExpression = function(DefaultExpression, extractItem){
+this.ListExpression = function(extractItem){
 	/**
 	 * 列表表达式
 	 * @param {Context} context - 语法标签上下文
@@ -1652,12 +1676,12 @@ this.ListExpression = function(DefaultExpression, extractItem){
 		length: 0,
 		min: 0,
 		/**
-		 * 设置表达式，与 add 不同，当 expession 为 DefaultExpression 实例时，会忽略该操作
+		 * 设置表达式，与 add 不同，当 expession 为默认表达式时，会忽略该操作
 		 * @param {Expression} expression - 需要添加的表达式
 		 */
 		set: function(expression){
 			// 如果是默认表达式
-			if(expression instanceof DefaultExpression){
+			if(expression.default){
 				return false;
 			}
 
@@ -1669,7 +1693,6 @@ this.ListExpression = function(DefaultExpression, extractItem){
 	
 	return ListExpression;
 }(
-	this.DefaultExpression,
 	// extractItem
 	function(item, contentBuilder, _anotherBuilder){
 		item.extractTo(contentBuilder, _anotherBuilder);

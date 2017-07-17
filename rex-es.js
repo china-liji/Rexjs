@@ -4678,7 +4678,7 @@ this.DestructuringItemExpression = function(DestructuringExpression){
 			// 提取源表达式到临时内容生成器
 			this.origin.extractTo(builder);
 			// 追加赋值操作
-			contentBuilder.appendString("," + builder.result + "=" + anotherBuilder.result)
+			contentBuilder.appendString("," + builder.result + "=" + anotherBuilder.result);
 		},
 		variable: ""
 	});
@@ -5172,7 +5172,7 @@ closeArrayTag = new this.CloseArrayTag();
 // 数组解构赋值相关
 ~function(BasicAssignmentTag, variableDeclarationArrayItemSeparatorTag, closeVariableDeclarationArrayTag){
 
-this.VariableDeclarationArrayExpression = function(ArrayExpression, ArrayDestructuringExpression){
+this.VariableDeclarationArrayExpression = function(ArrayExpression){
 	/**
 	 * 变量声明数组表达式
 	 * @param {Context} open - 起始标签上下文
@@ -5197,8 +5197,7 @@ this.VariableDeclarationArrayExpression = function(ArrayExpression, ArrayDestruc
 
 	return VariableDeclarationArrayExpression;
 }(
-	this.ArrayExpression,
-	this.ArrayDestructuringExpression
+	this.ArrayExpression
 );
 
 this.VariableDeclarationArrayItemAssignmentReadyStatement = function(){
@@ -8015,6 +8014,37 @@ closeArrowFunctionBodyTag = new this.CloseArrowFunctionBodyTag();
 // 对象属性相关
 ~function(){
 
+this.PropertyDestructuringItemExpression = function(DestructuringItemExpression){
+	/**
+	 * 属性解构项表达式
+	 * @param {Expression} origin - 解构赋值源表达式
+	 */
+	function PropertyDestructuringItemExpression(origin){
+		DestructuringItemExpression.call(this, origin);
+	};
+	PropertyDestructuringItemExpression = new Rexjs(PropertyDestructuringItemExpression, DestructuringItemExpression);
+
+	PropertyDestructuringItemExpression.props({
+		/**
+		 * 提取并编译表达式文本内容
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 * @param {ContentBuilder} anotherBuilder - 另一个内容生成器，一般用于副内容的生成或记录
+		 */
+		compileTo: function(contentBuilder, anotherBuilder){
+			var origin = this.origin, builder = new ContentBuilder();
+
+			// 解构属性名
+			origin.name.destructTo(builder, anotherBuilder);
+			// 解构属性值
+			origin.value.destructTo(contentBuilder, builder);
+		}
+	});
+
+	return PropertyDestructuringItemExpression;
+}(
+	this.DestructuringItemExpression
+);
+
 this.PropertyExpression = function(ShorthandPropertyValueExpression, config){
 	/**
 	 * 对象属性表达式
@@ -8090,12 +8120,6 @@ this.PropertyExpression = function(ShorthandPropertyValueExpression, config){
 			// 提取属性值
 			this.value.extractTo(contentBuilder);
 		},
-		/**
-		 * 判断是否为空属性
-		 */
-		empty: function(){
-			return this.name === NULL;
-		},
 		name: NULL,
 		/**
 		 * 判断指定标签上下文是否已经用于属性名
@@ -8148,6 +8172,17 @@ this.LiteralPropertyNameExpression = function(){
 			contentBuilder.appendContext(this.context);
 		},
 		/**
+		 * 以解构方式提取表达式文本内容
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 * @param {ContentBuilder} anotherBuilder - 另一个内容生成器，一般用于副内容的生成或记录
+		 */
+		destructTo: function(contentBuilder, anotherBuilder){debugger
+			// 追加对象访问符
+			contentBuilder.appendString(anotherBuilder.result + ".");
+			// 追加属性名上下文
+			contentBuilder.appendContext(this.context);
+		},
+		/**
 		 * 提取并编译表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
 		 */
@@ -8163,6 +8198,7 @@ this.LiteralPropertyNameExpression = function(){
 
 	return LiteralPropertyNameExpression;
 }();
+
 this.PropertyValueExpression = function(){
 	/**
 	 * 对象属性值表达式
@@ -8267,20 +8303,16 @@ this.PropertyStatement = function(PropertyExpression, ifComma){
 
 			var expression = this.expression, objectExpression = this.out();
 
-			switch(true){
-				// 如果表达式是空项
-				case expression.empty():
-					break;
-
+			// 如果表达式不是空项
+			if(expression.named(expression.name)){
 				// 如果可能是访问器
-				case expression.accessible:
+				if(expression.accessible){
 					// 核对访问器函数
 					expression.accessor.tag.checkFunction(parser, expression.value.operand, context);
+				}
 
-				default:
-					// 跳出语句并添加表达式
-					objectExpression.inner.add(expression);
-					break;
+				// 跳出语句并添加表达式
+				objectExpression.inner.add(expression);
 			}
 
 			return this.bindingOf();
@@ -8638,6 +8670,17 @@ this.IdentifierPropertyNameExpression = function(LiteralPropertyNameExpression){
 			contentBuilder.appendString('"');
 		},
 		/**
+		 * 以解构方式提取表达式文本内容
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 * @param {ContentBuilder} anotherBuilder - 另一个内容生成器，一般用于副内容的生成或记录
+		 */
+		destructTo: function(contentBuilder, anotherBuilder){
+			// 追加对象访问符
+			contentBuilder.appendString(anotherBuilder.result + ".");
+			// 追加属性名上下文
+			contentBuilder.appendContext(this.context);
+		},
+		/**
 		 * 提取并编译表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
 		 */
@@ -8672,6 +8715,19 @@ this.ShorthandPropertyValueExpression = function(PropertyValueExpression){
 		compileTo: function(contentBuilder){
 			// 追加冒号和变量名
 			contentBuilder.appendString("=" + this.context.content);
+		},
+		/**
+		 * 以解构方式提取表达式文本内容
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 * @param {ContentBuilder} anotherBuilder - 另一个内容生成器，一般用于副内容的生成或记录
+		 */
+		destructTo: function(contentBuilder, anotherBuilder){
+			// 追加逗号表达式分隔符
+			contentBuilder.appendString(",");
+			// 追加变量名
+			contentBuilder.appendContext(this.context);
+			// 追加赋值表达式
+			contentBuilder.appendString("=" + anotherBuilder.result);
 		},
 		/**
 		 * 提取表达式文本内容
@@ -9561,9 +9617,97 @@ this.SetTag = function(PropertyAccessorTag){
 
 
 // 对象相关
-~function(IdentifierTag, propertySeparatorTag, closeObjectTag){
+~function(propertySeparatorTag, closeObjectTag){
 
-this.ObjectExpression = function(LiteralPropertyNameExpression, ComputedPropertyNameExpression, AssignableExpression, ArrayExpression, BasicAssignmentTag, DestructuringExpression, extractTo, compileItem){
+this.ObjectDestructuringExpression = function(DestructuringExpression, destructItem){
+	/**
+	 * 对象解构表达式
+	 * @param {Expression} origin - 解构赋值源表达式
+	 */
+	function ObjectDestructuringExpression(origin){
+		DestructuringExpression.call(this, origin.open, origin);
+	};
+	ObjectDestructuringExpression = new Rexjs(ObjectDestructuringExpression, DestructuringExpression);
+
+	ObjectDestructuringExpression.props({
+		/**
+		 * 提取并编译表达式文本内容
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 * @param {ContentBuilder} anotherBuilder - 另一个内容生成器，一般用于副内容的生成或记录
+		 */
+		compileTo: function(contentBuilder, anotherBuilder){
+			// 遍历的提取每一项
+			this.origin.inner.forEach(destructItem, contentBuilder, anotherBuilder);
+		}
+	});
+
+	return ObjectDestructuringExpression;
+}(
+	this.DestructuringExpression,
+	// destructItem
+	function(expression, contentBuilder, anotherBuilder){
+		expression.compileTo(contentBuilder, anotherBuilder);
+	}
+);
+
+this.ObjectDestructuringItemExpression = function(DestructuringItemExpression){
+	/**
+	 * 数组解构项表达式
+	 * @param {Expression} origin - 解构赋值源表达式
+	 */
+	function ObjectDestructuringItemExpression(origin){
+		DestructuringItemExpression.call(this, origin);
+	};
+	ObjectDestructuringItemExpression = new Rexjs(ObjectDestructuringItemExpression, DestructuringItemExpression);
+
+	ObjectDestructuringItemExpression.props({
+		/**
+		 * 提取并编译表达式文本内容
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 * @param {ContentBuilder} anotherBuilder - 另一个内容生成器，一般用于副内容的生成或记录
+		 */
+		compileTo: function(contentBuilder, anotherBuilder){
+			var builder, inner = this.origin.inner;
+
+			// 根据长度判断
+			switch(inner.length){
+				// 如果是 0，说明没有解构内容，不需要解构
+				case 0:
+					return;
+
+				// 如果是 1，说明可以直接用 $Rexjs_0[0] 形式直接使用，不需要单独使用变量名记录
+				case 1:
+					builder = anotherBuilder;
+					break;
+
+				// 多项情况
+				default:
+					var variable = this.variable;
+
+					// 初始化内容生成器
+					builder = new ContentBuilder();
+
+					// 追加变量名到临时内容生成器
+					builder.appendString(variable);
+
+					// 追加变量名的赋值操作
+					contentBuilder.appendString(
+						"," + variable + "=" + anotherBuilder.result
+					);
+					break;
+			}
+
+			// 遍历的提取每一项
+			inner.forEach(destructItem, contentBuilder, builder);
+		}
+	});
+
+	return ObjectDestructuringItemExpression;
+}(
+	this.DestructuringItemExpression
+);
+
+this.ObjectExpression = function(ObjectDestructuringExpression, PropertyDestructuringItemExpression, LiteralPropertyNameExpression, ComputedPropertyNameExpression, AssignableExpression, ArrayExpression, BinaryExpression, DestructuringExpression, BasicAssignmentTag, extractTo, compileItem){
 	/**
 	 * 对象表达式
 	 * @param {Context} open - 起始标签上下文
@@ -9596,9 +9740,9 @@ this.ObjectExpression = function(LiteralPropertyNameExpression, ComputedProperty
 						case name instanceof ComputedPropertyNameExpression:
 							switch(true){
 								case operand === null:
-									break;
-
 								case operand instanceof AssignableExpression:
+									// 转化表达式
+									expression = new PropertyDestructuringItemExpression(expression);
 									break;
 
 								case operand instanceof BinaryExpression:
@@ -9631,6 +9775,9 @@ this.ObjectExpression = function(LiteralPropertyNameExpression, ComputedProperty
 							debugger
 							break;
 					}
+
+					// 重新设置表达式
+					inner[i] = inner.latest = expression;
 				}
 
 				return;
@@ -9666,7 +9813,7 @@ this.ObjectExpression = function(LiteralPropertyNameExpression, ComputedProperty
 		toDestructuring: function(parser){
 			// 转换内部表达式
 			this.convert(parser, this.inner);
-			return new ArrayDestructuringExpression(this);
+			return new ObjectDestructuringExpression(this);
 		},
 		/**
 		 * 转换为解构项表达式
@@ -9679,12 +9826,15 @@ this.ObjectExpression = function(LiteralPropertyNameExpression, ComputedProperty
 
 	return ObjectExpression;
 }(
+	this.ObjectDestructuringExpression,
+	this.PropertyDestructuringItemExpression,
 	this.LiteralPropertyNameExpression,
 	this.ComputedPropertyNameExpression,
 	this.AssignableExpression,
 	this.ArrayExpression,
-	this.BasicAssignmentTag,
+	this.BinaryExpression,
 	this.DestructuringExpression,
+	this.BasicAssignmentTag,
 	PartnerExpression.prototype.extractTo,
 	// compileItem
 	function(item, contentBuilder){
@@ -15451,7 +15601,7 @@ this.ClassPropertyStatement = function(PropertyStatement, ClassPropertyExpressio
 			var classExpression = this.out(), classBodyExpression = classExpression.body, propertyExpression = this.expression;
 
 			// 如果不是空表达式
-			if(!propertyExpression.empty()){
+			if(propertyExpression.named(propertyExpression.name)){
 				// 如果存在访问器
 				if(propertyExpression.accessible){
 					// 根据访问器核对函数正确性

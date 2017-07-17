@@ -1,15 +1,21 @@
-var a, b, c, d, e, f
+var a, b, c, d, e, f, x, y, z
 
-var n = 6
+var n = 6;
 
 
 ({
 	a,
 	2: b,
-	3: [c],
-	"4": { 4.1: d = 50, 4.2: e = 5 },
-	[n]: f = 99,
-	null: window.value,
+	"x": x,
+	["y"]: y
+	// 3: [c],
+	// "4": { 4.1: d = 50, 4.2: e = 5 },
+	// [n]: f = 99,
+	// null: window.value,
+	
+	// m = 5
+
+
 	// x(){},
 	// [y](){},
 	// get z(){},
