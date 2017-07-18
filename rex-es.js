@@ -4711,17 +4711,27 @@ this.DestructuringDefaultItemExpression = function(DestructuringItemExpression){
 		 * @param {ContentBuilder} anotherBuilder - 另一个内容生成器，一般用于副内容的生成或记录
 		 */
 		compileTo: function(contentBuilder, anotherBuilder){
-			var origin = this.origin, variable = this.variable, leftBuilder = new ContentBuilder(), rightBuilder = new ContentBuilder();
+			// 将默认值表达式转换为三元表达式
+			this.toTernary(this.origin, contentBuilder, anotherBuilder);
+		},
+		/**
+		 * 将默认值表达式转换为三元表达式
+		 * @param {BinaryExpression} expression - 默认值二元表达式
+		 * @param {ContentBuilder} contentBuilder - 主内容生成器
+		 * @param {ContentBuilder} valueBuilder - 属性值生成器
+		 */
+		toTernary: function(expression, contentBuilder, valueBuilder){
+			var variable = this.variable, leftBuilder = new ContentBuilder(), rightBuilder = new ContentBuilder();
 
 			// 提取左侧表达式到临时内容生成器
-			origin.left.extractTo(leftBuilder);
+			expression.left.extractTo(leftBuilder);
 			// 提取右侧表达式到临时内容生成器
-			origin.right.extractTo(rightBuilder);
+			expression.right.extractTo(rightBuilder);
 
 			// 追加赋值操作
 			contentBuilder.appendString(
 				"," + leftBuilder.result + "=(" +
-					variable + "=" + anotherBuilder.result + "," +
+					variable + "=" + valueBuilder.result + "," +
 					// 三元表达式，判断是否为 undefined
 					variable + "===void 0?" +
 						rightBuilder.result +
@@ -8033,8 +8043,11 @@ this.PropertyDestructuringItemExpression = function(DestructuringItemExpression)
 		compileTo: function(contentBuilder, anotherBuilder){
 			var origin = this.origin, builder = new ContentBuilder();
 
+			// 追加属性对象
+			builder.appendString(anotherBuilder.result);
+
 			// 解构属性名
-			origin.name.destructTo(builder, anotherBuilder);
+			origin.name.destructTo(builder);
 			// 解构属性值
 			origin.value.destructTo(contentBuilder, builder);
 		}
@@ -8043,6 +8056,40 @@ this.PropertyDestructuringItemExpression = function(DestructuringItemExpression)
 	return PropertyDestructuringItemExpression;
 }(
 	this.DestructuringItemExpression
+);
+
+this.PropertyDestructuringDefaultItemExpression = function(DestructuringDefaultItemExpression){
+	/**
+	 * 属性解构默认项表达式
+	 * @param {Expression} origin - 解构赋值源表达式
+	 */
+	function PropertyDestructuringDefaultItemExpression(origin, statements){
+		DestructuringDefaultItemExpression.call(this, origin, statements);
+	};
+	PropertyDestructuringDefaultItemExpression = new Rexjs(PropertyDestructuringDefaultItemExpression, DestructuringDefaultItemExpression);
+
+	PropertyDestructuringDefaultItemExpression.props({
+		/**
+		 * 提取并编译表达式文本内容
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 * @param {ContentBuilder} anotherBuilder - 另一个内容生成器，一般用于副内容的生成或记录
+		 */
+		compileTo: function(contentBuilder, anotherBuilder){
+			var origin = this.origin, builder = new ContentBuilder();
+
+			// 追加属性对象
+			builder.appendString(anotherBuilder.result);
+			// 解构属性名
+			origin.name.destructTo(builder);
+
+			// 将默认值表达式转换为三元表达式
+			this.toTernary(origin.value.operand, contentBuilder, builder);
+		}
+	});
+
+	return PropertyDestructuringDefaultItemExpression;
+}(
+	this.DestructuringDefaultItemExpression
 );
 
 this.PropertyExpression = function(ShorthandPropertyValueExpression, config){
@@ -8174,13 +8221,10 @@ this.LiteralPropertyNameExpression = function(){
 		/**
 		 * 以解构方式提取表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
-		 * @param {ContentBuilder} anotherBuilder - 另一个内容生成器，一般用于副内容的生成或记录
 		 */
-		destructTo: function(contentBuilder, anotherBuilder){debugger
-			// 追加对象访问符
-			contentBuilder.appendString(anotherBuilder.result + ".");
-			// 追加属性名上下文
-			contentBuilder.appendContext(this.context);
+		destructTo: function(contentBuilder){
+			// 调用编译表达式
+			this.compileTo(contentBuilder);
 		},
 		/**
 		 * 提取并编译表达式文本内容
@@ -8216,6 +8260,21 @@ this.PropertyValueExpression = function(){
 		 */
 		defineTo: function(contentBuilder){
 			this.extractTo(contentBuilder);
+		},
+		/**
+		 * 以解构方式提取表达式文本内容
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 * @param {ContentBuilder} anotherBuilder - 另一个内容生成器，一般用于副内容的生成或记录
+		 */
+		destructTo: function(contentBuilder, anotherBuilder){
+			// 追加表达式分隔符
+			contentBuilder.appendString(",");
+			debugger
+			// 提取操作对象
+			this.operand.compileTo(contentBuilder, anotherBuilder);
+
+			// 追加赋值操作表达式
+			contentBuilder.appendString("=" + anotherBuilder.result);
 		},
 		/**
 		 * 提取并编译表达式文本内容
@@ -8672,11 +8731,10 @@ this.IdentifierPropertyNameExpression = function(LiteralPropertyNameExpression){
 		/**
 		 * 以解构方式提取表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
-		 * @param {ContentBuilder} anotherBuilder - 另一个内容生成器，一般用于副内容的生成或记录
 		 */
-		destructTo: function(contentBuilder, anotherBuilder){
+		destructTo: function(contentBuilder){
 			// 追加对象访问符
-			contentBuilder.appendString(anotherBuilder.result + ".");
+			contentBuilder.appendString(".");
 			// 追加属性名上下文
 			contentBuilder.appendContext(this.context);
 		},
@@ -8965,6 +9023,13 @@ this.ComputedPropertyNameExpression = function(){
 
 	ComputedPropertyNameExpression.props({
 		/**
+		 * 提取并编译表达式文本内容
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 */
+		compileTo: function(contentBuilder){
+			this.extractTo(contentBuilder);
+		},
+		/**
 		 * 以定义属性的模式提取表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
 		 */
@@ -8977,10 +9042,11 @@ this.ComputedPropertyNameExpression = function(){
 			contentBuilder.appendString(")");
 		},
 		/**
-		 * 提取并编译表达式文本内容
+		 * 以解构方式提取表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
 		 */
-		compileTo: function(contentBuilder){
+		destructTo: function(contentBuilder){
+			// 直接提取
 			this.extractTo(contentBuilder);
 		}
 	});
@@ -9707,7 +9773,7 @@ this.ObjectDestructuringItemExpression = function(DestructuringItemExpression){
 	this.DestructuringItemExpression
 );
 
-this.ObjectExpression = function(ObjectDestructuringExpression, PropertyDestructuringItemExpression, LiteralPropertyNameExpression, ComputedPropertyNameExpression, AssignableExpression, ArrayExpression, BinaryExpression, DestructuringExpression, BasicAssignmentTag, extractTo, compileItem){
+this.ObjectExpression = function(ObjectDestructuringExpression, PropertyDestructuringItemExpression, PropertyDestructuringDefaultItemExpression, LiteralPropertyNameExpression, ComputedPropertyNameExpression, AssignableExpression, ArrayExpression, BinaryExpression, DestructuringExpression, BasicAssignmentTag, extractTo, compileItem){
 	/**
 	 * 对象表达式
 	 * @param {Context} open - 起始标签上下文
@@ -9735,16 +9801,23 @@ this.ObjectExpression = function(ObjectDestructuringExpression, PropertyDestruct
 					name = expression.name;
 					operand = expression.value.operand;
 					
+					// 判断属性名
 					switch(true){
+						// 如果是字面量属性名
 						case name instanceof LiteralPropertyNameExpression:
+						// 如果是计算式属性名
 						case name instanceof ComputedPropertyNameExpression:
+							// 判断属性值
 							switch(true){
+								// 如果是简写属性
 								case operand === null:
+								// 如果是可赋值的属性值
 								case operand instanceof AssignableExpression:
 									// 转化表达式
 									expression = new PropertyDestructuringItemExpression(expression);
 									break;
 
+								// 如果是二元表达式
 								case operand instanceof BinaryExpression:
 									// 如果二元运算表达式的标签是赋值符号
 									if(operand.context.tag instanceof BasicAssignmentTag){
@@ -9753,12 +9826,16 @@ this.ObjectExpression = function(ObjectDestructuringExpression, PropertyDestruct
 											break outerBlock;
 										}
 
+										// 转化表达式
+										expression = new PropertyDestructuringDefaultItemExpression(expression, parser.statements);
 										break;
 									}
 
 									break;
 
 								case operand instanceof ArrayExpression:
+									expression.value.operand = operand.toDestructuringItem(parser);
+									expression = new PropertyDestructuringItemExpression(expression);
 									break;
 
 								case operand instanceof ObjectExpression:
@@ -9828,6 +9905,7 @@ this.ObjectExpression = function(ObjectDestructuringExpression, PropertyDestruct
 }(
 	this.ObjectDestructuringExpression,
 	this.PropertyDestructuringItemExpression,
+	this.PropertyDestructuringDefaultItemExpression,
 	this.LiteralPropertyNameExpression,
 	this.ComputedPropertyNameExpression,
 	this.AssignableExpression,
