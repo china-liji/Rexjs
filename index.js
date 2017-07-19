@@ -1,20 +1,20 @@
 var a, b, c, d, e, f, x, y, z
 
 var n = 6;
-
+({ a: {} = 5 } = obj);
 
 ({
-	// a,
-	// 2: b,
-	// "x": x,
-	// ["y"]: y,
-	// 0b10101: window.z,
-	// hello: window.x = 5,
-	// ["world"]: window.world = 6,
-	// null: window.value,
+	a,
+	2: b,
+	"x": x,
+	["y"]: y,
+	0b10101: window.z,
+	hello: window.x = 5,
+	["world"]: window.world = 6,
+	null: window.value,
 	3: [c],
-	// "4": { 4.1: d = 50, 4.2: e = 5 },
-	// [n]: f = 99,
+	"4": { 4.1: d = 50, 4.2: e = 5 },
+	[n]: f = 99,
 	// m = 5
 
 
