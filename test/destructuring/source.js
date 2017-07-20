@@ -25,3 +25,191 @@ let [x, [[,,y = 100 + 50 / 2 + window.parseInt(20, 10),],,], z = 50] = [1, [[2,]
 if([x === 1, y === 145, z === 3].indexOf(false) > -1){
 	throw "多层默认值解构失败";
 }
+
+arr = [];
+e = 0;
+
+Object.defineProperty(
+	arr,
+	"1",
+	{
+		get: function(){
+			e++;
+
+			return [];
+		}
+	}
+);
+
+[, [a, b, c]] = arr;
+
+if(e !== 1){
+	throw "单项解构造成了多次访问";
+}
+
+var a, b, c, d, e, f, g, h, i, j = 9, k, l, m, get, set
+
+obj = {};
+
+({
+	.1: k,
+	"string": l = 5,
+	a,
+	aa: a,
+	b: b,
+	get,
+	set,
+	0b11: c,
+	["d"]: d,
+	0b10101: window.z,
+	hello: window.x = 5,
+	["wor" + "ld"]: window.world = 6,
+	null: window.value,
+	33: [m = 89, { 3.1: e = 30, 3.2: f = 25 }],
+	"4": { 4.1: [h = 50, i = 5] },
+	[j]: j = 99
+} = {
+	0.1: 0.1,
+	a: 1,
+	aa: 2,
+	b: 3,
+	get: 4,
+	set: 5,
+	3: 6,
+	d: 7,
+	21: 8,
+	world: 9,
+	null: 10,
+	33: [, { 3.2: 11 }],
+	4: { 4.1: [, 55] },
+	9: 97
+});
+
+if([
+	k === 0.1,
+	l === 5,
+	a === 2,
+	b === 3,
+	get === 4,
+	set === 5,
+	c === 6,
+	d === 7,
+	window.z === 8,
+	window.x === 5,
+	window.world === 9,
+	window.value === 10,
+	m === 89,
+	e === 30,
+	f === 11,
+	h === 50,
+	i === 55,
+	j === 97
+].indexOf(false) > -1){
+	throw "对象解构失败";
+}
+
+var a, b, c, d, e, f, g, h, i, j = 9, k, l, m, get, set
+
+[
+	,
+	a,
+	[
+		b,
+		,
+		{
+			c,
+			d: [
+				m = 99,
+				{
+					e: [f]
+				}
+			]
+		},
+		g
+	],
+	,
+	h
+] = [
+	0,
+	1,
+	[
+		2,
+		3,
+		{
+			c: 4,
+			d: [, {
+				e: [5]
+			}]
+		},
+		6
+	],
+	,
+	7
+];
+
+if([
+	a === 1,
+	b === 2,
+	c === 4,
+	f === 5,
+	g === 6,
+	h === 7,
+	m === 99
+].indexOf(false) > -1){
+	throw "数组的嵌套解构有误";
+}
+
+var a, b, c, d, e, f, g, h, i, j = 9, k, l, m, get, set
+
+({
+	x: [
+		,
+		a,
+		[
+			b,
+			,
+			{
+				c,
+				d: [
+					m = 99,
+					{
+						e: [f]
+					}
+				]
+			},
+			g
+		],
+		,
+		h
+	]
+} = {
+	x: [
+		0,
+		1,
+		[
+			2,
+			3,
+			{
+				c: 4,
+				d: [, {
+					e: [5]
+				}]
+			},
+			6
+		],
+		,
+		7
+	]
+});
+
+if([
+	a === 1,
+	b === 2,
+	c === 4,
+	f === 5,
+	g === 6,
+	h === 7,
+	m === 99
+].indexOf(false) > -1){
+	throw "对象的嵌套解构有误";
+}

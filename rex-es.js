@@ -1264,6 +1264,43 @@ this.IdentifierTag = function(IdentifierExpression, RegExg, keywords, regexp){
 
 	IdentifierTag.props({
 		$class: CLASS_EXPRESSION,
+		/**
+		 * 判断变量名，是否包含于指定收集器内
+		 * @param {String} variable - 需要判断的变量名
+		 * @param {ECMAScriptVariableCollections} collections - 指定的变量名集合
+		 */
+		containsBy: function(variable, collections){
+			return collections.const.contains(variable);
+		},
+		/**
+		 * 判断变量名，是否已被指定收集器收集，如果已被收集则报错
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 标签上下文
+		 * @param {Statements} statements - 当前语句块
+		 */
+		collected: function(parser, context, statements){
+			var content = context.content;
+
+			do {
+				// 如果已被收集
+				if(this.containsBy(content, statements.collections)){
+					// 报错
+					parser.error(
+						context,
+						ECMAScriptErrors.template(this.errorType, context.content)
+					);
+					return true;
+				}
+
+				// 获取 target
+				statements = statements.target;
+			}
+			// 如果语句块存在
+			while(statements);
+
+			return false;
+		},
+		errorType: "CONST",
 		order: ECMAScriptOrders.IDENTIFIER,
 		/**
 		 * 获取正则表达式
@@ -1331,43 +1368,6 @@ this.VariableTag = function(IdentifierTag){
 	VariableTag = new Rexjs(VariableTag, IdentifierTag);
 
 	VariableTag.props({
-		/**
-		 * 判断变量名，是否包含于指定收集器内
-		 * @param {String} variable - 需要判断的变量名
-		 * @param {ECMAScriptVariableCollections} collections - 指定的变量名集合
-		 */
-		containsBy: function(variable, collections){
-			return collections.const.contains(variable);
-		},
-		/**
-		 * 判断变量名，是否已被指定收集器收集，如果已被收集则报错
-		 * @param {SyntaxParser} parser - 语法解析器
-		 * @param {Context} context - 标签上下文
-		 * @param {Statements} statements - 当前语句块
-		 */
-		collected: function(parser, context, statements){
-			var content = context.content;
-
-			do {
-				// 如果已被收集
-				if(this.containsBy(content, statements.collections)){
-					// 报错
-					parser.error(
-						context,
-						ECMAScriptErrors.template(this.errorType, context.content)
-					);
-					return true;
-				}
-
-				// 获取 target
-				statements = statements.target;
-			}
-			// 如果语句块存在
-			while(statements);
-
-			return false;
-		},
-		errorType: "CONST",
 		order: ECMAScriptOrders.VARIABLE
 	});
 	
@@ -4609,6 +4609,40 @@ this.SpreadTag = function(SpreadExpression, SpreadStatement, AccessorExpression)
 // 解构表达式相关
 ~function(config){
 
+this.DestructibleExpression = function(){
+	/**
+	 * 可解构的表达式
+	 * @param {Context} open - 起始标签上下文
+	 */
+	function DestructibleExpression(open){
+		PartnerExpression.call(this, open);
+
+		this.inner = new ListExpression(NULL, ",");
+	};
+	DestructibleExpression = new Rexjs(DestructibleExpression, PartnerExpression);
+
+	DestructibleExpression.props({
+		/**
+		 * 将数组每一项转换为解构项表达式
+		 * @param {SyntaxParser} parser - 语法解析器
+		 */
+		convert: function(){},
+		declaration: false,
+		/**
+		 * 转换为解构表达式
+		 * @param {SyntaxParser} parser - 语法解析器
+		 */
+		toDestructuring: function(){},
+		/**
+		 * 转换为解构项表达式
+		 * @param {SyntaxParser} parser - 语法解析器
+		 */
+		toDestructuringItem: function(){}
+	});
+
+	return DestructibleExpression;
+}();
+
 this.DestructuringExpression = function(AssignableExpression){
 	/**
 	 * 解构表达式
@@ -4839,17 +4873,15 @@ this.ArrayDestructuringItemExpression = function(){
 	return ArrayDestructuringItemExpression;
 }();
 
-this.ArrayExpression = function(ArrayDestructuringExpression, ArrayDestructuringItemExpression, config, collected){
+this.ArrayExpression = function(DestructibleExpression, ArrayDestructuringExpression, ArrayDestructuringItemExpression, config, collected){
 	/**
 	 * 数组表达式
 	 * @param {Context} open - 起始标签上下文
 	 */
 	function ArrayExpression(open){
-		PartnerExpression.call(this, open);
-
-		this.inner = new ListExpression(NULL, ",");
+		DestructibleExpression.call(this, open);
 	};
-	ArrayExpression = new Rexjs(ArrayExpression, PartnerExpression);
+	ArrayExpression = new Rexjs(ArrayExpression, DestructibleExpression);
 
 	ArrayExpression.props({
 		/**
@@ -4877,8 +4909,8 @@ this.ArrayExpression = function(ArrayDestructuringExpression, ArrayDestructuring
 							expression = new DestructuringItemExpression(expression);
 							break;
 
-						// 如果是数组表达式
-						case expression instanceof ArrayExpression:
+						// 如果是可解构的表达式
+						case expression instanceof DestructibleExpression:
 							expression = expression.toDestructuringItem(parser);
 							break;
 
@@ -4916,7 +4948,6 @@ this.ArrayExpression = function(ArrayDestructuringExpression, ArrayDestructuring
 			// 报错
 			parser.error(expression.context);
 		},
-		declaration: false,
 		/**
 		 * 转换为解构表达式
 		 * @param {SyntaxParser} parser - 语法解析器
@@ -4956,6 +4987,7 @@ this.ArrayExpression = function(ArrayDestructuringExpression, ArrayDestructuring
 
 	return ArrayExpression;
 }(
+	this.DestructibleExpression,
 	this.ArrayDestructuringExpression,
 	this.ArrayDestructuringItemExpression,
 	DestructuringExpression.config,
@@ -9752,17 +9784,23 @@ this.ObjectDestructuringItemExpression = function(DestructuringItemExpression){
 	this.DestructuringItemExpression
 );
 
-this.ObjectExpression = function(ObjectDestructuringExpression, ObjectDestructuringItemExpression, PropertyDestructuringItemExpression, PropertyDestructuringDefaultItemExpression, LiteralPropertyNameExpression, ComputedPropertyNameExpression, ShorthandMethodExpression, AssignableExpression, ArrayExpression, BinaryExpression, BasicAssignmentTag, config, extractTo, compileItem){
+this.ObjectExpression = function(
+	DestructibleExpression, ObjectDestructuringExpression,
+	ObjectDestructuringItemExpression, PropertyDestructuringItemExpression, PropertyDestructuringDefaultItemExpression,
+	LiteralPropertyNameExpression, ComputedPropertyNameExpression, ShorthandMethodExpression,
+	IdentifierExpression, AssignableExpression, BinaryExpression,
+	BasicAssignmentTag,
+	config,
+	extractTo, compileItem, collected
+){
 	/**
 	 * 对象表达式
 	 * @param {Context} open - 起始标签上下文
 	 */
 	function ObjectExpression(open){
-		PartnerExpression.call(this, open);
-
-		this.inner = new ListExpression(NULL, ",");
+		DestructibleExpression.call(this, open);
 	};
-	ObjectExpression = new Rexjs(ObjectExpression, PartnerExpression);
+	ObjectExpression = new Rexjs(ObjectExpression, DestructibleExpression);
 
 	ObjectExpression.props({
 		/**
@@ -9778,64 +9816,79 @@ this.ObjectExpression = function(ObjectDestructuringExpression, ObjectDestructur
 				for(var i = inner.min, j = inner.length;i < j;i++){
 					var expression = inner[i], name = expression.name, value = expression.value, operand = value.operand;
 					
-					exp = name;
-
 					// 判断属性名
 					switch(true){
 						// 如果是字面量属性名
 						case name instanceof LiteralPropertyNameExpression:
+							break;
+
 						// 如果是计算式属性名
 						case name instanceof ComputedPropertyNameExpression:
-							exp = operand;
+							break;
 
-							// 判断属性值
-							switch(true){
-								// 如果是简写属性
-								case operand === null:
-								// 如果是可赋值的属性值
-								case operand instanceof AssignableExpression:
-									// 转化表达式
-									expression = new PropertyDestructuringItemExpression(expression);
-									break;
+						default:
+							exp = name;
+							break outerBlock;
+					}
 
-								// 如果是二元表达式
-								case operand instanceof BinaryExpression:
-									// 如果二元运算表达式的标签是赋值符号
-									if(operand.context.tag instanceof BasicAssignmentTag){
-										// 如果二元表达式左侧是解构表达式
-										if(operand.left instanceof DestructuringExpression){
-											break outerBlock;
-										}
+					exp = operand;
 
-										// 转化表达式
-										expression = new PropertyDestructuringDefaultItemExpression(expression, parser.statements);
-										break;
-									}
-
-									break outerBlock;
-
-								// 如果是数组
-								case operand instanceof ArrayExpression:
-								// 如果对象
-								case operand instanceof ObjectExpression:
-									// 表明是嵌套解构子项
-									value.destructuringItem = true;
-									// 转化为解构子项
-									value.operand = operand.toDestructuringItem(parser);
-
-									// 转化表达式
-									expression = new PropertyDestructuringItemExpression(expression);
-									break;
-
-								case operand instanceof ShorthandMethodExpression:
-									exp = expression.accessible ? name : operand.arguments;
-									break outerBlock;
-
-								default:
-									break outerBlock;
+					// 判断属性值
+					switch(true){
+						// 如果是简写属性
+						case operand === null:
+							// 如果已经被收集到常量内
+							if(collected(parser, name, true)){
+								break outerBlock;
 							}
 
+							// 转化表达式
+							expression = new PropertyDestructuringItemExpression(expression);
 							break;
+							
+						// 如果是可赋值的属性值
+						case operand instanceof AssignableExpression:
+							// 如果已经被收集到常量内
+							if(collected(parser, operand, operand instanceof IdentifierExpression)){
+								break outerBlock;
+							}
+
+							// 转化表达式
+							expression = new PropertyDestructuringItemExpression(expression);
+							break;
+
+						// 如果是二元表达式
+						case operand instanceof BinaryExpression:
+							// 如果二元运算表达式的标签是赋值符号
+							if(operand.context.tag instanceof BasicAssignmentTag){
+								// 如果二元表达式左侧是解构表达式
+								if(operand.left instanceof DestructuringExpression){
+									break outerBlock;
+								}
+
+								// 转化表达式
+								expression = new PropertyDestructuringDefaultItemExpression(expression, parser.statements);
+								break;
+							}
+
+							break outerBlock;
+
+						// 如果是可解构的表达式
+						case operand instanceof DestructibleExpression:
+							// 表明是嵌套解构子项
+							value.destructuringItem = true;
+							// 转化为解构子项
+							value.operand = operand.toDestructuringItem(parser);
+
+							// 转化表达式
+							expression = new PropertyDestructuringItemExpression(expression);
+							break;
+
+						// 如果是简写表达式
+						case operand instanceof ShorthandMethodExpression:
+							// 设置需要报错的表达式
+							exp = expression.accessible ? name : operand.arguments;
+							break outerBlock;
 
 						default:
 							break outerBlock;
@@ -9851,7 +9904,6 @@ this.ObjectExpression = function(ObjectDestructuringExpression, ObjectDestructur
 			// 报错
 			parser.error(exp.context);
 		},
-		declaration: false,
 		/**
 		 * 提取表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
@@ -9911,6 +9963,7 @@ this.ObjectExpression = function(ObjectDestructuringExpression, ObjectDestructur
 
 	return ObjectExpression;
 }(
+	this.DestructibleExpression,
 	this.ObjectDestructuringExpression,
 	this.ObjectDestructuringItemExpression,
 	this.PropertyDestructuringItemExpression,
@@ -9918,8 +9971,8 @@ this.ObjectExpression = function(ObjectDestructuringExpression, ObjectDestructur
 	this.LiteralPropertyNameExpression,
 	this.ComputedPropertyNameExpression,
 	this.ShorthandMethodExpression,
+	this.IdentifierExpression,
 	this.AssignableExpression,
-	this.ArrayExpression,
 	this.BinaryExpression,
 	this.BasicAssignmentTag,
 	DestructuringExpression.config,
@@ -9927,6 +9980,18 @@ this.ObjectExpression = function(ObjectDestructuringExpression, ObjectDestructur
 	// compileItem
 	function(item, contentBuilder){
 		item.compileTo(contentBuilder);
+	},
+	// collected
+	function(parser, expression, identifier){
+		// 如果是标识符表达式
+		if(identifier){
+			var context = expression.context;
+
+			// 判断是否收集到常量中
+			return context.tag.collected(parser, context, parser.statements);
+		}
+
+		return false;
 	}
 );
 

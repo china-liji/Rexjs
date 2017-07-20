@@ -1,83 +1,47 @@
-var a, b, c, d, e, f, x, y, z
 
-var n = 6;
-({ a: {} = 5 } = obj);
+
+var a, b, c, d, e, f, g, h, i, j = 9, k, l, get, set
+
+obj = {};
 
 ({
+	.1: k,
+	"string": l = 5,
 	a,
-	2: b,
-	"x": x,
-	["y"]: y,
+	aa: a,
+	b: b,
+	get,
+	set,
+	0b11: c,
+	["d"]: d,
 	0b10101: window.z,
 	hello: window.x = 5,
-	["world"]: window.world = 6,
+	["wor" + "ld"]: window.world = 6,
 	null: window.value,
-	3: [c],
-	"4": { 4.1: d = 50, 4.2: e = 5 },
-	[n]: f = 99,
-	// m = 5
-
-
-	// x(){},
-	// [y](){},
-	// get z(){},
-	// $: [$] = 1
+	33: [c = 89, { 3.1: e = 30, 3.2: f = 25 }],
+	"4": { 4.1: [h = 50, i = 5] },
+	[j]: j = 99
 } = {
+	0.1: 0.1,
 	a: 1,
-	2: 2,
-	3: [3],
-	4: { 4.1: 4 },
-	6: 6,
-	null: "123"
+	aa: 2,
+	b: 3,
+	get: 4,
+	set: 5,
+	3: 6,
+	d: 7,
+	21: 8,
+	world: 9,
+	null: 10,
+	33: [, { 3.2: 11 }],
+	4: { 4.1: [, 55] },
+	9: 97
 });
 
-({} = {})
-
-// ({
-// 	.1: 0.1,
-// 	"string": "stirng",
-// 	a,
-// 	b: 1,
-// 	c(){
-
-// 	},
-// 	d(x, y = 100, ...z){
-// 		return x + y + z[1]
-// 	},
-// 	[(e + "").toString()]: e,
-// 	[f](){
-
-// 	},
-// 	["g"](x, y = 100, ...z){
-// 		return x + y + z[1]
-// 	},
-// 	get,
-// 	set,
-// 	get: "get",
-// 	set: "set",
-// 	get h(){
-// 		return h
-// 	},
-// 	set h(value){
-// 		h = value + 1
-// 	},
-// 	get ["i"](){
-// 		return i
-// 	},
-// 	set ["i"](value = 88){
-// 		i = value + 2
-// 	},
-// 	get 0b1010(){
-// 		return bn
-// 	},
-// 	set 0b1010(value){
-// 		bn = value
-// 	},
-// 	get 0O1010(){
-// 		return 0O1010
-// 	},
-// 	0b11: "0b11",
-// 	get8888(){
-// 		return 8888
-// 	}
-// } = {})
+if([
+	k === 0.1,
+	l === 5,
+	a === 2
+].indexOf("false") > -1){
+	throw "对象解构失败";
+}
