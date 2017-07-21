@@ -8127,14 +8127,14 @@ this.PropertyDestructuringDefaultItemExpression = function(DestructuringDefaultI
 	this.DestructuringDefaultItemExpression
 );
 
-this.PropertyExpression = function(ShorthandPropertyValueExpression, config){
+this.PropertyExpression = function(BinaryExpression, ShorthandPropertyValueExpression, config){
 	/**
 	 * 对象属性表达式
 	 */
 	function PropertyExpression(){
-		Expression.call(this, NULL);
+		BinaryExpression.call(this, NULL, NULL);
 	};
-	PropertyExpression = new Rexjs(PropertyExpression, Expression);
+	PropertyExpression = new Rexjs(PropertyExpression, BinaryExpression);
 
 	PropertyExpression.static({
 		/**
@@ -8185,6 +8185,17 @@ this.PropertyExpression = function(ShorthandPropertyValueExpression, config){
 			contentBuilder.appendString(";");
 		},
 		/**
+		 * 获取标签上下文
+		 */
+		get context(){
+			return this.value.context;
+		},
+		/**
+		 * 设置标签上下文
+		 * @parma {Context} value - 标签上下文
+		 */
+		set context(value){},
+		/**
 		 * 提取表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
 		 */
@@ -8202,6 +8213,28 @@ this.PropertyExpression = function(ShorthandPropertyValueExpression, config){
 			// 提取属性值
 			this.value.extractTo(contentBuilder);
 		},
+		/**
+		 * 获取该二元表达式所关联的最后一个二元表达式
+		 */
+		get last(){
+			return this;
+		},
+		/**
+		 * 设置该二元表达式所关联的最后一个二元表达式
+		 * @parma {BinaryExpression} value - 二元表达式
+		 */
+		set last(value){},
+		/**
+		 * 获取该二元表达式的左侧表达式
+		 */
+		get left(){
+			return this.name;
+		},
+		/**
+		 * 设置该二元表达式的左侧表达式
+		 * @parma {Expression} value - 左侧表达式
+		 */
+		set left(value){},
 		name: NULL,
 		/**
 		 * 判断指定标签上下文是否已经用于属性名
@@ -8223,12 +8256,24 @@ this.PropertyExpression = function(ShorthandPropertyValueExpression, config){
 
 			return false;
 		},
+		/**
+		 * 获取该二元表达式的右侧表达式
+		 */
+		get right(){
+			return this.value.operand;
+		},
+		/**
+		 * 设置该二元表达式的右侧表达式
+		 * @parma {Expression} value - 左侧表达式
+		 */
+		set right(value){},
 		superDepth: 1,
 		value: NULL
 	});
 
 	return PropertyExpression;
 }(
+	this.BinaryExpression,
 	this.ShorthandPropertyValueExpression,
 	// config
 	new SyntaxConfig("shorthandMethod", "shorthandPropertyName", "computedName")
@@ -8343,7 +8388,7 @@ this.PropertyValueExpression = function(){
 	return PropertyValueExpression;
 }();
 
-this.PropertyValueStatement = function(){
+this.PropertyValueStatement = function(setOperand){
 	/**
 	 * 对象属性值语句
 	 * @param {Statements} statements - 该语句将要所处的语句块
@@ -8360,20 +8405,26 @@ this.PropertyValueStatement = function(){
 		 * @param {Context} context - 语法标签上下文
 		 */
 		catch: function(parser, context){
-			// 跳出语句并设置 operand
-			this.out().value.operand = this.expression;
+			// 设置 operand
+			setOperand(this);
 		},
 		try: function(parser, context){
 			// 如果是逗号
 			if(context.content === ","){
-				// 跳出语句并设置 operand
-				this.out().value.operand = this.expression;
+				// 设置 operand
+				setOperand(this);
 			}
 		}
 	});
 
 	return PropertyValueStatement;
-}();
+}(
+	// setOperand
+	function(statement){
+		// 跳出语句并设置 operand
+		statement.out().value.operand = statement.expression;
+	}
+);
 
 this.PropertyStatement = function(PropertyExpression, ifComma){
 	/**
@@ -8388,6 +8439,7 @@ this.PropertyStatement = function(PropertyExpression, ifComma){
 	PropertyStatement = new Rexjs(PropertyStatement, ECMAScriptStatement);
 
 	PropertyStatement.props({
+		assigned: false,
 		/**
 		 * 捕获处理异常
 		 * @param {SyntaxParser} parser - 语法解析器
@@ -8432,19 +8484,23 @@ this.PropertyStatement = function(PropertyExpression, ifComma){
 			switch(context.content){
 				// 如果是冒号
 				case ":":
-					break;
+				// 如果是等于号
+				case "=":
+					// 如果已经赋值过，即 键值对值 或 属性默认值
+					if(this.assigned){
+						break;
+					}
+
+					this.assigned = true;
+					return NULL;
 
 				// 如果是逗号
 				case ",":
 					return ifComma(parser, this, this.expression, context);
-
-				default:
-					// 报错
-					parser.error(context);
-					break;
 			}
 
-			return NULL;
+			// 报错
+			parser.error(context);
 		}
 	});
 
@@ -9029,7 +9085,26 @@ this.KeywordPropertyNameTag = function(WordPropertyNameTag, IdentifierPropertyNa
 // 属性初始值标签相关
 ~function(){
 
-this.PropertyInitializerTag = function(BasicAssignmentTag){
+this.PropertyInitializerExpression = function(PropertyValueExpression){
+	/**
+	 * 属性初始值表达式
+	 * @param {Context} context - 语法标签上下文
+	 */
+	function PropertyInitializerExpression(context){
+		PropertyValueExpression.call(this, context);
+	};
+	PropertyInitializerExpression = new Rexjs(PropertyInitializerExpression, PropertyValueExpression);
+
+	PropertyInitializerExpression.props({
+
+	});
+
+	return PropertyInitializerExpression;
+}(
+	this.PropertyValueExpression
+);
+
+this.PropertyInitializerTag = function(BasicAssignmentTag, PropertyInitializerExpression, PropertyValueStatement){
 	/**
 	 * 属性初始值标签
 	 * @param {Number} _type - 标签类型
@@ -9039,9 +9114,27 @@ this.PropertyInitializerTag = function(BasicAssignmentTag){
 	};
 	PropertyInitializerTag = new Rexjs(PropertyInitializerTag, BasicAssignmentTag);
 
+	PropertyInitializerTag.props({
+		/**
+		 * 标签访问器
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 标签上下文
+		 * @param {Statement} statement - 当前语句
+		 * @param {Statements} statements - 当前语句块
+		 */
+		visitor: function(parser, context, statement, statements){
+			// 设置属性表达式的值
+			statement.expression.value = new PropertyInitializerExpression(context);
+			// 设置当前语句
+			statements.statement = new PropertyValueStatement(statements);
+		}
+	});
+
 	return PropertyInitializerTag;
 }(
-	this.BasicAssignmentTag
+	this.BasicAssignmentTag,
+	this.PropertyInitializerExpression,
+	this.PropertyValueStatement
 );
 
 }.call(
@@ -19809,7 +19902,7 @@ this.PropertyNameContextTags = function(OpenShorthandMethodArgumentsTag, Propert
 	this.CloseBraceTag
 );
 
-this.IdentifierPropertyNameContextTags = function(PropertyNameContextTags, PropertySeparatorTag, CloseObjectTag){
+this.IdentifierPropertyNameContextTags = function(PropertyNameContextTags, PropertySeparatorTag, PropertyInitializerTag, CloseObjectTag){
 	/**
 	 * 对象标识符名称上下文标签列表
 	 */
@@ -19818,6 +19911,7 @@ this.IdentifierPropertyNameContextTags = function(PropertyNameContextTags, Prope
 
 		this.register(
 			new PropertySeparatorTag(),
+			new PropertyInitializerTag(),
 			new CloseObjectTag(TYPE_UNEXPECTED)
 		);
 	};
@@ -19831,6 +19925,7 @@ this.IdentifierPropertyNameContextTags = function(PropertyNameContextTags, Prope
 }(
 	this.PropertyNameContextTags,
 	this.PropertySeparatorTag,
+	this.PropertyInitializerTag,
 	this.CloseObjectTag
 );
 
