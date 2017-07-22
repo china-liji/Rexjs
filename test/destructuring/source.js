@@ -47,7 +47,7 @@ if(e !== 1){
 	throw "数组单项解构造成了多次访问";
 }
 
-var a, b, c, d, e, f, g, h, i, j = 9, k, l, m, get, set
+var a, b, c, d, e, f, g, h, i, j = 9, k, l, m, n, get, set
 
 obj = {};
 
@@ -67,7 +67,8 @@ obj = {};
 	null: window.value,
 	33: [m = 89, { 3.1: e = 30, 3.2: f = 25 }],
 	"4": { 4.1: [h = 50, i = 5] },
-	[j]: j = 99
+	[j]: j = 99,
+	n = 88
 } = {
 	0.1: 0.1,
 	a: 1,
@@ -103,7 +104,8 @@ if([
 	f === 11,
 	h === 50,
 	i === 55,
-	j === 97
+	j === 97,
+	n === 88
 ].indexOf(false) > -1){
 	throw "对象解构失败";
 }
@@ -180,7 +182,8 @@ var a, b, c, d, e, f, g, h, i, j = 9, k, l, m, get, set
 			g
 		],
 		,
-		h
+		h,
+		i = 66
 	]
 } = {
 	x: [
@@ -209,7 +212,8 @@ if([
 	f === 5,
 	g === 6,
 	h === 7,
-	m === 99
+	m === 99,
+	i === 66
 ].indexOf(false) > -1){
 	throw "对象的嵌套解构有误";
 }

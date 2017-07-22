@@ -155,6 +155,22 @@ test.unit(
 		);
 
 		this.false(
+			"默认值作为属性名",
+			"!{ a = b : 2 }",
+			function(parser, err){
+				return err.context.content === ":" ? "" : "没有识别出冒号";
+			}
+		);
+		
+		this.false(
+			"默认值表达式不完整",
+			"!{ a =  }",
+			function(parser, err){
+				return err.context.content === "}" ? "" : "没有识别出结束大括号";
+			}
+		);
+
+		this.false(
 			"访问器默认值",
 			"!{ get a = 5(){} }",
 			function(parser, err){

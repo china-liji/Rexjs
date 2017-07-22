@@ -4755,6 +4755,7 @@ this.DestructuringDefaultItemExpression = function(DestructuringItemExpression){
 	/**
 	 * 解构默认项表达式
 	 * @param {Expression} origin - 解构赋值源表达式
+	 * @param {Statements} statements - 该表达式所处的语句块
 	 */
 	function DestructuringDefaultItemExpression(origin, statements){
 		DestructuringItemExpression.call(this, origin);
@@ -8097,13 +8098,18 @@ this.PropertyDestructuringDefaultItemExpression = function(DestructuringDefaultI
 	/**
 	 * 属性解构默认项表达式
 	 * @param {Expression} origin - 解构赋值源表达式
+	 * @param {BinaryExpression} assignment - 默认值赋值表达式
+	 * @param {Statements} statements - 该表达式所处的语句块
 	 */
-	function PropertyDestructuringDefaultItemExpression(origin, statements){
+	function PropertyDestructuringDefaultItemExpression(origin, assignment, statements){
 		DestructuringDefaultItemExpression.call(this, origin, statements);
+
+		this.assignment = assignment;
 	};
 	PropertyDestructuringDefaultItemExpression = new Rexjs(PropertyDestructuringDefaultItemExpression, DestructuringDefaultItemExpression);
 
 	PropertyDestructuringDefaultItemExpression.props({
+		assignment: NULL,
 		/**
 		 * 提取并编译表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
@@ -8118,7 +8124,7 @@ this.PropertyDestructuringDefaultItemExpression = function(DestructuringDefaultI
 			origin.name.destructTo(builder);
 
 			// 将默认值表达式转换为三元表达式
-			this.toTernary(origin.value.operand, contentBuilder, builder);
+			this.toTernary(this.assignment, contentBuilder, builder);
 		}
 	});
 
@@ -9938,7 +9944,7 @@ this.ObjectDestructuringItemExpression = function(DestructuringItemExpression){
 this.ObjectExpression = function(
 	DestructibleExpression, ObjectDestructuringExpression,
 	ObjectDestructuringItemExpression, PropertyDestructuringItemExpression, PropertyDestructuringDefaultItemExpression,
-	LiteralPropertyNameExpression, ComputedPropertyNameExpression, ShorthandMethodExpression,
+	LiteralPropertyNameExpression, ComputedPropertyNameExpression, ShorthandMethodExpression, PropertyInitializerExpression,
 	IdentifierExpression, AssignableExpression, BinaryExpression,
 	BasicAssignmentTag,
 	config,
@@ -9986,6 +9992,12 @@ this.ObjectExpression = function(
 
 					// 判断属性值
 					switch(true){
+						// 如果是简写属性默认值表达式
+						case value instanceof PropertyInitializerExpression:
+							// 转化表达式
+							expression = new PropertyDestructuringDefaultItemExpression(expression, expression, parser.statements);
+							break;
+
 						// 如果是简写属性
 						case operand === null:
 							// 如果已经被收集到常量内
@@ -10018,7 +10030,7 @@ this.ObjectExpression = function(
 								}
 
 								// 转化表达式
-								expression = new PropertyDestructuringDefaultItemExpression(expression, parser.statements);
+								expression = new PropertyDestructuringDefaultItemExpression(expression, operand, parser.statements);
 								break;
 							}
 
@@ -10122,6 +10134,7 @@ this.ObjectExpression = function(
 	this.LiteralPropertyNameExpression,
 	this.ComputedPropertyNameExpression,
 	this.ShorthandMethodExpression,
+	this.PropertyInitializerExpression,
 	this.IdentifierExpression,
 	this.AssignableExpression,
 	this.BinaryExpression,

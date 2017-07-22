@@ -37,9 +37,8 @@ test.unit(
 		this.true("键值对单项对象解构 - 进制名称", "({ 0b10101: b } = obj)");
 		this.true("键值对单项对象解构 - 属性访问器值", "({ a: (function(){}.toString() + '123').a } = obj)");
 		
-		// this.true("默认值对象解构", "({a = 5} = obj)");
-		console.warn("默认值对象解构");
-		
+		this.true("简写属性默认值对象解构", "({ a = 5, b = c = d = 5 } = obj)");
+
 		this.true("默认值键值对单项对象解构 - 标识符名称", "({ a: b = 5 } = obj)");
 		this.true("默认值键值对单项对象解构 - 字符串名称", "({ 'a': b = 5 } = obj)");
 		this.true("默认值键值对单项对象解构 - 数字名称", "({ 1: b = 5 } = obj)");
@@ -51,7 +50,7 @@ test.unit(
 		this.true("嵌套数组解构的对象解构", "({ a: [a] } = obj)");
 		this.true("嵌套对象解构的对象解构", "({ a: {a} } = obj)");
 
-		this.true("多项对象解构", "({ a, 2: b, 'x': x = 1, ['y']: window.y, null: window.value = 1, 3: { c: [d = 100] } } = obj)");
+		this.true("多项对象解构", "({ a, 2: b = 99, c, 'x': x = 1, ['y']: window.y, null: window.value = 1, 3: { c: [d = 100] } } = obj)");
 
 		this.true("运算结果测试", source, true);
 
