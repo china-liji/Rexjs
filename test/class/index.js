@@ -72,6 +72,30 @@ test.unit(
 			}
 		);
 
+		this.false(
+			"类属性默认值",
+			"class A { a = 5 }",
+			function(parser, err){
+				return err.context.content === "=" ? "" : "类不能设置属性默认值";
+			}
+		);
+
+		this.false(
+			"类的键值对属性",
+			"class A { a : 5 }",
+			function(parser, err){
+				return err.context.content === ":" ? "" : "类不能设置键值对属性";
+			}
+		);
+
+		this.false(
+			"类的简写属性",
+			"class A { a }",
+			function(parser, err){
+				return err.context.content === "}" ? "" : "类不能设置简写属性";
+			}
+		);
+
 		this.groupEnd();
 	}
 );

@@ -2395,7 +2395,7 @@ this.UnaryKeywordTag = function(UnaryTag){
 	
 	UnaryKeywordTag.props({
 		/**
-		 * 提取表达式文本内容
+		 * 提取文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
 		 * @param {String} content - 标签内容
 		 */
@@ -2546,7 +2546,7 @@ this.PlusSiblingTag = function(PlusTag){
 	
 	PlusSiblingTag.props({
 		/**
-		 * 提取表达式文本内容
+		 * 提取文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
 		 * @param {String} content - 标签内容
 		 */
@@ -2600,7 +2600,7 @@ this.NegationSiblingTag = function(NegationTag){
 	
 	NegationSiblingTag.props({
 		/**
-		 * 提取表达式文本内容
+		 * 提取文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
 		 * @param {String} content - 标签内容
 		 */
@@ -2871,7 +2871,7 @@ this.IncrementSiblingTag = function(IncrementTag){
 	
 	IncrementSiblingTag.props({
 		/**
-		 * 提取表达式文本内容
+		 * 提取文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
 		 * @param {String} content - 标签内容
 		 */
@@ -2941,7 +2941,7 @@ this.DecrementSiblingTag = function(DecrementTag){
 	
 	DecrementSiblingTag.props({
 		/**
-		 * 提取表达式文本内容
+		 * 提取文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
 		 * @param {String} content - 标签内容
 		 */
@@ -3255,7 +3255,7 @@ this.BinaryKeywordTag = function(){
 
 	BinaryKeywordTag.props({
 		/**
-		 * 提取表达式文本内容
+		 * 提取文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
 		 * @param {String} content - 标签内容
 		 */
@@ -6087,7 +6087,7 @@ this.FunctionNameTag = function(VariableDeclarationTag, FunctionDeclarationExpre
 
 	FunctionNameTag.props({
 		/**
-		 * 提取表达式文本内容
+		 * 提取文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
 		 * @param {String} content - 标签内容
 		 */
@@ -9083,25 +9083,80 @@ this.KeywordPropertyNameTag = function(WordPropertyNameTag, IdentifierPropertyNa
 
 
 // 属性初始值标签相关
-~function(){
+~function(PropertyValueExpression){
 
-this.PropertyInitializerExpression = function(PropertyValueExpression){
+this.PropertyInitializerExpression = function(config, extractTo, toTernary){
 	/**
 	 * 属性初始值表达式
 	 * @param {Context} context - 语法标签上下文
+	 * @param {Expression} variable - 对象简写属性所对应的变量名
 	 */
-	function PropertyInitializerExpression(context){
+	function PropertyInitializerExpression(context, variable){
 		PropertyValueExpression.call(this, context);
+
+		this.variable = variable;
 	};
 	PropertyInitializerExpression = new Rexjs(PropertyInitializerExpression, PropertyValueExpression);
 
-	PropertyInitializerExpression.props({
+	PropertyInitializerExpression.static({
+		/**
+		 * 获取表达式编译配置
+		 */
+		get config(){
+			return config;
+		}
+	});
 
+	PropertyInitializerExpression.props({
+		/**
+		 * 提取并编译表达式文本内容
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 */
+		compileTo: function(contentBuilder){
+			// 以三元表达式的形式追加
+			toTernary(contentBuilder, this, "=");
+		},
+		/**
+		 * 提取表达式文本内容
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 */
+		extractTo: function(contentBuilder){
+			// 如果需要解析该表达式
+			if(config.propertyInitializer){
+				// 以三元表达式的形式追加
+				toTernary(contentBuilder, this, ":");
+				return;
+			}
+
+			// 调用父类方法
+			extractTo.call(this, contentBuilder);
+		},
+		variable: NULL
 	});
 
 	return PropertyInitializerExpression;
 }(
-	this.PropertyValueExpression
+
+	// config
+	new SyntaxConfig("propertyInitializer"),
+	PropertyValueExpression.prototype.extractTo,
+	// toTernary
+	function(contentBuilder, expression, assignment){
+		var variableContent = expression.variable.context.content;
+			
+		// 追加 undefined 判断
+		contentBuilder.appendString(
+			assignment + variableContent + "===void 0?"
+		);
+
+		// 提取属性值
+		expression.operand.extractTo(contentBuilder);
+
+		// 追加三元运算的否定结果表达式
+		contentBuilder.appendString(
+			":" + variableContent
+		);
+	}
 );
 
 this.PropertyInitializerTag = function(BasicAssignmentTag, PropertyInitializerExpression, PropertyValueStatement){
@@ -9123,8 +9178,10 @@ this.PropertyInitializerTag = function(BasicAssignmentTag, PropertyInitializerEx
 		 * @param {Statements} statements - 当前语句块
 		 */
 		visitor: function(parser, context, statement, statements){
+			var expression = statement.expression;
+
 			// 设置属性表达式的值
-			statement.expression.value = new PropertyInitializerExpression(context);
+			expression.value = new PropertyInitializerExpression(context, expression.name);
 			// 设置当前语句
 			statements.statement = new PropertyValueStatement(statements);
 		}
@@ -9138,7 +9195,8 @@ this.PropertyInitializerTag = function(BasicAssignmentTag, PropertyInitializerEx
 );
 
 }.call(
-	this
+	this,
+	this.PropertyValueExpression
 );
 
 
@@ -11119,7 +11177,7 @@ this.LetTag = function(VarTag, config){
 			return letDeclarationSeparatorTag;
 		},
 		/**
-		 * 提取表达式文本内容
+		 * 提取文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
 		 * @param {String} content - 标签内容
 		 */
@@ -11297,7 +11355,7 @@ this.ConstTag = function(LetTag, ConstStatement, config){
 			return constDeclarationSeparatorTag;
 		},
 		/**
-		 * 提取表达式文本内容
+		 * 提取文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
 		 * @param {String} content - 标签内容
 		 */
@@ -20652,6 +20710,7 @@ this.ECMAScript6Config = function(configs, forEach, every, defineProperty){
 		this.LiteralExpression,
 		this.ObjectExpression,
 		this.PropertyExpression,
+		this.PropertyInitializerExpression,
 		this.TemplateExpression,
 		this.VarExpression
 	]

@@ -36,7 +36,9 @@ test.unit(
 		this.true("访问器作为简写属性名", "!{ set : 1 }");
 		this.true("访问器作为简写函数名", "!{ set(){} }");
 		this.true("带访问器属性名的访问器", "!{ set set(a){} }");
-		this.true("所有情况属性名并存", "!{ a, b: 2, var: 3, c, for: 4, d: 5, 'e': 6, if: 7, 8: 8, 9.333: 9, get ''(){}, set [1 + 2 + 3](v){}, set var(v){}, get 1(){}, }");
+		this.true("单项属性默认值", "!{ a = 1 }");
+		this.true("多项属性默认值", "!{ a = 1, b = c = d + 5 + 6 }");
+		this.true("所有情况属性名并存", "!{ a, b: 2, g = 1, h = i = u + 5 + 6, var: 3, c, for: 4, d: 5, 'e': 6, if: 7, 8: 8, 9.333: 9, get ''(){}, set [1 + 2 + 3](v){}, set var(v){}, get 1(){}, }");
 
 		this.true("复杂的测试", source, true);
 
@@ -117,6 +119,46 @@ test.unit(
 			"!{ [1] + 1: 1 }",
 			function(parser, err){
 				return err.context.tag instanceof Rexjs.PlusTag ? "" : "没有识别出非法字符";
+			}
+		);
+
+		this.false(
+			"数字默认值",
+			"!{ 1 = 5 }",
+			function(parser, err){
+				return err.context.content === "=" ? "" : "数字属性不能设置默认值";
+			}
+		);
+		
+		this.false(
+			"字符串默认值",
+			"!{ '123' = 5 }",
+			function(parser, err){
+				return err.context.content === "=" ? "" : "字符串属性不能设置默认值";
+			}
+		);
+		
+		this.false(
+			"关键字默认值",
+			"!{ null = 5 }",
+			function(parser, err){
+				return err.context.content === "=" ? "" : "关键字属性不能设置默认值";
+			}
+		);
+
+		this.false(
+			"计算式默认值",
+			"!{ [null] = 5 }",
+			function(parser, err){
+				return err.context.content === "=" ? "" : "计算式属性不能设置默认值";
+			}
+		);
+
+		this.false(
+			"访问器默认值",
+			"!{ get a = 5(){} }",
+			function(parser, err){
+				return err.context.content === "=" ? "" : "访问器属性不能设置默认值";
 			}
 		);
 

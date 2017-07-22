@@ -44,7 +44,7 @@ Object.defineProperty(
 [, [a, b, c]] = arr;
 
 if(e !== 1){
-	throw "单项解构造成了多次访问";
+	throw "数组单项解构造成了多次访问";
 }
 
 var a, b, c, d, e, f, g, h, i, j = 9, k, l, m, get, set
@@ -212,4 +212,17 @@ if([
 	m === 99
 ].indexOf(false) > -1){
 	throw "对象的嵌套解构有误";
+}
+
+var count = 0;
+
+({ a: { a,b,c,d } } = {
+	get a(){
+		count++;
+		return {}
+	}
+});
+
+if(count !== 1){
+	throw "对象单项解构造成了多次访问";
 }

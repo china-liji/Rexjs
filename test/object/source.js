@@ -1,4 +1,4 @@
-var a, get, set, e = "e", f = "f", h, i, bn = parseInt(1010, 2)
+var a, get, set, e = "e", f = "f", h, i, bn = parseInt(1010, 2), x = 100, y = null, z
 
 var obj = {
 	.1: 0.1,
@@ -46,7 +46,10 @@ var obj = {
 	0b11: "0b11",
 	get8888(){
 		return 8888
-	}
+	},
+	x = 1,
+	y = 2,
+	z = 3
 }
 
 var names = [
@@ -66,7 +69,10 @@ var names = [
 	parseInt(1010, 2),
 	parseInt(1010, 8),
 	parseInt(11, 2),
-	"get8888"
+	"get8888",
+	"x",
+	"y",
+	"z"
 ]
 
 if(
@@ -139,4 +145,20 @@ if(
 	obj["get8888"]() !== 8888
 ){
 	throw "带访问器的属性返回值不正确"
+}
+
+if(obj.x !== 100){
+	throw "对象默认值设置失败 - 带具体值"
+}
+
+if(obj.y !== null){
+	throw "对象默认值设置失败 - null"
+}
+
+if(obj.z !== 3){
+	throw "对象默认值设置失败 - undefined"
+}
+
+if({ z = 99 }.z !== 99){
+	throw "最简单的默认值设置失败"
 }

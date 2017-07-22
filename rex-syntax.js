@@ -897,7 +897,7 @@ this.SyntaxTag = function(SyntaxElement, TagClass, TagType){
 		},
 		class: null,
 		/**
-		 * 提取表达式文本内容
+		 * 提取文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
 		 * @param {String} content - 标签内容
 		 */
