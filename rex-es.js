@@ -21,7 +21,6 @@ new function(
 ){
 "use strict";
 
-
 //ECMAScript 辅助类
 ~function(){
 
@@ -89,7 +88,7 @@ this.ECMAScriptErrors = ECMAScriptErrors = function(REGEXP){
 
 this.ECMAScriptOrders = ECMAScriptOrders = function(){
 	/**
-	 * 标签顺序
+	 * 标签优先级顺序
 	 */
 	function ECMAScriptOrders(){};
 	ECMAScriptOrders = new Rexjs(ECMAScriptOrders);
@@ -8243,7 +8242,7 @@ this.PropertyExpression = function(BinaryExpression, ShorthandPropertyValueExpre
 		set left(value){},
 		name: NULL,
 		/**
-		 * 判断指定标签上下文是否已经用于属性名
+		 * 判断非属性名标签上下文是否已经用于属性名
 		 * @param {Context} context - 需要判断的指定标签
 		 */
 		named: function(context){
@@ -8461,16 +8460,20 @@ this.PropertyStatement = function(PropertyExpression, ifComma){
 
 			var expression = this.expression, objectExpression = this.out();
 
-			// 如果表达式不是空项
-			if(expression.named(expression.name)){
+			switch(true){
+				// 如果表达式是空项
+				case expression.name === null:
+					break;
+
 				// 如果可能是访问器
-				if(expression.accessible){
+				case expression.accessible:
 					// 核对访问器函数
 					expression.accessor.tag.checkFunction(parser, expression.value.operand, context);
-				}
 
-				// 跳出语句并添加表达式
-				objectExpression.inner.add(expression);
+				default:
+					// 跳出语句并添加表达式
+					objectExpression.inner.add(expression);
+					break;
 			}
 
 			return this.bindingOf();
@@ -8695,6 +8698,7 @@ this.NumberPropertyNameTag = function(NumberTag){
 }(
 	this.NumberTag
 );
+
 this.NumberMethodNameTag = function(NumberPropertyNameTag){
 	/**
 	 * 数字方法名标签
@@ -8971,10 +8975,12 @@ this.IdentifierPropertyNameTag = function(IdentifierTag, IdentifierPropertyNameE
 		 * @param {Statements} statements - 当前语句块
 		 */
 		visitor: function(parser, context, statement, statements){
+			var expression = statement.expression;
+
 			// 设置表达式的 name 属性
-			statement.expression.name = new IdentifierPropertyNameExpression(context);
+			expression.name = new IdentifierPropertyNameExpression(context);
 			// 设置当前语句
-			statement.expression.value = new ShorthandPropertyValueExpression(context);
+			expression.value = new ShorthandPropertyValueExpression(context);
 		}
 	});
 
@@ -10302,6 +10308,120 @@ closeObjectTag = new this.CloseObjectTag();
 	}
 );
 
+
+// 对象声明解构赋值相关
+~function(IdentifierPropertyNameTag){
+	
+this.VariableDeclarationObjectExpression = function(ObjectExpression){
+	/**
+	 * 变量声明数组表达式
+	 * @param {Context} open - 起始标签上下文
+	 * @param {Expression} objectOf - 该对象所属的声明表达式
+	 */
+	function VariableDeclarationObjectExpression(open, objectOf){
+		ObjectExpression.call(this, open);
+
+		this.objectOf = objectOf;
+	};
+	VariableDeclarationObjectExpression = new Rexjs(VariableDeclarationObjectExpression, ObjectExpression);
+
+	VariableDeclarationObjectExpression.props({
+		/**
+		 * 将数组每一项转换为解构项表达式
+		 * @param {SyntaxParser} parser - 语法解析器
+		 */
+		convert: function(){},
+		declaration: true,
+		objectOf: null
+	});
+
+	return VariableDeclarationObjectExpression;
+}(
+	this.ObjectExpression
+);
+
+this.OpenVariableDeclarationObjectTag = function(OpenObjectTag, VariableDeclarationObjectExpression, PropertyStatement){
+	/**
+	 * 变量声明对象起始标签
+	 * @param {Number} _type - 标签类型
+	 */
+	function OpenVariableDeclarationObjectTag(_type){
+		OpenObjectTag.call(this, _type);
+	};
+	OpenVariableDeclarationObjectTag = new Rexjs(OpenVariableDeclarationObjectTag, OpenObjectTag);
+
+	OpenVariableDeclarationObjectTag.props({
+		/**
+		 * 获取此标签接下来所需匹配的标签列表
+		 * @param {TagsMap} tagsMap - 标签集合映射
+		 */
+		require: function(tagsMap){
+			return tagsMap.openVariableDeclarationObjectContextTags;
+		},
+		/**
+		 * 标签访问器
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 标签上下文
+		 * @param {Statement} statement - 当前语句
+		 * @param {Statements} statements - 当前语句块
+		 */
+		visitor: function(parser, context, statement, statements){
+			// 设置当前表达式
+			statement.expression = new VariableDeclarationObjectExpression(context, statement.target.expression);
+			// 设置当前语句
+			statements.statement = new PropertyStatement(statements);
+		}
+	});
+
+	return OpenVariableDeclarationObjectTag;
+}(
+	this.OpenObjectTag,
+	this.VariableDeclarationObjectExpression,
+	this.PropertyStatement
+);
+
+this.DeclarableIdentifierPropertyNameTag = function(visitor){
+	/**
+	 * 可声明的标识符属性名称标签
+	 * @param {Number} _type - 标签类型
+	 */
+	function DeclarableIdentifierPropertyNameTag(_type){
+		IdentifierPropertyNameTag.call(this, _type);
+	};
+	DeclarableIdentifierPropertyNameTag = new Rexjs(DeclarableIdentifierPropertyNameTag, IdentifierPropertyNameTag);
+
+	DeclarableIdentifierPropertyNameTag.props({
+		/**
+		 * 获取此标签接下来所需匹配的标签列表
+		 * @param {TagsMap} tagsMap - 标签集合映射
+		 */
+		require: function(tagsMap){
+			return tagsMap.identifierPropertyNameContextTags;
+		},
+		/**
+		 * 标签访问器
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 标签上下文
+		 * @param {Statement} statement - 当前语句
+		 * @param {Statements} statements - 当前语句块
+		 */
+		visitor: function(parser, context, statement, statements){
+			visitor.call(this, parser, context, statement, statements);
+
+			// 判断变量名
+			debugger
+		}
+	});
+
+	return DeclarableIdentifierPropertyNameTag;
+}(
+	IdentifierPropertyNameTag.prototype.visitor
+);
+
+}.call(
+	this,
+	this.IdentifierPropertyNameTag
+);
 
 // 标记标签相关
 ~function(){
@@ -15923,7 +16043,7 @@ this.ClassPropertyStatement = function(PropertyStatement, ClassPropertyExpressio
 			var classExpression = this.out(), classBodyExpression = classExpression.body, propertyExpression = this.expression;
 
 			// 如果不是空表达式
-			if(propertyExpression.named(propertyExpression.name)){
+			if(propertyExpression.name !== null){
 				// 如果存在访问器
 				if(propertyExpression.accessible){
 					// 根据访问器核对函数正确性
@@ -18977,7 +19097,7 @@ this.ClosureVariableContextTags = function(BasicAssignmentTag, IllegalShorthandA
 	this.IllegalShorthandAssignmentTag
 );
 
-this.VariableDeclarationTags = function(OpenVariableDeclarationArrayTag){
+this.VariableDeclarationTags = function(OpenVariableDeclarationArrayTag, OpenVariableDeclarationObjectTag){
 	/**
 	 * 变量声明标签列表
 	 */
@@ -18985,7 +19105,8 @@ this.VariableDeclarationTags = function(OpenVariableDeclarationArrayTag){
 		IllegalTags.call(this);
 		
 		this.register(
-			new OpenVariableDeclarationArrayTag()
+			new OpenVariableDeclarationArrayTag(),
+			new OpenVariableDeclarationObjectTag()
 		);
 	};
 	VariableDeclarationTags = new Rexjs(VariableDeclarationTags, IllegalTags);
@@ -18996,7 +19117,8 @@ this.VariableDeclarationTags = function(OpenVariableDeclarationArrayTag){
 	
 	return VariableDeclarationTags;
 }(
-	this.OpenVariableDeclarationArrayTag
+	this.OpenVariableDeclarationArrayTag,
+	this.OpenVariableDeclarationObjectTag
 );
 
 this.ConstContextTags = function(VariableDeclarationTags, ConstVariableTag){
@@ -19887,6 +20009,29 @@ this.OpenVariableDeclarationArrayContextTags = function(VariableDeclarationArray
 	this.VariableDeclarationArrayItemSeparatorTag,
 	this.OpenNestedVariableDeclarationArrayTag,
 	this.CloseVariableDeclarationArrayTag
+);
+
+this.OpenVariableDeclarationObjectContextTags = function(list){
+	/**
+	 * 起始变量声明对象上下文标签列表
+	 */
+	function OpenVariableDeclarationObjectContextTags(){
+		IllegalTags.call(this);
+
+		this.delegate(list);
+	};
+	OpenVariableDeclarationObjectContextTags = new Rexjs(OpenVariableDeclarationObjectContextTags, IllegalTags);
+
+	OpenVariableDeclarationObjectContextTags.props({
+		id: "openVariableDeclarationObjectContextTags"
+	});
+	
+	return OpenVariableDeclarationObjectContextTags; 
+}(
+	// list
+	[
+		this.DeclarableIdentifierPropertyNameTag
+	]
 );
 
 this.ParameterTags = function(SpreadTag){
@@ -20826,6 +20971,7 @@ this.ECMAScriptTagsMap = function(SyntaxTagsMap, tagsArray){
 		this.OpenRestrictedCommentContextTags,
 		this.OpenSwitchBodyContextTags,
 		this.OpenVariableDeclarationArrayContextTags,
+		this.OpenVariableDeclarationObjectContextTags,
 		this.ParameterTags,
 		this.PlusContextTags,
 		this.PropertyAccessorContextTags,
