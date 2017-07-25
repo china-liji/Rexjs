@@ -47,7 +47,7 @@ if(e !== 1){
 	throw "数组单项解构造成了多次访问";
 }
 
-var a, b, c, d, e, f, g, h, i, j = 9, k, l, m, n, get, set
+var a, b, c, d, e, f, g, h, i, j = 9, k, l, m, n, get, set, aa
 
 obj = {};
 
@@ -68,7 +68,8 @@ obj = {};
 	33: [m = 89, { 3.1: e = 30, 3.2: f = 25 }],
 	"4": { 4.1: [h = 50, i = 5] },
 	[j]: j = 99,
-	n = 88
+	n = 88,
+	bb: aa
 } = {
 	0.1: 0.1,
 	a: 1,
