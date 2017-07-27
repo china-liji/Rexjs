@@ -14,6 +14,7 @@ test.unit(
 		this.true("嵌套对象解构的数组解构", "[ { a, b: [c] }, x, { y } ] = arr");
 		this.true("连等解构", "[] = [a, [window.b, [c = 100,], ], window.d, ] = $ = [x, [y, ], , z, ] = arr");
 		
+
 		this.true("数组声明解构 - 空的数组解构", "var [] = arr");
 		this.true("数组声明解构 - 单项数组解构", "var [a] = arr");
 		this.true("数组声明解构 - 默认值数组解构", "[,a = 1,,, b = 2 + 3 + window.c, c = 100, ] = arr");
@@ -26,6 +27,7 @@ test.unit(
 		this.true("let 数组声明解构 - 连等解构", "let [a, [, [c], ], , ] = $ = [, window.b, x, [y, window.d], , z, ] = arr");
 		this.true("const 数组声明解构 - 连等解构", "const [a, [, [c = 100,], ], d = 4, ] = $ = [, window.b, x, [y, window.d], , z, ] = arr");
 		
+
 		this.true("空的对象解构", "({} = obj)");
 		this.true("简写单项对象解构", "({ a } = obj)");
 
@@ -51,6 +53,33 @@ test.unit(
 		this.true("嵌套对象解构的对象解构", "({ a: {a} } = obj)");
 
 		this.true("多项对象解构", "({ a, 2: b = 99, c, 'x': x = 1, ['y']: window.y, null: window.value = 1, 3: { c: [d = 100] } } = obj)");
+
+
+		this.true("对象声明解构 - 空的对象解构", "var {} = obj");
+		this.true("对象声明解构 - 简写单项对象解构", "var { a, } = obj");
+		this.true("对象声明解构 - let - 简写单项对象解构", "let { a } = obj");
+		this.true("对象声明解构 - const - 简写单项对象解构", "const { a, } = obj");
+
+		this.true("对象声明解构 - 键值对单项对象解构 - 标识符名称", "var { a: b, } = obj");
+		this.true("对象声明解构 - 键值对单项对象解构 - 字符串名称", "var { 'a': b } = obj");
+		this.true("对象声明解构 - 键值对单项对象解构 - 数字名称", "var { 1: b } = obj");
+		this.true("对象声明解构 - 键值对单项对象解构 - 关键字名称", "var { null: b } = obj");
+		this.true("对象声明解构 - 键值对单项对象解构 - 计算式名称", "var { ['hello']: b } = obj");
+		this.true("对象声明解构 - 键值对单项对象解构 - 进制名称", "var { 0b10101: b } = obj");
+		
+		this.true("对象声明解构 - 简写属性默认值对象解构", "var { a = 5, b = c = d = 5, } = obj");
+
+		this.true("对象声明解构 - 默认值键值对单项对象解构 - 标识符名称", "var { a: b = 5 } = obj");
+		this.true("对象声明解构 - 默认值键值对单项对象解构 - 字符串名称", "var { 'a': b = 5 } = obj");
+		this.true("对象声明解构 - 默认值键值对单项对象解构 - 数字名称", "var { 1: b = 5 } = obj");
+		this.true("对象声明解构 - 默认值键值对单项对象解构 - 关键字名称", "var { null: b = 5 } = obj");
+		this.true("对象声明解构 - 默认值键值对单项对象解构 - 计算式名称", "var { ['hello']: b = 5 } = obj");
+		this.true("对象声明解构 - 默认值键值对单项对象解构 - 进制名称", "var { 0b10101: b = 5 } = obj");
+		
+		//this.true("对象声明解构 - 嵌套数组解构的对象解构", "var { a: [a] } = obj");
+		//this.true("对象声明解构 - 嵌套对象解构的对象解构", "var { a: {a} } = obj");
+
+		//this.true("对象声明解构 - 多项对象解构", "var { a, 2: b = 99, c, 'x': x = 1, ['y']: window.y, null: window.value = 1, 3: { c: [d = 100] } } = obj");
 
 		this.true("运算结果测试", source, true);
 
@@ -126,6 +155,14 @@ test.unit(
 			"[a] + [b] = arr",
 			function(parser, err){
 				return err.context.content === "=" ? "" : "没有识别出赋值运算符";
+			}
+		);
+		
+		this.false(
+			"数组声明解构 - 解构表达式不完整",
+			"var [a]",
+			function(parser, err){
+				return err.context.tag instanceof Rexjs.FileEndTag === false;
 			}
 		);
 		
@@ -357,31 +394,8 @@ test.unit(
 			}
 		);
 
-		
-		// this.false(
-		// 	"对象声明解构 - 解构中重复定义",
-		// 	"let [a, a] = arr",
-		// 	function(parser, err){
-		// 		return err.context.content === "a" ? "" : "没有识别出重复定义的 a";
-		// 	},
-		// 	function(parser, err){
-		// 		return err.context.position.column === 8 ? "" : "没有找到正确的错误地方";
-		// 	}
-		// );
-
-		// this.false(
-		// 	"对象声明解构 - 常量赋值",
-		// 	"const [a] = arr;a = 1;",
-		// 	function(parser, err){
-		// 		return err.context.content === "a" ? "" : "没有识别出重复定义的 a";
-		// 	},
-		// 	function(parser, err){
-		// 		return err.context.position.column === 16 ? "" : "没有找到正确的错误地方";
-		// 	}
-		// );
-
 		this.false(
-			"简写常量变量名作为对象解构项",
+			"对象解构 - 简写常量变量名作为对象解构项",
 			"const a = 1;({ a } = {});",
 			function(parser, err){
 				return err.context.content === "a" ? "" : "没有识别出重复定义的 a";
@@ -392,8 +406,193 @@ test.unit(
 		);
 
 		this.false(
-			"键值对常量变量名作为对象解构项",
+			"对象解构 - 键值对常量变量名作为对象解构项",
 			"const a = 1;({ 1: a } = {});",
+			function(parser, err){
+				return err.context.content === "a" ? "" : "没有识别出重复定义的 a";
+			},
+			function(parser, err){
+				return err.context.position.column === 18 ? "" : "没有找到正确的错误地方";
+			}
+		);
+
+		this.false(
+			"对象声明解构 - 出现非法属性 - 数字",
+			"var { 1 } = obj",
+			function(parser, err){
+				return err.context.content !== "}";
+			}
+		);
+
+		this.false(
+			"对象声明解构 - 出现非法属性 - 二进制数字",
+			"var { 0b10 } = obj",
+			function(parser, err){
+				return err.context.content !== "}";
+			}
+		);
+
+		this.false(
+			"对象声明解构 - 出现非法属性 - 八进制数字",
+			"var { 0o12345670 } = obj",
+			function(parser, err){
+				return err.context.content !== "}";
+			}
+		);
+
+		this.false(
+			"对象声明解构 - 出现非法属性 - 关键字",
+			"var { null } = obj",
+			function(parser, err){
+				return err.context.content !== "}";
+			}
+		);
+
+		this.false(
+			"对象声明解构 - 出现非法属性 - 计算式",
+			"var { [123] } = obj",
+			function(parser, err){
+				return err.context.content !== "}";
+			}
+		);
+
+		this.false(
+			"对象声明解构 - 出现非法属性 - 字符串",
+			"var { 'string' } = obj",
+			function(parser, err){
+				return err.context.content !== "}";
+			}
+		);
+
+		this.false(
+			"对象声明解构 - 出现简写函数 - 数字函数名",
+			"var { 1(){} } = obj",
+			function(parser, err){
+				return err.context.content !== "(";
+			}
+		);
+
+		this.false(
+			"对象声明解构 - 出现简写函数 - 二进制数字函数名",
+			"var { 0b0101(){} } = obj",
+			function(parser, err){
+				return err.context.content !== "(";
+			}
+		);
+
+		this.false(
+			"对象声明解构 - 出现简写函数 - 八进制数字函数名",
+			"var { 0o01234567(){} } = obj",
+			function(parser, err){
+				return err.context.content !== "(";
+			}
+		);
+
+		this.false(
+			"对象声明解构 - 出现简写函数 - 字符串函数名",
+			"var { 'string'(){} } = obj",
+			function(parser, err){
+				return err.context.content !== "(";
+			}
+		);
+
+		this.false(
+			"对象声明解构 - 出现简写函数 - 关键字函数名",
+			"var { null(){} } = obj",
+			function(parser, err){
+				return err.context.content !== "(";
+			}
+		);
+
+		this.false(
+			"对象声明解构 - 出现简写函数 - 计算式函数名",
+			"var { [1](){} } = obj",
+			function(parser, err){
+				return err.context.content !== "(";
+			}
+		);
+		
+		this.false(
+			"对象声明解构 - 属性值不是变量名 - 属性访问器",
+			"var { a: window.a } = obj",
+			function(parser, err){
+				return err.context.content !== ".";
+			}
+		);
+		
+		this.false(
+			"对象声明解构 - 属性值不是变量名 - 数字",
+			"var { a: 1 } = obj",
+			function(parser, err){
+				return err.context.content !== "1";
+			}
+		);
+		
+		this.false(
+			"对象声明解构 - 属性值不是变量名 - 字符串",
+			"var { 'a': '1' } = obj",
+			function(parser, err){
+				return err.context.content !== "'1'";
+			}
+		);
+		
+		this.false(
+			"对象声明解构 - 属性值不是变量名 - 其他表达式",
+			"var { 1: a + '1' / 3 } = obj",
+			function(parser, err){
+				return err.context.content !== "+";
+			}
+		);
+		
+		this.false(
+			"对象声明解构 - 简写属性默认值不完整",
+			"var { a = } = obj",
+			function(parser, err){
+				return err.context.content !== "}";
+			}
+		);
+		
+		this.false(
+			"对象声明解构 - 键值对属性默认值不完整",
+			"var { a: b = } = obj",
+			function(parser, err){
+				return err.context.content !== "}";
+			}
+		);
+		
+		this.false(
+			"对象声明解构 - 解构表达式不完整",
+			"var { a }",
+			function(parser, err){
+				return err.context.tag instanceof Rexjs.FileEndTag === false;
+			}
+		);
+
+		this.false(
+			"对象声明解构 - 重复定义",
+			"var a;let { a } = obj",
+			function(parser, err){
+				return err.context.content === "a" ? "" : "没有识别出重复定义的 a";
+			},
+			function(parser, err){
+				return err.context.position.column === 12 ? "" : "没有找到正确的错误地方";
+			}
+		);
+		
+		this.false(
+			"对象声明解构 - 解构中重复定义",
+			"let { a, a } = obj",
+			function(parser, err){
+				return err.context.content === "a" ? "" : "没有识别出重复定义的 a";
+			},
+			function(parser, err){
+				return err.context.position.column === 9 ? "" : "没有找到正确的错误地方";
+			}
+		);
+
+		this.false(
+			"对象声明解构 - 常量赋值",
+			"const { a } = obj;a = 1;",
 			function(parser, err){
 				return err.context.content === "a" ? "" : "没有识别出重复定义的 a";
 			},

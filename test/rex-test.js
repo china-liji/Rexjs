@@ -170,7 +170,6 @@ this.SimpleTest = function(ECMAScriptParser, XMLHttpRequest, Error, INNER_CONTEN
 		return !callbacks.every(function(callback){
 			var err = callback(parser, error);
 			
-			// 如果返回了错误信息
 			if(!err){
 				return true;
 			}

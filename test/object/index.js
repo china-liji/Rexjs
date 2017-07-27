@@ -20,7 +20,7 @@ test.unit(
 		this.true("多个数字属性名", "!{ 1: 1, 2.22333: 2, 3: 3, 1e+1: 5, 0x1234567890abcdef: 6, .14e+1: 7, 0b10: 8 }");
 		this.true("多个字符串属性名并带有一一对应的逗号", "!{ 1: 1, 2: 2, 3: 3, }");
 		this.true("单个简写方法", "!{ a(){} }");
-		this.true("多个简写方法", "!{ a(){}, b(){} }");
+		this.true("多个简写方法", "!{ a(){}, b(){}, 0b0101(){}, 0o0123(){}, ['string'](){}, null(){} }");
 		this.true("多个简写方法并带有一一对应的逗号", "!{ a(){}, b(){}, c(){} }");
 		this.true("单个计算式属性", "!{ [1 + 2]: 1 }");
 		this.true("多个计算式属性", "!{ [1 + 2]: 1, [2 + 3]: function(){} }");
@@ -31,7 +31,7 @@ test.unit(
 		this.true("单个访问器", "!{ get a(){} }");
 		this.true("多个访问器", "!{ get a(){}, set a(value){} }");
 		this.true("多个访问器并带有一一对应的逗号", "!{ get a(){}, set a(value){}, get b(){}, }");
-		this.true("其他形式的访问器", "!{ get ''(){}, get 8(){}, set [1 + 2 + 3](v){}, set var(v){}, get 1(){} }");
+		this.true("其他形式的访问器", "!{ get ''(){}, get 8(){}, set [1 + 2 + 3](v){}, set var(v){}, get 1(){}, get 0b0101(){}, get 0o0123(){} }");
 		this.true("访问器作为属性名", "!{ get : 1 }");
 		this.true("访问器作为简写属性名", "!{ set : 1 }");
 		this.true("访问器作为简写函数名", "!{ set(){} }");
@@ -95,6 +95,14 @@ test.unit(
 			"!{ 'abc' }",
 			function(parser, err){
 				return err.context.tag instanceof Rexjs.CloseBraceTag ? "" : "没有识别出结束大括号";
+			}
+		);
+
+		this.false(
+			"空计算式名称",
+			"!{ []: 3 }",
+			function(parser, err){
+				return err.context.content !== "]";
 			}
 		);
 
