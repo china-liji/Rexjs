@@ -51,6 +51,8 @@ var a, b, c, d, e, f, g, h, i, j = 9, k, l, m, n, get, set, aa
 
 obj = {};
 
+new function(){
+	
 ({
 	.1: k,
 	"string": l = 5,
@@ -111,6 +113,10 @@ if([
 	throw "对象解构失败";
 }
 
+}();
+
+new function(){
+
 var a, b, c, d, e, f, g, h, i, j = 9, k, l, m, get, set
 
 [
@@ -161,6 +167,62 @@ if([
 ].indexOf(false) > -1){
 	throw "数组的嵌套解构有误";
 }
+
+}();
+
+
+new function(){
+
+var [
+	,
+	a,
+	[
+		b,
+		,
+		{
+			c,
+			d: [
+				m = 99,
+				{
+					e: [f]
+				}
+			]
+		},
+		g
+	],
+	,
+	h
+] = [
+	0,
+	1,
+	[
+		2,
+		3,
+		{
+			c: 4,
+			d: [, {
+				e: [5]
+			}]
+		},
+		6
+	],
+	,
+	7
+];
+
+if([
+	a === 1,
+	b === 2,
+	c === 4,
+	f === 5,
+	g === 6,
+	h === 7,
+	m === 99
+].indexOf(false) > -1){
+	throw "数组声明解构 - 数组的嵌套解构有误";
+}
+
+}();
 
 
 new function(){
@@ -290,7 +352,7 @@ if([
 	m === 99,
 	i === 66
 ].indexOf(false) > -1){
-	throw "对象的嵌套解构有误";
+	throw "对象声明解构 - 对象的嵌套解构有误";
 }
 
 var count = 0;

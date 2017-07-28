@@ -1,26 +1,28 @@
-var [ { a } ] = []
+// var [ { a } ] = []
 
-// var {
-// 	a = 5 + 6 + 8,
-// 	b,
-// 	c: c,
-// 	d: d = 5,
-// 	1: e,
-// 	0b10101: g,
-// 	0o1234: h,
-// 	this: i,
-// 	"string": f,
-// 	["wor" + "ld"]: j = 99,
-// 	"array": [x, y],
-// 	object: {
-// 		a: a,
-// 		b,
-// 		c = 3,
-// 		d: d = 5
-// 	}
-// } = {
-// 	a: 1000
-// }
+var {
+	a = 5 + 6 + 8,
+	b,
+	c: c,
+	d: d = 5,
+	1: e,
+	0b10101: g,
+	0o1234: h,
+	this: i,
+	"string": f,
+	["wor" + "ld"]: j = 99,
+	"array": [x, y],
+	object: {
+		a: a,
+		b,
+		c = 3,
+		d: d = 5
+	}
+} = {
+	a: 1000
+}
+
+debugger
 
 // var {
 // 	a,
