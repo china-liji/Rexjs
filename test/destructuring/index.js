@@ -22,10 +22,10 @@ test.unit(
 		this.true("数组声明解构 - 带空项的数组解构", "var [, a, , b, c, ,] = arr");
 		this.true("数组声明解构 - 全空项的数组解构", "var [,,,,] = arr");
 		this.true("数组声明解构 - 多层数组解构", "var [a, [b, [c], ], d, ] = arr");
-		this.true("数组声明解构 - 嵌套对象解构的数组解构", "[ { a, b: [c] }, x, { y } ] = arr");
+		this.true("数组声明解构 - 嵌套对象解构的数组解构", "var [ { a, b: [c] }, x, { y } ] = arr");
 		this.true("var 数组声明解构 - 连等解构", "var [a, [, [c], ], , ] = $ = [, window.b, x, [y, window.d], , z, ] = arr");
 		this.true("let 数组声明解构 - 连等解构", "let [a, [, [c], ], , ] = $ = [, window.b, x, [y, window.d], , z, ] = arr");
-		this.true("const 数组声明解构 - 连等解构", "const [a, [, [c = 100,], ], d = 4, ] = $ = [, window.b, x, [y, window.d], , z, ] = arr");
+		this.true("const 数组声明解构 - 连等解构", "const [a, [, [c = 100, { x, y = 5, z: [] }], ], d = 4, ] = $ = [, window.b, x1, [y1, window.d], , z1, ] = arr");
 		
 
 		this.true("空的对象解构", "({} = obj)");
@@ -76,10 +76,10 @@ test.unit(
 		this.true("对象声明解构 - 默认值键值对单项对象解构 - 计算式名称", "var { ['hello']: b = 5 } = obj");
 		this.true("对象声明解构 - 默认值键值对单项对象解构 - 进制名称", "var { 0b10101: b = 5 } = obj");
 		
-		//this.true("对象声明解构 - 嵌套数组解构的对象解构", "var { a: [a] } = obj");
-		//this.true("对象声明解构 - 嵌套对象解构的对象解构", "var { a: {a} } = obj");
+		this.true("对象声明解构 - 嵌套数组解构的对象解构", "let { a: [], } = obj");
+		this.true("对象声明解构 - 嵌套对象解构的对象解构", "const { a: {} } = obj");
 
-		//this.true("对象声明解构 - 多项对象解构", "var { a, 2: b = 99, c, 'x': x = 1, ['y']: window.y, null: window.value = 1, 3: { c: [d = 100] } } = obj");
+		this.true("对象声明解构 - 多项对象解构", "var { a, 2: b = 99, c, 'x': x = 1, ['y']: [{y}], null: value = 1, 3: { c: [d = 100] } } = obj");
 
 		this.true("运算结果测试", source, true);
 

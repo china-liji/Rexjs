@@ -5494,24 +5494,24 @@ closeDeclarationArrayTag = new this.CloseDeclarationArrayTag();
 
 
 // 变量声明数组项标签相关
-~function(CloseDeclarationArrayTag, closeNestedDeclarationArrayTag){
+~function(CloseDeclarationArrayTag, closeNestedDeclarationArrayItemTag){
 
-this.OpenNestedDeclarationArrayTag = function(OpenDeclarationArrayTag, DeclarationArrayExpression, ArrayStatement){
+this.OpenNestedDeclarationArrayItemTag = function(OpenDeclarationArrayTag, DeclarationArrayExpression, ArrayStatement){
 	/**
 	 * 嵌套的变量声明数组起始标签
 	 * @param {Number} _type - 标签类型
 	 */
-	function OpenNestedDeclarationArrayTag(_type){
+	function OpenNestedDeclarationArrayItemTag(_type){
 		OpenDeclarationArrayTag.call(this, _type);
 	};
-	OpenNestedDeclarationArrayTag = new Rexjs(OpenNestedDeclarationArrayTag, OpenDeclarationArrayTag);
+	OpenNestedDeclarationArrayItemTag = new Rexjs(OpenNestedDeclarationArrayItemTag, OpenDeclarationArrayTag);
 	
-	OpenNestedDeclarationArrayTag.props({
+	OpenNestedDeclarationArrayItemTag.props({
 		/**
 		 * 获取绑定的标签，该标签一般是用于语句的 try、catch 的返回值
 		 */
 		get binding(){
-			return closeNestedDeclarationArrayTag;
+			return closeNestedDeclarationArrayItemTag;
 		},
 		/**
 		 * 标签访问器
@@ -5532,24 +5532,24 @@ this.OpenNestedDeclarationArrayTag = function(OpenDeclarationArrayTag, Declarati
 		}
 	});
 
-	return OpenNestedDeclarationArrayTag;
+	return OpenNestedDeclarationArrayItemTag;
 }(
 	this.OpenDeclarationArrayTag,
 	this.DeclarationArrayExpression,
 	this.ArrayStatement
 );
 
-this.CloseNestedDeclarationArrayTag = function(visitor){
+this.CloseNestedDeclarationArrayItemTag = function(visitor){
 	/**
 	 * 标签变量声明数组结束标签
 	 * @param {Number} _type - 标签类型
 	 */
-	function CloseNestedDeclarationArrayTag(_type){
+	function CloseNestedDeclarationArrayItemTag(_type){
 		CloseDeclarationArrayTag.call(this, _type);
 	};
-	CloseNestedDeclarationArrayTag = new Rexjs(CloseNestedDeclarationArrayTag, CloseDeclarationArrayTag);
+	CloseNestedDeclarationArrayItemTag = new Rexjs(CloseNestedDeclarationArrayItemTag, CloseDeclarationArrayTag);
 	
-	CloseNestedDeclarationArrayTag.props({
+	CloseNestedDeclarationArrayItemTag.props({
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
@@ -5573,17 +5573,17 @@ this.CloseNestedDeclarationArrayTag = function(visitor){
 		}
 	});
 	
-	return CloseNestedDeclarationArrayTag;
+	return CloseNestedDeclarationArrayItemTag;
 }(
 	CloseDeclarationArrayTag.prototype.visitor
 );
 
-closeNestedDeclarationArrayTag = new this.CloseNestedDeclarationArrayTag();
+closeNestedDeclarationArrayItemTag = new this.CloseNestedDeclarationArrayItemTag();
 
 }.call(
 	this,
 	this.CloseDeclarationArrayTag,
-	// closeNestedDeclarationArrayTag
+	// closeNestedDeclarationArrayItemTag
 	NULL
 );
 
@@ -10460,17 +10460,17 @@ closeDeclarationObjectTag = new this.CloseDeclarationObjectTag();
 // 对象解构声明的属性名相关
 ~function(IdentifierPropertyNameTag, PropertyDestructuringItemExpression, closeComputedDeclarationPropertyNameTag, require){
 
-this.DeclarableIdentifierPropertyNameStatement = function(both){
+this.IdentifierDeclarationPropertyNameStatement = function(both){
 	/**
-	 * 可声明的标识符属性名称语句
+	 * 标识符声明属性名称语句
 	 * @param {Statements} statements - 该语句将要所处的语句块
 	 */
-	function DeclarableIdentifierPropertyNameStatement(statements){
+	function IdentifierDeclarationPropertyNameStatement(statements){
 		ECMAScriptStatement.call(this, statements);
 	};
-	DeclarableIdentifierPropertyNameStatement = new Rexjs(DeclarableIdentifierPropertyNameStatement, ECMAScriptStatement);
+	IdentifierDeclarationPropertyNameStatement = new Rexjs(IdentifierDeclarationPropertyNameStatement, ECMAScriptStatement);
 
-	DeclarableIdentifierPropertyNameStatement.props({
+	IdentifierDeclarationPropertyNameStatement.props({
 		/**
 		 * 捕获处理异常
 		 * @param {SyntaxParser} parser - 语法解析器
@@ -10498,7 +10498,7 @@ this.DeclarableIdentifierPropertyNameStatement = function(both){
 		}
 	});
 
-	return DeclarableIdentifierPropertyNameStatement;
+	return IdentifierDeclarationPropertyNameStatement;
 }(
 	// both
 	function(parser, statement, isSeparator){
@@ -10523,7 +10523,7 @@ this.DeclarableIdentifierPropertyNameStatement = function(both){
 	}
 );
 
-this.IdentifierDeclarationPropertyNameTag = function(DeclarableIdentifierPropertyNameStatement, visitor){
+this.IdentifierDeclarationPropertyNameTag = function(IdentifierDeclarationPropertyNameStatement, visitor){
 	/**
 	 * 标识符声明属性名称标签
 	 * @param {Number} _type - 标签类型
@@ -10553,13 +10553,13 @@ this.IdentifierDeclarationPropertyNameTag = function(DeclarableIdentifierPropert
 			visitor.call(this, parser, context, statement, statements);
 
 			// 设置当前语句
-			statements.statement = new DeclarableIdentifierPropertyNameStatement(statements);
+			statements.statement = new IdentifierDeclarationPropertyNameStatement(statements);
 		}
 	});
 
 	return IdentifierDeclarationPropertyNameTag;
 }(
-	this.DeclarableIdentifierPropertyNameStatement,
+	this.IdentifierDeclarationPropertyNameStatement,
 	IdentifierPropertyNameTag.prototype.visitor
 );
 
@@ -10829,24 +10829,113 @@ this.DeclarationPropertyNameSeparatorTag = function(visitor){
 
 
 // 对象解构声明的属性值相关
-~function(VariableDeclarationTag, BasicAssignmentTag, closeDeclarationArrayPropertyValueTag){
+~function(PropertyDestructuringItemExpression, CloseDeclarationObjectTag, VariableDeclarationTag, BasicAssignmentTag, closeArrayDeclarationPropertyValueTag, closeObjectDeclarationPropertyValueTag){
 
-this.OpenDeclarationArrayPropertyValueTag = function(OpenNestedDeclarationArrayTag, PropertyDestructuringItemExpression, DeclarationArrayExpression, ArrayStatement){
+this.OpenObjectDeclarationPropertyValueTag = function(OpenDeclarationObjectTag, DeclarationObjectExpression, PropertyStatement){
 	/**
-	 * 变量声明数组属性值（对象属性值，即：对象解构中所嵌套的数组解构）起始标签
+	 * 对象声明属性值（即：对象解构中所嵌套的对象解构）起始标签
 	 * @param {Number} _type - 标签类型
 	 */
-	function OpenDeclarationArrayPropertyValueTag(_type){
-		OpenNestedDeclarationArrayTag.call(this, _type);
+	function OpenObjectDeclarationPropertyValueTag(_type){
+		OpenDeclarationObjectTag.call(this, _type);
 	};
-	OpenDeclarationArrayPropertyValueTag = new Rexjs(OpenDeclarationArrayPropertyValueTag, OpenNestedDeclarationArrayTag);
+	OpenObjectDeclarationPropertyValueTag = new Rexjs(OpenObjectDeclarationPropertyValueTag, OpenDeclarationObjectTag);
 	
-	OpenDeclarationArrayPropertyValueTag.props({
+	OpenObjectDeclarationPropertyValueTag.props({
 		/**
 		 * 获取绑定的标签，该标签一般是用于语句的 try、catch 的返回值
 		 */
 		get binding(){
-			return closeDeclarationArrayPropertyValueTag;
+			return closeObjectDeclarationPropertyValueTag;
+		},
+		/**
+		 * 标签访问器
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 标签上下文
+		 * @param {Statement} statement - 当前语句
+		 * @param {Statements} statements - 当前语句块
+		 */
+		visitor: function(parser, context, statement, statements){
+			var propertyStatement = statement.target.target, propertyExpression = propertyStatement.expression;
+
+			// 设置当前表达式
+			statement.expression = new DeclarationObjectExpression(
+				context,
+				propertyStatement.target.expression.objectOf
+			);
+
+			// 设置当前语句
+			statements.statement = new PropertyStatement(statements);
+
+			// 设置 destructuringItem 属性，以标识为解构子项
+			propertyExpression.value.destructuringItem = true;
+			// 重新设置属性语句的表达式为属性解构子项表达式
+			propertyStatement.expression = new PropertyDestructuringItemExpression(propertyExpression);
+		}
+	});
+
+	return OpenObjectDeclarationPropertyValueTag;
+}(
+	this.OpenDeclarationObjectTag,
+	this.DeclarationObjectExpression,
+	this.PropertyStatement
+);
+
+this.CloseObjectDeclarationPropertyValueTag = function(visitor){
+	/**
+	 * 对象声明属性值（即：对象解构中所嵌套的对象解构）结束标签
+	 * @param {Number} _type - 标签类型
+	 */
+	function CloseObjectDeclarationPropertyValueTag(_type){
+		CloseDeclarationObjectTag.call(this, _type);
+	};
+	CloseObjectDeclarationPropertyValueTag = new Rexjs(CloseObjectDeclarationPropertyValueTag, CloseDeclarationObjectTag);
+	
+	CloseObjectDeclarationPropertyValueTag.props({
+		/**
+		 * 获取此标签接下来所需匹配的标签列表
+		 * @param {TagsMap} tagsMap - 标签集合映射
+		 */
+		require: function(tagsMap){
+			return tagsMap.declarationPropertySeparatorTags;
+		},
+		/**
+		 * 标签访问器
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 标签上下文
+		 * @param {Statement} statement - 当前语句
+		 * @param {Statements} statements - 当前语句块
+		 */
+		visitor: function(parser, context, statement, statements){
+			// 调用父类访问器
+			visitor.call(this, parser, context, statement, statements);
+
+			// 将表达式转化为解构项
+			statement.expression = statement.expression.toDestructuringItem(parser);
+		}
+	});
+	
+	return CloseObjectDeclarationPropertyValueTag;
+}(
+	CloseDeclarationObjectTag.prototype.visitor
+);
+
+this.OpenArrayDeclarationPropertyValueTag = function(OpenNestedDeclarationArrayItemTag, DeclarationArrayExpression, ArrayStatement){
+	/**
+	 * 数组声明属性值（即：对象解构中所嵌套的对象解构）起始标签
+	 * @param {Number} _type - 标签类型
+	 */
+	function OpenArrayDeclarationPropertyValueTag(_type){
+		OpenNestedDeclarationArrayItemTag.call(this, _type);
+	};
+	OpenArrayDeclarationPropertyValueTag = new Rexjs(OpenArrayDeclarationPropertyValueTag, OpenNestedDeclarationArrayItemTag);
+	
+	OpenArrayDeclarationPropertyValueTag.props({
+		/**
+		 * 获取绑定的标签，该标签一般是用于语句的 try、catch 的返回值
+		 */
+		get binding(){
+			return closeArrayDeclarationPropertyValueTag;
 		},
 		/**
 		 * 标签访问器
@@ -10866,6 +10955,7 @@ this.OpenDeclarationArrayPropertyValueTag = function(OpenNestedDeclarationArrayT
 
 			// 设置当前语句
 			statements.statement = new ArrayStatement(statements);
+
 			// 设置 destructuringItem 属性，以标识为解构子项
 			propertyExpression.value.destructuringItem = true;
 			// 重新设置属性语句的表达式为属性解构子项表达式
@@ -10873,25 +10963,24 @@ this.OpenDeclarationArrayPropertyValueTag = function(OpenNestedDeclarationArrayT
 		}
 	});
 
-	return OpenDeclarationArrayPropertyValueTag;
+	return OpenArrayDeclarationPropertyValueTag;
 }(
-	this.OpenNestedDeclarationArrayTag,
-	this.PropertyDestructuringItemExpression,
+	this.OpenNestedDeclarationArrayItemTag,
 	this.DeclarationArrayExpression,
 	this.ArrayStatement
 );
 
-this.CloseDeclarationArrayPropertyValueTag = function(CloseNestedDeclarationArrayTag){
+this.CloseArrayDeclarationPropertyValueTag = function(CloseNestedDeclarationArrayItemTag){
 	/**
-	 * 标签变量声明数组结束标签
+	 * 数组声明属性值（即：对象解构中所嵌套的对象解构）结束标签
 	 * @param {Number} _type - 标签类型
 	 */
-	function CloseDeclarationArrayPropertyValueTag(_type){
-		CloseNestedDeclarationArrayTag.call(this, _type);
+	function CloseArrayDeclarationPropertyValueTag(_type){
+		CloseNestedDeclarationArrayItemTag.call(this, _type);
 	};
-	CloseDeclarationArrayPropertyValueTag = new Rexjs(CloseDeclarationArrayPropertyValueTag, CloseNestedDeclarationArrayTag);
+	CloseArrayDeclarationPropertyValueTag = new Rexjs(CloseArrayDeclarationPropertyValueTag, CloseNestedDeclarationArrayItemTag);
 	
-	CloseDeclarationArrayPropertyValueTag.props({
+	CloseArrayDeclarationPropertyValueTag.props({
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
@@ -10901,9 +10990,9 @@ this.CloseDeclarationArrayPropertyValueTag = function(CloseNestedDeclarationArra
 		}
 	});
 	
-	return CloseDeclarationArrayPropertyValueTag;
+	return CloseArrayDeclarationPropertyValueTag;
 }(
-	this.CloseNestedDeclarationArrayTag
+	this.CloseNestedDeclarationArrayItemTag
 );
 
 this.DeclarationPropertyValueTag = function(PropertyDestructuringItemExpression, visitor){
@@ -10988,13 +11077,109 @@ this.DeclarationPropertyValueInitializerTag = function(PropertyDestructuringDefa
 	BasicAssignmentTag.prototype.visitor
 );
 
-closeDeclarationArrayPropertyValueTag = new this.CloseDeclarationArrayPropertyValueTag();
+closeArrayDeclarationPropertyValueTag = new this.CloseArrayDeclarationPropertyValueTag();
+closeObjectDeclarationPropertyValueTag = new this.CloseObjectDeclarationPropertyValueTag();
 
 }.call(
 	this,
+	this.PropertyDestructuringItemExpression,
+	this.CloseDeclarationObjectTag,
 	this.VariableDeclarationTag,
 	this.BasicAssignmentTag,
-	// closeDeclarationArrayPropertyValueTag
+	// closeArrayDeclarationPropertyValueTag
+	NULL,
+	// closeObjectDeclarationPropertyValueTag
+	NULL
+);
+
+
+// 数组声明解构内的对象解构相关
+~function(CloseDeclarationObjectTag, closeObjectDeclarationArrayItemTag){
+
+this.OpenObjectDeclarationArrayItemTag = function(OpenDeclarationObjectTag, DeclarationObjectExpression, PropertyStatement){
+	/**
+	 * 对象声明数组项（即数组声明解构中，所嵌套的对象解构）起始标签
+	 * @param {Number} _type - 标签类型
+	 */
+	function OpenObjectDeclarationArrayItemTag(_type){
+		OpenDeclarationObjectTag.call(this, _type);
+	};
+	OpenObjectDeclarationArrayItemTag = new Rexjs(OpenObjectDeclarationArrayItemTag, OpenDeclarationObjectTag);
+	
+	OpenObjectDeclarationArrayItemTag.props({
+		/**
+		 * 获取绑定的标签，该标签一般是用于语句的 try、catch 的返回值
+		 */
+		get binding(){
+			return closeObjectDeclarationArrayItemTag;
+		},
+		/**
+		 * 标签访问器
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 标签上下文
+		 * @param {Statement} statement - 当前语句
+		 * @param {Statements} statements - 当前语句块
+		 */
+		visitor: function(parser, context, statement, statements){
+			// 设置当前表达式
+			statement.expression = new DeclarationObjectExpression(context, statement.target.expression.arrayOf);
+			// 设置当前语句
+			statements.statement = new PropertyStatement(statements);
+		}
+	});
+
+	return OpenObjectDeclarationArrayItemTag;
+}(
+	this.OpenDeclarationObjectTag,
+	this.DeclarationObjectExpression,
+	this.PropertyStatement
+);
+
+this.CloseObjectDeclarationArrayItemTag = function(visitor){
+	/**
+	 * 对象声明数组项（即数组声明解构中，所嵌套的对象解构）结束标签
+	 * @param {Number} _type - 标签类型
+	 */
+	function CloseObjectDeclarationArrayItemTag(_type){
+		CloseDeclarationObjectTag.call(this, _type);
+	};
+	CloseObjectDeclarationArrayItemTag = new Rexjs(CloseObjectDeclarationArrayItemTag, CloseDeclarationObjectTag);
+	
+	CloseObjectDeclarationArrayItemTag.props({
+		/**
+		 * 获取此标签接下来所需匹配的标签列表
+		 * @param {TagsMap} tagsMap - 标签集合映射
+		 */
+		require: function(tagsMap){
+			return tagsMap.declarationArrayItemSeparatorTags;
+		},
+		/**
+		 * 标签访问器
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 标签上下文
+		 * @param {Statement} statement - 当前语句
+		 * @param {Statements} statements - 当前语句块
+		 */
+		visitor: function(parser, context, statement, statements){
+			// 调用父类访问器
+			visitor.call(this, parser, context, statement, statements);
+
+			// 将表达式转化为解构项
+			statement.expression = statement.expression.toDestructuringItem(parser);
+		}
+	});
+	
+	return CloseObjectDeclarationArrayItemTag;
+}(
+	CloseDeclarationObjectTag.prototype.visitor
+);
+
+closeObjectDeclarationArrayItemTag = new this.CloseObjectDeclarationArrayItemTag();
+
+}.call(
+	this,
+	this.CloseDeclarationObjectTag,
+	// closeObjectDeclarationArrayItemTag
 	NULL
 );
 
@@ -19910,7 +20095,7 @@ this.DeclarationPropertyValueContextTags = function(DeclarationPropertySeparator
 	this.DeclarationPropertyValueInitializerTag
 );
 
-this.DeclarationPropertyValueTags = function(DeclarationPropertyValueTag, OpenDeclarationArrayPropertyValueTag){
+this.DeclarationPropertyValueTags = function(DeclarationPropertyValueTag, OpenArrayDeclarationPropertyValueTag, OpenObjectDeclarationPropertyValueTag){
 	/**
 	 * 变量声明属性值标签列表
 	 */
@@ -19919,7 +20104,8 @@ this.DeclarationPropertyValueTags = function(DeclarationPropertyValueTag, OpenDe
 
 		this.register(
 			new DeclarationPropertyValueTag(),
-			new OpenDeclarationArrayPropertyValueTag()
+			new OpenArrayDeclarationPropertyValueTag(),
+			new OpenObjectDeclarationPropertyValueTag()
 		);
 	};
 	DeclarationPropertyValueTags = new Rexjs(DeclarationPropertyValueTags, IllegalTags);
@@ -19931,7 +20117,8 @@ this.DeclarationPropertyValueTags = function(DeclarationPropertyValueTag, OpenDe
 	return DeclarationPropertyValueTags;
 }(
 	this.DeclarationPropertyValueTag,
-	this.OpenDeclarationArrayPropertyValueTag
+	this.OpenArrayDeclarationPropertyValueTag,
+	this.OpenObjectDeclarationPropertyValueTag
 );
 
 this.DestructibleExpressionContextTags = function(DestructuringAssignmentTag){
@@ -20754,19 +20941,14 @@ this.OpenSwitchBodyContextTags = function(CaseTag, DefaultTag, CloseBlockCompone
 	this.CloseBlockComponentTag
 );
 
-this.OpenDeclarationArrayContextTags = function(DeclarationArrayItemTag, DeclarationArrayItemSeparatorTag, OpenNestedDeclarationArrayTag, CloseDeclarationArrayTag){
+this.OpenDeclarationArrayContextTags = function(list){
 	/**
 	 * 起始变量声明数组上下文标签列表
 	 */
 	function OpenDeclarationArrayContextTags(){
 		IllegalTags.call(this);
 
-		this.register(
-			new DeclarationArrayItemTag(),
-			new DeclarationArrayItemSeparatorTag(),
-			new OpenNestedDeclarationArrayTag(),
-			new CloseDeclarationArrayTag()
-		);
+		this.delegate(list);
 	};
 	OpenDeclarationArrayContextTags = new Rexjs(OpenDeclarationArrayContextTags, IllegalTags);
 
@@ -20776,10 +20958,14 @@ this.OpenDeclarationArrayContextTags = function(DeclarationArrayItemTag, Declara
 	
 	return OpenDeclarationArrayContextTags; 
 }(
-	this.DeclarationArrayItemTag,
-	this.DeclarationArrayItemSeparatorTag,
-	this.OpenNestedDeclarationArrayTag,
-	this.CloseDeclarationArrayTag
+	// list
+	[
+		this.DeclarationArrayItemTag,
+		this.DeclarationArrayItemSeparatorTag,
+		this.OpenNestedDeclarationArrayItemTag,
+		this.OpenObjectDeclarationArrayItemTag,
+		this.CloseDeclarationArrayTag
+	]
 );
 
 this.ParameterTags = function(SpreadTag){
