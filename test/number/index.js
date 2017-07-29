@@ -37,6 +37,14 @@ test.unit(
 			}
 		);
 
+		this.false(
+			"错误的数字",
+			"000000000000000.1",
+			function(parser, err){
+				return err.context.content !== "0.1";
+			}
+		);
+
 		function callback1(parser, err){
 			return err.context.tag instanceof Rexjs.IdentifierTag ? "" : "没有解析出数字后面的标识符";
 		};
@@ -44,6 +52,7 @@ test.unit(
 		function callback2(parser, err){
 			return err.context.content === err.file.source.substring(1) ? "" : "没有正确的分离出标识符";
 		};
+
 
 		this.false("错误的二进制数字 - 非0、1数字", "0b2", callback1, callback2);
 		this.false("错误的二进制数字 - 带字母", "0ba", callback1, callback2);
