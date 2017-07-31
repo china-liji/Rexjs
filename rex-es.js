@@ -11627,7 +11627,7 @@ this.ThrowContextLineTerminatorTag = function(IllegalLineTerminatorTag){
 
 
 // 迭代中断流类相关
-~function(TerminatedFlowStatement, LabelledStatement, SCOPE_CLOSURE){
+~function(TerminatedFlowStatement, LabelledExpression, SCOPE_CLOSURE){
 
 this.TerminatedBranchFlowStatement = function(catchMethod, withoutAnyFlow){
 	/**
@@ -11685,7 +11685,10 @@ this.TerminatedBranchFlowStatement = function(catchMethod, withoutAnyFlow){
 		while(statements){
 			var statement = statements.statement;
 
-			// 如果语句存在
+			/*
+				如果语句存在，这里要用循环判断，而不能使用 statements[statements.length - 1]；
+				因为这些语句没有 label 语句的必定性质，即：“ label 语句在该语句块内必定是最外层的那个语句”。
+			*/
 			while(statement){
 				// 如果流一致
 				if((statement.flow & flow) === flow){
@@ -11800,30 +11803,24 @@ this.LabelledIdentifierTag = function(LabelTag, withoutAnyFlow){
 	function(statements, terminatedFlowTag, content){
 		// 如果语句块存在
 		while(statements){
-			var statement = statements.statement;
+			// 这里可以不用 while(statement) 去循环判断，因为 label 语句在该语句块内必定是最外层的那个语句
+			var statement = statements[statements.length - 1], expression = statement.expression;
 
-			// 如果目标语句存在
-			while(statement){
-				var target = statement.target;
+			switch(false){
+				// 如果目标语句不是标记语句
+				case expression instanceof LabelledExpression:
+					break;
 
-				switch(false){
-					// 如果目标语句不是标记语句
-					case statement instanceof LabelledStatement:
-						break;
+				// 如果标记名称不符合
+				case expression.context.content === content:
+					break;
 
-					// 如果标记名称不符合
-					case target.expression.context.content === content:
-						break;
+				// 如果流语句核对无效
+				case terminatedFlowTag.checkFlowStatement(statement):
+					break;
 
-					// 如果流语句核对无效
-					case terminatedFlowTag.checkFlowStatement(statement):
-						break;
-
-					default:
-						return false;
-				}
-
-				statement = target;
+				default:
+					return false;
 			}
 
 			// 如果是闭包，则获取 target，否则等于 null，中断循环
@@ -11837,7 +11834,7 @@ this.LabelledIdentifierTag = function(LabelTag, withoutAnyFlow){
 }.call(
 	this,
 	this.TerminatedFlowStatement,
-	this.LabelledStatement,
+	this.LabelledExpression,
 	this.ECMAScriptStatements.SCOPE_CLOSURE
 );
 

@@ -28,7 +28,7 @@ test.unit(
 				return err.context.content !== "a";
 			},
 			function(parser, err){
-				return err.context.position.column !== 14;
+				return err.context.position.column !== 17;
 			}
 		);
 
