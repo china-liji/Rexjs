@@ -9,6 +9,10 @@ test.unit(
 		this.true("let 与 函数表达式共存", "var fn = function a(){};let a;");
 		this.true("let 在函数参数名之前定义", "let x, y, z;var fn = function a(x, y, z){};");
 		this.true("let 在函数参数名之后定义", "var fn = function a(x, y, z){};let x, y, z;");
+		this.true("函数内外重新使用 let 定义不影响", "let a = 1;!function(){ let a = 2; }");
+		this.true("语句块内外重新使用 let 定义不影响", "let a = 1;{ let a = 2; }");
+		this.true("函数内使用 var 重复定义", "let a;!function(){ var a = 1; }");
+
 
 		/*
 		* 由于 let 继承 var， var 测过过的就不再测试

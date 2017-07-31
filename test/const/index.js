@@ -22,6 +22,28 @@ test.unit(
 		);
 
 		this.false(
+			"语句块内部重新赋值",
+			"const a = 1;{{{{ a = 2 }}}}",
+			function(parser, err){
+				return err.context.content !== "a";
+			},
+			function(parser, err){
+				return err.context.position.column !== 14;
+			}
+		);
+
+		this.false(
+			"函数内部重新赋值",
+			"const a = 1;!function(){ a = 2 }",
+			function(parser, err){
+				return err.context.content !== "a";
+			},
+			function(parser, err){
+				return err.context.position.column !== 25;
+			}
+		);
+
+		this.false(
 			"常量递增",
 			"const a = 1;++a",
 			function(parser, err){
