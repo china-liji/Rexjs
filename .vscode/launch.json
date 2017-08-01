@@ -1,0 +1,20 @@
+{
+	"version": "0.2.0",
+	"configurations": [
+		{
+			"type": "node",
+			"request": "launch",
+			"name": "source",
+			"program": "${workspaceRoot}/source/index.js",
+			"args": [
+				"-dev"
+			]
+		},
+		{
+			"type": "node",
+			"request": "launch",
+			"name": "dev",
+			"program": "${workspaceRoot}/dev/index.js"
+		}
+	]
+}

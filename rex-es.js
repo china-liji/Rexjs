@@ -368,10 +368,6 @@ this.ECMAScriptStatements = function(ECMAScriptStatement, extractTo){
 	};
 	ECMAScriptStatements = new Rexjs(ECMAScriptStatements, Statements);
 
-	ECMAScriptStatements.static({
-		scope: Statements.SCOPE_CLOSURE
-	});
-
 	ECMAScriptStatements.props({
 		/**
 		 * 申请应用 super 关键字
@@ -6083,7 +6079,7 @@ this.FunctionExpression = function(config){
 	return FunctionExpression;
 }(
 	// config
-	new SyntaxConfig("defaultArgument", "restArgument", "arrowFunction")
+	new SyntaxConfig("defaultArgument", "restArgument", "arrowFunction", "generator")
 );
 
 this.FunctionTag = function(FunctionExpression){
@@ -6127,34 +6123,6 @@ this.FunctionTag = function(FunctionExpression){
 }(
 	this.FunctionExpression
 );
-
-this.FunctionGeneratorTag = function(){
-	/**
-	 * 函数生成器标签
-	 * @param {Number} _type - 标签类型
-	 */
-	function FunctionGeneratorTag(_type){
-		SyntaxTag.call(this, _type);
-	};
-	FunctionGeneratorTag = new Rexjs(FunctionGeneratorTag, SyntaxTag);
-
-	FunctionGeneratorTag.props({
-		regexp: /\*/,
-		/**
-		 * 标签访问器
-		 * @param {SyntaxParser} parser - 语法解析器
-		 * @param {Context} context - 标签上下文
-		 * @param {Statement} statement - 当前语句
-		 * @param {Statements} statements - 当前语句块
-		 */
-		visitor: function(parser, context, statement, statements){
-			// 设置函数表达式的 generator 属性
-			statement.expression.generator = context;
-		}
-	});
-
-	return FunctionGeneratorTag;
-}();
 
 this.FunctionNameTag = function(VariableDeclarationTag, FunctionDeclarationExpression){
 	/**
@@ -6316,6 +6284,52 @@ this.FunctionVariableTag = function(visitor){
 }.call(
 	this,
 	this.FunctionNameTag
+);
+
+
+// 函数生成器符号相关
+~function(){
+
+this.GeneratorHeaderExpression = function(){
+	function GeneratorHeaderExpression(context){
+		Expression.call(this, context);
+	};
+	GeneratorHeaderExpression = new Rexjs(GeneratorHeaderExpression, Expression);
+
+
+	return GeneratorHeaderExpression;
+}();
+
+this.GeneratorTag = function(){
+	/**
+	 * 函数生成器标签
+	 * @param {Number} _type - 标签类型
+	 */
+	function GeneratorTag(_type){
+		SyntaxTag.call(this, _type);
+	};
+	GeneratorTag = new Rexjs(GeneratorTag, SyntaxTag);
+
+	GeneratorTag.props({
+		regexp: /\*/,
+		/**
+		 * 标签访问器
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 标签上下文
+		 * @param {Statement} statement - 当前语句
+		 * @param {Statements} statements - 当前语句块
+		 */
+		visitor: function(parser, context, statement, statements){
+			// 设置函数表达式的 generator 属性
+			statement.expression.generator = context;
+		}
+	});
+
+	return GeneratorTag;
+}();
+
+}.call(
+	this
 );
 
 
@@ -6955,7 +6969,6 @@ this.FunctionBodyExpression = function(extractTo, insertDefaults){
 			// 插入默认参数
 			insertDefaults(contentBuilder, this, defaults);
 		},
-		generation: false,
 		state: BlockExpression.STATE_NONE
 	});
 	
@@ -6996,6 +7009,32 @@ this.FunctionBodyExpression = function(extractTo, insertDefaults){
 	}
 );
 
+this.GeneratorBodyExpression = function(FunctionBodyExpression){
+	/**
+	 * 函数主体语句块表达式
+	 * @param {Context} open - 起始标签上下文
+	 */
+	function GeneratorBodyExpression(open){
+		FunctionBodyExpression.call(this, open);
+	};
+	GeneratorBodyExpression = new Rexjs(GeneratorBodyExpression, FunctionBodyExpression);
+
+	GeneratorBodyExpression.props({
+		/**
+		 * 提取表达式文本内容
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 * @param {ContentBuilder} defaultArgumentBuilder - 默认参数生成器
+		 */
+		// extractTo: function(contentBuilder, defaultArgumentBuilder){debugger
+			
+		// }
+	});
+	
+	return GeneratorBodyExpression;
+}(
+	this.FunctionBodyExpression
+);
+
 this.FunctionBodyStatements = function(BlockBodyStatements, ECMAScriptVariableCollections, VariableIndex){
 	/**
 	 * 函数主体语句块
@@ -7021,7 +7060,7 @@ this.FunctionBodyStatements = function(BlockBodyStatements, ECMAScriptVariableCo
 	Rexjs.VariableIndex
 );
 
-this.OpenFunctionBodyTag = function(OpenBlockComponentTag, FunctionBodyExpression, FunctionBodyStatements, BlockComponentStatement, forEach){
+this.OpenFunctionBodyTag = function(OpenBlockComponentTag, FunctionBodyExpression, GeneratorBodyExpression, FunctionBodyStatements, BlockComponentStatement, config, forEach){
 	/**
 	 * 起始函数主体标签
 	 * @param {Number} _type - 标签类型
@@ -7066,13 +7105,14 @@ this.OpenFunctionBodyTag = function(OpenBlockComponentTag, FunctionBodyExpressio
 		 * @param {Statements} statements - 当前语句块
 		 */
 		visitor: function(parser, context, statement, statements){
-			var declarationCollection, expression = statement.expression, functionBodyExpression = new FunctionBodyExpression(context);
+			var declarationCollection, functionBodyExpression, expression = statement.expression;
 			
-			// 如果有生成器
-			if(expression.generator){
-				// 告知函数主体 - 该函数为生成器
-				functionBodyExpression.generation = true;
-			}
+			functionBodyExpression = (
+				// 如果有生成器并且需要解析
+				expression.generator && config.generator ?
+					new GeneratorBodyExpression(context):
+					new FunctionBodyExpression(context)
+			);
 
 			(
 				// 设置当前语句
@@ -7100,8 +7140,10 @@ this.OpenFunctionBodyTag = function(OpenBlockComponentTag, FunctionBodyExpressio
 }(
 	this.OpenBlockComponentTag,
 	this.FunctionBodyExpression,
+	this.GeneratorBodyExpression,
 	this.FunctionBodyStatements,
 	this.BlockComponentStatement,
+	this.FunctionExpression.config,
 	Rexjs.forEach
 );
 
@@ -8370,7 +8412,7 @@ this.PropertyExpression = function(BinaryExpression, ShorthandPropertyValueExpre
 	this.BinaryExpression,
 	this.ShorthandPropertyValueExpression,
 	// config
-	new SyntaxConfig("shorthandMethod", "shorthandPropertyName", "computedName")
+	new SyntaxConfig("shorthandMethod", "shorthandPropertyName", "computedName", "propertyInitializer")
 );
 
 this.LiteralPropertyNameExpression = function(){
@@ -9199,15 +9241,6 @@ this.PropertyInitializerExpression = function(config, extractTo, toTernary){
 	};
 	PropertyInitializerExpression = new Rexjs(PropertyInitializerExpression, PropertyValueExpression);
 
-	PropertyInitializerExpression.static({
-		/**
-		 * 获取表达式编译配置
-		 */
-		get config(){
-			return config;
-		}
-	});
-
 	PropertyInitializerExpression.props({
 		/**
 		 * 提取并编译表达式文本内容
@@ -9239,7 +9272,7 @@ this.PropertyInitializerExpression = function(config, extractTo, toTernary){
 }(
 
 	// config
-	new SyntaxConfig("propertyInitializer"),
+	this.PropertyExpression.config,
 	PropertyValueExpression.prototype.extractTo,
 	// toTernary
 	function(contentBuilder, expression, assignment){
@@ -20509,7 +20542,7 @@ this.FunctionBodyTags = function(OpenFunctionBodyTag){
 	this.OpenFunctionBodyTag
 );
 
-this.FunctionContextTags = function(FunctionGeneratorTag, FunctionNameTag, OpenArgumentsTag){
+this.FunctionContextTags = function(GeneratorTag, FunctionNameTag, OpenArgumentsTag){
 	/**
 	 * 函数关键字上下文标签列表
 	 */
@@ -20517,7 +20550,7 @@ this.FunctionContextTags = function(FunctionGeneratorTag, FunctionNameTag, OpenA
 		IllegalTags.call(this);
 		
 		this.register(
-			new FunctionGeneratorTag(),
+			// new GeneratorTag(),
 			new FunctionNameTag(),
 			new OpenArgumentsTag()
 		);
@@ -20530,7 +20563,7 @@ this.FunctionContextTags = function(FunctionGeneratorTag, FunctionNameTag, OpenA
 	
 	return FunctionContextTags;
 }(
-	this.FunctionGeneratorTag,
+	this.GeneratorTag,
 	this.FunctionNameTag,
 	this.OpenArgumentsTag
 );
@@ -21839,23 +21872,25 @@ this.ECMAScript6Config = function(configs, forEach, every, defineProperty){
 }(
 	// configs
 	[
-		this.CallExpression,
-		this.DestructuringExpression,
-		this.ExponentiationExpression,
-		this.ExportExpression,
-		this.ForExpression,
-		this.FunctionExpression,
-		this.ImportExpression,
-		this.LiteralExpression,
-		this.ObjectExpression,
-		this.PropertyExpression,
-		this.PropertyInitializerExpression,
-		this.TemplateExpression,
-		this.VarExpression
+		"Call",
+		"Destructuring",
+		"Exponentiation",
+		"Export",
+		"For",
+		"Function",
+		"Import",
+		"Literal",
+		"Object",
+		"Property",
+		"Template",
+		"Var"
 	]
-	.map(function(Expression){
-		return Expression.config;
-	}),
+	.map(
+		function(prefix){
+			return this[prefix + "Expression"].config;
+		},
+		this
+	),
 	Rexjs.forEach,
 	Rexjs.every,
 	Object.defineProperty
