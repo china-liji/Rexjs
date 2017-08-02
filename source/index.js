@@ -22,7 +22,7 @@ this.Source = function(File, EventEmitter){
 			File.write(
 				"rex-es.js",
 				list.map((filename) => {
-						var content = File.read(`${MAPS_PATH}/${filename}.js`);
+						var content = File.read(`${MAPS_PATH}/${filename}`);
 
 						this.emit("read", content, filename);
 						return content;
@@ -49,10 +49,10 @@ this.DevSource = function(Source, File, FUNCTION_BODY_REGEXP_SOURCE){
 				"read",
 				(content, filename) => {
 					switch(filename){
-						case "header":
+						case "file-header.js":
 							break;
 
-						case "footer":
+						case "file-footer.js":
 							break;
 
 						default:
@@ -65,7 +65,7 @@ this.DevSource = function(Source, File, FUNCTION_BODY_REGEXP_SOURCE){
 									.match(
 										/${FUNCTION_BODY_REGEXP_SOURCE}/
 									)[1] +
-									"\\n//# sourceURL=http://rexjs.org/${filename}.js"
+									"\\n//# sourceURL=http://rexjs.org/${filename}"
 								)`
 							);
 							return;
@@ -96,8 +96,9 @@ this.DevSource = function(Source, File, FUNCTION_BODY_REGEXP_SOURCE){
 	/^\s*function\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/.source
 );
 
+console.time("time");
 new this[dev ? "DevSource" : "Source"]().generate();
-
+console.timeEnd("time");
 }(
 	// MAPS_PATH
 	"/maps",
@@ -105,8 +106,72 @@ new this[dev ? "DevSource" : "Source"]().generate();
 	process.argv.indexOf("-dev") > -1,
 	// list
 	[
-		"header",
-		"helper",
-		"footer"
+		"file-header.js",
+		"ecmaScript-helper.js",
+		"common-expression.js",
+		"ecmaScript-statement.js",
+		"ecmaScript-statements.js",
+		"basic-tag.js",
+		"file-position.js",
+		"literal-base.js",
+		"literal-inheritor.js",
+		"mathematical-number.js",
+		"identifier.js",
+		"variable.js",
+		"semicolon.js",
+		"line-terminator.js",
+		"comment.js",
+		"accessor-dot.js",
+		"accessor-bracket.js",
+		"comma.js",
+		"unary-base.js",
+		"unary-non-assginment.js",
+		"unary-assginment.js",
+		"in(de)crement.js",
+		"binary-base.js",
+		"binary-special.js",
+		"binary-all.js",
+		"exponentiation.js",
+		"ternary.js",
+		"call.js",
+		"spread.js",
+		"destructuring.js",
+		"array.js",
+		"declaration-array.js",
+		"nested-declaration-array-item.js",
+		"block.js",
+		"block-component.js",
+		"function.js",
+		"function-declaration.js",
+		"generator.js",
+		"argument.js",
+		"argument-default.js",
+		"argument-rest.js",
+		"function-body.js",
+		"target.js",
+		"grouping.js",
+		"arrow.js",
+		"property.js",
+		"property-iteral-name.js",
+		"property-identifier-name.js",
+		// "",
+		// "",
+		// "",
+		// "",
+		// "",
+		// "",
+		// "",
+		// "",
+		// "",
+		// "",
+		// "",
+		// "",
+		// "",
+		// "",
+		// "",
+		// "",
+		// "",
+		// "",
+		"file-footer.js"
 	]
 );

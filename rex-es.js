@@ -1119,7 +1119,7 @@ this.StringTag = function(){
 
 
 // 算数标签相关
-~function(){
+~function(config){
 
 this.MathematicalNumberTag = function(NumberTag){
 	/**
@@ -1162,15 +1162,7 @@ this.MathematicalNumberTag = function(NumberTag){
 	this.NumberTag
 );
 
-}.call(
-	this
-);
-
-
-// 算数子标签相关
-~function(MathematicalNumberTag, config){
-
-this.BinaryNumberTag = function(){
+this.BinaryNumberTag = function(MathematicalNumberTag){
 	/**
 	 * 二进制数字标签
 	 * @param {Number} _type - 标签类型
@@ -1192,9 +1184,11 @@ this.BinaryNumberTag = function(){
 	});
 	
 	return BinaryNumberTag;
-}();
+}(
+	this.MathematicalNumberTag
+);
 
-this.OctalNumberTag = function(){
+this.OctalNumberTag = function(MathematicalNumberTag){
 	/**
 	 * 八进制数字标签
 	 * @param {Number} _type - 标签类型
@@ -1216,11 +1210,12 @@ this.OctalNumberTag = function(){
 	});
 	
 	return OctalNumberTag;
-}();
+}(
+	this.MathematicalNumberTag
+);
 
 }.call(
 	this,
-	this.MathematicalNumberTag,
 	this.LiteralExpression.config
 );
 
@@ -2878,7 +2873,7 @@ this.PostfixUnaryAssignmentTag = function(UnaryAssignmentTag, PostfixUnaryExpres
 );
 
 
-// 一元赋值标签
+// 递增和递减标签
 ~function(UnaryAssignmentTag, PostfixUnaryAssignmentTag){
 
 this.IncrementTag = function(){

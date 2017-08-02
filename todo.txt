@@ -94,34 +94,6 @@ async
 
 	- 优先级较后
 
-对象属性的连续简写方式 - 2016.10.12
-	- 如：
-		源码：
-			function getElements(){
-				return jQuery(".class") <- css("color", "red"), timeStr = Date.now(), ["+1"] = 1, attr("data-key", 0);
-			};
-
-		解析后（大概意思如下）：
-			function getElements(){
-				var $els = jQuery(".class");
-
-				$els.("color", "red");
-
-				$els.timeStr = Date.now();
-				$els["+1"] = 1;
-
-				$els.attr("data-key", 0);
-				return $els;
-			};
-		
-	- 原因：
-		1. 有时候，一个函数，我就想让读代码和维护代码的人一看，就知道我要返回的是什么，而不是我中间做了哪些无关紧要的事情，
-		简单的说，让他人关注的是结果，而不是过程
-		
-		2. 如果你需要别人关注过程，那么可以不这么写，可以采取解析后的代码方式写，以上只不过提供了一种选择
-
-	- 优先级较后
-
 压缩打包前的开发环境不需要引用 Rexjs 等相关文件 - 2016.11.10
 	- 利用 Electron 封装一个浏览器，使其内部加载 Rexjs（但不能影响当前运行环境）并利用 Rexjs 编译所有 js 文件，包括 new Function("try fn()");
 	- 这样，可以使代码不用每次写完都 watch 编译，尽量使得开发环境简单
@@ -142,6 +114,8 @@ async
 --------
 已完成功能 ↓
 --------
+分解 rex-es.js 50% - 2017.08.02
+
 开始分解 rex-es.js - 2017.08.01
 
 优化 中断流 与 label 语句的解析机制，以提高解析性能 - 2017.07.31

@@ -3,7 +3,7 @@ new function(Rexjs, forEach){
 "use strict";
 
 // 列表相关
-~function(isNaN){
+~function(){
 
 this.List = function(Array, Object, toArray){
 	/**
