@@ -5,7 +5,7 @@
 			"type": "node",
 			"request": "launch",
 			"name": "source",
-			"program": "${workspaceRoot}/source/index.js",
+			"program": "${workspaceRoot}/index.js",
 			"args": [
 				"-dev"
 			]
@@ -14,7 +14,7 @@
 			"type": "node",
 			"request": "launch",
 			"name": "dev",
-			"program": "${workspaceRoot}/dev/index.js"
+			"program": "${workspaceRoot}/dev.js"
 		}
 	]
 }
