@@ -21,7 +21,6 @@ new function(
 ){
 "use strict";
 
-
 //ECMAScript 辅助类
 ~function(){
 
@@ -1451,7 +1450,7 @@ this.VariableDeclarationTag = function(VariableTag, SCOPE_CLOSURE, visitor){
 		 * @params {ECMAScriptStatements} statements - 当前语句块
 		 */
 		nextStatementsOf: function(statements){
-			// 如果当前语句块是闭包，那么返回 null（因为不同闭包内，可以多次声明同一变量），否则返回 target
+			// 如果当前语句块是闭包，那么返回 NULL（因为不同闭包内，可以多次声明同一变量），否则返回 target
 			return (statements.scope & SCOPE_CLOSURE) === SCOPE_CLOSURE ? null : statements.target;
 		},
 		/**
@@ -11532,7 +11531,7 @@ this.TerminatedFlowTag = function(TerminatedFlowExpression, TerminatedFlowStatem
 
 
 // 中断流标签子类相关
-~function(TerminatedFlowTag){
+~function(TerminatedFlowTag, ECMAScriptStatements){
 
 this.ReturnTag = function(SCOPE_CLOSURE, visitor){
 	/**
@@ -11590,21 +11589,11 @@ this.ReturnTag = function(SCOPE_CLOSURE, visitor){
 	
 	return ReturnTag;
 }(
-	this.ECMAScriptStatements.SCOPE_CLOSURE,
+	ECMAScriptStatements.SCOPE_CLOSURE,
 	TerminatedFlowTag.prototype.visitor
 );
 
-}.call(
-	this,
-	this.TerminatedFlowTag,
-	this.ECMAScriptStatements
-);
-
-
-// 中断流标签子类相关
-~function(){
-
-this.ThrowTag = function(TerminatedFlowTag){
+this.ThrowTag = function(){
 	/**
 	 * throw 标签
 	 * @param {Number} _type - 标签类型
@@ -11627,9 +11616,7 @@ this.ThrowTag = function(TerminatedFlowTag){
 	});
 	
 	return ThrowTag;
-}(
-	this.TerminatedFlowTag
-);
+}();
 
 this.ThrowContextLineTerminatorTag = function(IllegalLineTerminatorTag){
 	/**
@@ -11661,7 +11648,9 @@ this.ThrowContextLineTerminatorTag = function(IllegalLineTerminatorTag){
 );
 
 }.call(
-	this
+	this,
+	this.TerminatedFlowTag,
+	this.ECMAScriptStatements
 );
 
 
@@ -22092,7 +22081,6 @@ this.ECMAScriptParser = function(ECMAScriptTagsMap, GlobalStatements, tagsMap, p
 	this,
 	Rexjs.SyntaxParser
 );
-
 
 Rexjs.static(this);
 }(

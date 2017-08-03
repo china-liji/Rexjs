@@ -1,0 +1,30 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>index.html</title>
+	<base href="../ "/>
+</head>
+<body>
+	<div></div>
+	<script src="source/rex-core.js"></script>
+	<script src="source/rex-syntax.js"></script>
+	<script src="dev/rex-es.js"></script>
+	<!-- <script src="rex-es.js"></script>
+	<script src="rex-helper.js"></script> -->
+	
+	<script src="index.js" type="text/rexjs"></script>
+
+	<script>
+		new function(){return;
+			// Rexjs.ECMAScript6Config.all = false
+
+			return;
+			var debug = true;
+			var filename = document.baseURI + (debug ? "index.js" : "test-old/profile.js");
+
+			new Rexjs.Module(filename);
+		}()
+	</script>
+</body>
+</html>
