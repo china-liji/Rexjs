@@ -798,6 +798,33 @@ this.Module = function(ModuleName, ECMAScriptParser, MappingBuilder, File, STATU
 // 其他
 ~function(){
 
+this.Function = function(bind, empty){
+	function Function(){};
+	Function = new Rexjs(Function);
+
+	Function.static({
+		convert: function(object, propertyName){
+			if(arguments.length === 1){
+				return typeof object === "function" ? object : empty;
+			}
+
+			var func = object[propertyName];
+
+			if(typeof func !== "function"){
+				return empty;
+			}
+
+			return bind.call(func, object);
+		}
+	});
+
+	return Function;
+}(
+	Function.bind,
+	// empty
+	function(){}
+);
+
 this.Parameter = function(forEach, push){
 	function Parameter(value){
 		this.value = value;

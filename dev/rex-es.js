@@ -2521,10 +2521,12 @@ this.UnaryStatement = function(){
 		 * @param {Context} context - 语法标签上下文
 		 */
 		try: function(parser, context){
+			var expression = this.expression;
+
 			// 如果一元标签验证该标签为表达式分隔符标签
-			if(this.target.expression.context.tag.isSeparator(context)){
+			if(this.target.expression.context.tag.isSeparator(context, expression)){
 				// 跳出语句并设置 operand
-				this.out().operand = this.expression;
+				this.out().operand = expression;
 			}
 		}
 	});
@@ -2547,6 +2549,7 @@ this.UnaryTag = function(UnaryExpression, UnaryStatement, ExpressionSeparatorTag
 		/**
 		 * 验证所提供的标签是否为表达式分隔符标签
 		 * @param {Context} context - 所需验证的标签上下文
+		 * @param {Expression} operand - 该一元表达式所操作的对象
 		 */
 		isSeparator: function(context){
 			return context.tag instanceof ExpressionSeparatorTag;
@@ -2623,6 +2626,75 @@ this.UnaryKeywordTag = function(UnaryTag){
 
 eval(
 									function(){
+										// 执行函数的一元操作符相关
+~function(UnaryKeywordTag){
+
+this.ExecutableExpression = function(){
+	/**
+	 * 可被执行的（函数）表达式
+	 * @param {Context} open - 起始标签上下文
+	 */
+	function ExecutableExpression(open){
+		PartnerExpression.call(this, open);
+	};
+	ExecutableExpression = new Rexjs(ExecutableExpression, PartnerExpression);
+
+	return ExecutableExpression;
+}();
+
+this.ExecTag = function(ExecutableExpression, isSeparator){
+	/**
+	 * 执行函数关键字（如：new、try 等）标签
+	 * @param {Number} _type - 标签类型
+	 */
+	function ExecTag(_type){
+		UnaryKeywordTag.call(this, _type);
+	};
+	ExecTag = new Rexjs(ExecTag, UnaryKeywordTag);
+	
+	ExecTag.props({
+		/**
+		 * 验证所提供的标签是否为表达式分隔符标签
+		 * @param {Context} context - 所需验证的标签上下文
+		 * @param {Expression} operand - 该一元表达式所操作的对象
+		 */
+		isSeparator: function(context, operand){
+			/*
+				该 isSeparator 是由 try 方法进入，
+				而只有 CLASS_EXPRESSION_CONTEXT 标签才能进入 try
+			*/
+			return operand instanceof ExecutableExpression || isSeparator.call(this, context);
+		},
+		/**
+		 * 获取此标签接下来所需匹配的标签列表
+		 * @param {TagsMap} tagsMap - 标签集合映射
+		 */
+		require: function(tagsMap){
+			return tagsMap.execContextTags;
+		}
+	});
+	
+	return ExecTag;
+}(
+	this.ExecutableExpression,
+	UnaryKeywordTag.prototype.isSeparator
+);
+
+}.call(
+	this,
+	this.UnaryKeywordTag,
+);
+									}
+									.toString()
+									.match(
+										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+									)[1] +
+									"\n//# sourceURL=http://rexjs.org/unary-exec.js"
+								);
+
+
+eval(
+									function(){
 										// 非赋值一元标签
 ~function(UnaryTag, UnaryKeywordTag){
 
@@ -2643,43 +2715,23 @@ this.DeleteTag = function(){
 	return DeleteTag;
 }();
 
-this.NewTag = function(isSeparator){
+this.NewTag = function(ExecTag){
 	/**
 	 * new 关键字标签
 	 * @param {Number} _type - 标签类型
 	 */
 	function NewTag(_type){
-		UnaryKeywordTag.call(this, _type);
+		ExecTag.call(this, _type);
 	};
-	NewTag = new Rexjs(NewTag, UnaryKeywordTag);
+	NewTag = new Rexjs(NewTag, ExecTag);
 	
 	NewTag.props({
-		/**
-		 * 验证所提供的标签是否为表达式分隔符标签
-		 * @param {Context} context - 所需验证的标签上下文
-		 */
-		isSeparator: function(context){
-			/*
-				该 isSeparator 是由 try 方法进入，
-				而只有 CLASS_EXPRESSION_CONTEXT 标签才能进入 try，
-				如果是起始小括号，
-				那么则说明，它确定就是函数实例化的小括号
-			*/
-			return context.content === "(" || isSeparator.call(this, context);
-		},
-		regexp: /new/,
-		/**
-		 * 获取此标签接下来所需匹配的标签列表
-		 * @param {TagsMap} tagsMap - 标签集合映射
-		 */
-		require: function(tagsMap){
-			return tagsMap.newContextTags;
-		}
+		regexp: /new/
 	});
 	
 	return NewTag;
 }(
-	UnaryKeywordTag.prototype.isSeparator
+	this.ExecTag
 );
 
 this.TypeofTag = function(){
@@ -4396,19 +4448,25 @@ eval(
 										// 函数调用相关
 ~function(BracketAccessorExpression, UnaryKeywordTag, parameterSeparatorTag, closeCallTag, extractTo){
 
-this.CallExpression = function(UnaryExpression, AccessorExpression, config, compileWithAccessor, compileWithNew, compileDefault){
+this.CallExpression = function(ExecutableExpression, AccessorExpression, UnaryStatement, config, compileWithAccessor, compileWithNew, compileDefault){
 	/**
 	 * 函数调用表达式
 	 * @param {Context} open - 起始标签上下文
-	 * @param {Expression} operand - 操作对象表达式
+	 * @param {ECMAScriptStatement} statement - 当前语句
 	 */
-	function CallExpression(open, operand){
-		PartnerExpression.call(this, open);
+	function CallExpression(open, statement){
+		ExecutableExpression.call(this, open);
 
-		this.operand = operand;
+		this.operand = statement.expression;
 		this.inner = new ListExpression(null, ",");
+
+		if(statement instanceof UnaryStatement){
+			if(statement.target.expression.context.content === "new"){
+				this.new = true;
+			}
+		}
 	};
-	CallExpression = new Rexjs(CallExpression, PartnerExpression);
+	CallExpression = new Rexjs(CallExpression, ExecutableExpression);
 
 	CallExpression.static({
 		/**
@@ -4430,20 +4488,16 @@ this.CallExpression = function(UnaryExpression, AccessorExpression, config, comp
 			// 如果有拓展符且需要编译
 			if(this.hasSpread && config.spread){
 				switch(true){
+					// 如果是 new 实例化
+					case this.new:
+						compileWithNew(contentBuilder, this, operand);
+						return;
+
 					// 如果是对象方法的调用
 					case operand instanceof AccessorExpression:
 						// 根据访问器编译
 						compileWithAccessor(contentBuilder, this, operand, this.variable);
 						return;
-
-					// 如果是一元表达式
-					case operand instanceof UnaryExpression:
-						// 而且如果是 new 关键字
-						if(operand.context.content === "new"){
-							// 根据 new 关键字编译
-							compileWithNew(contentBuilder, this, operand);
-							return;
-						}
 
 					default:
 						// 编译默认情况
@@ -4458,14 +4512,16 @@ this.CallExpression = function(UnaryExpression, AccessorExpression, config, comp
 			extractTo.call(this, contentBuilder);
 		},
 		hasSpread: false,
+		new: false,
 		operand: null,
 		variable: ""
 	});
 
 	return CallExpression;
 }(
-	this.UnaryExpression,
+	this.ExecutableExpression,
 	this.AccessorExpression,
+	this.UnaryStatement,
 	// config
 	new SyntaxConfig("spread"),
 	// compileWithAccessor
@@ -4498,12 +4554,10 @@ this.CallExpression = function(UnaryExpression, AccessorExpression, config, comp
 	},
 	// compileWithNew
 	function(contentBuilder, expression, operand){
-		// 追加 new 关键字上下文
-		contentBuilder.appendContext(operand.context);
 		// 追加 bind 方法
 		contentBuilder.appendString("(Function.bind.apply(");
 		// 提取该调用的方法
-		operand.operand.extractTo(contentBuilder);
+		operand.extractTo(contentBuilder);
 		// 追加拓展符编译的方法
 		contentBuilder.appendString(",Rexjs.Parameter.toSpreadArray");
 		// 追加函数调用的起始小括号
@@ -4624,7 +4678,7 @@ this.OpenCallTag = function(OpenParenTag, CallExpression, CallStatement){
 		 */
 		visitor: function(parser, context, statement, statements){
 			// 设置当前表达式
-			statement.expression = new CallExpression(context, statement.expression);
+			statement.expression = new CallExpression(context, statement);
 			
 			// 设置当前语句
 			(
@@ -14753,8 +14807,237 @@ forLogicConditionSeparatorTag = new this.ForLogicConditionSeparatorTag();
 
 eval(
 									function(){
+										~function(UnaryExpression, CallExpression, FunctionConvertorExpression, config){
+
+this.TryFunctionExpression = function(extractTo){
+	/**
+	 * 尝试执行函数表达式
+	 * @param {Context} context - 标签上下文
+	 */
+	function TryFunctionExpression(context){
+		UnaryExpression.call(this, context);
+	};
+	TryFunctionExpression = new Rexjs(TryFunctionExpression, UnaryExpression);
+
+	TryFunctionExpression.props({
+		/**
+		 * 提取表达式文本内容
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 */
+		extractTo: function(contentBuilder){
+			// 如果需要编译
+			if(config.tryFunction){
+				// 直接提取操作对象
+				this.operand.extractTo(contentBuilder);
+				return;
+			}
+
+			// 调用父类方法
+			extractTo.call(this, contentBuilder);
+		}
+	});
+
+	return TryFunctionExpression;
+}(
+	UnaryExpression.prototype.extractTo
+);
+
+this.FunctionConvertorExpression = FunctionConvertorExpression = function(AccessorExpression, extractAccessor){
+	/**
+	 * 函数转换器表达式
+	 * @param {Expression} func - 标签上下文
+	 */
+	function FunctionConvertorExpression(func){
+		Expression.call(this, func.context);
+
+		this.function = func;
+	};
+	FunctionConvertorExpression = new Rexjs(FunctionConvertorExpression, Expression);
+
+	FunctionConvertorExpression.props({
+		called: true,
+		function: null,
+		/**
+		 * 提取表达式文本内容
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 */
+		extractTo: function(contentBuilder){
+			var func = this.function;
+
+			// 如果需要编译
+			if(config.tryFunction){
+				// 追加转换方法
+				contentBuilder.appendString("(Rexjs.Function.convert(");
+
+				// 如果函数是访问器形式的
+				if(func instanceof AccessorExpression){
+					// 以访问器形式提取
+					extractAccessor(contentBuilder, func, func.property);
+				}
+				else {
+					// 直接提取
+					func.extractTo(contentBuilder);
+				}
+
+				// 追加转换方法的结束小括号
+				contentBuilder.appendString(
+					// 如果没有带执行方法的小括号，则加上
+					"))" + (this.called ? "" : "()")
+				);
+
+				return;
+			}
+
+			// 直接提取
+			func.extractTo(contentBuilder);
+		}
+	});
+
+	return FunctionConvertorExpression;
+}(
+	this.AccessorExpression,
+	// extractAccessor
+	function(contentBuilder, func, property){
+		// 先提取函数所属对象
+		func.object.extractTo(contentBuilder);
+
+		// 追加 convert 方法的参数分隔符
+		contentBuilder.appendString(",");
+
+		// 如果是匹配组表达式，则说明是中括号（window["a"]）形式的访问器
+		if(property instanceof PartnerExpression){
+			// 将起始中括号改成小括号
+			contentBuilder.appendString("(");
+			// 提取括号内部表达式
+			property.inner.extractTo(contentBuilder);
+			// 将结束中括号改成小括号
+			contentBuilder.appendString(")");
+			return;
+		}
+
+		// 将标识符用双引号包括起来
+		contentBuilder.appendString('"');
+		// 提取标识符
+		contentBuilder.appendContext(property);
+		// 将标识符用双引号包括起来
+		contentBuilder.appendString('"');
+	}
+);
+
+this.TryFunctionStatement = function(UnaryStatement, setOperand){
+	/**
+	 * 一元语句
+	 * @param {Statements} statements - 该语句将要所处的语句块
+	 */
+	function TryFunctionStatement(statements){
+		UnaryStatement.call(this, statements);
+	};
+	TryFunctionStatement = new Rexjs(TryFunctionStatement, UnaryStatement);
+	
+	TryFunctionStatement.props({
+		/**
+		 * 捕获处理异常
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 语法标签上下文
+		 */
+		catch: function(){
+			// 设置 operand
+			setOperand(this, this.expression);
+		},
+		/**
+		 * 尝试处理异常
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 语法标签上下文
+		 */
+		try: function(parser, context){
+			var expression = this.expression;
+
+			// 如果一元标签验证该标签为表达式分隔符标签
+			if(this.target.expression.context.tag.isSeparator(context, expression)){
+				// 设置 operand
+				setOperand(this, expression);
+			}
+		}
+	});
+	
+	return TryFunctionStatement;
+}(
+	this.UnaryStatement,
+	// setOperand
+	function(statement, expression){
+		// 如果是函数调用表达式
+		if(expression instanceof CallExpression){
+			// 将函数调用表达式的操作对象设置为 函数转换器表达式
+			expression.operand = new FunctionConvertorExpression(expression.operand);
+		}
+		else {
+			// 直接设置表达式为 函数转换器表达式
+			expression = new FunctionConvertorExpression(expression);
+			// 并告知函数转换器表达式，并没有被手动调用
+			expression.called = false;
+		}
+
+		// 设置操作对象
+		statement.out().operand = expression;
+	}
+);
+
+this.TryFunctionTag = function(ExecTag, TryFunctionExpression, TryFunctionStatement){
+	/**
+	 * 尝试执行函数的 try 标签
+	 * @param {Number} _type - 标签类型
+	 */
+	function TryFunctionTag(_type){
+		ExecTag.call(this, _type);
+	};
+	TryFunctionTag = new Rexjs(TryFunctionTag, ExecTag);
+
+	TryFunctionTag.props({
+		regexp: /try/,
+		/**
+		 * 标签访问器
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 标签上下文
+		 * @param {Statement} statement - 当前语句
+		 * @param {Statements} statements - 当前语句块
+		 */
+		visitor: function(parser, context, statement, statements){
+			// 设置当前表达式
+			statement.expression = new TryFunctionExpression(context);
+			// 设置当前语句
+			statements.statement = new TryFunctionStatement(statements);
+		}
+	});
+
+	return TryFunctionTag;
+}(
+	this.ExecTag,
+	this.TryFunctionExpression,
+	this.TryFunctionStatement
+);
+
+}.call(
+	this,
+	this.UnaryExpression,
+	this.CallExpression,
+	// FunctionConvertorExpression
+	null,
+	// config
+	new SyntaxConfig("tryFunction")
+);
+									}
+									.toString()
+									.match(
+										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+									)[1] +
+									"\n//# sourceURL=http://rexjs.org/try-function.js"
+								);
+
+
+eval(
+									function(){
 										// try catch 语句相关
-~function(catchTag, finallyTag){
+~function(TryFunctionExpression, TryFunctionStatement, tryFunctionTag, catchTag, finallyTag){
 	
 this.TryExpression = function(){
 	/**
@@ -14814,7 +15097,7 @@ this.TryExpression = function(){
 	return TryExpression;
 }();
 
-this.TryStatement = function(){
+this.TryStatement = function(toUnary){
 	/**
 	 * try 语句
 	 * @param {Statements} statements - 该语句将要所处的语句块
@@ -14831,8 +15114,15 @@ this.TryStatement = function(){
 		 * @param {Context} context - 语法标签上下文
 		 */
 		catch: function(parser, context){
+			var expression = this.expression;
+
+			// 如果是默认表达式，即 try 关键字后面跟的不是起始大括号 "{"，因为起始大括号会给该语句重新设置表达式为 BlockExpression
+			if(expression.default){
+				return toUnary(parser, this, expression, context);
+			}
+
 			// 跳出语句并设置 tryBlock 属性
-			this.out().tryBlock = this.expression;
+			this.out().tryBlock = expression;
 			
 			switch(context.content){
 				// 如果是 catch
@@ -14846,11 +15136,34 @@ this.TryStatement = function(){
 
 			// 报错
 			parser.error(context, ECMAScriptErrors.TRY);
-		}
+		},
+		expression: new DefaultExpression()
 	});
 	
 	return TryStatement;
-}();
+}(
+	// toUnary
+	function(parser, statement, expression, context){
+		var tag = context.tag;
+
+		// 如果匹配到的标签是可误解的
+		if(tag.type.mistakable){
+			var statements = statement.statements, targetContext = statement.out().context;
+
+			// 重置标签
+			targetContext.tag = tryFunctionTag;
+			// 重置目标语句的表达式
+			statement.target.expression = new TryFunctionExpression(targetContext);
+			// 设置当前语句为
+			statements.statement = new TryFunctionStatement(statements);
+
+			return tag;
+		}
+
+		// 报错
+		parser.error(context);
+	}
+);
 
 this.CatchStatement = function(){
 	/**
@@ -14940,7 +15253,7 @@ this.TryTag = function(TryExpression, TryStatement){
 		 * @param {TagsMap} tagsMap - 标签集合映射
 		 */
 		require: function(tagsMap){
-			return tagsMap.blockTags;
+			return tagsMap.tryContextTags;
 		},
 		/**
 		 * 标签访问器
@@ -15152,6 +15465,10 @@ finallyTag = new this.FinallyTag();
 
 }.call(
 	this,
+	this.TryFunctionExpression,
+	this.TryFunctionStatement,
+	// tryFunctionTag
+	new this.TryFunctionTag(),
 	// catchTag
 	null,
 	// finallyTag
@@ -20392,19 +20709,14 @@ eval(
 										// 基类标签列表相关
 ~function(ECMAScriptTags, OnlyStatementEndTags){
 
-this.ExpressionTags = function(FunctionTag, ClassTag, OpenObjectTag, VariableTag){
+this.ExpressionTags = function(list){
 	/**
 	 * 表达式标签列表
 	 */
 	function ExpressionTags(){
 		ECMAScriptTags.call(this);
 		
-		this.register(
-			new FunctionTag(),
-			new ClassTag(),
-			new VariableTag(),
-			new OpenObjectTag()
-		);
+		this.delegate(list);
 	};
 	ExpressionTags = new Rexjs(ExpressionTags, ECMAScriptTags);
 	
@@ -20427,10 +20739,14 @@ this.ExpressionTags = function(FunctionTag, ClassTag, OpenObjectTag, VariableTag
 	
 	return ExpressionTags;
 }(
-	this.FunctionTag,
-	this.ClassTag,
-	this.OpenObjectTag,
-	this.VariableTag
+	// list
+	[
+		this.ClassTag,
+		this.FunctionTag,
+		this.OpenObjectTag,
+		this.TryFunctionTag,
+		this.VariableTag
+	]
 );
 
 this.ExpressionContextTags = function(list){
@@ -21283,7 +21599,7 @@ this.ExportContextTags = function(list){
 	]
 );
 
-this.ExtendsContextTags = function(UnaryTag, NewTag, filter){
+this.ExtendsContextTags = function(UnaryTag, ExecTag, filter){
 	/**
 	 * extends 关键字上下文标签列表
 	 */
@@ -21300,8 +21616,8 @@ this.ExtendsContextTags = function(UnaryTag, NewTag, filter){
 		filter: function(tag){
 			// 如果是一元标签
 			if(tag instanceof UnaryTag){
-				// 如果是 new 关键字标签
-				if(tag instanceof NewTag){
+				// 如果是执行标签
+				if(tag instanceof ExecTag){
 					// 设置为可匹配
 					tag.type = new TagType(TYPE_MATCHABLE);
 				}
@@ -21317,7 +21633,7 @@ this.ExtendsContextTags = function(UnaryTag, NewTag, filter){
 	return ExtendsContextTags;
 }(
 	this.UnaryTag,
-	this.NewTag,
+	this.ExecTag,
 	ExpressionTags.prototype.filter
 );
 
@@ -21809,20 +22125,20 @@ this.NegationContextTags = function(NegationSiblingTag, DecrementSiblingTag){
 	this.DecrementSiblingTag
 );
 
-this.NewContextTags = function(ExtendsContextTags, TargetAccessorTag, SuperTag, filter){
+this.ExecContextTags = function(ExtendsContextTags, TargetAccessorTag, SuperTag, filter){
 	/**
-	 * 语句块起始上下文标签列表
+	 * 执行函数关键字（如：new、try 等）上下文标签列表
 	 */
-	function NewContextTags(){
+	function ExecContextTags(){
 		ExtendsContextTags.call(this);
 
 		this.register(
 			new TargetAccessorTag()
 		);
 	};
-	NewContextTags = new Rexjs(NewContextTags, ExtendsContextTags);
+	ExecContextTags = new Rexjs(ExecContextTags, ExtendsContextTags);
 	
-	NewContextTags.props({
+	ExecContextTags.props({
 		/**
 		 * 标签过滤处理
 		 * @param {SyntaxTag} tag - 语法标签
@@ -21836,10 +22152,10 @@ this.NewContextTags = function(ExtendsContextTags, TargetAccessorTag, SuperTag, 
 			// 调用父类方法
 			filter.call(this, tag);
 		},
-		id: "newContextTags"
+		id: "execContextTags"
 	});
 	
-	return NewContextTags;
+	return ExecContextTags;
 }(
 	this.ExtendsContextTags,
 	this.TargetAccessorTag,
@@ -22625,6 +22941,48 @@ this.ThrowContextTags = function(ThrowContextLineTerminatorTag){
 	this.ThrowContextLineTerminatorTag
 );
 
+this.TryContextTags = function(ExecContextTags, OpenBlockTag, filter){
+	/**
+	 * try 关键字上下文标签
+	 */
+	function TryContextTags(){
+		ExecContextTags.call(this);
+		
+		this.register(
+			new OpenBlockTag()
+		);
+	};
+	TryContextTags = new Rexjs(TryContextTags, ExecContextTags);
+
+	TryContextTags.props({
+		id: "tryContextTags",
+		/**
+		 * 标签过滤处理
+		 * @param {SyntaxTag} tag - 语法标签
+		 */
+		filter: function(tag){
+			var value = filter.call(this, tag);
+
+			// 如果是表达式标签
+			if(tag.class.expression){
+				// 如果是可以匹配的
+				if(tag.type.matchable){
+					// 设置为可匹配
+					tag.type = new TagType(TYPE_MISTAKABLE);
+				}
+			}
+			
+			return value;
+		}
+	});
+	
+	return TryContextTags;
+}(
+	this.ExecContextTags,
+	this.OpenBlockTag,
+	this.ExecContextTags.prototype.filter
+);
+
 this.UnexpectedTags = function(){
 	/**
 	 * 未捕获的标签列表
@@ -22880,6 +23238,7 @@ this.ECMAScriptTagsMap = function(SyntaxTagsMap, tagsArray){
 		this.DoWhileConditionTags,
 		this.DotAccessorContextTags,
 		this.ExceptionVariableTags,
+		this.ExecContextTags,
 		this.ExportContextTags,
 		this.ExtendsContextTags,
 		this.FileStartTags,
@@ -22904,7 +23263,6 @@ this.ECMAScriptTagsMap = function(SyntaxTagsMap, tagsArray){
 		this.ModuleNameTags,
 		this.ModuleVariableTags,
 		this.NegationContextTags,
-		this.NewContextTags,
 		this.OpenArgumentsContextTags,
 		this.OpenClassBodyContextTags,
 		this.OpenMultiLineCommentContextTags,
@@ -22932,6 +23290,7 @@ this.ECMAScriptTagsMap = function(SyntaxTagsMap, tagsArray){
 		this.TemplateContentTags,
 		this.TerminatedBranchFlowContextTags,
 		this.ThrowContextTags,
+		this.TryContextTags,
 		this.UnexpectedTags,
 		this.VarContextTags,
 		this.VariableDeclarationTags,

@@ -15,13 +15,6 @@ async
 	- 如指向外层 this ？
 	- 虽然在箭头函数中没什么用，但对于 class 与 普通函数有用
 
-100% 可能执行、调用的函数变量 - 2016.09.14
-	- 如：fn = null, 当 fn() 代码被执行的时候，就算 fn 为 null 也不会报错
-	- 可能解析前的代码，会加一个一元操作符，如：try fn()、?fn()、>>fn()、@fn()、exec fn() 等等
-	- 可能解析后的代码如： (fn || Function.prototype)()
-	- 原因：很多时候，callback 可以不被提供，但是每次都要判断是否存在，再去执行，很麻烦，这样做能大大简化
-	- 优先级较后
-
 解构赋值 增加“可绑定的函数”功能 - 2016.09.21
 	- 如：var { ::warn, @changeStatus } = this.refs.box，当 warn()、changeStatus() 被执行时，相当于 this.refs.box.warn()、this.refs.box.changeStatus()
 	- 具体符号暂定，可能使用 "@"(比较好看)、"::"(比较符合 react 习惯)
@@ -105,15 +98,22 @@ async
 --------
 	Rexjs 新增语法 ↓
 --------
-
 对象属性默认值
 	Rexjs：var obj = { a = 1 };
 	js：var obj = { a: a === void 0 ? 1 : a };
 
+100% 可能执行、调用的函数变量
+	Rexjs：try fn();
+	js：typeof fn === "function" && fn();
+
+	- 如：fn = null, 当 fn() 代码被执行的时候，就算 fn 为 null 也不会报错
+	- 原因：很多时候，callback 可以不被提供，但是每次都要判断是否存在，再去执行，很麻烦，这样做能大大简化
 
 --------
 已完成功能 ↓
 --------
+100% 可能执行、调用的函数变量 - 2017.08.05
+
 发开环境使用 node 对 rex-es.js 的分解文件进行合并 - 2017.08.03
 
 分解 rex-es.js 100% - 2017.08.03

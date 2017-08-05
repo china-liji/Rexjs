@@ -680,7 +680,7 @@ this.ExportContextTags = function(list){
 	]
 );
 
-this.ExtendsContextTags = function(UnaryTag, NewTag, filter){
+this.ExtendsContextTags = function(UnaryTag, ExecTag, filter){
 	/**
 	 * extends 关键字上下文标签列表
 	 */
@@ -697,8 +697,8 @@ this.ExtendsContextTags = function(UnaryTag, NewTag, filter){
 		filter: function(tag){
 			// 如果是一元标签
 			if(tag instanceof UnaryTag){
-				// 如果是 new 关键字标签
-				if(tag instanceof NewTag){
+				// 如果是执行标签
+				if(tag instanceof ExecTag){
 					// 设置为可匹配
 					tag.type = new TagType(TYPE_MATCHABLE);
 				}
@@ -714,7 +714,7 @@ this.ExtendsContextTags = function(UnaryTag, NewTag, filter){
 	return ExtendsContextTags;
 }(
 	this.UnaryTag,
-	this.NewTag,
+	this.ExecTag,
 	ExpressionTags.prototype.filter
 );
 
@@ -1206,20 +1206,20 @@ this.NegationContextTags = function(NegationSiblingTag, DecrementSiblingTag){
 	this.DecrementSiblingTag
 );
 
-this.NewContextTags = function(ExtendsContextTags, TargetAccessorTag, SuperTag, filter){
+this.ExecContextTags = function(ExtendsContextTags, TargetAccessorTag, SuperTag, filter){
 	/**
-	 * 语句块起始上下文标签列表
+	 * 执行函数关键字（如：new、try 等）上下文标签列表
 	 */
-	function NewContextTags(){
+	function ExecContextTags(){
 		ExtendsContextTags.call(this);
 
 		this.register(
 			new TargetAccessorTag()
 		);
 	};
-	NewContextTags = new Rexjs(NewContextTags, ExtendsContextTags);
+	ExecContextTags = new Rexjs(ExecContextTags, ExtendsContextTags);
 	
-	NewContextTags.props({
+	ExecContextTags.props({
 		/**
 		 * 标签过滤处理
 		 * @param {SyntaxTag} tag - 语法标签
@@ -1233,10 +1233,10 @@ this.NewContextTags = function(ExtendsContextTags, TargetAccessorTag, SuperTag, 
 			// 调用父类方法
 			filter.call(this, tag);
 		},
-		id: "newContextTags"
+		id: "execContextTags"
 	});
 	
-	return NewContextTags;
+	return ExecContextTags;
 }(
 	this.ExtendsContextTags,
 	this.TargetAccessorTag,
@@ -2020,6 +2020,48 @@ this.ThrowContextTags = function(ThrowContextLineTerminatorTag){
 	return ThrowContextTags;
 }(
 	this.ThrowContextLineTerminatorTag
+);
+
+this.TryContextTags = function(ExecContextTags, OpenBlockTag, filter){
+	/**
+	 * try 关键字上下文标签
+	 */
+	function TryContextTags(){
+		ExecContextTags.call(this);
+		
+		this.register(
+			new OpenBlockTag()
+		);
+	};
+	TryContextTags = new Rexjs(TryContextTags, ExecContextTags);
+
+	TryContextTags.props({
+		id: "tryContextTags",
+		/**
+		 * 标签过滤处理
+		 * @param {SyntaxTag} tag - 语法标签
+		 */
+		filter: function(tag){
+			var value = filter.call(this, tag);
+
+			// 如果是表达式标签
+			if(tag.class.expression){
+				// 如果是可以匹配的
+				if(tag.type.matchable){
+					// 设置为可匹配
+					tag.type = new TagType(TYPE_MISTAKABLE);
+				}
+			}
+			
+			return value;
+		}
+	});
+	
+	return TryContextTags;
+}(
+	this.ExecContextTags,
+	this.OpenBlockTag,
+	this.ExecContextTags.prototype.filter
 );
 
 this.UnexpectedTags = function(){

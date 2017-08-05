@@ -18,43 +18,23 @@ this.DeleteTag = function(){
 	return DeleteTag;
 }();
 
-this.NewTag = function(isSeparator){
+this.NewTag = function(ExecTag){
 	/**
 	 * new 关键字标签
 	 * @param {Number} _type - 标签类型
 	 */
 	function NewTag(_type){
-		UnaryKeywordTag.call(this, _type);
+		ExecTag.call(this, _type);
 	};
-	NewTag = new Rexjs(NewTag, UnaryKeywordTag);
+	NewTag = new Rexjs(NewTag, ExecTag);
 	
 	NewTag.props({
-		/**
-		 * 验证所提供的标签是否为表达式分隔符标签
-		 * @param {Context} context - 所需验证的标签上下文
-		 */
-		isSeparator: function(context){
-			/*
-				该 isSeparator 是由 try 方法进入，
-				而只有 CLASS_EXPRESSION_CONTEXT 标签才能进入 try，
-				如果是起始小括号，
-				那么则说明，它确定就是函数实例化的小括号
-			*/
-			return context.content === "(" || isSeparator.call(this, context);
-		},
-		regexp: /new/,
-		/**
-		 * 获取此标签接下来所需匹配的标签列表
-		 * @param {TagsMap} tagsMap - 标签集合映射
-		 */
-		require: function(tagsMap){
-			return tagsMap.newContextTags;
-		}
+		regexp: /new/
 	});
 	
 	return NewTag;
 }(
-	UnaryKeywordTag.prototype.isSeparator
+	this.ExecTag
 );
 
 this.TypeofTag = function(){

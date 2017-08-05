@@ -1,19 +1,25 @@
 // 函数调用相关
 ~function(BracketAccessorExpression, UnaryKeywordTag, parameterSeparatorTag, closeCallTag, extractTo){
 
-this.CallExpression = function(UnaryExpression, AccessorExpression, config, compileWithAccessor, compileWithNew, compileDefault){
+this.CallExpression = function(ExecutableExpression, AccessorExpression, UnaryStatement, config, compileWithAccessor, compileWithNew, compileDefault){
 	/**
 	 * 函数调用表达式
 	 * @param {Context} open - 起始标签上下文
-	 * @param {Expression} operand - 操作对象表达式
+	 * @param {ECMAScriptStatement} statement - 当前语句
 	 */
-	function CallExpression(open, operand){
-		PartnerExpression.call(this, open);
+	function CallExpression(open, statement){
+		ExecutableExpression.call(this, open);
 
-		this.operand = operand;
+		this.operand = statement.expression;
 		this.inner = new ListExpression(null, ",");
+
+		if(statement instanceof UnaryStatement){
+			if(statement.target.expression.context.content === "new"){
+				this.new = true;
+			}
+		}
 	};
-	CallExpression = new Rexjs(CallExpression, PartnerExpression);
+	CallExpression = new Rexjs(CallExpression, ExecutableExpression);
 
 	CallExpression.static({
 		/**
@@ -35,20 +41,16 @@ this.CallExpression = function(UnaryExpression, AccessorExpression, config, comp
 			// 如果有拓展符且需要编译
 			if(this.hasSpread && config.spread){
 				switch(true){
+					// 如果是 new 实例化
+					case this.new:
+						compileWithNew(contentBuilder, this, operand);
+						return;
+
 					// 如果是对象方法的调用
 					case operand instanceof AccessorExpression:
 						// 根据访问器编译
 						compileWithAccessor(contentBuilder, this, operand, this.variable);
 						return;
-
-					// 如果是一元表达式
-					case operand instanceof UnaryExpression:
-						// 而且如果是 new 关键字
-						if(operand.context.content === "new"){
-							// 根据 new 关键字编译
-							compileWithNew(contentBuilder, this, operand);
-							return;
-						}
 
 					default:
 						// 编译默认情况
@@ -63,14 +65,16 @@ this.CallExpression = function(UnaryExpression, AccessorExpression, config, comp
 			extractTo.call(this, contentBuilder);
 		},
 		hasSpread: false,
+		new: false,
 		operand: null,
 		variable: ""
 	});
 
 	return CallExpression;
 }(
-	this.UnaryExpression,
+	this.ExecutableExpression,
 	this.AccessorExpression,
+	this.UnaryStatement,
 	// config
 	new SyntaxConfig("spread"),
 	// compileWithAccessor
@@ -103,12 +107,10 @@ this.CallExpression = function(UnaryExpression, AccessorExpression, config, comp
 	},
 	// compileWithNew
 	function(contentBuilder, expression, operand){
-		// 追加 new 关键字上下文
-		contentBuilder.appendContext(operand.context);
 		// 追加 bind 方法
 		contentBuilder.appendString("(Function.bind.apply(");
 		// 提取该调用的方法
-		operand.operand.extractTo(contentBuilder);
+		operand.extractTo(contentBuilder);
 		// 追加拓展符编译的方法
 		contentBuilder.appendString(",Rexjs.Parameter.toSpreadArray");
 		// 追加函数调用的起始小括号
@@ -229,7 +231,7 @@ this.OpenCallTag = function(OpenParenTag, CallExpression, CallStatement){
 		 */
 		visitor: function(parser, context, statement, statements){
 			// 设置当前表达式
-			statement.expression = new CallExpression(context, statement.expression);
+			statement.expression = new CallExpression(context, statement);
 			
 			// 设置当前语句
 			(

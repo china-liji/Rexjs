@@ -10,18 +10,17 @@
 	<script src="source/rex-core.js"></script>
 	<script src="source/rex-syntax.js"></script>
 	<script src="dev/rex-es.js"></script>
-	<!-- <script src="rex-es.js"></script>
-	<script src="rex-helper.js"></script> -->
+	<script src="source/rex-helper.js"></script>
 	
-	<script src="index.js" type="text/rexjs"></script>
+	<script src="dev/index.js" type="text/rexjs"></script>
 
 	<script>
-		new function(){return;
+		new function(){
 			// Rexjs.ECMAScript6Config.all = false
 
 			return;
 			var debug = true;
-			var filename = document.baseURI + (debug ? "index.js" : "test-old/profile.js");
+			var filename = document.baseURI + (debug ? "dev/index.js" : "test-old/profile.js");
 
 			new Rexjs.Module(filename);
 		}()

@@ -82,10 +82,12 @@ this.UnaryStatement = function(){
 		 * @param {Context} context - 语法标签上下文
 		 */
 		try: function(parser, context){
+			var expression = this.expression;
+
 			// 如果一元标签验证该标签为表达式分隔符标签
-			if(this.target.expression.context.tag.isSeparator(context)){
+			if(this.target.expression.context.tag.isSeparator(context, expression)){
 				// 跳出语句并设置 operand
-				this.out().operand = this.expression;
+				this.out().operand = expression;
 			}
 		}
 	});
@@ -108,6 +110,7 @@ this.UnaryTag = function(UnaryExpression, UnaryStatement, ExpressionSeparatorTag
 		/**
 		 * 验证所提供的标签是否为表达式分隔符标签
 		 * @param {Context} context - 所需验证的标签上下文
+		 * @param {Expression} operand - 该一元表达式所操作的对象
 		 */
 		isSeparator: function(context){
 			return context.tag instanceof ExpressionSeparatorTag;

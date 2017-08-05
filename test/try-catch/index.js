@@ -9,10 +9,10 @@ test.unit(
 		test.true("复杂的测试", source, true);
 
 		test.false(
-			"try 关键字后面缺少大括号",
-			"try 123;catch(e){}",
+			"不完整的 try catch",
+			"try {catch(e){}",
 			function(parser, err){
-				return err.context.tag instanceof Rexjs.NumberTag ? "" : "没有识别出数字";
+				return err.context.content !== "catch";
 			}
 		);
 

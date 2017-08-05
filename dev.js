@@ -23,11 +23,23 @@ this.Server = function(DIR_NAME, http, path, childProcess, testPath, error, read
 							return;
 						}
 
-						if(p.base === "rex-es.js"){
-							childProcess.execFileSync("node", ["index.js", "-dev"]);
+						if(p.base !== "rex-es.js"){
+							readFile(fullPath, p, serverResponse);
+							return;
 						}
 
-						readFile(fullPath, p, serverResponse);
+						childProcess.execFile(
+							"node",
+							["index.js", "-dev"],
+							(err) => {
+								if(err){
+									error(serverResponse);
+									return;
+								}
+
+								readFile(fullPath, p, serverResponse);
+							}
+						);
 					}
 				);
 			});

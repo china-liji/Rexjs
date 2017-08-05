@@ -1,5 +1,5 @@
 // try catch 语句相关
-~function(catchTag, finallyTag){
+~function(TryFunctionExpression, TryFunctionStatement, tryFunctionTag, catchTag, finallyTag){
 	
 this.TryExpression = function(){
 	/**
@@ -59,7 +59,7 @@ this.TryExpression = function(){
 	return TryExpression;
 }();
 
-this.TryStatement = function(){
+this.TryStatement = function(toUnary){
 	/**
 	 * try 语句
 	 * @param {Statements} statements - 该语句将要所处的语句块
@@ -76,8 +76,15 @@ this.TryStatement = function(){
 		 * @param {Context} context - 语法标签上下文
 		 */
 		catch: function(parser, context){
+			var expression = this.expression;
+
+			// 如果是默认表达式，即 try 关键字后面跟的不是起始大括号 "{"，因为起始大括号会给该语句重新设置表达式为 BlockExpression
+			if(expression.default){
+				return toUnary(parser, this, expression, context);
+			}
+
 			// 跳出语句并设置 tryBlock 属性
-			this.out().tryBlock = this.expression;
+			this.out().tryBlock = expression;
 			
 			switch(context.content){
 				// 如果是 catch
@@ -91,11 +98,34 @@ this.TryStatement = function(){
 
 			// 报错
 			parser.error(context, ECMAScriptErrors.TRY);
-		}
+		},
+		expression: new DefaultExpression()
 	});
 	
 	return TryStatement;
-}();
+}(
+	// toUnary
+	function(parser, statement, expression, context){
+		var tag = context.tag;
+
+		// 如果匹配到的标签是可误解的
+		if(tag.type.mistakable){
+			var statements = statement.statements, targetContext = statement.out().context;
+
+			// 重置标签
+			targetContext.tag = tryFunctionTag;
+			// 重置目标语句的表达式
+			statement.target.expression = new TryFunctionExpression(targetContext);
+			// 设置当前语句为
+			statements.statement = new TryFunctionStatement(statements);
+
+			return tag;
+		}
+
+		// 报错
+		parser.error(context);
+	}
+);
 
 this.CatchStatement = function(){
 	/**
@@ -185,7 +215,7 @@ this.TryTag = function(TryExpression, TryStatement){
 		 * @param {TagsMap} tagsMap - 标签集合映射
 		 */
 		require: function(tagsMap){
-			return tagsMap.blockTags;
+			return tagsMap.tryContextTags;
 		},
 		/**
 		 * 标签访问器
@@ -397,6 +427,10 @@ finallyTag = new this.FinallyTag();
 
 }.call(
 	this,
+	this.TryFunctionExpression,
+	this.TryFunctionStatement,
+	// tryFunctionTag
+	new this.TryFunctionTag(),
 	// catchTag
 	null,
 	// finallyTag

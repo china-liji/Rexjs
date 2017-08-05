@@ -1,8 +1,1 @@
-// var fn = function*(){
-// 	var a = 1;
-
-// 	{
-// 		var b = 2;
-// 	}
-	
-// }
+try try try try a(123);

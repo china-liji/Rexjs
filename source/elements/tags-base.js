@@ -1,19 +1,14 @@
 // 基类标签列表相关
 ~function(ECMAScriptTags, OnlyStatementEndTags){
 
-this.ExpressionTags = function(FunctionTag, ClassTag, OpenObjectTag, VariableTag){
+this.ExpressionTags = function(list){
 	/**
 	 * 表达式标签列表
 	 */
 	function ExpressionTags(){
 		ECMAScriptTags.call(this);
 		
-		this.register(
-			new FunctionTag(),
-			new ClassTag(),
-			new VariableTag(),
-			new OpenObjectTag()
-		);
+		this.delegate(list);
 	};
 	ExpressionTags = new Rexjs(ExpressionTags, ECMAScriptTags);
 	
@@ -36,10 +31,14 @@ this.ExpressionTags = function(FunctionTag, ClassTag, OpenObjectTag, VariableTag
 	
 	return ExpressionTags;
 }(
-	this.FunctionTag,
-	this.ClassTag,
-	this.OpenObjectTag,
-	this.VariableTag
+	// list
+	[
+		this.ClassTag,
+		this.FunctionTag,
+		this.OpenObjectTag,
+		this.TryFunctionTag,
+		this.VariableTag
+	]
 );
 
 this.ExpressionContextTags = function(list){
