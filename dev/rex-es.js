@@ -14819,6 +14819,15 @@ this.TryFunctionExpression = function(extractTo){
 	};
 	TryFunctionExpression = new Rexjs(TryFunctionExpression, UnaryExpression);
 
+	TryFunctionExpression.static({
+		/**
+		 * 获取表达式编译配置
+		 */
+		get config(){
+			return config;
+		}
+	});
+	
 	TryFunctionExpression.props({
 		/**
 		 * 提取表达式文本内容
@@ -19332,7 +19341,7 @@ this.MemberVariableTag = function(ConstVariableTag, MemberExpression){
 		 * @param {TagsMap} tagsMap - 标签集合映射
 		 */
 		require: function(tagsMap){
-			return tagsMap.memberContextTag;
+			return tagsMap.memberContextTags;
 		},
 		/**
 		 * 标签访问器
@@ -20733,8 +20742,7 @@ this.ExpressionTags = function(list){
 			}
 			
 			return false;
-		},
-		id: "expressionTags"
+		}
 	});
 	
 	return ExpressionTags;
@@ -20779,8 +20787,7 @@ this.ExpressionContextTags = function(list){
 			}
 
 			return false;
-		},
-		id: "expressionContextTags"
+		}
 	});
 	
 	return ExpressionContextTags;
@@ -20825,8 +20832,7 @@ this.StatementTags = function(FileEndTag){
 			}
 			
 			return false;
-		},
-		id: "statementTags"
+		}
 	});
 	
 	return StatementTags;
@@ -20846,10 +20852,6 @@ this.StatementEndTags = function(){
 		);
 	};
 	StatementEndTags = new Rexjs(StatementEndTags, ECMAScriptTags);
-	
-	StatementEndTags.props({
-		id: "statementEndTags"
-	});
 	
 	return StatementEndTags;
 }();
@@ -20876,8 +20878,7 @@ this.MistakableTags = function(StatementTags){
 			}
 			
 			return false;
-		},
-		id: "mistakableTags"
+		}
 	});
 	
 	return MistakableTags;
@@ -20893,10 +20894,6 @@ this.IllegalTags = function(){
 		ECMAScriptTags.call(this, TYPE_ILLEGAL);
 	};
 	IllegalTags = new Rexjs(IllegalTags, ECMAScriptTags);
-
-	IllegalTags.props({
-		id: "illegalTags"
-	});
 
 	return IllegalTags;
 }();
@@ -20933,10 +20930,6 @@ this.ArgumentNameContextTags = function(ArgumentAssignmentTag){
 	};
 	ArgumentNameContextTags = new Rexjs(ArgumentNameContextTags, ECMAScriptTags);
 
-	ArgumentNameContextTags.props({
-		id: "argumentNameContextTags"
-	});
-	
 	return ArgumentNameContextTags;
 }(
 	this.ArgumentAssignmentTag
@@ -20956,10 +20949,6 @@ this.ArgumentSeparatorContextTags = function(ArgumentNameTag, RestTag){
 	};
 	ArgumentSeparatorContextTags = new Rexjs(ArgumentSeparatorContextTags, IllegalTags);
 
-	ArgumentSeparatorContextTags.props({
-		id: "argumentSeparatorContextTags"
-	});
-	
 	return ArgumentSeparatorContextTags;
 }(
 	this.ArgumentNameTag,
@@ -20978,10 +20967,6 @@ this.ArrowContextTags = function(OpenArrowFunctionBodyTag){
 		);
 	};
 	ArrowContextTags = new Rexjs(ArrowContextTags, ExpressionTags);
-
-	ArrowContextTags.props({
-		id: "arrowContextTags"
-	});
 
 	return ArrowContextTags;
 }(
@@ -21002,10 +20987,6 @@ this.BlockTags = function(OpenBlockTag){
 	};
 	BlockTags = new Rexjs(BlockTags, IllegalTags);
 
-	BlockTags.props({
-		id: "blockTags"
-	});
-	
 	return BlockTags;
 }(
 	this.OpenBlockTag
@@ -21024,10 +21005,6 @@ this.CatchedExceptionTags = function(OpenCatchedExceptionTag){
 	};
 	CatchedExceptionTags = new Rexjs(CatchedExceptionTags, IllegalTags);
 	
-	CatchedExceptionTags.props({
-		id: "catchedExceptionTags"
-	});
-
 	return CatchedExceptionTags;
 }(
 	this.OpenCatchedExceptionTag
@@ -21048,10 +21025,6 @@ this.ClassContextTags = function(ClassNameTag, ExtendsTag, OpenClassBodyTag){
 	};
 	ClassContextTags = new Rexjs(ClassContextTags, IllegalTags);
 
-	ClassContextTags.props({
-		id: "classContextTags"
-	});
-	
 	return ClassContextTags;
 }(
 	this.ClassNameTag,
@@ -21073,10 +21046,6 @@ this.ClassNameContextTags = function(ExtendsTag, OpenClassBodyTag){
 	};
 	ClassNameContextTags = new Rexjs(ClassNameContextTags, IllegalTags);
 
-	ClassNameContextTags.props({
-		id: "classNameContextTags"
-	});
-	
 	return ClassNameContextTags;
 }(
 	this.ExtendsTag,
@@ -21096,10 +21065,6 @@ this.ClassVariableTags = function(ClassVariableTag){
 	};
 	ClassVariableTags = new Rexjs(ClassVariableTags, IllegalTags);
 
-	ClassVariableTags.props({
-		id: "classVariableTags"
-	});
-	
 	return ClassVariableTags;
 }(
 	this.ClassVariableTag
@@ -21128,8 +21093,7 @@ this.CloseArrowFunctionBodyContextTags = function(CommaTag, filter){
 			}
 
 			return filter.call(this, tag);
-		},
-		id: "closeArrowFunctionBodyContextTags"
+		}
 	});
 
 	return CloseArrowFunctionBodyContextTags;
@@ -21151,10 +21115,6 @@ this.CloseCatchedExceptionTags = function(CloseCatchedExceptionTag){
 	};
 	CloseCatchedExceptionTags = new Rexjs(CloseCatchedExceptionTags, IllegalTags);
 	
-	CloseCatchedExceptionTags.props({
-		id: "closeCatchedExceptionTags"
-	});
-
 	return CloseCatchedExceptionTags;
 }(
 	this.CloseCatchedExceptionTag
@@ -21186,8 +21146,7 @@ this.ClosureVariableContextTags = function(BasicAssignmentTag, IllegalShorthandA
 			}
 			
 			return false;
-		},
-		id: "closureVariableContextTags"
+		}
 	})
 	
 	return ClosureVariableContextTags;
@@ -21210,10 +21169,6 @@ this.VariableDeclarationTags = function(OpenDeclarationArrayTag, OpenDeclaration
 	};
 	VariableDeclarationTags = new Rexjs(VariableDeclarationTags, IllegalTags);
 
-	VariableDeclarationTags.props({
-		id: "variableDeclarationTags"
-	});
-	
 	return VariableDeclarationTags;
 }(
 	this.OpenDeclarationArrayTag,
@@ -21233,10 +21188,6 @@ this.ConstContextTags = function(VariableDeclarationTags, ConstVariableTag){
 	};
 	ConstContextTags = new Rexjs(ConstContextTags, VariableDeclarationTags);
 
-	ConstContextTags.props({
-		id: "constContextTags"
-	});
-	
 	return ConstContextTags;
 }(
 	this.VariableDeclarationTags,
@@ -21256,10 +21207,6 @@ this.ConstructorArgumentsTags = function(OpenConstructorArgumentsTag){
 	};
 	ConstructorArgumentsTags = new Rexjs(ConstructorArgumentsTags, IllegalTags);
 
-	ConstructorArgumentsTags.props({
-		id: "constructorArgumentsTags"
-	});
-
 	return ConstructorArgumentsTags;
 }(
 	this.OpenConstructorArgumentsTag
@@ -21277,10 +21224,6 @@ this.ConstructorBodyTags = function(OpenConstructorBodyTag){
 		);
 	};
 	ConstructorBodyTags = new Rexjs(ConstructorBodyTags, IllegalTags);
-
-	ConstructorBodyTags.props({
-		id: "constructorBodyTags"
-	});
 
 	return ConstructorBodyTags;
 }(
@@ -21300,10 +21243,6 @@ this.DeclarationPropertySeparatorTags = function(DeclarationPropertySeparatorTag
 		);
 	};
 	DeclarationPropertySeparatorTags = new Rexjs(DeclarationPropertySeparatorTags, IllegalTags);
-
-	DeclarationPropertySeparatorTags.props({
-		id: "declarationPropertySeparatorTags"
-	});
 
 	return DeclarationPropertySeparatorTags;
 }(
@@ -21325,10 +21264,6 @@ this.DeclarationArrayItemSeparatorTags = function(DeclarationArrayItemSeparatorT
 	};
 	DeclarationArrayItemSeparatorTags = new Rexjs(DeclarationArrayItemSeparatorTags, IllegalTags);
 
-	DeclarationArrayItemSeparatorTags.props({
-		id: "declarationArrayItemSeparatorTags"
-	});
-	
 	return DeclarationArrayItemSeparatorTags; 
 }(
 	this.DeclarationArrayItemSeparatorTag,
@@ -21348,10 +21283,6 @@ this.DeclarationArrayItemContextTags = function(DeclarationArrayItemSeparatorTag
 	};
 	DeclarationArrayItemContextTags = new Rexjs(DeclarationArrayItemContextTags, DeclarationArrayItemSeparatorTags);
 
-	DeclarationArrayItemContextTags.props({
-		id: "declarationArrayItemContextTags"
-	});
-	
 	return DeclarationArrayItemContextTags; 
 }(
 	this.DeclarationArrayItemSeparatorTags,
@@ -21371,10 +21302,6 @@ this.DeclarationPropertyNameSeparatorTags = function(DeclarationPropertyNameSepa
 	};
 	DeclarationPropertyNameSeparatorTags = new Rexjs(DeclarationPropertyNameSeparatorTags, IllegalTags);
 
-	DeclarationPropertyNameSeparatorTags.props({
-		id: "declarationPropertyNameSeparatorTags"
-	});
-	
 	return DeclarationPropertyNameSeparatorTags; 
 }(
 	this.DeclarationPropertyNameSeparatorTag
@@ -21391,10 +21318,6 @@ this.DeclarationPropertyNameTags = function(list){
 	};
 	DeclarationPropertyNameTags = new Rexjs(DeclarationPropertyNameTags, IllegalTags);
 
-	DeclarationPropertyNameTags.props({
-		id: "declarationPropertyNameTags"
-	});
-	
 	return DeclarationPropertyNameTags; 
 }(
 	// list
@@ -21423,10 +21346,6 @@ this.DeclarationPropertyValueContextTags = function(DeclarationPropertySeparator
 	};
 	DeclarationPropertyValueContextTags = new Rexjs(DeclarationPropertyValueContextTags, DeclarationPropertySeparatorTags);
 
-	DeclarationPropertyValueContextTags.props({
-		id: "declarationPropertyValueContextTags"
-	});
-
 	return DeclarationPropertyValueContextTags;
 }(
 	this.DeclarationPropertySeparatorTags,
@@ -21448,10 +21367,6 @@ this.DeclarationPropertyValueTags = function(DeclarationPropertyValueTag, OpenAr
 	};
 	DeclarationPropertyValueTags = new Rexjs(DeclarationPropertyValueTags, IllegalTags);
 
-	DeclarationPropertyValueTags.props({
-		id: "declarationPropertyValueTags"
-	});
-	
 	return DeclarationPropertyValueTags;
 }(
 	this.DeclarationPropertyValueTag,
@@ -21472,10 +21387,6 @@ this.DestructibleExpressionContextTags = function(DestructuringAssignmentTag){
 	};
 	DestructibleExpressionContextTags = new Rexjs(DestructibleExpressionContextTags, ExpressionContextTags);
 	
-	DestructibleExpressionContextTags.props({
-		id: "destructibleExpressionContextTags"
-	});
-
 	return DestructibleExpressionContextTags;
 }(
 	this.DestructuringAssignmentTag
@@ -21493,10 +21404,6 @@ this.DestructuringAssignmentTags = function(DestructuringAssignmentTag){
 		);
 	};
 	DestructuringAssignmentTags = new Rexjs(DestructuringAssignmentTags, IllegalTags);
-
-	DestructuringAssignmentTags.props({
-		id: "destructuringAssignmentTags"
-	});
 
 	return DestructuringAssignmentTags;
 }(
@@ -21516,10 +21423,6 @@ this.DoWhileConditionTags = function(OpenDoWhileConditionTag){
 	};
 	DoWhileConditionTags = new Rexjs(DoWhileConditionTags, IllegalTags);
 	
-	DoWhileConditionTags.props({
-		id: "doWhileConditionTags"
-	});
-
 	return DoWhileConditionTags;
 }(
 	this.OpenDoWhileConditionTag
@@ -21538,10 +21441,6 @@ this.DotAccessorContextTags = function(PropertyNameTag){
 	};
 	DotAccessorContextTags = new Rexjs(DotAccessorContextTags, IllegalTags);
 	
-	DotAccessorContextTags.props({
-		id: "dotAccessorContextTags"
-	});
-
 	return DotAccessorContextTags;
 }(
 	this.PropertyNameTag
@@ -21560,10 +21459,6 @@ this.ExceptionVariableTags = function(ExceptionVariableTag){
 	};
 	ExceptionVariableTags = new Rexjs(ExceptionVariableTags, IllegalTags);
 
-	ExceptionVariableTags.props({
-		id: "exceptionVariableTags"
-	});
-	
 	return ExceptionVariableTags;
 }(
 	this.ExceptionVariableTag
@@ -21579,10 +21474,6 @@ this.ExportContextTags = function(list){
 		this.delegate(list);
 	};
 	ExportContextTags = new Rexjs(ExportContextTags, IllegalTags);
-
-	ExportContextTags.props({
-		id: "exportContextTags"
-	});
 
 	return ExportContextTags;
 }(
@@ -21626,8 +21517,7 @@ this.ExtendsContextTags = function(UnaryTag, ExecTag, filter){
 			}
 			
 			return filter.call(this, tag);
-		},
-		id: "extendsContextTags"
+		}
 	});
 
 	return ExtendsContextTags;
@@ -21651,8 +21541,7 @@ this.FileStartTags = function(FileStartTag){
 	FileStartTags = new Rexjs(FileStartTags, IllegalTags);
 	
 	FileStartTags.props({
-		entrance: true,
-		id: "fileStartTags"
+		entrance: true
 	});
 	
 	return FileStartTags;
@@ -21673,10 +21562,6 @@ this.ForConditionTags = function(OpenForConditionTag){
 	};
 	ForConditionTags = new Rexjs(ForConditionTags, IllegalTags);
 
-	ForConditionTags.props({
-		id: "forConditionTags"
-	});
-	
 	return ForConditionTags;
 }(
 	this.OpenForConditionTag
@@ -21704,8 +21589,7 @@ this.ForConditionContextTags = function(VarTag){
 			}
 			
 			return false;
-		},
-		id: "forConditionContextTags"
+		}
 	});
 	
 	return ForConditionTags;
@@ -21726,10 +21610,6 @@ this.FunctionArgumentTags = function(OpenArgumentsTag){
 	};
 	FunctionArgumentTags = new Rexjs(FunctionArgumentTags, IllegalTags);
 
-	FunctionArgumentTags.props({
-		id: "functionArgumentTags"
-	});
-
 	return FunctionArgumentTags;
 }(
 	this.OpenArgumentsTag
@@ -21748,10 +21628,6 @@ this.FunctionBodyTags = function(OpenFunctionBodyTag){
 	};
 	FunctionBodyTags = new Rexjs(FunctionBodyTags, IllegalTags);
 
-	FunctionBodyTags.props({
-		id: "functionBodyTags"
-	});
-	
 	return FunctionBodyTags;
 }(
 	this.OpenFunctionBodyTag
@@ -21772,10 +21648,6 @@ this.FunctionContextTags = function(GeneratorTag, FunctionNameTag, OpenArguments
 	};
 	FunctionContextTags = new Rexjs(FunctionContextTags, IllegalTags);
 
-	FunctionContextTags.props({
-		id: "functionContextTags"
-	});
-	
 	return FunctionContextTags;
 }(
 	this.GeneratorTag,
@@ -21796,10 +21668,6 @@ this.FunctionDeclarationContextTags = function(FunctionVariableTag){
 	};
 	FunctionDeclarationContextTags = new Rexjs(FunctionDeclarationContextTags, IllegalTags);
 
-	FunctionDeclarationContextTags.props({
-		id: "functionDeclarationContextTags"
-	});
-	
 	return FunctionDeclarationContextTags;
 }(
 	this.FunctionVariableTag
@@ -21818,10 +21686,6 @@ this.IfConditionTags = function(OpenIfConditionTag){
 	};
 	IfConditionTags = new Rexjs(IfConditionTags, IllegalTags);
 
-	IfConditionTags.props({
-		id: "ifConditionTags"
-	});
-	
 	return IfConditionTags;
 }(
 	this.OpenIfConditionTag
@@ -21840,10 +21704,6 @@ this.LabelContextTags = function(LabelColonTag){
 	};
 	LabelContextTags = new Rexjs(LabelContextTags, ExpressionContextTags);
 
-	LabelContextTags.props({
-		id: "labelContextTags"
-	});
-	
 	return LabelContextTags;
 }(
 	this.LabelColonTag
@@ -21862,10 +21722,6 @@ this.LetContextTags = function(VariableDeclarationTags, LocalVariableTag){
 	};
 	LetContextTags = new Rexjs(LetContextTags, VariableDeclarationTags);
 
-	LetContextTags.props({
-		id: "letContextTags"
-	});
-	
 	return LetContextTags;
 }(
 	this.VariableDeclarationTags,
@@ -21885,20 +21741,16 @@ this.MemberAliasVariableTags = function(MemberAliasVariableTag){
 	};
 	MemberAliasVariableTags = new Rexjs(MemberAliasVariableTags, IllegalTags);
 
-	MemberAliasVariableTags.props({
-		id: "memberAliasVariableTags"
-	});
-
 	return MemberAliasVariableTags;
 }(
 	this.MemberAliasVariableTag
 );
 
-this.MemberContextTag = function(MemberAliasTag, MultipleMembersSeparatorTag){
+this.MemberContextTags = function(MemberAliasTag, MultipleMembersSeparatorTag){
 	/**
 	 * 模块成员上下文标签列表
 	 */
-	function MemberContextTag(){
+	function MemberContextTags(){
 		ECMAScriptTags.call(this);
 
 		this.register(
@@ -21906,13 +21758,9 @@ this.MemberContextTag = function(MemberAliasTag, MultipleMembersSeparatorTag){
 			new MultipleMembersSeparatorTag()
 		);
 	};
-	MemberContextTag = new Rexjs(MemberContextTag, ECMAScriptTags);
+	MemberContextTags = new Rexjs(MemberContextTags, ECMAScriptTags);
 
-	MemberContextTag.props({
-		id: "memberContextTag"
-	});
-
-	return MemberContextTag;
+	return MemberContextTags;
 }(
 	this.MemberAliasTag,
 	this.MultipleMembersSeparatorTag
@@ -21932,10 +21780,6 @@ this.MemberSeparatorContextTags = function(DefaultMemberTag, AllMembersTag, Open
 		);
 	};
 	MemberSeparatorContextTags = new Rexjs(MemberSeparatorContextTags, IllegalTags);
-
-	MemberSeparatorContextTags.props({
-		id: "memberSeparatorContextTags"
-	});
 
 	return MemberSeparatorContextTags;
 }(
@@ -21958,10 +21802,6 @@ this.IdentifierDeclarationPropertyNameContextTags = function(DeclarationProperty
 	};
 	IdentifierDeclarationPropertyNameContextTags = new Rexjs(IdentifierDeclarationPropertyNameContextTags, DeclarationPropertySeparatorTags);
 
-	IdentifierDeclarationPropertyNameContextTags.props({
-		id: "identifierDeclarationPropertyNameContextTags"
-	});
-
 	return IdentifierDeclarationPropertyNameContextTags;
 }(
 	this.DeclarationPropertySeparatorTags,
@@ -21978,10 +21818,6 @@ this.ImportContextTags = function(MemberSeparatorContextTags, ModuleNameTag){
 		);
 	};
 	ImportContextTags = new Rexjs(ImportContextTags, MemberSeparatorContextTags);
-
-	ImportContextTags.props({
-		id: "importContextTags"
-	});
 
 	return ImportContextTags;
 }(
@@ -22003,10 +21839,6 @@ this.MemberSeparatorTags = function(MemberSeparatorTag, FromTag){
 	};
 	MemberSeparatorTags = new Rexjs(MemberSeparatorTags, IllegalTags);
 
-	MemberSeparatorTags.props({
-		id: "memberSeparatorTags"
-	});
-
 	return MemberSeparatorTags;
 }(
 	this.MemberSeparatorTag,
@@ -22026,10 +21858,6 @@ this.MemberVariableTags = function(MemberVariableTag){
 	};
 	MemberVariableTags = new Rexjs(MemberVariableTags, ECMAScriptTags);
 
-	MemberVariableTags.props({
-		id: "memberVariableTags"
-	});
-
 	return MemberVariableTags;
 }(
 	this.MemberVariableTag
@@ -22048,10 +21876,6 @@ this.ModuleAliasTags = function(ModuleAliasTag){
 	};
 	ModuleAliasTags = new Rexjs(ModuleAliasTags, IllegalTags);
 
-	ModuleAliasTags.props({
-		id: "moduleAliasTags"
-	});
-	
 	return ModuleAliasTags;
 }(
 	this.ModuleAliasTag
@@ -22070,10 +21894,6 @@ this.ModuleNameTags = function(ModuleNameTag){
 	};
 	ModuleNameTags = new Rexjs(ModuleNameTags, IllegalTags);
 
-	ModuleNameTags.props({
-		id: "moduleNameTags"
-	});
-	
 	return ModuleNameTags;
 }(
 	this.ModuleNameTag
@@ -22092,10 +21912,6 @@ this.ModuleVariableTags = function(ModuleVariableTag){
 	};
 	ModuleVariableTags = new Rexjs(ModuleVariableTags, IllegalTags);
 
-	ModuleVariableTags.props({
-		id: "moduleVariableTags"
-	});
-	
 	return ModuleVariableTags;
 }(
 	this.ModuleVariableTag
@@ -22115,10 +21931,6 @@ this.NegationContextTags = function(NegationSiblingTag, DecrementSiblingTag){
 	};
 	NegationContextTags = new Rexjs(NegationContextTags, ExpressionTags);
 
-	NegationContextTags.props({
-		id: "negationContextTags"
-	});
-	
 	return NegationContextTags;
 }(
 	this.NegationSiblingTag,
@@ -22151,8 +21963,7 @@ this.ExecContextTags = function(ExtendsContextTags, TargetAccessorTag, SuperTag,
 
 			// 调用父类方法
 			filter.call(this, tag);
-		},
-		id: "execContextTags"
+		}
 	});
 	
 	return ExecContextTags;
@@ -22176,10 +21987,6 @@ this.OpenArgumentsContextTags = function(ArgumentSeparatorContextTags, CloseArgu
 	};
 	OpenArgumentsContextTags = new Rexjs(OpenArgumentsContextTags, ArgumentSeparatorContextTags);
 
-	OpenArgumentsContextTags.props({
-		id: "openArgumentsContextTags"
-	});
-	
 	return OpenArgumentsContextTags;
 }(
 	this.ArgumentSeparatorContextTags,
@@ -22200,10 +22007,6 @@ this.OpenMultiLineCommentContextTags = function(CommentContentTag, CloseMultiLin
 	};
 	OpenMultiLineCommentContextTags = new Rexjs(OpenMultiLineCommentContextTags, IllegalTags);
 
-	OpenMultiLineCommentContextTags.props({
-		id: "openMultiLineCommentContextTags"
-	});
-	
 	return OpenMultiLineCommentContextTags;
 }(
 	this.CommentContentTag,
@@ -22223,10 +22026,6 @@ this.OpenGroupingContextTags = function(IllegibleRestTag){
 	};
 	OpenGroupingContextTags = new Rexjs(OpenGroupingContextTags, ExpressionTags);
 
-	OpenGroupingContextTags.props({
-		id: "openGroupingContextTags"
-	});
-
 	return OpenGroupingContextTags;
 }(
 	this.IllegibleRestTag
@@ -22245,10 +22044,6 @@ this.OpenRestrictedCommentContextTags = function(OpenMultiLineCommentContextTags
 	};
 	OpenRestrictedCommentContextTags = new Rexjs(OpenRestrictedCommentContextTags, OpenMultiLineCommentContextTags);
 
-	OpenRestrictedCommentContextTags.props({
-		id: "openRestrictedCommentContextTags"
-	});
-	
 	return OpenRestrictedCommentContextTags;
 }(
 	this.OpenMultiLineCommentContextTags,
@@ -22270,10 +22065,6 @@ this.OpenSwitchBodyContextTags = function(CaseTag, DefaultTag, CloseBlockCompone
 	};
 	OpenSwitchBodyContextTags = new Rexjs(OpenSwitchBodyContextTags, IllegalTags);
 
-	OpenSwitchBodyContextTags.props({
-		id: "openSwitchBodyContextTags"
-	});
-	
 	return OpenSwitchBodyContextTags;
 }(
 	this.CaseTag,
@@ -22292,10 +22083,6 @@ this.OpenDeclarationArrayContextTags = function(list){
 	};
 	OpenDeclarationArrayContextTags = new Rexjs(OpenDeclarationArrayContextTags, IllegalTags);
 
-	OpenDeclarationArrayContextTags.props({
-		id: "openDeclarationArrayContextTags"
-	});
-	
 	return OpenDeclarationArrayContextTags; 
 }(
 	// list
@@ -22321,10 +22108,6 @@ this.ParameterTags = function(SpreadTag){
 	};
 	ParameterTags = new Rexjs(ParameterTags, ExpressionTags);
 
-	ParameterTags.props({
-		id: "parameterTags"
-	});
-	
 	return ParameterTags;
 }(
 	this.SpreadTag
@@ -22344,10 +22127,6 @@ this.PlusContextTags = function(PlusSiblingTag, IncrementSiblingTag){
 	};
 	PlusContextTags = new Rexjs(PlusContextTags, ExpressionTags);
 
-	PlusContextTags.props({
-		id: "plusContextTags"
-	});
-	
 	return PlusContextTags;
 }(
 	this.PlusSiblingTag,
@@ -22382,8 +22161,7 @@ this.PropertyNameContextTags = function(OpenShorthandMethodArgumentsTag, Propert
 			}
 			
 			return false;
-		},
-		id: "propertyNameContextTags"
+		}
 	});
 
 	return PropertyNameContextTags;
@@ -22409,10 +22187,6 @@ this.IdentifierPropertyNameContextTags = function(PropertyNameContextTags, Prope
 	};
 	IdentifierPropertyNameContextTags = new Rexjs(IdentifierPropertyNameContextTags, PropertyNameContextTags);
 
-	IdentifierPropertyNameContextTags.props({
-		id: "identifierPropertyNameContextTags"
-	});
-
 	return IdentifierPropertyNameContextTags;
 }(
 	this.PropertyNameContextTags,
@@ -22431,10 +22205,6 @@ this.PropertyNameTags = function(list){
 		this.delegate(list);
 	};
 	PropertyNameTags = new Rexjs(PropertyNameTags, IllegalTags);
-
-	PropertyNameTags.props({
-		id: "propertyNameTags"
-	});
 
 	return PropertyNameTags;
 }(
@@ -22466,10 +22236,6 @@ this.PropertySeparatorTags = function(PropertySeparatorTag){
 	};
 	PropertySeparatorTags = new Rexjs(PropertySeparatorTags, ECMAScriptTags);
 
-	PropertySeparatorTags.props({
-		id: "propertySeparatorTags"
-	});
-	
 	return PropertySeparatorTags;
 }(
 	this.PropertySeparatorTag
@@ -22488,10 +22254,6 @@ this.RestArgumentNameTags = function(RestArgumentNameTag){
 	};
 	RestArgumentNameTags = new Rexjs(RestArgumentNameTags, IllegalTags);
 
-	RestArgumentNameTags.props({
-		id: "restArgumentNameTags"
-	});
-	
 	return RestArgumentNameTags;
 }(
 	this.RestArgumentNameTag
@@ -22510,10 +22272,6 @@ this.RestArgumentNameContextTags = function(RestArgumentSeparatorTag){
 	};
 	RestArgumentNameContextTags = new Rexjs(RestArgumentNameContextTags, ECMAScriptTags);
 
-	RestArgumentNameContextTags.props({
-		id: "restArgumentNameContextTags"
-	});
-	
 	return RestArgumentNameContextTags;
 }(
 	this.RestArgumentSeparatorTag
@@ -22547,8 +22305,7 @@ this.RestrictedExpressionContextTags = function(PostfixUnaryAssignmentTag, Unary
 			}
 
 			return filter.call(this, tag);
-		},
-		id: "restrictedExpressionContextTags"
+		}
 	});
 	
 	return RestrictedExpressionContextTags;
@@ -22571,10 +22328,6 @@ this.ReturnContextTags = function(OnlyStatementEndTags){
 	};
 	ReturnContextTags = new Rexjs(ReturnContextTags, ExpressionTags);
 
-	ReturnContextTags.props({
-		id: "returnContextTags"
-	})
-	
 	return ReturnContextTags;
 }(
 	this.OnlyStatementEndTags
@@ -22592,10 +22345,6 @@ this.ShorthandMethodArgumentsTags = function(OpenShorthandMethodArgumentsTag){
 		);
 	};
 	ShorthandMethodArgumentsTags = new Rexjs(ShorthandMethodArgumentsTags, IllegalTags);
-
-	ShorthandMethodArgumentsTags.props({
-		id: "shorthandMethodArgumentsTags"
-	});
 
 	return ShorthandMethodArgumentsTags;
 }(
@@ -22615,10 +22364,6 @@ this.ShorthandMethodBodyTags = function(OpenShorthandMethodBodyTag){
 	};
 	ShorthandMethodBodyTags = new Rexjs(ShorthandMethodBodyTags, IllegalTags);
 
-	ShorthandMethodBodyTags.props({
-		id: "shorthandMethodBodyTags"
-	});
-
 	return ShorthandMethodBodyTags;
 }(
 	this.OpenShorthandMethodBodyTag
@@ -22635,10 +22380,6 @@ this.ShorthandMethodNameTags = function(list){
 	};
 	ShorthandMethodNameTags = new Rexjs(ShorthandMethodNameTags, IllegalTags);
 
-	ShorthandMethodNameTags.props({
-		id: "shorthandMethodNameTags"
-	});
-	
 	return ShorthandMethodNameTags;
 }(
 	// list
@@ -22668,10 +22409,6 @@ this.PropertyAccessorContextTags = function(ShorthandMethodNameTags, OpenShortha
 	};
 	PropertyAccessorContextTags = new Rexjs(PropertyAccessorContextTags, ShorthandMethodNameTags);
 
-	PropertyAccessorContextTags.props({
-		id: "propertyAccessorContextTags"
-	});
-	
 	return PropertyAccessorContextTags;
 }(
 	this.ShorthandMethodNameTags,
@@ -22696,10 +22433,6 @@ this.ClassPropertyNameTags = function(ShorthandMethodNameTags, ConstructorTag, G
 	};
 	ClassPropertyNameTags = new Rexjs(ClassPropertyNameTags, ShorthandMethodNameTags);
 
-	ClassPropertyNameTags.props({
-		id: "classPropertyNameTags"
-	});
-	
 	return ClassPropertyNameTags;
 }(
 	this.ShorthandMethodNameTags,
@@ -22732,8 +22465,7 @@ this.AccessorDescriptorContextTags = function(ClassPropertyNameTags, ClassProper
 				tag instanceof ClassPropertyPlaceholderTag ||
 				tag instanceof PropertyAccessorTag
 			);
-		},
-		id: "accessorDescriptorContextTags"
+		}
 	});
 
 	return AccessorDescriptorContextTags;
@@ -22756,10 +22488,6 @@ this.OpenClassBodyContextTags = function(ClassPropertyNameTags, StaticModifierTa
 		);
 	};
 	OpenClassBodyContextTags = new Rexjs(OpenClassBodyContextTags, ClassPropertyNameTags);
-
-	OpenClassBodyContextTags.props({
-		id: "openClassBodyContextTags"
-	});
 
 	return OpenClassBodyContextTags;
 }(
@@ -22787,8 +22515,7 @@ this.StaticModifierContextTags = function(ClassPropertyNameTags, ConstructorTag,
 		 */
 		filter: function(tag){
 			return tag instanceof ConstructorTag;
-		},
-		id: "staticModifierContextTags"
+		}
 	})
 	
 	return StaticModifierContextTags;
@@ -22811,10 +22538,6 @@ this.SwitchBlockTags = function(OpenSwitchBodyTag){
 	};
 	SwitchBlockTags = new Rexjs(SwitchBlockTags, IllegalTags);
 
-	SwitchBlockTags.props({
-		id: "switchBlockTags"
-	});
-	
 	return SwitchBlockTags;
 }(
 	this.OpenSwitchBodyTag
@@ -22833,10 +22556,6 @@ this.SwitchConditionTags = function(OpenSwitchConditionTag){
 	};
 	SwitchConditionTags = new Rexjs(SwitchConditionTags, IllegalTags);
 
-	SwitchConditionTags.props({
-		id: "switchConditionTags"
-	});
-	
 	return SwitchConditionTags;
 }(
 	this.OpenSwitchConditionTag
@@ -22854,10 +22573,6 @@ this.TargetAccessorContextTags = function(TargetTag){
 		);
 	};
 	TargetAccessorContextTags = new Rexjs(TargetAccessorContextTags, IllegalTags);
-
-	TargetAccessorContextTags.props({
-		id: "targetAccessorContextTags"
-	});
 
 	return TargetAccessorContextTags;
 }(
@@ -22884,10 +22599,6 @@ this.TemplateContentTags = function(TemplateContentTag, OpenPlaceHolderTag, Temp
 	};
 	TemplateContentTags = new Rexjs(TemplateContentTags, ECMAScriptTags);
 
-	TemplateContentTags.props({
-		id: "templateContentTags"
-	});
-
 	return TemplateContentTags;
 }(
 	this.TemplateContentTag,
@@ -22910,10 +22621,6 @@ this.TerminatedBranchFlowContextTags = function(LabelledIdentifierTag){
 	};
 	TerminatedBranchFlowContextTags = new Rexjs(TerminatedBranchFlowContextTags, StatementEndTags);
 
-	TerminatedBranchFlowContextTags.props({
-		id: "terminatedBranchFlowContextTags"
-	});
-	
 	return TerminatedBranchFlowContextTags;
 }(
 	this.LabelledIdentifierTag
@@ -22932,10 +22639,6 @@ this.ThrowContextTags = function(ThrowContextLineTerminatorTag){
 	};
 	ThrowContextTags = new Rexjs(ThrowContextTags, ExpressionTags);
 
-	ThrowContextTags.props({
-		id: "throwContextTags"
-	});
-	
 	return ThrowContextTags;
 }(
 	this.ThrowContextLineTerminatorTag
@@ -22955,7 +22658,6 @@ this.TryContextTags = function(ExecContextTags, OpenBlockTag, filter){
 	TryContextTags = new Rexjs(TryContextTags, ExecContextTags);
 
 	TryContextTags.props({
-		id: "tryContextTags",
 		/**
 		 * 标签过滤处理
 		 * @param {SyntaxTag} tag - 语法标签
@@ -22992,10 +22694,6 @@ this.UnexpectedTags = function(){
 	};
 	UnexpectedTags = new Rexjs(UnexpectedTags, ECMAScriptTags);
 
-	UnexpectedTags.props({
-		id: "unexpectedTags"
-	});
-
 	return UnexpectedTags;
 }();
 
@@ -23012,10 +22710,6 @@ this.VarContextTags = function(VariableDeclarationTags, ClosureVariableTag){
 	};
 	VarContextTags = new Rexjs(VarContextTags, VariableDeclarationTags);
 
-	VarContextTags.props({
-		id: "varContextTags"
-	});
-	
 	return VarContextTags;
 }(
 	this.VariableDeclarationTags,
@@ -23035,10 +22729,6 @@ this.WhileConditionTags = function(OpenWhileConditionTag){
 	};
 	WhileConditionTags = new Rexjs(WhileConditionTags, IllegalTags);
 
-	WhileConditionTags.props({
-		id: "whileConditionTags"
-	});
-	
 	return WhileConditionTags;
 }(
 	this.OpenWhileConditionTag
@@ -23149,6 +22839,7 @@ this.ECMAScript6Config = function(configs, forEach, every, defineProperty){
 		"Object",
 		"Property",
 		"Template",
+		"TryFunction",
 		"Var"
 	]
 	.map(
@@ -23179,17 +22870,18 @@ eval(
 										// ECMAScript 解析器相关
 ~function(SyntaxParser){
 
-this.ECMAScriptTagsMap = function(SyntaxTagsMap, tagsArray){
+this.ECMAScriptTagsMap = function(SyntaxTagsMap, dataArray){
 	/**
 	 * ECMAScript 标签列表映射，初始化该类是个耗性能过程，建议作为单例使用
 	 */
 	function ECMAScriptTagsMap(){
 		SyntaxTagsMap.call(this);
 		
-		tagsArray.forEach(
-			function(Tags){
+		dataArray.forEach(
+			function(data){
 				this.map(
-					new Tags()
+					data.name,
+					new data.tags()
 				);
 			},
 			this
@@ -23200,102 +22892,111 @@ this.ECMAScriptTagsMap = function(SyntaxTagsMap, tagsArray){
 	return ECMAScriptTagsMap;
 }(
 	Rexjs.SyntaxTagsMap,
-	// tagsArray
+	// dataArray
 	[
 		// 基类标签列表
-		this.ExpressionTags,
-		this.ExpressionContextTags,
-		this.MistakableTags,
-		this.IllegalTags,
-		this.StatementTags,
-		this.StatementEndTags,
+		"Expression",
+		"ExpressionContext",
+		"Mistakable",
+		"Illegal",
+		"Statement",
+		"StatementEnd",
 		// 其他标签列表
-		this.AccessorDescriptorContextTags,
-		this.ArgumentNameContextTags,
-		this.ArgumentSeparatorContextTags,
-		this.ArrowContextTags,
-		this.BlockTags,
-		this.CatchedExceptionTags,
-		this.ClassContextTags,
-		this.ClassNameContextTags,
-		this.ClassPropertyNameTags,
-		this.ClassVariableTags,
-		this.CloseArrowFunctionBodyContextTags,
-		this.CloseCatchedExceptionTags,
-		this.ClosureVariableContextTags,
-		this.ConstContextTags,
-		this.ConstructorArgumentsTags,
-		this.ConstructorBodyTags,
-		this.DeclarationArrayItemContextTags,
-		this.DeclarationArrayItemSeparatorTags,
-		this.DeclarationPropertyNameSeparatorTags,
-		this.DeclarationPropertyNameTags,
-		this.DeclarationPropertySeparatorTags,
-		this.DeclarationPropertyValueContextTags,
-		this.DeclarationPropertyValueTags,
-		this.DestructibleExpressionContextTags,
-		this.DestructuringAssignmentTags,
-		this.DoWhileConditionTags,
-		this.DotAccessorContextTags,
-		this.ExceptionVariableTags,
-		this.ExecContextTags,
-		this.ExportContextTags,
-		this.ExtendsContextTags,
-		this.FileStartTags,
-		this.ForConditionTags,
-		this.ForConditionContextTags,
-		this.FunctionArgumentTags,
-		this.FunctionBodyTags,
-		this.FunctionContextTags,
-		this.FunctionDeclarationContextTags,
-		this.IdentifierPropertyNameContextTags,
-		this.IfConditionTags,
-		this.IdentifierDeclarationPropertyNameContextTags,
-		this.ImportContextTags,
-		this.LabelContextTags,
-		this.LetContextTags,
-		this.MemberAliasVariableTags,
-		this.MemberContextTag,
-		this.MemberSeparatorContextTags,
-		this.MemberSeparatorTags,
-		this.MemberVariableTags,
-		this.ModuleAliasTags,
-		this.ModuleNameTags,
-		this.ModuleVariableTags,
-		this.NegationContextTags,
-		this.OpenArgumentsContextTags,
-		this.OpenClassBodyContextTags,
-		this.OpenMultiLineCommentContextTags,
-		this.OpenGroupingContextTags,
-		this.OpenRestrictedCommentContextTags,
-		this.OpenSwitchBodyContextTags,
-		this.OpenDeclarationArrayContextTags,
-		this.ParameterTags,
-		this.PlusContextTags,
-		this.PropertyAccessorContextTags,
-		this.PropertyNameTags,
-		this.PropertyNameContextTags,
-		this.PropertySeparatorTags,
-		this.RestArgumentNameTags,
-		this.RestArgumentNameContextTags,
-		this.RestrictedExpressionContextTags,
-		this.ReturnContextTags,
-		this.ShorthandMethodArgumentsTags,
-		this.ShorthandMethodBodyTags,
-		this.ShorthandMethodNameTags,
-		this.StaticModifierContextTags,
-		this.SwitchBlockTags,
-		this.SwitchConditionTags,
-		this.TargetAccessorContextTags,
-		this.TemplateContentTags,
-		this.TerminatedBranchFlowContextTags,
-		this.ThrowContextTags,
-		this.TryContextTags,
-		this.UnexpectedTags,
-		this.VarContextTags,
-		this.VariableDeclarationTags,
-		this.WhileConditionTags
+		"AccessorDescriptorContext",
+		"ArgumentNameContext",
+		"ArgumentSeparatorContext",
+		"ArrowContext",
+		"Block",
+		"CatchedException",
+		"ClassContext",
+		"ClassNameContext",
+		"ClassPropertyName",
+		"ClassVariable",
+		"CloseArrowFunctionBodyContext",
+		"CloseCatchedException",
+		"ClosureVariableContext",
+		"ConstContext",
+		"ConstructorArguments",
+		"ConstructorBody",
+		"DeclarationArrayItemContext",
+		"DeclarationArrayItemSeparator",
+		"DeclarationPropertyNameSeparator",
+		"DeclarationPropertyName",
+		"DeclarationPropertySeparator",
+		"DeclarationPropertyValueContext",
+		"DeclarationPropertyValue",
+		"DestructibleExpressionContext",
+		"DestructuringAssignment",
+		"DoWhileCondition",
+		"DotAccessorContext",
+		"ExceptionVariable",
+		"ExecContext",
+		"ExportContext",
+		"ExtendsContext",
+		"FileStart",
+		"ForCondition",
+		"ForConditionContext",
+		"FunctionArgument",
+		"FunctionBody",
+		"FunctionContext",
+		"FunctionDeclarationContext",
+		"IdentifierPropertyNameContext",
+		"IfCondition",
+		"IdentifierDeclarationPropertyNameContext",
+		"ImportContext",
+		"LabelContext",
+		"LetContext",
+		"MemberAliasVariable",
+		"MemberContext",
+		"MemberSeparatorContext",
+		"MemberSeparator",
+		"MemberVariable",
+		"ModuleAlias",
+		"ModuleName",
+		"ModuleVariable",
+		"NegationContext",
+		"OpenArgumentsContext",
+		"OpenClassBodyContext",
+		"OpenMultiLineCommentContext",
+		"OpenGroupingContext",
+		"OpenRestrictedCommentContext",
+		"OpenSwitchBodyContext",
+		"OpenDeclarationArrayContext",
+		"Parameter",
+		"PlusContext",
+		"PropertyAccessorContext",
+		"PropertyName",
+		"PropertyNameContext",
+		"PropertySeparator",
+		"RestArgumentName",
+		"RestArgumentNameContext",
+		"RestrictedExpressionContext",
+		"ReturnContext",
+		"ShorthandMethodArguments",
+		"ShorthandMethodBody",
+		"ShorthandMethodName",
+		"StaticModifierContext",
+		"SwitchBlock",
+		"SwitchCondition",
+		"TargetAccessorContext",
+		"TemplateContent",
+		"TerminatedBranchFlowContext",
+		"ThrowContext",
+		"TryContext",
+		"Unexpected",
+		"VarContext",
+		"VariableDeclaration",
+		"WhileCondition"
 	]
+	.map(
+		function(prefix){
+			return {
+				name: prefix[0].toLowerCase() + prefix.substring(1) + "Tags",
+				tags: this[prefix + "Tags"]
+			};
+		},
+		this
+	)
 );
 
 this.ECMAScriptParser = function(ECMAScriptTagsMap, GlobalStatements, tagsMap, parse){

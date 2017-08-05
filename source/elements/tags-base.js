@@ -25,8 +25,7 @@ this.ExpressionTags = function(list){
 			}
 			
 			return false;
-		},
-		id: "expressionTags"
+		}
 	});
 	
 	return ExpressionTags;
@@ -71,8 +70,7 @@ this.ExpressionContextTags = function(list){
 			}
 
 			return false;
-		},
-		id: "expressionContextTags"
+		}
 	});
 	
 	return ExpressionContextTags;
@@ -117,8 +115,7 @@ this.StatementTags = function(FileEndTag){
 			}
 			
 			return false;
-		},
-		id: "statementTags"
+		}
 	});
 	
 	return StatementTags;
@@ -138,10 +135,6 @@ this.StatementEndTags = function(){
 		);
 	};
 	StatementEndTags = new Rexjs(StatementEndTags, ECMAScriptTags);
-	
-	StatementEndTags.props({
-		id: "statementEndTags"
-	});
 	
 	return StatementEndTags;
 }();
@@ -168,8 +161,7 @@ this.MistakableTags = function(StatementTags){
 			}
 			
 			return false;
-		},
-		id: "mistakableTags"
+		}
 	});
 	
 	return MistakableTags;
@@ -185,10 +177,6 @@ this.IllegalTags = function(){
 		ECMAScriptTags.call(this, TYPE_ILLEGAL);
 	};
 	IllegalTags = new Rexjs(IllegalTags, ECMAScriptTags);
-
-	IllegalTags.props({
-		id: "illegalTags"
-	});
 
 	return IllegalTags;
 }();

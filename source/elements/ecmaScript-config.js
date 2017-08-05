@@ -82,6 +82,7 @@ this.ECMAScript6Config = function(configs, forEach, every, defineProperty){
 		"Object",
 		"Property",
 		"Template",
+		"TryFunction",
 		"Var"
 	]
 	.map(

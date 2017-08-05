@@ -1079,7 +1079,6 @@ this.SyntaxTags = function(List, getSortedValue, distinct){
 		filter: function(tag){
 			return false;
 		},
-		id: "",
 		/**
 		 * 将所有标签准备就绪，即排序和初始化正则表达式，ps：这是个耗性能的方法
 		 */
@@ -1232,8 +1231,8 @@ this.DefaultTags = function(SyntaxTags, WhitespaceTag, LineTerminatorTag, Illega
 	/**
 	 * 默认标签列表
 	 */
-	function DefaultTags(_id){
-		SyntaxTags.call(this, _id);
+	function DefaultTags(){
+		SyntaxTags.call(this);
 		
 		this.register(
 			new WhitespaceTag(),
@@ -1261,9 +1260,10 @@ this.SyntaxTagsMap = function(){
 	SyntaxTagsMap.props({
 		/**
 		 * 映射标签列表
+		 * @param {String} name - 标签唯一名称
 		 * @param {SyntaxTags} tags - 需要映射的标签列表
 		 */
-		map: function(tags){
+		map: function(name, tags){
 			// 标签列表就绪
 			tags.ready();
 			
@@ -1273,8 +1273,8 @@ this.SyntaxTagsMap = function(){
 				this.entranceTags = tags;
 			}
 			
-			// 根据 id 设置标签列表
-			this[tags.id] = tags;
+			// 根据 name 设置标签列表
+			this[name] = tags;
 		}
 	});
 	

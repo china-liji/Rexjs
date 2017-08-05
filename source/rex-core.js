@@ -399,7 +399,7 @@ this.toString = function(){
 	};
 }();
 
-this.version = "5.0.0";
+this.version = "1.0.0";
 
 this.forEach(
 	this,

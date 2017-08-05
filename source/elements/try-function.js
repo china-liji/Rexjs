@@ -10,6 +10,15 @@ this.TryFunctionExpression = function(extractTo){
 	};
 	TryFunctionExpression = new Rexjs(TryFunctionExpression, UnaryExpression);
 
+	TryFunctionExpression.static({
+		/**
+		 * 获取表达式编译配置
+		 */
+		get config(){
+			return config;
+		}
+	});
+	
 	TryFunctionExpression.props({
 		/**
 		 * 提取表达式文本内容

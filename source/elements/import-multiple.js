@@ -317,7 +317,7 @@ this.MemberVariableTag = function(ConstVariableTag, MemberExpression){
 		 * @param {TagsMap} tagsMap - 标签集合映射
 		 */
 		require: function(tagsMap){
-			return tagsMap.memberContextTag;
+			return tagsMap.memberContextTags;
 		},
 		/**
 		 * 标签访问器
