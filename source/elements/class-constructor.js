@@ -18,7 +18,7 @@ this.ConstructorNameExpression = function(config){
 		 */
 		extractTo: function(contentBuilder){
 			// 如果需要编译类
-			if(config.class){
+			if(config.value){
 				var context = this.context;
 				
 				// 如果没有类名
@@ -34,7 +34,8 @@ this.ConstructorNameExpression = function(config){
 
 	return ConstructorNameExpression;
 }(
-	this.ClassExpression.config
+	// config
+	ECMAScriptConfig.class
 );
 
 this.DefaultConstructorExpression = function(ClassPropertyExpression){

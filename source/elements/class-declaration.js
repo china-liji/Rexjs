@@ -18,7 +18,7 @@ this.ClassDeclarationExpression = function(config, extractTo){
 		 */
 		extractTo: function(contentBuilder){
 			// 如果需要解析类
-			if(config.class){
+			if(config.value){
 				// 追加 var 关键字
 				contentBuilder.appendString("var");
 				// 提取名称
@@ -49,7 +49,8 @@ this.ClassDeclarationExpression = function(config, extractTo){
 
 	return ClassDeclarationExpression;
 }(
-	ClassExpression.config,
+	// config
+	ECMAScriptConfig.class,
 	ClassExpression.prototype.extractTo
 );
 

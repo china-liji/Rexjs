@@ -1,7 +1,7 @@
 // var 语句相关
 ~function(VariableDeclarationTag, closureVariableTag, varDeclarationSeparatorTag){
 
-this.VarExpression = function(IdentifierExpression, config){
+this.VarExpression = function(IdentifierExpression){
 	/**
 	 * var 表达式
 	 * @param {Context} context - 标签上下文
@@ -13,15 +13,6 @@ this.VarExpression = function(IdentifierExpression, config){
 	};
 	VarExpression = new Rexjs(VarExpression, Expression);
 
-	VarExpression.static({
-		/**
-		 * 获取表达式编译配置
-		 */
-		get config(){
-			return config;
-		}
-	});
-	
 	VarExpression.props({
 		/**
 		 * 提取表达式文本内容
@@ -62,9 +53,7 @@ this.VarExpression = function(IdentifierExpression, config){
 
 	return VarExpression;
 }(
-	this.IdentifierExpression,
-	// config
-	new SyntaxConfig("let", "const")
+	this.IdentifierExpression
 );
 
 this.VarStatement = function(){

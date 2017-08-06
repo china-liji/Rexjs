@@ -11,15 +11,6 @@ this.TemplateExpression = function(config, extractTo, compileItem){
 	};
 	TemplateExpression = new Rexjs(TemplateExpression, PartnerExpression);
 
-	TemplateExpression.static({
-		/**
-		 * 获取表达式编译配置
-		 */
-		get config(){
-			return config;
-		}
-	});
-
 	TemplateExpression.props({
 		/**
 		 * 提取表达式文本内容
@@ -27,7 +18,7 @@ this.TemplateExpression = function(config, extractTo, compileItem){
 		 */
 		extractTo: function(contentBuilder){
 			// 如果需要编译
-			if(config.template){
+			if(config.value){
 				// 追加起始双引号
 				contentBuilder.appendString('"');
 				// 直接编译 inner
@@ -45,7 +36,7 @@ this.TemplateExpression = function(config, extractTo, compileItem){
 	return TemplateExpression;
 }(
 	// config
-	new SyntaxConfig("template"),
+	ECMAScriptConfig.addBaseConfig("template"),
 	PartnerExpression.prototype.extractTo,
 	// compileItem
 	function(item, contentBuilder){

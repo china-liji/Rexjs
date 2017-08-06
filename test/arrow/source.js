@@ -1,4 +1,4 @@
-let fn = (a = 1, b, c = 3, ...d) => a + b + c + d[1]
+let fn = (a = 1, b, c = 3, ...d) => { return a + b + c + d[1] };
 
 if(
 	fn(2, 4, void 0, 6, 7) !== 16

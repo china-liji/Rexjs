@@ -1,7 +1,7 @@
 // 箭头函数相关
-~function(FunctionExpression, ArgumentsExpression, OpenFunctionBodyTag, CloseFunctionBodyTag, config, closeArrowFunctionBodyTag){
+~function(FunctionExpression, ArgumentsExpression, OpenFunctionBodyTag, CloseFunctionBodyTag, closeArrowFunctionBodyTag){
 
-this.ArrowFunctionExpression = function(){
+this.ArrowFunctionExpression = function(config){
 	/**
 	 * 箭头函数表达式
 	 * @param {Context} context - 语法标签上下文
@@ -23,15 +23,26 @@ this.ArrowFunctionExpression = function(){
 			var defaultArgumentBuilder = new ContentBuilder();
 
 			// 如果需要编译箭头函数
-			if(config.arrowFunction){
-				// 追加参数起始小括号
+			if(config.value){
+				/*
+					这里有包括了两层函数，
+					因为箭头函数里的 this 与 arguments 都是指向外层的，箭头函数自己没有 arguments
+				*/
+
+				// 追加外层函数头部代码
 				contentBuilder.appendString("(function");
 				// 提取并编译函数参数
 				this.arguments.compileTo(contentBuilder, defaultArgumentBuilder);
+				// 追加内层函数头部代码 与 默认参数
+				contentBuilder.appendString("{" + defaultArgumentBuilder.result + "return function()");
+				
+				// 清空默认参数，因为在上面已经被追加至生成器内
+				defaultArgumentBuilder.result = "";
+
 				// 提取并编译函数主体
 				this.body.compileTo(contentBuilder, defaultArgumentBuilder);
-				// 追加 参数结束小括号 并使用 bind 方法绑定 this
-				contentBuilder.appendString(".bind(this))");
+				// 追加两层函数的尾部代码
+				contentBuilder.appendString(".apply(this[0],this[1])}.bind([this, arguments]))");
 				return;
 			}
 			
@@ -45,7 +56,10 @@ this.ArrowFunctionExpression = function(){
 	});
 
 	return ArrowFunctionExpression;
-}();
+}(
+	// config
+	ECMAScriptConfig.addBaseConfig("arrowFunction")
+);
 
 this.SingleArgumentExpression = function(ArgumentsExpression, ArgumentExpression){
 	/**
@@ -339,7 +353,7 @@ this.CloseArrowFunctionBodyTag = function(visitor){
 		 */
 		visitor: function(parser, context, statement, statements){
 			// 设置表达式状态
-			statement.expression.state = STATE_STATEMENT_ENDED;
+			statement.expression.state = STATE_STATEMENT_ENDABLE;
 
 			// 调用父类方法
 			visitor.call(this, parser, context, statement, statements);
@@ -359,7 +373,6 @@ closeArrowFunctionBodyTag = new this.CloseArrowFunctionBodyTag();
 	this.ArgumentsExpression,
 	this.OpenFunctionBodyTag,
 	this.CloseFunctionBodyTag,
-	this.FunctionExpression.config,
 	// closeArrowFunctionBodyTag
 	null
 );

@@ -29,7 +29,7 @@ this.PropertyInitializerExpression = function(config, extractTo, toTernary){
 		 */
 		extractTo: function(contentBuilder){
 			// 如果需要解析该表达式
-			if(config.propertyInitializer){
+			if(config.value){
 				// 以三元表达式的形式追加
 				toTernary(contentBuilder, this, ":");
 				return;
@@ -43,9 +43,8 @@ this.PropertyInitializerExpression = function(config, extractTo, toTernary){
 
 	return PropertyInitializerExpression;
 }(
-
 	// config
-	this.PropertyExpression.config,
+	ECMAScriptConfig.addRexjsConfig("propertyInitializer"),
 	PropertyValueExpression.prototype.extractTo,
 	// toTernary
 	function(contentBuilder, expression, assignment){

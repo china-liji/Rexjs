@@ -82,6 +82,12 @@ this.ECMAScriptStatements = function(ECMAScriptStatement, extractTo){
 
 	ECMAScriptStatements.props({
 		/**
+		 * 获取当前所处闭包
+		 */
+		get closure(){
+			return this.target.closure;
+		},
+		/**
 		 * 申请应用 super 关键字
 		 * @param {SyntaxParser} parser - 语法解析器
 		 * @param {Context} context - super 关键字上下文
@@ -160,6 +166,15 @@ this.GlobalStatements = function(ECMAScriptStatements, ECMAScriptVariableCollect
 		);
 	};
 	GlobalStatements = new Rexjs(GlobalStatements, ECMAScriptStatements);
+
+	GlobalStatements.props({
+		/**
+		 * 获取当前所处闭包
+		 */
+		get closure(){
+			return null;
+		}
+	});
 
 	return GlobalStatements;
 }(

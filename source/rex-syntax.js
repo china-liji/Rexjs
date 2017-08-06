@@ -598,54 +598,74 @@ this.SyntaxElement = function(){
 	return SyntaxElement;
 }();
 
-this.SyntaxConfigItem = function(){
-	/**
-	 * 语法配置项
-	 * @param {String} key - 配置项的键
-	 * @param {Boolean} value - 配置项的值
-	 */
-	function SyntaxConfigItem(key, value){
-		this.key = key;
-		this.value = value;
-	};
-	SyntaxConfigItem = new Rexjs(SyntaxConfigItem);
-
-	SyntaxConfigItem.props({
-		key: "",
-		value: true
-	});
-
-	return SyntaxConfigItem;
-}();
-
-this.SyntaxConfig = function(SyntaxConfigItem){
+this.SyntaxConfig = function(forEach, defineProperty){
 	/**
 	 * 语法配置，用于管理是否编译指定表达式
+	 * @param {String} name - 配置名称
+	 * @param {String} version - 配置相关版本
 	 */
-	function SyntaxConfig(){
-		// 遍历所有参数
-		forEach(
-			arguments,
-			function(item){
-				// 如果是 SyntaxConfigItem 的实例
-				if(item instanceof SyntaxConfigItem){
-					// 记录配置
-					this[item.key] = item.value;
-					return;
-				}
-
-				// 记录配置
-				this[item] = true;
-			},
-			this,
-			true
-		);
+	function SyntaxConfig(name, version){
+		this.name = name;
+		this.version = version;
 	};
 	SyntaxConfig = new Rexjs(SyntaxConfig);
 
+	SyntaxConfig.static({
+		/**
+		 * 添加配置信息
+		 * @param {String} name - 配置名称
+		 * @param {String} version - 配置相关版本
+		 */
+		add: function(name, version){
+			var config = new this(name, version);
+
+			// 定义属性
+			defineProperty(
+				this,
+				name,
+				{
+					get: function(){
+						return config;
+					},
+					enumerable: true
+				}
+			);
+
+			return config;
+		},
+		/**
+		 * 给所有指定配置设置值
+		 * @param {Boolean} value - 需要设置的值
+		 * @param {String} _version - 可指定的版本，当提供时，只会给指定版本的配置项设置该值
+		 */
+		all: function(value, _version){
+			forEach(
+				this,
+				// 如果提供了版本
+				_version ?
+					function(config){
+						// 如果版本相匹配
+						if(config.version === _version){
+							config.value = value;
+						}
+					} :
+					function(config){
+						config.value = value;
+					}
+			);
+		}
+	});
+
+	SyntaxConfig.props({
+		name: "",
+		value: true,
+		version: ""
+	});
+
 	return SyntaxConfig;
 }(
-	this.SyntaxConfigItem
+	Rexjs.forEach,
+	Object.defineProperty
 );
 
 this.SyntaxRegExp = function(RegExp, Infinity){

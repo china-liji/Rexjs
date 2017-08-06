@@ -48,15 +48,6 @@ this.DestructuringExpression = function(AssignableExpression){
 	};
 	DestructuringExpression = new Rexjs(DestructuringExpression, AssignableExpression);
 
-	DestructuringExpression.static({
-		/**
-		 * 获取表达式编译配置
-		 */
-		get config(){
-			return config;
-		}
-	});
-
 	DestructuringExpression.props({
 		/**
 		 * 提取并编译表达式文本内容
@@ -153,7 +144,7 @@ this.DestructuringDefaultItemExpression = function(DestructuringItemExpression){
 		DestructuringItemExpression.call(this, origin);
 
 		// 如果需要解析解构表达式
-		if(config.destructuring){
+		if(config.value){
 			// 给刚生成的解构赋值表达式设置变量名
 			this.variable = statements.collections.generate();
 		}
@@ -205,5 +196,5 @@ this.DestructuringDefaultItemExpression = function(DestructuringItemExpression){
 }.call(
 	this,
 	// config
-	new SyntaxConfig("destructuring")
+	ECMAScriptConfig.addBaseConfig("destructuring")
 );

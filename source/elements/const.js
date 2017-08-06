@@ -76,7 +76,7 @@ this.ConstTag = function(LetTag, ConstStatement, config){
 		 */
 		extractTo: function(contentBuilder, content){
 			// 追加标签内容
-			contentBuilder.appendString(config.const ? "var" : content);
+			contentBuilder.appendString(config.value ? "var" : content);
 		},
 		regexp: /const/,
 		/**
@@ -111,7 +111,8 @@ this.ConstTag = function(LetTag, ConstStatement, config){
 }(
 	this.LetTag,
 	this.ConstStatement,
-	VarExpression.config
+	// config
+	ECMAScriptConfig.addBaseConfig("const")
 );
 
 this.ConstVariableTag = function(collectTo){

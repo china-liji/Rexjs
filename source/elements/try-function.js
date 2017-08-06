@@ -10,15 +10,6 @@ this.TryFunctionExpression = function(extractTo){
 	};
 	TryFunctionExpression = new Rexjs(TryFunctionExpression, UnaryExpression);
 
-	TryFunctionExpression.static({
-		/**
-		 * 获取表达式编译配置
-		 */
-		get config(){
-			return config;
-		}
-	});
-	
 	TryFunctionExpression.props({
 		/**
 		 * 提取表达式文本内容
@@ -26,7 +17,7 @@ this.TryFunctionExpression = function(extractTo){
 		 */
 		extractTo: function(contentBuilder){
 			// 如果需要编译
-			if(config.tryFunction){
+			if(config.value){
 				// 直接提取操作对象
 				this.operand.extractTo(contentBuilder);
 				return;
@@ -65,7 +56,7 @@ this.FunctionConvertorExpression = FunctionConvertorExpression = function(Access
 			var func = this.function;
 
 			// 如果需要编译
-			if(config.tryFunction){
+			if(config.value){
 				// 追加转换方法
 				contentBuilder.appendString("(Rexjs.Function.convert(");
 
@@ -223,5 +214,5 @@ this.TryFunctionTag = function(ExecTag, TryFunctionExpression, TryFunctionStatem
 	// FunctionConvertorExpression
 	null,
 	// config
-	new SyntaxConfig("tryFunction")
+	ECMAScriptConfig.addRexjsConfig("tryFunction")
 );

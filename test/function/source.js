@@ -12,10 +12,12 @@ var obj = { fn: fn }
 
 obj.fn(...[1,2,3])
 
-if(
-	$Rexjs_0 !== obj
-){
-	throw "临时变量名生成有误";
+if(Rexjs.ECMAScriptConfig.spread.value){
+	if(
+		$Rexjs_0 !== obj
+	){
+		throw "临时变量名生成有误";
+	}
 }
 
 function forOf(){
@@ -30,8 +32,10 @@ function forOf(){
 	}
 }
 
-if(
-	$Rexjs_0 === 2
-){
-	throw "变量名受到闭包的影响";
+if(Rexjs.ECMAScriptConfig.spread.value){
+	if(
+		$Rexjs_0 === 2
+	){
+		throw "变量名受到闭包的影响";
+	}
 }

@@ -11,15 +11,6 @@ this.ForExpression = function(ConditionalExpression, config, compileOf){
 	};
 	ForExpression = new Rexjs(ForExpression, ConditionalExpression);
 
-	ForExpression.static({
-		/**
-		 * 获取表达式编译配置
-		 */
-		get config(){
-			return config;
-		}
-	});
-
 	ForExpression.props({
 		body: null,
 		/**
@@ -31,7 +22,7 @@ this.ForExpression = function(ConditionalExpression, config, compileOf){
 			contentBuilder.appendContext(this.context);
 
 			// 如果是 of 标签而且需要编译 of
-			if(this.iterator === "of" && config.of){
+			if(this.iterator === "of" && config.value){
 				// 编译 for of
 				compileOf(
 					this.condition,
@@ -57,7 +48,7 @@ this.ForExpression = function(ConditionalExpression, config, compileOf){
 }(
 	this.ConditionalExpression,
 	// config
-	new SyntaxConfig("of"),
+	ECMAScriptConfig.addBaseConfig("of"),
 	// compileOf
 	function(condition, body, contentBuilder, builder, variable){
 		var inner = condition.inner;

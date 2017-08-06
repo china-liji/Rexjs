@@ -111,7 +111,7 @@ this.ForOfTag = function(IteratorTag, config, visitor){
 		 */
 		visitor: function(parser, context, statement, statements){
 			// 如果需要编译 of
-			if(config.of){
+			if(config.value){
 				// 生成并记录临时变量名
 				statement.target.expression.variable = statements.collections.generate();
 			}
@@ -124,7 +124,8 @@ this.ForOfTag = function(IteratorTag, config, visitor){
 	return ForOfTag;
 }(
 	this.IteratorTag,
-	this.ForExpression.config,
+	// config
+	ECMAScriptConfig.of,
 	this.IteratorTag.prototype.visitor
 );
 

@@ -11,15 +11,6 @@ this.ClassExpression = function(DefaultExtendsExpression, config){
 	};
 	ClassExpression = new Rexjs(ClassExpression, Expression);
 
-	ClassExpression.static({
-		/**
-		 * 获取表达式编译配置
-		 */
-		get config(){
-			return config;
-		}
-	});
-
 	ClassExpression.props({
 		name: new DefaultExpression(),
 		extends: new DefaultExtendsExpression(),
@@ -29,7 +20,7 @@ this.ClassExpression = function(DefaultExtendsExpression, config){
 		 */
 		extractTo: function(contentBuilder){
 			// 如果需要编译类
-			if(config.class){
+			if(config.value){
 				var body = this.body;
 				
 				// 追加闭包头部
@@ -60,7 +51,7 @@ this.ClassExpression = function(DefaultExtendsExpression, config){
 }(
 	this.DefaultExtendsExpression,
 	// config
-	new SyntaxConfig("class")
+	ECMAScriptConfig.addBaseConfig("class")
 );
 
 this.ClassTag = function(ClassExpression){

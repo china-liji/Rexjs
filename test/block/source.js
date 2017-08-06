@@ -8,16 +8,18 @@ for(var i of [1]){
 	}
 }
 
-if(
-	$Rexjs_0 instanceof Rexjs.Generator === false
-){
-	throw "临时变量名值1错误"
-}
+if(Rexjs.ECMAScriptConfig.of.value){
+	if(
+		$Rexjs_0 instanceof Rexjs.Generator === false
+	){
+		throw "临时变量名值1错误"
+	}
 
-if(
-	$Rexjs_1 instanceof Rexjs.Generator === false
-){
-	throw "临时变量名值2错误"
+	if(
+		$Rexjs_1 instanceof Rexjs.Generator === false
+	){
+		throw "临时变量名值2错误"
+	}
 }
 
 {

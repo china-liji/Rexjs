@@ -11,15 +11,6 @@ this.FunctionExpression = function(config){
 	};
 	FunctionExpression = new Rexjs(FunctionExpression, Expression);
 
-	FunctionExpression.static({
-		/**
-		 * 获取表达式编译配置
-		 */
-		get config(){
-			return config;
-		}
-	});
-
 	FunctionExpression.props({
 		arguments: null,
 		/**
@@ -60,7 +51,7 @@ this.FunctionExpression = function(config){
 	return FunctionExpression;
 }(
 	// config
-	new SyntaxConfig("defaultArgument", "restArgument", "arrowFunction", "generator")
+	ECMAScriptConfig.addBaseConfig("generator")
 );
 
 this.FunctionTag = function(FunctionExpression){

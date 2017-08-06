@@ -5,9 +5,7 @@ new function(
 	// 表达式相关
 	Expression, ListExpression, EmptyExpression, DefaultExpression, PartnerExpression, LeftHandSideExpression,
 	// ECMAScript 相关
-	ECMAScriptStatement, ECMABoxStatement, ECMAScriptErrors, ECMAScriptOrders,
-	// 语法配置相关
-	SyntaxConfig,
+	ECMAScriptStatement, ECMABoxStatement, ECMAScriptErrors, ECMAScriptOrders, ECMAScriptConfig,
 	// 标签相关类
 	SyntaxTag, TagType,
 	// 标签分类相关
@@ -148,6 +146,46 @@ this.ECMAScriptOrders = ECMAScriptOrders = function(){
 
 	return ECMAScriptOrders;
 }();
+
+this.ECMAScriptConfig = ECMAScriptConfig = function(SyntaxConfig){
+	/**
+	 * ECMAScript 语法配置
+	 * @param {String} name - 配置名称
+	 * @param {String} version - 配置相关版本
+	 */
+	function ECMAScriptConfig(name, version){
+		SyntaxConfig.call(this, name, version);
+	};
+	ECMAScriptConfig = new Rexjs(ECMAScriptConfig, SyntaxConfig);
+
+	ECMAScriptConfig.static({
+		/**
+		 * 添加 es6 基础配置信息
+		 * @param {String} name - 配置名称
+		 */
+		addBaseConfig: function(name){
+			return this.add(name, "es6-base");
+		},
+		/**
+		 * 添加 es6 模块配置信息
+		 * @param {String} name - 配置名称
+		 */
+		addModuleConfig: function(name){
+			return this.add(name, "es6-module");
+		},
+		/**
+		 * 添加 Rexjs 配置信息
+		 * @param {String} name - 配置名称
+		 */
+		addRexjsConfig: function(name){
+			return this.add(name, "rexjs");
+		}
+	});
+	
+	return ECMAScriptConfig;
+}(
+	Rexjs.SyntaxConfig
+);
 
 }.call(
 	this
@@ -400,6 +438,12 @@ this.ECMAScriptStatements = function(ECMAScriptStatement, extractTo){
 
 	ECMAScriptStatements.props({
 		/**
+		 * 获取当前所处闭包
+		 */
+		get closure(){
+			return this.target.closure;
+		},
+		/**
 		 * 申请应用 super 关键字
 		 * @param {SyntaxParser} parser - 语法解析器
 		 * @param {Context} context - super 关键字上下文
@@ -478,6 +522,15 @@ this.GlobalStatements = function(ECMAScriptStatements, ECMAScriptVariableCollect
 		);
 	};
 	GlobalStatements = new Rexjs(GlobalStatements, ECMAScriptStatements);
+
+	GlobalStatements.props({
+		/**
+		 * 获取当前所处闭包
+		 */
+		get closure(){
+			return null;
+		}
+	});
 
 	return GlobalStatements;
 }(
@@ -922,7 +975,7 @@ eval(
 										// 字面量标签相关
 ~function(){
 
-this.LiteralExpression = function(config){
+this.LiteralExpression = function(){
 	/**
 	 * 字面量表达式
 	 * @param {Context} context - 语法标签上下文
@@ -932,20 +985,8 @@ this.LiteralExpression = function(config){
 	};
 	LiteralExpression = new Rexjs(LiteralExpression, Expression);
 	
-	LiteralExpression.static({
-		/**
-		 * 获取表达式编译配置
-		 */
-		get config(){
-			return config;
-		}
-	});
-
 	return LiteralExpression;
-}(
-	// config
-	new SyntaxConfig("binaryNumber", "octalNumber")
-);
+}();
 
 this.LiteralTag = function(LiteralExpression){
 	/**
@@ -1194,7 +1235,7 @@ this.StringTag = function(){
 eval(
 									function(){
 										// 算数标签相关
-~function(config){
+~function(){
 
 this.MathematicalNumberTag = function(NumberTag){
 	/**
@@ -1237,7 +1278,7 @@ this.MathematicalNumberTag = function(NumberTag){
 	this.NumberTag
 );
 
-this.BinaryNumberTag = function(MathematicalNumberTag){
+this.BinaryNumberTag = function(MathematicalNumberTag, config){
 	/**
 	 * 二进制数字标签
 	 * @param {Number} _type - 标签类型
@@ -1254,16 +1295,18 @@ this.BinaryNumberTag = function(MathematicalNumberTag){
 		 * 是否使用 parseInt 方法进行转义
 		 */
 		useParse: function(){
-			return config.binaryNumber;
+			return config.value;
 		}
 	});
 	
 	return BinaryNumberTag;
 }(
-	this.MathematicalNumberTag
+	this.MathematicalNumberTag,
+	// config
+	ECMAScriptConfig.addBaseConfig("binaryNumber")
 );
 
-this.OctalNumberTag = function(MathematicalNumberTag){
+this.OctalNumberTag = function(MathematicalNumberTag, config){
 	/**
 	 * 八进制数字标签
 	 * @param {Number} _type - 标签类型
@@ -1280,18 +1323,19 @@ this.OctalNumberTag = function(MathematicalNumberTag){
 		 * 是否使用 parseInt 方法进行转义
 		 */
 		useParse: function(){
-			return config.octalNumber;
+			return config.value;
 		}
 	});
 	
 	return OctalNumberTag;
 }(
-	this.MathematicalNumberTag
+	this.MathematicalNumberTag,
+	// config
+	ECMAScriptConfig.addBaseConfig("octalNumber")
 );
 
 }.call(
-	this,
-	this.LiteralExpression.config
+	this
 );
 									}
 									.toString()
@@ -4128,15 +4172,6 @@ this.ExponentiationExpression = function(config, extractTo){
 	};
 	ExponentiationExpression = new Rexjs(ExponentiationExpression, BinaryExpression);
 
-	ExponentiationExpression.static({
-		/**
-		 * 获取表达式编译配置
-		 */
-		get config(){
-			return config;
-		}
-	});
-
 	ExponentiationExpression.props({
 		/**
 		 * 提取表达式文本内容
@@ -4144,7 +4179,7 @@ this.ExponentiationExpression = function(config, extractTo){
 		 */
 		extractTo: function(contentBuilder){
 			// 如果需要解析幂运算
-			if(config.exponentiation){
+			if(config.value){
 				// 追加算数方法
 				contentBuilder.appendString("Math.pow(");
 				// 提取左侧的算数底值
@@ -4166,7 +4201,7 @@ this.ExponentiationExpression = function(config, extractTo){
 	return ExponentiationExpression;
 }(
 	// config
-	new SyntaxConfig("exponentiation"),
+	ECMAScriptConfig.addBaseConfig("exponentiation"),
 	BinaryExpression.prototype.extractTo
 );
 
@@ -4468,15 +4503,6 @@ this.CallExpression = function(ExecutableExpression, AccessorExpression, UnarySt
 	};
 	CallExpression = new Rexjs(CallExpression, ExecutableExpression);
 
-	CallExpression.static({
-		/**
-		 * 获取表达式编译配置
-		 */
-		get config(){
-			return config;
-		}
-	});
-
 	CallExpression.props({
 		/**
 		 * 提取表达式文本内容
@@ -4486,7 +4512,7 @@ this.CallExpression = function(ExecutableExpression, AccessorExpression, UnarySt
 			var operand = this.operand;
 
 			// 如果有拓展符且需要编译
-			if(this.hasSpread && config.spread){
+			if(this.hasSpread && config.value){
 				switch(true){
 					// 如果是 new 实例化
 					case this.new:
@@ -4523,7 +4549,7 @@ this.CallExpression = function(ExecutableExpression, AccessorExpression, UnarySt
 	this.AccessorExpression,
 	this.UnaryStatement,
 	// config
-	new SyntaxConfig("spread"),
+	ECMAScriptConfig.addBaseConfig("spread"),
 	// compileWithAccessor
 	function(contentBuilder, expression, operand, variable){
 		// 追加临时变量名
@@ -4815,7 +4841,7 @@ this.SpreadExpression = function(config){
 		 */
 		extractTo: function(contentBuilder){
 			// 如果需要编译拓展符
-			if(config.spread){
+			if(config.value){
 				// 追加编译拓展符方法
 				contentBuilder.appendString("new Rexjs.Parameter(");
 				// 提取参数
@@ -4834,7 +4860,7 @@ this.SpreadExpression = function(config){
 
 	return SpreadExpression;
 }(
-	this.CallExpression.config
+	ECMAScriptConfig.spread
 );
 
 this.SpreadStatement = function(){
@@ -5006,15 +5032,6 @@ this.DestructuringExpression = function(AssignableExpression){
 	};
 	DestructuringExpression = new Rexjs(DestructuringExpression, AssignableExpression);
 
-	DestructuringExpression.static({
-		/**
-		 * 获取表达式编译配置
-		 */
-		get config(){
-			return config;
-		}
-	});
-
 	DestructuringExpression.props({
 		/**
 		 * 提取并编译表达式文本内容
@@ -5111,7 +5128,7 @@ this.DestructuringDefaultItemExpression = function(DestructuringItemExpression){
 		DestructuringItemExpression.call(this, origin);
 
 		// 如果需要解析解构表达式
-		if(config.destructuring){
+		if(config.value){
 			// 给刚生成的解构赋值表达式设置变量名
 			this.variable = statements.collections.generate();
 		}
@@ -5163,7 +5180,7 @@ this.DestructuringDefaultItemExpression = function(DestructuringItemExpression){
 }.call(
 	this,
 	// config
-	new SyntaxConfig("destructuring")
+	ECMAScriptConfig.addBaseConfig("destructuring")
 );
 									}
 									.toString()
@@ -5325,7 +5342,7 @@ this.ArrayExpression = function(DestructibleExpression, ArrayDestructuringExpres
 			var inner = this.inner, expression = new ArrayDestructuringItemExpression(this);
 
 			// 如果需要解析解构表达式 而且 长度大于 1（长度为 0 不解析，长度为 1，只需取一次对象，所以都不需要生成变量名）
-			if(config.destructuring && inner.length > 1){
+			if(config.value && inner.length > 1){
 				var collections = parser.statements.collections;
 
 				// 给刚生成的解构赋值表达式设置变量名
@@ -5350,7 +5367,8 @@ this.ArrayExpression = function(DestructibleExpression, ArrayDestructuringExpres
 	this.DestructibleExpression,
 	this.ArrayDestructuringExpression,
 	this.ArrayDestructuringItemExpression,
-	DestructuringExpression.config,
+	// config
+	ECMAScriptConfig.destructuring,
 	// collected
 	function(parser, expression){
 		// 如果是标识符表达式
@@ -6388,15 +6406,6 @@ this.FunctionExpression = function(config){
 	};
 	FunctionExpression = new Rexjs(FunctionExpression, Expression);
 
-	FunctionExpression.static({
-		/**
-		 * 获取表达式编译配置
-		 */
-		get config(){
-			return config;
-		}
-	});
-
 	FunctionExpression.props({
 		arguments: null,
 		/**
@@ -6437,7 +6446,7 @@ this.FunctionExpression = function(config){
 	return FunctionExpression;
 }(
 	// config
-	new SyntaxConfig("defaultArgument", "restArgument", "arrowFunction", "generator")
+	ECMAScriptConfig.addBaseConfig("generator")
 );
 
 this.FunctionTag = function(FunctionExpression){
@@ -7054,7 +7063,7 @@ this.DefaultArgumentExpression = function(ArgumentExpression, config){
 		 */
 		extractTo: function(contentBuilder, anotherBuilder){
 			// 如果需要编译默认参数
-			if(config.defaultArgument){
+			if(config.value){
 				var context = this.context;
 
 				// 追加参数名至 contentBuilder
@@ -7080,7 +7089,8 @@ this.DefaultArgumentExpression = function(ArgumentExpression, config){
 	return DefaultArgumentExpression;
 }(
 	this.ArgumentExpression,
-	this.FunctionExpression.config
+	// config
+	ECMAScriptConfig.addBaseConfig("defaultArgument")
 );
 
 this.ArgumentAssignmentStatement = function(){
@@ -7203,7 +7213,7 @@ this.RestArgumentExpression = function(ArgumentExpression, config){
 		 */
 		extractTo: function(contentBuilder, anotherBuilder){
 			// 如果需要编译省略参数
-			if(config.restArgument){
+			if(config.value){
 				// 将默认参数名追加至临时生成器
 				anotherBuilder.appendContext(this.name);
 				// 将赋值运算追加至临时生成器
@@ -7223,7 +7233,8 @@ this.RestArgumentExpression = function(ArgumentExpression, config){
 	return RestArgumentExpression;
 }(
 	this.ArgumentExpression,
-	this.FunctionExpression.config
+	// config
+	ECMAScriptConfig.addBaseConfig("restArgument")
 );
 
 this.RestTag = function(SpreadTag, RestArgumentExpression){
@@ -7462,6 +7473,12 @@ this.FunctionBodyStatements = function(BlockBodyStatements, ECMAScriptVariableCo
 	FunctionBodyStatements = new Rexjs(FunctionBodyStatements, BlockBodyStatements);
 	
 	FunctionBodyStatements.props({
+		/**
+		 * 获取当前所处闭包
+		 */
+		get closure(){
+			return this;
+		},
 		scope: BlockBodyStatements.SCOPE_CLOSURE
 	});
 	
@@ -7521,7 +7538,7 @@ this.OpenFunctionBodyTag = function(OpenBlockComponentTag, FunctionBodyExpressio
 			
 			functionBodyExpression = (
 				// 如果有生成器并且需要解析
-				expression.generator && config.generator ?
+				expression.generator && config.value ?
 					new GeneratorBodyExpression(context):
 					new FunctionBodyExpression(context)
 			);
@@ -7555,7 +7572,8 @@ this.OpenFunctionBodyTag = function(OpenBlockComponentTag, FunctionBodyExpressio
 	this.GeneratorBodyExpression,
 	this.FunctionBodyStatements,
 	this.BlockComponentStatement,
-	this.FunctionExpression.config,
+	// config
+	ECMAScriptConfig.generator,
 	Rexjs.forEach
 );
 
@@ -7917,7 +7935,12 @@ this.GroupingContextStatement = function(ArgumentsExpression, BinaryExpression, 
 		catch: function(parser, context){
 			return this.try(parser, context);
 		},
-		expression: new DefaultExpression(),
+		/**
+		 * 获取当前语句表达式
+		 */
+		get expression(){
+			return this.target.expression;
+		},
 		/**
 		 * 尝试处理异常
 		 * @param {SyntaxParser} parser - 语法解析器
@@ -8260,9 +8283,9 @@ closeGroupingTag = new this.CloseGroupingTag();
 eval(
 									function(){
 										// 箭头函数相关
-~function(FunctionExpression, ArgumentsExpression, OpenFunctionBodyTag, CloseFunctionBodyTag, config, closeArrowFunctionBodyTag){
+~function(FunctionExpression, ArgumentsExpression, OpenFunctionBodyTag, CloseFunctionBodyTag, closeArrowFunctionBodyTag){
 
-this.ArrowFunctionExpression = function(){
+this.ArrowFunctionExpression = function(config){
 	/**
 	 * 箭头函数表达式
 	 * @param {Context} context - 语法标签上下文
@@ -8284,15 +8307,26 @@ this.ArrowFunctionExpression = function(){
 			var defaultArgumentBuilder = new ContentBuilder();
 
 			// 如果需要编译箭头函数
-			if(config.arrowFunction){
-				// 追加参数起始小括号
+			if(config.value){
+				/*
+					这里有包括了两层函数，
+					因为箭头函数里的 this 与 arguments 都是指向外层的，箭头函数自己没有 arguments
+				*/
+
+				// 追加外层函数头部代码
 				contentBuilder.appendString("(function");
 				// 提取并编译函数参数
 				this.arguments.compileTo(contentBuilder, defaultArgumentBuilder);
+				// 追加内层函数头部代码 与 默认参数
+				contentBuilder.appendString("{" + defaultArgumentBuilder.result + "return function()");
+				
+				// 清空默认参数，因为在上面已经被追加至生成器内
+				defaultArgumentBuilder.result = "";
+
 				// 提取并编译函数主体
 				this.body.compileTo(contentBuilder, defaultArgumentBuilder);
-				// 追加 参数结束小括号 并使用 bind 方法绑定 this
-				contentBuilder.appendString(".bind(this))");
+				// 追加两层函数的尾部代码
+				contentBuilder.appendString(".apply(this[0],this[1])}.bind([this, arguments]))");
 				return;
 			}
 			
@@ -8306,7 +8340,10 @@ this.ArrowFunctionExpression = function(){
 	});
 
 	return ArrowFunctionExpression;
-}();
+}(
+	// config
+	ECMAScriptConfig.addBaseConfig("arrowFunction")
+);
 
 this.SingleArgumentExpression = function(ArgumentsExpression, ArgumentExpression){
 	/**
@@ -8600,7 +8637,7 @@ this.CloseArrowFunctionBodyTag = function(visitor){
 		 */
 		visitor: function(parser, context, statement, statements){
 			// 设置表达式状态
-			statement.expression.state = STATE_STATEMENT_ENDED;
+			statement.expression.state = STATE_STATEMENT_ENDABLE;
 
 			// 调用父类方法
 			visitor.call(this, parser, context, statement, statements);
@@ -8620,7 +8657,6 @@ closeArrowFunctionBodyTag = new this.CloseArrowFunctionBodyTag();
 	this.ArgumentsExpression,
 	this.OpenFunctionBodyTag,
 	this.CloseFunctionBodyTag,
-	this.FunctionExpression.config,
 	// closeArrowFunctionBodyTag
 	null
 );
@@ -8689,6 +8725,20 @@ this.PropertyDestructuringDefaultItemExpression = function(DestructuringDefaultI
 	PropertyDestructuringDefaultItemExpression.props({
 		assignment: null,
 		/**
+		 * 提取表达式文本内容
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 */
+		extractTo: function(contentBuilder){
+			var origin = this.origin, value = origin.value;
+
+			// 解构属性名
+			origin.name.extractTo(contentBuilder);
+			// 追加等号
+			contentBuilder.appendContext(value.context);
+			// 追加值
+			value.operand.extractTo(contentBuilder);
+		},
+		/**
 		 * 提取并编译表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
 		 * @param {ContentBuilder} anotherBuilder - 另一个内容生成器，一般用于副内容的生成或记录
@@ -8711,7 +8761,7 @@ this.PropertyDestructuringDefaultItemExpression = function(DestructuringDefaultI
 	this.DestructuringDefaultItemExpression
 );
 
-this.PropertyExpression = function(BinaryExpression, ShorthandPropertyValueExpression, config){
+this.PropertyExpression = function(BinaryExpression, ShorthandPropertyValueExpression){
 	/**
 	 * 对象属性表达式
 	 */
@@ -8719,15 +8769,6 @@ this.PropertyExpression = function(BinaryExpression, ShorthandPropertyValueExpre
 		BinaryExpression.call(this, null, null);
 	};
 	PropertyExpression = new Rexjs(PropertyExpression, BinaryExpression);
-
-	PropertyExpression.static({
-		/**
-		 * 获取表达式编译配置
-		 */
-		get config(){
-			return config;
-		}
-	});
 
 	PropertyExpression.props({
 		/**
@@ -8858,9 +8899,7 @@ this.PropertyExpression = function(BinaryExpression, ShorthandPropertyValueExpre
 	return PropertyExpression;
 }(
 	this.BinaryExpression,
-	this.ShorthandPropertyValueExpression,
-	// config
-	new SyntaxConfig("shorthandMethod", "shorthandPropertyName", "computedName", "propertyInitializer")
+	this.ShorthandPropertyValueExpression3
 );
 
 this.LiteralPropertyNameExpression = function(){
@@ -9731,7 +9770,7 @@ this.PropertyInitializerExpression = function(config, extractTo, toTernary){
 		 */
 		extractTo: function(contentBuilder){
 			// 如果需要解析该表达式
-			if(config.propertyInitializer){
+			if(config.value){
 				// 以三元表达式的形式追加
 				toTernary(contentBuilder, this, ":");
 				return;
@@ -9745,9 +9784,8 @@ this.PropertyInitializerExpression = function(config, extractTo, toTernary){
 
 	return PropertyInitializerExpression;
 }(
-
 	// config
-	this.PropertyExpression.config,
+	ECMAScriptConfig.addRexjsConfig("propertyInitializer"),
 	PropertyValueExpression.prototype.extractTo,
 	// toTernary
 	function(contentBuilder, expression, assignment){
@@ -9947,7 +9985,7 @@ this.OpenComputedPropertyNameTag = function(OpenBracketTag, ComputedPropertyName
 			statement.expression.name = new ComputedPropertyNameExpression(context);
 
 			// 如果需要编译计算式名称
-			if(config.computedName){
+			if(config.value){
 				// 设置对象表达式的 useFunction 属性，表示要用函数包裹，进行封装
 				statement.target.expression.useFunction = true;
 			}
@@ -9962,7 +10000,8 @@ this.OpenComputedPropertyNameTag = function(OpenBracketTag, ComputedPropertyName
 	this.OpenBracketTag,
 	this.ComputedPropertyNameExpression,
 	this.ObjectComputedNameStatement,
-	this.PropertyExpression.config
+	// config
+	ECMAScriptConfig.addBaseConfig("computedName")
 );
 
 this.CloseComputedPropertyNameTag = function(CloseBracketTag){
@@ -10743,7 +10782,7 @@ this.ObjectExpression = function(
 			var inner = this.inner, expression = new ObjectDestructuringItemExpression(this);
 
 			// 如果需要解析解构表达式 而且 长度大于 1（长度为 0 不解析，长度为 1，只需取一次对象，所以都不需要生成变量名）
-			if(config.destructuring && inner.length > 1){
+			if(config.value && inner.length > 1){
 				var collections = parser.statements.collections;
 
 				// 给刚生成的解构赋值表达式设置变量名
@@ -12150,21 +12189,14 @@ this.ReturnTag = function(SCOPE_CLOSURE, visitor){
 		 * @param {Statements} statements - 当前语句块
 		 */
 		visitor: function(parser, context, statement, statements){
-			var s = statements;
+			// 如果存在闭包
+			if(statements.closure){
+				// 调用父类访问器
+				visitor.call(this, parser, context, statement, statements);
 
-			// 如果语句块存在
-			while(s){
-				// 如果是闭包，而且不是全局系统最外层闭包
-				if((s.scope & SCOPE_CLOSURE) === SCOPE_CLOSURE){
-					// 调用父类访问器
-					visitor.call(this, parser, context, statement, statements);
-
-					// 设置当前表达式为空表达式
-					statements.statement.expression = new EmptyExpression(null);
-					return;
-				}
-
-				s = s.target;
+				// 设置当前表达式为空表达式
+				statements.statement.expression = new EmptyExpression(null);
+				return;
 			}
 
 			// 报错
@@ -12558,7 +12590,7 @@ eval(
 										// var 语句相关
 ~function(VariableDeclarationTag, closureVariableTag, varDeclarationSeparatorTag){
 
-this.VarExpression = function(IdentifierExpression, config){
+this.VarExpression = function(IdentifierExpression){
 	/**
 	 * var 表达式
 	 * @param {Context} context - 标签上下文
@@ -12570,15 +12602,6 @@ this.VarExpression = function(IdentifierExpression, config){
 	};
 	VarExpression = new Rexjs(VarExpression, Expression);
 
-	VarExpression.static({
-		/**
-		 * 获取表达式编译配置
-		 */
-		get config(){
-			return config;
-		}
-	});
-	
 	VarExpression.props({
 		/**
 		 * 提取表达式文本内容
@@ -12619,9 +12642,7 @@ this.VarExpression = function(IdentifierExpression, config){
 
 	return VarExpression;
 }(
-	this.IdentifierExpression,
-	// config
-	new SyntaxConfig("let", "const")
+	this.IdentifierExpression
 );
 
 this.VarStatement = function(){
@@ -12831,7 +12852,7 @@ this.LetTag = function(VarTag, config){
 		 */
 		extractTo: function(contentBuilder, content){
 			// 追加标签内容
-			contentBuilder.appendString(config.let ? "var" : content);
+			contentBuilder.appendString(config.value ? "var" : content);
 		},
 		regexp: /let/,
 		/**
@@ -12852,7 +12873,8 @@ this.LetTag = function(VarTag, config){
 	return LetTag;
 }(
 	this.VarTag,
-	this.VarExpression.config
+	// config
+	ECMAScriptConfig.addBaseConfig("let")
 );
 
 this.LocalVariableTag = function(collectTo){
@@ -12885,13 +12907,6 @@ this.LocalVariableTag = function(collectTo){
 		 */
 		containsBy: function(variable, collections){
 			return collections.declaration.contains(variable);
-		},
-		/**
-		 * 获取下一个语句块
-		 * @params {ECMAScriptStatements} statements - 当前语句块
-		 */
-		nextStatementsOf: function(){
-			return null;
 		}
 	});
 	
@@ -13025,7 +13040,7 @@ this.ConstTag = function(LetTag, ConstStatement, config){
 		 */
 		extractTo: function(contentBuilder, content){
 			// 追加标签内容
-			contentBuilder.appendString(config.const ? "var" : content);
+			contentBuilder.appendString(config.value ? "var" : content);
 		},
 		regexp: /const/,
 		/**
@@ -13060,7 +13075,8 @@ this.ConstTag = function(LetTag, ConstStatement, config){
 }(
 	this.LetTag,
 	this.ConstStatement,
-	VarExpression.config
+	// config
+	ECMAScriptConfig.addBaseConfig("const")
 );
 
 this.ConstVariableTag = function(collectTo){
@@ -13973,15 +13989,6 @@ this.ForExpression = function(ConditionalExpression, config, compileOf){
 	};
 	ForExpression = new Rexjs(ForExpression, ConditionalExpression);
 
-	ForExpression.static({
-		/**
-		 * 获取表达式编译配置
-		 */
-		get config(){
-			return config;
-		}
-	});
-
 	ForExpression.props({
 		body: null,
 		/**
@@ -13993,7 +14000,7 @@ this.ForExpression = function(ConditionalExpression, config, compileOf){
 			contentBuilder.appendContext(this.context);
 
 			// 如果是 of 标签而且需要编译 of
-			if(this.iterator === "of" && config.of){
+			if(this.iterator === "of" && config.value){
 				// 编译 for of
 				compileOf(
 					this.condition,
@@ -14019,7 +14026,7 @@ this.ForExpression = function(ConditionalExpression, config, compileOf){
 }(
 	this.ConditionalExpression,
 	// config
-	new SyntaxConfig("of"),
+	ECMAScriptConfig.addBaseConfig("of"),
 	// compileOf
 	function(condition, body, contentBuilder, builder, variable){
 		var inner = condition.inner;
@@ -14244,7 +14251,7 @@ this.ForOfTag = function(IteratorTag, config, visitor){
 		 */
 		visitor: function(parser, context, statement, statements){
 			// 如果需要编译 of
-			if(config.of){
+			if(config.value){
 				// 生成并记录临时变量名
 				statement.target.expression.variable = statements.collections.generate();
 			}
@@ -14257,7 +14264,8 @@ this.ForOfTag = function(IteratorTag, config, visitor){
 	return ForOfTag;
 }(
 	this.IteratorTag,
-	this.ForExpression.config,
+	// config
+	ECMAScriptConfig.of,
 	this.IteratorTag.prototype.visitor
 );
 
@@ -14819,15 +14827,6 @@ this.TryFunctionExpression = function(extractTo){
 	};
 	TryFunctionExpression = new Rexjs(TryFunctionExpression, UnaryExpression);
 
-	TryFunctionExpression.static({
-		/**
-		 * 获取表达式编译配置
-		 */
-		get config(){
-			return config;
-		}
-	});
-	
 	TryFunctionExpression.props({
 		/**
 		 * 提取表达式文本内容
@@ -14835,7 +14834,7 @@ this.TryFunctionExpression = function(extractTo){
 		 */
 		extractTo: function(contentBuilder){
 			// 如果需要编译
-			if(config.tryFunction){
+			if(config.value){
 				// 直接提取操作对象
 				this.operand.extractTo(contentBuilder);
 				return;
@@ -14874,7 +14873,7 @@ this.FunctionConvertorExpression = FunctionConvertorExpression = function(Access
 			var func = this.function;
 
 			// 如果需要编译
-			if(config.tryFunction){
+			if(config.value){
 				// 追加转换方法
 				contentBuilder.appendString("(Rexjs.Function.convert(");
 
@@ -15032,7 +15031,7 @@ this.TryFunctionTag = function(ExecTag, TryFunctionExpression, TryFunctionStatem
 	// FunctionConvertorExpression
 	null,
 	// config
-	new SyntaxConfig("tryFunction")
+	ECMAScriptConfig.addRexjsConfig("tryFunction")
 );
 									}
 									.toString()
@@ -16253,15 +16252,6 @@ this.TemplateExpression = function(config, extractTo, compileItem){
 	};
 	TemplateExpression = new Rexjs(TemplateExpression, PartnerExpression);
 
-	TemplateExpression.static({
-		/**
-		 * 获取表达式编译配置
-		 */
-		get config(){
-			return config;
-		}
-	});
-
 	TemplateExpression.props({
 		/**
 		 * 提取表达式文本内容
@@ -16269,7 +16259,7 @@ this.TemplateExpression = function(config, extractTo, compileItem){
 		 */
 		extractTo: function(contentBuilder){
 			// 如果需要编译
-			if(config.template){
+			if(config.value){
 				// 追加起始双引号
 				contentBuilder.appendString('"');
 				// 直接编译 inner
@@ -16287,7 +16277,7 @@ this.TemplateExpression = function(config, extractTo, compileItem){
 	return TemplateExpression;
 }(
 	// config
-	new SyntaxConfig("template"),
+	ECMAScriptConfig.addBaseConfig("template"),
 	PartnerExpression.prototype.extractTo,
 	// compileItem
 	function(item, contentBuilder){
@@ -16829,7 +16819,7 @@ this.TemplateParameterExpression = function(config, extractTo, compileInner){
 			this.operand.extractTo(contentBuilder);
 
 			// 如果需要编译
-			if(config.template){
+			if(config.value){
 				// 编译 inner
 				compileInner(this.inner, contentBuilder);
 				return;
@@ -16843,7 +16833,8 @@ this.TemplateParameterExpression = function(config, extractTo, compileInner){
 
 	return TemplateParameterExpression;
 }(
-	TemplateExpression.config,
+	// config
+	ECMAScriptConfig.template,
 	PartnerExpression.prototype.extractTo,
 	// compileInner
 	function(inner, contentBuilder){
@@ -17208,15 +17199,6 @@ this.ClassExpression = function(DefaultExtendsExpression, config){
 	};
 	ClassExpression = new Rexjs(ClassExpression, Expression);
 
-	ClassExpression.static({
-		/**
-		 * 获取表达式编译配置
-		 */
-		get config(){
-			return config;
-		}
-	});
-
 	ClassExpression.props({
 		name: new DefaultExpression(),
 		extends: new DefaultExtendsExpression(),
@@ -17226,7 +17208,7 @@ this.ClassExpression = function(DefaultExtendsExpression, config){
 		 */
 		extractTo: function(contentBuilder){
 			// 如果需要编译类
-			if(config.class){
+			if(config.value){
 				var body = this.body;
 				
 				// 追加闭包头部
@@ -17257,7 +17239,7 @@ this.ClassExpression = function(DefaultExtendsExpression, config){
 }(
 	this.DefaultExtendsExpression,
 	// config
-	new SyntaxConfig("class")
+	ECMAScriptConfig.addBaseConfig("class")
 );
 
 this.ClassTag = function(ClassExpression){
@@ -17379,7 +17361,7 @@ this.ClassDeclarationExpression = function(config, extractTo){
 		 */
 		extractTo: function(contentBuilder){
 			// 如果需要解析类
-			if(config.class){
+			if(config.value){
 				// 追加 var 关键字
 				contentBuilder.appendString("var");
 				// 提取名称
@@ -17410,7 +17392,8 @@ this.ClassDeclarationExpression = function(config, extractTo){
 
 	return ClassDeclarationExpression;
 }(
-	ClassExpression.config,
+	// config
+	ECMAScriptConfig.class,
 	ClassExpression.prototype.extractTo
 );
 
@@ -17519,7 +17502,7 @@ this.ConstructorNameExpression = function(config){
 		 */
 		extractTo: function(contentBuilder){
 			// 如果需要编译类
-			if(config.class){
+			if(config.value){
 				var context = this.context;
 				
 				// 如果没有类名
@@ -17535,7 +17518,8 @@ this.ConstructorNameExpression = function(config){
 
 	return ConstructorNameExpression;
 }(
-	this.ClassExpression.config
+	// config
+	ECMAScriptConfig.class
 );
 
 this.DefaultConstructorExpression = function(ClassPropertyExpression){
@@ -18147,7 +18131,7 @@ this.ClassPropertyStatement = function(PropertyStatement, ClassPropertyExpressio
 	function(classExpression, classBodyExpression){
 		switch(false){
 			// 如果不需要编译类表达式
-			case config.class:
+			case config.value:
 				return;
 
 			// 如果已有构造函数
@@ -18444,7 +18428,8 @@ closeClassBodyTag = new this.CloseClassBodyTag();
 	this.DefaultConstructorExpression,
 	this.BinaryNumberTag,
 	this.OctalNumberTag,
-	this.ClassExpression.config,
+	// config
+	ECMAScriptConfig.class,
 	// classPropertySeparatorTag
 	null,
 	// closeClassBodyTag
@@ -18614,7 +18599,7 @@ this.SuperExpression = function(LiteralExpression, config){
 		 */
 		extractTo: function(contentBuilder){
 			// 如果需要编译类
-			if(config.class){
+			if(config.value){
 				// 追加编译后调用 super 的字符串
 				contentBuilder.appendString(
 					"(Rexjs.Class.superOf(this," + this.depth + "" + (this.call ? ",true" : "") + "))"
@@ -18631,7 +18616,8 @@ this.SuperExpression = function(LiteralExpression, config){
 	return SuperExpression;
 }(
 	this.LiteralExpression,
-	this.ClassExpression.config
+	// config
+	ECMAScriptConfig.class
 );
 
 this.SuperStatement = function(){
@@ -18772,15 +18758,6 @@ this.ImportExpression = function(compileMember){
 	};
 	ImportExpression = new Rexjs(ImportExpression, Expression);
 
-	ImportExpression.static({
-		/**
-		 * 获取表达式编译配置
-		 */
-		get config(){
-			return config;
-		}
-	});
-
 	ImportExpression.props({
 		clean: true,
 		/**
@@ -18789,7 +18766,7 @@ this.ImportExpression = function(compileMember){
 		 */
 		extractTo: function(contentBuilder){
 			// 如果需要编译 import 语句
-			if(config.import){
+			if(config.value){
 				// 如果当前 import 没有导入任何成员
 				if(this.clean){
 					// 返回，因为模块在依赖分析时候就已经加载
@@ -18991,7 +18968,7 @@ this.ModuleNameTag = function(StringTag){
 			statement.expression.name = context;
 
 			// 如果需要解析 import 语句，否则不需要添加依赖，因为统统交给浏览器自己或第三方去处理 import 语句
-			if(config.import){
+			if(config.value){
 				// 添加模块依赖
 				parser.deps.push(
 					content.substring(1, content.length - 1)
@@ -19009,7 +18986,7 @@ this.ModuleNameTag = function(StringTag){
 	this,
 	this.ModuleTag,
 	// config
-	new SyntaxConfig("import")
+	ECMAScriptConfig.addModuleConfig("import")
 );
 									}
 									.toString()
@@ -19808,15 +19785,6 @@ this.ExportExpression = function(config, compile){
 	};
 	ExportExpression = new Rexjs(ExportExpression, Expression);
 
-	ExportExpression.static({
-		/**
-		 * 获取表达式编译配置
-		 */
-		get config(){
-			return config;
-		}
-	});
-
 	ExportExpression.props({
 		/**
 		 * 提取表达式文本内容
@@ -19826,7 +19794,7 @@ this.ExportExpression = function(config, compile){
 			var from = this.from;
 
 			// 如果需要解析 export
-			if(config.export){
+			if(config.value){
 				// 编译成员
 				compile(this.member, this.from, this.name, this.file, contentBuilder);
 				return;
@@ -19858,7 +19826,7 @@ this.ExportExpression = function(config, compile){
 	return ExportExpression;
 }(
 	// config
-	new SyntaxConfig("export"),
+	ECMAScriptConfig.addModuleConfig("export"),
 	// compile
 	function(member, from, name, file, contentBuilder){
 		// 初始化内容生成器
@@ -20410,7 +20378,7 @@ this.DestructuringAssignmentExpression = function(extractTo){
 		 */
 		extractTo: function(contentBuilder){
 			// 如果需要编译解构赋值
-			if(config.destructuring){
+			if(config.value){
 				var variable = this.variable, left = this.left, builder = new ContentBuilder();
 
 				// 用新的生成器记录临时变量名
@@ -20503,7 +20471,7 @@ this.DestructuringAssignmentTag = function(DestructuringAssignmentExpression, vi
 			visitor.call(this, parser, context, statement, statements);
 
 			// 如果需要解析解构赋值
-			if(config.destructuring){
+			if(config.value){
 				// 给刚生成的解构赋值表达式设置变量名
 				setVariable(statement.expression.last, statements.collections);
 			}
@@ -20538,7 +20506,8 @@ this.DestructuringAssignmentTag = function(DestructuringAssignmentExpression, vi
 	this.ArrayExpression,
 	this.ObjectExpression,
 	this.BasicAssignmentTag,
-	this.DestructuringExpression.config
+	// config
+	ECMAScriptConfig.destructuring
 );
 									}
 									.toString()
@@ -22755,118 +22724,6 @@ this.WhileConditionTags = function(OpenWhileConditionTag){
 
 eval(
 									function(){
-										// 语法配置相关
-~function(){
-
-this.ECMAScript6Config = function(configs, forEach, every, defineProperty){
-	/**
-	 * ECMAScript6 语法配置
-	 */
-	function ECMAScript6Config(){
-		SyntaxConfig.call(this);
-	};
-	ECMAScript6Config = new Rexjs(ECMAScript6Config, SyntaxConfig);
-
-	ECMAScript6Config.static({
-		/**
-		 * 获取是否全部表达式都需要编译
-		 */
-		get all(){
-			return every(
-				this,
-				function(value){
-					return value;
-				}
-			);
-		},
-		/**
-		 * 设置是否全部表达式都需要编译
-		 * @param {Boolean} value - 是否都需要编译
-		 */
-		set all(value){
-			forEach(
-				this,
-				function(oldValue, name){
-					this[name] = value;
-				},
-				this
-			);
-		}
-	});
-
-	// 遍历所有配置
-	forEach(
-		configs,
-		function(config){
-			// 遍历单个配置项
-			forEach(config, this, config);
-		},
-		function(value, name){
-			var config = this;
-
-			// 定义静态属性
-			defineProperty(
-				ECMAScript6Config,
-				name,
-				{
-					// 获取
-					get: function(){
-						return config[name];
-					},
-					// 设置
-					set: function(value){
-						config[name] = value;
-					},
-					enumerable: true,
-					configurable: true
-				}
-			);
-		}
-	);
-	
-	return ECMAScript6Config;
-}(
-	// configs
-	[
-		"Call",
-		"Destructuring",
-		"Exponentiation",
-		"Export",
-		"For",
-		"Function",
-		"Import",
-		"Literal",
-		"Object",
-		"Property",
-		"Template",
-		"TryFunction",
-		"Var"
-	]
-	.map(
-		function(prefix){
-			return this[prefix + "Expression"].config;
-		},
-		this
-	),
-	Rexjs.forEach,
-	Rexjs.every,
-	Object.defineProperty
-);
-
-}.call(
-	this
-);
-									}
-									.toString()
-									.match(
-										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-									)[1] +
-									"\n//# sourceURL=http://rexjs.org/ecmaScript-config.js"
-								);
-
-
-eval(
-									function(){
 										// ECMAScript 解析器相关
 ~function(SyntaxParser){
 
@@ -23099,7 +22956,8 @@ Rexjs.static(this);
 	null,
 	// ECMAScriptOrders
 	null,
-	Rexjs.SyntaxConfig,
+	// ECMAScriptConfig
+	null,
 	Rexjs.SyntaxTag,
 	Rexjs.TagType,
 	Rexjs.TagClass.CLASS_STATEMENT_BEGIN,

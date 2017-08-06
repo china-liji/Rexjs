@@ -160,7 +160,12 @@ this.GroupingContextStatement = function(ArgumentsExpression, BinaryExpression, 
 		catch: function(parser, context){
 			return this.try(parser, context);
 		},
-		expression: new DefaultExpression(),
+		/**
+		 * 获取当前语句表达式
+		 */
+		get expression(){
+			return this.target.expression;
+		},
 		/**
 		 * 尝试处理异常
 		 * @param {SyntaxParser} parser - 语法解析器

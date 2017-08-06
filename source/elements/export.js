@@ -14,15 +14,6 @@ this.ExportExpression = function(config, compile){
 	};
 	ExportExpression = new Rexjs(ExportExpression, Expression);
 
-	ExportExpression.static({
-		/**
-		 * 获取表达式编译配置
-		 */
-		get config(){
-			return config;
-		}
-	});
-
 	ExportExpression.props({
 		/**
 		 * 提取表达式文本内容
@@ -32,7 +23,7 @@ this.ExportExpression = function(config, compile){
 			var from = this.from;
 
 			// 如果需要解析 export
-			if(config.export){
+			if(config.value){
 				// 编译成员
 				compile(this.member, this.from, this.name, this.file, contentBuilder);
 				return;
@@ -64,7 +55,7 @@ this.ExportExpression = function(config, compile){
 	return ExportExpression;
 }(
 	// config
-	new SyntaxConfig("export"),
+	ECMAScriptConfig.addModuleConfig("export"),
 	// compile
 	function(member, from, name, file, contentBuilder){
 		// 初始化内容生成器

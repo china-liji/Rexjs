@@ -111,6 +111,12 @@ this.FunctionBodyStatements = function(BlockBodyStatements, ECMAScriptVariableCo
 	FunctionBodyStatements = new Rexjs(FunctionBodyStatements, BlockBodyStatements);
 	
 	FunctionBodyStatements.props({
+		/**
+		 * 获取当前所处闭包
+		 */
+		get closure(){
+			return this;
+		},
 		scope: BlockBodyStatements.SCOPE_CLOSURE
 	});
 	
@@ -170,7 +176,7 @@ this.OpenFunctionBodyTag = function(OpenBlockComponentTag, FunctionBodyExpressio
 			
 			functionBodyExpression = (
 				// 如果有生成器并且需要解析
-				expression.generator && config.generator ?
+				expression.generator && config.value ?
 					new GeneratorBodyExpression(context):
 					new FunctionBodyExpression(context)
 			);
@@ -204,7 +210,8 @@ this.OpenFunctionBodyTag = function(OpenBlockComponentTag, FunctionBodyExpressio
 	this.GeneratorBodyExpression,
 	this.FunctionBodyStatements,
 	this.BlockComponentStatement,
-	this.FunctionExpression.config,
+	// config
+	ECMAScriptConfig.generator,
 	Rexjs.forEach
 );
 

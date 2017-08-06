@@ -20,7 +20,7 @@ this.DefaultArgumentExpression = function(ArgumentExpression, config){
 		 */
 		extractTo: function(contentBuilder, anotherBuilder){
 			// 如果需要编译默认参数
-			if(config.defaultArgument){
+			if(config.value){
 				var context = this.context;
 
 				// 追加参数名至 contentBuilder
@@ -46,7 +46,8 @@ this.DefaultArgumentExpression = function(ArgumentExpression, config){
 	return DefaultArgumentExpression;
 }(
 	this.ArgumentExpression,
-	this.FunctionExpression.config
+	// config
+	ECMAScriptConfig.addBaseConfig("defaultArgument")
 );
 
 this.ArgumentAssignmentStatement = function(){

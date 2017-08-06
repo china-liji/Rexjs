@@ -1,5 +1,5 @@
 // 算数标签相关
-~function(config){
+~function(){
 
 this.MathematicalNumberTag = function(NumberTag){
 	/**
@@ -42,7 +42,7 @@ this.MathematicalNumberTag = function(NumberTag){
 	this.NumberTag
 );
 
-this.BinaryNumberTag = function(MathematicalNumberTag){
+this.BinaryNumberTag = function(MathematicalNumberTag, config){
 	/**
 	 * 二进制数字标签
 	 * @param {Number} _type - 标签类型
@@ -59,16 +59,18 @@ this.BinaryNumberTag = function(MathematicalNumberTag){
 		 * 是否使用 parseInt 方法进行转义
 		 */
 		useParse: function(){
-			return config.binaryNumber;
+			return config.value;
 		}
 	});
 	
 	return BinaryNumberTag;
 }(
-	this.MathematicalNumberTag
+	this.MathematicalNumberTag,
+	// config
+	ECMAScriptConfig.addBaseConfig("binaryNumber")
 );
 
-this.OctalNumberTag = function(MathematicalNumberTag){
+this.OctalNumberTag = function(MathematicalNumberTag, config){
 	/**
 	 * 八进制数字标签
 	 * @param {Number} _type - 标签类型
@@ -85,16 +87,17 @@ this.OctalNumberTag = function(MathematicalNumberTag){
 		 * 是否使用 parseInt 方法进行转义
 		 */
 		useParse: function(){
-			return config.octalNumber;
+			return config.value;
 		}
 	});
 	
 	return OctalNumberTag;
 }(
-	this.MathematicalNumberTag
+	this.MathematicalNumberTag,
+	// config
+	ECMAScriptConfig.addBaseConfig("octalNumber")
 );
 
 }.call(
-	this,
-	this.LiteralExpression.config
+	this
 );

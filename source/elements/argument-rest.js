@@ -23,7 +23,7 @@ this.RestArgumentExpression = function(ArgumentExpression, config){
 		 */
 		extractTo: function(contentBuilder, anotherBuilder){
 			// 如果需要编译省略参数
-			if(config.restArgument){
+			if(config.value){
 				// 将默认参数名追加至临时生成器
 				anotherBuilder.appendContext(this.name);
 				// 将赋值运算追加至临时生成器
@@ -43,7 +43,8 @@ this.RestArgumentExpression = function(ArgumentExpression, config){
 	return RestArgumentExpression;
 }(
 	this.ArgumentExpression,
-	this.FunctionExpression.config
+	// config
+	ECMAScriptConfig.addBaseConfig("restArgument")
 );
 
 this.RestTag = function(SpreadTag, RestArgumentExpression){

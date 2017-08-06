@@ -33,8 +33,10 @@ switch(
 		throw "运算结果5错误";
 }
 
-if(
-	$Rexjs_0 !== obj
-){
-	throw "临时变量名生成有误";
+if(Rexjs.ECMAScriptConfig.spread.value){
+	if(
+		$Rexjs_0 !== obj
+	){
+		throw "临时变量名生成有误";
+	}
 }

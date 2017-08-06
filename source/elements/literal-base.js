@@ -1,7 +1,7 @@
 // 字面量标签相关
 ~function(){
 
-this.LiteralExpression = function(config){
+this.LiteralExpression = function(){
 	/**
 	 * 字面量表达式
 	 * @param {Context} context - 语法标签上下文
@@ -11,20 +11,8 @@ this.LiteralExpression = function(config){
 	};
 	LiteralExpression = new Rexjs(LiteralExpression, Expression);
 	
-	LiteralExpression.static({
-		/**
-		 * 获取表达式编译配置
-		 */
-		get config(){
-			return config;
-		}
-	});
-
 	return LiteralExpression;
-}(
-	// config
-	new SyntaxConfig("binaryNumber", "octalNumber")
-);
+}();
 
 this.LiteralTag = function(LiteralExpression){
 	/**

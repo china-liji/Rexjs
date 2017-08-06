@@ -16,7 +16,8 @@ Rexjs.static(this);
 	null,
 	// ECMAScriptOrders
 	null,
-	Rexjs.SyntaxConfig,
+	// ECMAScriptConfig
+	null,
 	Rexjs.SyntaxTag,
 	Rexjs.TagType,
 	Rexjs.TagClass.CLASS_STATEMENT_BEGIN,

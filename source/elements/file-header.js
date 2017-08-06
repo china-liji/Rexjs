@@ -5,9 +5,7 @@ new function(
 	// 表达式相关
 	Expression, ListExpression, EmptyExpression, DefaultExpression, PartnerExpression, LeftHandSideExpression,
 	// ECMAScript 相关
-	ECMAScriptStatement, ECMABoxStatement, ECMAScriptErrors, ECMAScriptOrders,
-	// 语法配置相关
-	SyntaxConfig,
+	ECMAScriptStatement, ECMABoxStatement, ECMAScriptErrors, ECMAScriptOrders, ECMAScriptConfig,
 	// 标签相关类
 	SyntaxTag, TagType,
 	// 标签分类相关

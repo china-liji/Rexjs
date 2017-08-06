@@ -15,15 +15,6 @@ this.ImportExpression = function(compileMember){
 	};
 	ImportExpression = new Rexjs(ImportExpression, Expression);
 
-	ImportExpression.static({
-		/**
-		 * 获取表达式编译配置
-		 */
-		get config(){
-			return config;
-		}
-	});
-
 	ImportExpression.props({
 		clean: true,
 		/**
@@ -32,7 +23,7 @@ this.ImportExpression = function(compileMember){
 		 */
 		extractTo: function(contentBuilder){
 			// 如果需要编译 import 语句
-			if(config.import){
+			if(config.value){
 				// 如果当前 import 没有导入任何成员
 				if(this.clean){
 					// 返回，因为模块在依赖分析时候就已经加载
@@ -234,7 +225,7 @@ this.ModuleNameTag = function(StringTag){
 			statement.expression.name = context;
 
 			// 如果需要解析 import 语句，否则不需要添加依赖，因为统统交给浏览器自己或第三方去处理 import 语句
-			if(config.import){
+			if(config.value){
 				// 添加模块依赖
 				parser.deps.push(
 					content.substring(1, content.length - 1)
@@ -252,5 +243,5 @@ this.ModuleNameTag = function(StringTag){
 	this,
 	this.ModuleTag,
 	// config
-	new SyntaxConfig("import")
+	ECMAScriptConfig.addModuleConfig("import")
 );

@@ -52,6 +52,20 @@ this.PropertyDestructuringDefaultItemExpression = function(DestructuringDefaultI
 	PropertyDestructuringDefaultItemExpression.props({
 		assignment: null,
 		/**
+		 * 提取表达式文本内容
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 */
+		extractTo: function(contentBuilder){
+			var origin = this.origin, value = origin.value;
+
+			// 解构属性名
+			origin.name.extractTo(contentBuilder);
+			// 追加等号
+			contentBuilder.appendContext(value.context);
+			// 追加值
+			value.operand.extractTo(contentBuilder);
+		},
+		/**
 		 * 提取并编译表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
 		 * @param {ContentBuilder} anotherBuilder - 另一个内容生成器，一般用于副内容的生成或记录
@@ -74,7 +88,7 @@ this.PropertyDestructuringDefaultItemExpression = function(DestructuringDefaultI
 	this.DestructuringDefaultItemExpression
 );
 
-this.PropertyExpression = function(BinaryExpression, ShorthandPropertyValueExpression, config){
+this.PropertyExpression = function(BinaryExpression, ShorthandPropertyValueExpression){
 	/**
 	 * 对象属性表达式
 	 */
@@ -82,15 +96,6 @@ this.PropertyExpression = function(BinaryExpression, ShorthandPropertyValueExpre
 		BinaryExpression.call(this, null, null);
 	};
 	PropertyExpression = new Rexjs(PropertyExpression, BinaryExpression);
-
-	PropertyExpression.static({
-		/**
-		 * 获取表达式编译配置
-		 */
-		get config(){
-			return config;
-		}
-	});
 
 	PropertyExpression.props({
 		/**
@@ -221,9 +226,7 @@ this.PropertyExpression = function(BinaryExpression, ShorthandPropertyValueExpre
 	return PropertyExpression;
 }(
 	this.BinaryExpression,
-	this.ShorthandPropertyValueExpression,
-	// config
-	new SyntaxConfig("shorthandMethod", "shorthandPropertyName", "computedName", "propertyInitializer")
+	this.ShorthandPropertyValueExpression3
 );
 
 this.LiteralPropertyNameExpression = function(){

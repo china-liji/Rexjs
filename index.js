@@ -210,7 +210,6 @@ console.timeEnd("time");
 		"ecmaScript-tags.js",
 		"tags-base.js",
 		"tags-others.js",
-		"ecmaScript-config.js",
 		"ecmaScript-parser.js",
 		"file-footer.js"
 	]

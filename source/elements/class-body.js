@@ -193,7 +193,7 @@ this.ClassPropertyStatement = function(PropertyStatement, ClassPropertyExpressio
 	function(classExpression, classBodyExpression){
 		switch(false){
 			// 如果不需要编译类表达式
-			case config.class:
+			case config.value:
 				return;
 
 			// 如果已有构造函数
@@ -490,7 +490,8 @@ closeClassBodyTag = new this.CloseClassBodyTag();
 	this.DefaultConstructorExpression,
 	this.BinaryNumberTag,
 	this.OctalNumberTag,
-	this.ClassExpression.config,
+	// config
+	ECMAScriptConfig.class,
 	// classPropertySeparatorTag
 	null,
 	// closeClassBodyTag

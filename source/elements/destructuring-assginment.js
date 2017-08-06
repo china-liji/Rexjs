@@ -19,7 +19,7 @@ this.DestructuringAssignmentExpression = function(extractTo){
 		 */
 		extractTo: function(contentBuilder){
 			// 如果需要编译解构赋值
-			if(config.destructuring){
+			if(config.value){
 				var variable = this.variable, left = this.left, builder = new ContentBuilder();
 
 				// 用新的生成器记录临时变量名
@@ -112,7 +112,7 @@ this.DestructuringAssignmentTag = function(DestructuringAssignmentExpression, vi
 			visitor.call(this, parser, context, statement, statements);
 
 			// 如果需要解析解构赋值
-			if(config.destructuring){
+			if(config.value){
 				// 给刚生成的解构赋值表达式设置变量名
 				setVariable(statement.expression.last, statements.collections);
 			}
@@ -147,5 +147,6 @@ this.DestructuringAssignmentTag = function(DestructuringAssignmentExpression, vi
 	this.ArrayExpression,
 	this.ObjectExpression,
 	this.BasicAssignmentTag,
-	this.DestructuringExpression.config
+	// config
+	ECMAScriptConfig.destructuring
 );

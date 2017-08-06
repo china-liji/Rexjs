@@ -30,21 +30,14 @@ this.ReturnTag = function(SCOPE_CLOSURE, visitor){
 		 * @param {Statements} statements - 当前语句块
 		 */
 		visitor: function(parser, context, statement, statements){
-			var s = statements;
+			// 如果存在闭包
+			if(statements.closure){
+				// 调用父类访问器
+				visitor.call(this, parser, context, statement, statements);
 
-			// 如果语句块存在
-			while(s){
-				// 如果是闭包，而且不是全局系统最外层闭包
-				if((s.scope & SCOPE_CLOSURE) === SCOPE_CLOSURE){
-					// 调用父类访问器
-					visitor.call(this, parser, context, statement, statements);
-
-					// 设置当前表达式为空表达式
-					statements.statement.expression = new EmptyExpression(null);
-					return;
-				}
-
-				s = s.target;
+				// 设置当前表达式为空表达式
+				statements.statement.expression = new EmptyExpression(null);
+				return;
 			}
 
 			// 报错

@@ -12,15 +12,6 @@ this.ExponentiationExpression = function(config, extractTo){
 	};
 	ExponentiationExpression = new Rexjs(ExponentiationExpression, BinaryExpression);
 
-	ExponentiationExpression.static({
-		/**
-		 * 获取表达式编译配置
-		 */
-		get config(){
-			return config;
-		}
-	});
-
 	ExponentiationExpression.props({
 		/**
 		 * 提取表达式文本内容
@@ -28,7 +19,7 @@ this.ExponentiationExpression = function(config, extractTo){
 		 */
 		extractTo: function(contentBuilder){
 			// 如果需要解析幂运算
-			if(config.exponentiation){
+			if(config.value){
 				// 追加算数方法
 				contentBuilder.appendString("Math.pow(");
 				// 提取左侧的算数底值
@@ -50,7 +41,7 @@ this.ExponentiationExpression = function(config, extractTo){
 	return ExponentiationExpression;
 }(
 	// config
-	new SyntaxConfig("exponentiation"),
+	ECMAScriptConfig.addBaseConfig("exponentiation"),
 	BinaryExpression.prototype.extractTo
 );
 

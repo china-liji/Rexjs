@@ -147,7 +147,7 @@ this.ArrayExpression = function(DestructibleExpression, ArrayDestructuringExpres
 			var inner = this.inner, expression = new ArrayDestructuringItemExpression(this);
 
 			// 如果需要解析解构表达式 而且 长度大于 1（长度为 0 不解析，长度为 1，只需取一次对象，所以都不需要生成变量名）
-			if(config.destructuring && inner.length > 1){
+			if(config.value && inner.length > 1){
 				var collections = parser.statements.collections;
 
 				// 给刚生成的解构赋值表达式设置变量名
@@ -172,7 +172,8 @@ this.ArrayExpression = function(DestructibleExpression, ArrayDestructuringExpres
 	this.DestructibleExpression,
 	this.ArrayDestructuringExpression,
 	this.ArrayDestructuringItemExpression,
-	DestructuringExpression.config,
+	// config
+	ECMAScriptConfig.destructuring,
 	// collected
 	function(parser, expression){
 		// 如果是标识符表达式

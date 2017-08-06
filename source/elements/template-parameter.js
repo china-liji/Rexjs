@@ -24,7 +24,7 @@ this.TemplateParameterExpression = function(config, extractTo, compileInner){
 			this.operand.extractTo(contentBuilder);
 
 			// 如果需要编译
-			if(config.template){
+			if(config.value){
 				// 编译 inner
 				compileInner(this.inner, contentBuilder);
 				return;
@@ -38,7 +38,8 @@ this.TemplateParameterExpression = function(config, extractTo, compileInner){
 
 	return TemplateParameterExpression;
 }(
-	TemplateExpression.config,
+	// config
+	ECMAScriptConfig.template,
 	PartnerExpression.prototype.extractTo,
 	// compileInner
 	function(inner, contentBuilder){

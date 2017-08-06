@@ -20,7 +20,7 @@ this.SuperExpression = function(LiteralExpression, config){
 		 */
 		extractTo: function(contentBuilder){
 			// 如果需要编译类
-			if(config.class){
+			if(config.value){
 				// 追加编译后调用 super 的字符串
 				contentBuilder.appendString(
 					"(Rexjs.Class.superOf(this," + this.depth + "" + (this.call ? ",true" : "") + "))"
@@ -37,7 +37,8 @@ this.SuperExpression = function(LiteralExpression, config){
 	return SuperExpression;
 }(
 	this.LiteralExpression,
-	this.ClassExpression.config
+	// config
+	ECMAScriptConfig.class
 );
 
 this.SuperStatement = function(){

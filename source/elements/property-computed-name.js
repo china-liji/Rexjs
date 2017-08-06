@@ -127,7 +127,7 @@ this.OpenComputedPropertyNameTag = function(OpenBracketTag, ComputedPropertyName
 			statement.expression.name = new ComputedPropertyNameExpression(context);
 
 			// 如果需要编译计算式名称
-			if(config.computedName){
+			if(config.value){
 				// 设置对象表达式的 useFunction 属性，表示要用函数包裹，进行封装
 				statement.target.expression.useFunction = true;
 			}
@@ -142,7 +142,8 @@ this.OpenComputedPropertyNameTag = function(OpenBracketTag, ComputedPropertyName
 	this.OpenBracketTag,
 	this.ComputedPropertyNameExpression,
 	this.ObjectComputedNameStatement,
-	this.PropertyExpression.config
+	// config
+	ECMAScriptConfig.addBaseConfig("computedName")
 );
 
 this.CloseComputedPropertyNameTag = function(CloseBracketTag){

@@ -19,7 +19,7 @@ this.SpreadExpression = function(config){
 		 */
 		extractTo: function(contentBuilder){
 			// 如果需要编译拓展符
-			if(config.spread){
+			if(config.value){
 				// 追加编译拓展符方法
 				contentBuilder.appendString("new Rexjs.Parameter(");
 				// 提取参数
@@ -38,7 +38,7 @@ this.SpreadExpression = function(config){
 
 	return SpreadExpression;
 }(
-	this.CallExpression.config
+	ECMAScriptConfig.spread
 );
 
 this.SpreadStatement = function(){

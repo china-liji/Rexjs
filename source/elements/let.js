@@ -25,7 +25,7 @@ this.LetTag = function(VarTag, config){
 		 */
 		extractTo: function(contentBuilder, content){
 			// 追加标签内容
-			contentBuilder.appendString(config.let ? "var" : content);
+			contentBuilder.appendString(config.value ? "var" : content);
 		},
 		regexp: /let/,
 		/**
@@ -46,7 +46,8 @@ this.LetTag = function(VarTag, config){
 	return LetTag;
 }(
 	this.VarTag,
-	this.VarExpression.config
+	// config
+	ECMAScriptConfig.addBaseConfig("let")
 );
 
 this.LocalVariableTag = function(collectTo){
@@ -79,13 +80,6 @@ this.LocalVariableTag = function(collectTo){
 		 */
 		containsBy: function(variable, collections){
 			return collections.declaration.contains(variable);
-		},
-		/**
-		 * 获取下一个语句块
-		 * @params {ECMAScriptStatements} statements - 当前语句块
-		 */
-		nextStatementsOf: function(){
-			return null;
 		}
 	});
 	

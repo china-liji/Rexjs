@@ -21,15 +21,6 @@ this.CallExpression = function(ExecutableExpression, AccessorExpression, UnarySt
 	};
 	CallExpression = new Rexjs(CallExpression, ExecutableExpression);
 
-	CallExpression.static({
-		/**
-		 * 获取表达式编译配置
-		 */
-		get config(){
-			return config;
-		}
-	});
-
 	CallExpression.props({
 		/**
 		 * 提取表达式文本内容
@@ -39,7 +30,7 @@ this.CallExpression = function(ExecutableExpression, AccessorExpression, UnarySt
 			var operand = this.operand;
 
 			// 如果有拓展符且需要编译
-			if(this.hasSpread && config.spread){
+			if(this.hasSpread && config.value){
 				switch(true){
 					// 如果是 new 实例化
 					case this.new:
@@ -76,7 +67,7 @@ this.CallExpression = function(ExecutableExpression, AccessorExpression, UnarySt
 	this.AccessorExpression,
 	this.UnaryStatement,
 	// config
-	new SyntaxConfig("spread"),
+	ECMAScriptConfig.addBaseConfig("spread"),
 	// compileWithAccessor
 	function(contentBuilder, expression, operand, variable){
 		// 追加临时变量名
