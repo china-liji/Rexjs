@@ -68,7 +68,7 @@ this.Server = function(DIR_NAME, http, path, childProcess, testPath, error, read
 	// testPath
 	(path) => {
 		return (
-			/\/(?:dev|test|source)(?:\/|$)/.test(path.dir) &&
+			/\/(?:dev|test|source|old)(?:\/|$)/.test(path.dir) &&
 			/^(?:\.js|\.css|\.html|\.json|\.txt|\.xml)$/.test(path.ext)
 		);
 	},

@@ -1,7 +1,10 @@
 ﻿new function ( ) {
-var a = 1
+var a = ()=>{}
 
 a = 2
 
 debugger
-} ( ) 
+} ( );
+
+
+export default a;

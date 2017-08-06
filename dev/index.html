@@ -12,16 +12,13 @@
 	<script src="dev/rex-es.js"></script>
 	<script src="source/rex-helper.js"></script>
 	
-	<script src="dev/index.js" type="text/rexjs"></script>
+	<script src="dev/index.js" type="text/rexjs1"></script>
 
 	<script>
 		new function(){
-			Rexjs.ECMAScriptConfig.all(true);
-			return;
-			var debug = true;
-			var filename = document.baseURI + (debug ? "dev/index.js" : "test-old/profile.js");
-
-			new Rexjs.Module(filename);
+			// Rexjs.ECMAScriptConfig.all(true);
+			// return;
+			new Rexjs.Module("old/test/profile.js");
 		}()
 	</script>
 </body>
