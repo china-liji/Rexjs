@@ -689,13 +689,9 @@ this.Module = function(ModuleName, ECMAScriptParser, MappingBuilder, File, STATU
 			
 			this.status = STATUS_PARSING;
 
-			console.time("ss");
-
 			parser.parse(file);
 			
 			this.result = parser.build();
-
-			console.timeEnd("ss");
 			this.status = STATUS_READY;
 
 			parser.deps.forEach(

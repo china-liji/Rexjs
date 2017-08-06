@@ -2562,7 +2562,7 @@ this.ExecTag = function(ExecutableExpression, isSeparator){
 
 }.call(
 	this,
-	this.UnaryKeywordTag,
+	this.UnaryKeywordTag
 );
 
 
