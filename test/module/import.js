@@ -43,7 +43,8 @@ if(css !== "body { color: #222; z-index: 99; position: relative; }"){
 	console.error("css 文件读取结果错误")
 }
 
-if(getComputedStyle(document.body).zIndex !== "99"){
+// ie 下样式可能是数字
+if(getComputedStyle(document.body).zIndex != "99"){
 	console.error("css 并没有被加载进文档")
 }
 

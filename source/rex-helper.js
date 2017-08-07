@@ -291,7 +291,7 @@ this.Class = function(ClassProperty, StaticProperty, defineProperty, getPrototyp
 );
 
 
-~function(XMLHttpRequest, URL_REGEXP, encodeURI, parseInt){
+~function(XMLHttpRequest, URL_REGEXP, encodeURI, parseInt, getBaseHref){
 
 this.URL = function(toString, parse){
 	/**
@@ -498,8 +498,11 @@ this.ModuleName = function(URL, BASE_URI){
 	return ModuleName;
 }(
 	this.URL,
-	// BASE_URI todo: 需要兼容 node 环境
-	document.baseURI
+	new this.URL(
+		getBaseHref(),
+		location.href
+	)
+	.href
 );
 
 this.Module = function(ModuleName, ECMAScriptParser, MappingBuilder, File, STATUS_NONE, STATUS_LOADING, STATUS_PARSING, STATUS_READY, STATUS_COMPLETED, cache, name, exports, create, defineProperty, nativeEval, load){
@@ -657,7 +660,15 @@ this.Module = function(ModuleName, ECMAScriptParser, MappingBuilder, File, STATU
 				case ".css":
 					var style = document.createElement("style");
 
-					style.textContent = content;
+					style.type="text/css";
+
+					// ie
+					if(style.styleSheet){
+						style.styleSheet.cssText = content;
+					}
+					else {
+						style.textContent = content;
+					}
 
 					document.head.appendChild(style);
 
@@ -791,7 +802,16 @@ this.Module = function(ModuleName, ECMAScriptParser, MappingBuilder, File, STATU
 	// URL_REGEXP
 	/^([^:/?#.]+:)?(?:\/\/(?:[^/?#]*@)?([\w\d\-\u0100-\uffff.%]*)(?::([0-9]+))?)?([^?#]+?(\.[^.?#]+)?)?(?:(\?[^#]*))?(?:(#.*))?$/,
 	encodeURI,
-	parseInt
+	parseInt,
+	// getBaseHref
+	function(){
+		// BASE_URI todo: 需要兼容 node 环境
+		var baseElement = document.querySelector("base");
+
+		return (
+			baseElement && baseElement.getAttribute("href")
+		) || "./";
+	}
 );
 
 

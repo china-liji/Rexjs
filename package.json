@@ -1,0 +1,23 @@
+{
+	"name": "rexjs",
+	"version": "1.0.0",
+	"description": "这是个 JavaScript 语言解析器，用于解析 ES6 语法",
+	"main": "node/index.js",
+	"repository": {
+		"type": "git",
+		"url": "https://git.oschina.net/jQun/Rexjs.git"
+	},
+	"keywords": [
+		"rex",
+		"es6",
+		"compiler",
+		"javascript",
+		"js",
+		"编译"
+	],
+	"homepage": "",
+	"author": {
+		"name": "李骥",
+		"email": "hello_zaizi@163.com"
+	}
+}

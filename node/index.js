@@ -1,4 +1,4 @@
-new function(ELEMENTS_PATH, dev, list){
+new function(MAP_PATH, dev, list){
 
 this.File = function(fs, DIR_NAME){
 	return class File {
@@ -20,9 +20,9 @@ this.Source = function(File, EventEmitter){
 	return class Source extends EventEmitter {
 		generate(){
 			File.write(
-				"source/rex-es.js",
+				"../source/rex-es.js",
 				list.map((filename) => {
-						var content = File.read(`${ELEMENTS_PATH}/${filename}`);
+						var content = File.read(`${MAP_PATH}/${filename}`);
 
 						this.emit("read", content, filename);
 						return content;
@@ -82,7 +82,7 @@ this.DevSource = function(Source, File, FUNCTION_BODY_REGEXP_SOURCE){
 			super.generate();
 
 			File.write(
-				"dev/rex-es.js",
+				"../dev/rex-es.js",
 				this.contents.join(
 					"\n".repeat(3)
 				)
@@ -100,8 +100,8 @@ console.time("time");
 new this[dev ? "DevSource" : "Source"]().generate();
 console.timeEnd("time");
 }(
-	// ELEMENTS_PATH
-	"source/elements",
+	// MAP_PATH
+	"../source/map",
 	// dev
 	process.argv.indexOf("-dev") > -1,
 	// list

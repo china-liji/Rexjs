@@ -1,6 +1,6 @@
-new function(fs, contentTypes){
+new function(fs, path, contentTypes, error){
 
-this.Server = function(DIR_NAME, http, path, childProcess, testPath, error, readFile){
+this.Server = function(DIR_NAME, http, childProcess, testPath, readFile){
 	return class Server {
 		constructor(){
 			var server = http.createServer((incomingMessage, serverResponse) => {
@@ -61,9 +61,8 @@ this.Server = function(DIR_NAME, http, path, childProcess, testPath, error, read
 	};
 }(
 	// DIR_NAME
-	__dirname,
+	path.resolve(__dirname, "../"),
 	require("http"),
-	require("path"),
 	require("child_process"),
 	// testPath
 	(path) => {
@@ -71,13 +70,6 @@ this.Server = function(DIR_NAME, http, path, childProcess, testPath, error, read
 			/\/(?:dev|test|source|old)(?:\/|$)/.test(path.dir) &&
 			/^(?:\.js|\.css|\.html|\.json|\.txt|\.xml)$/.test(path.ext)
 		);
-	},
-	// error
-	(serverResponse) => {
-		serverResponse.setHeader("Content-Type", "text/plain;charset=utf-8;");
-		serverResponse.writeHead(404);
-		serverResponse.write("找不到指定文件！");
-		serverResponse.end();
 	},
 	// readFile
 	(fullPath, path, serverResponse) => {
@@ -103,6 +95,7 @@ new this.Server();
 
 }(
 	require("fs"),
+	require("path"),
 	// contentTypes
 	{
 		".txt": "text/plain",
@@ -111,5 +104,12 @@ new this.Server();
 		".css": "text/css",
 		".json": "application/json",
 		".xml": "text/xml"
+	},
+	// error
+	(serverResponse) => {
+		serverResponse.setHeader("Content-Type", "text/plain;charset=utf-8;");
+		serverResponse.writeHead(404);
+		serverResponse.write("找不到指定文件！");
+		serverResponse.end();
 	}
 );
