@@ -8,6 +8,7 @@ test.unit(
 		this.true("带运算条件的 if 语句", "if(a = 1 + 2 > 3);");
 		this.true("嵌套的 if 语句", "if(1 + 2 > 3)if(a === 100){}");
 		this.true("最简单的 if else 语句", "if(true);else;");
+		this.true("带单语句的 if else 语句", "if(false)1;else;");
 		this.true("嵌套的 if else 语句", "if(true);else if(1 + 2 > 3){}else {}");
 
 		this.true("运算结果测试", source, true);

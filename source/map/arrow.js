@@ -168,24 +168,24 @@ this.ArrowFunctionBodyExpression = function(FunctionBodyExpression){
 	this.FunctionBodyExpression
 );
 
-this.ArrowContextStatement = function(ArrowFunctionBodyExpression){
+this.ArrowContextStatement = function(SingleStatement, ArrowFunctionBodyExpression){
 	/**
 	 * 箭头符号上下文语句
 	 * @param {Statements} statements - 该语句将要所处的语句块
 	 */
 	function ArrowContextStatement(statements){
-		ECMAScriptStatement.call(this, statements);
+		SingleStatement.call(this, statements);
 	};
-	ArrowContextStatement = new Rexjs(ArrowContextStatement, ECMAScriptStatement);
+	ArrowContextStatement = new Rexjs(ArrowContextStatement, SingleStatement);
 
 	ArrowContextStatement.props({
 		expression: new DefaultExpression(),
 		/**
-		 * 捕获处理异常
+		 * 请求跳出该语句
 		 * @param {SyntaxParser} parser - 语法解析器
 		 * @param {Context} context - 语法标签上下文
 		 */
-		catch: function(parser, context){
+		requestOut: function(parser, context){
 			// 跳出语句并设置 body
 			this.out().body = new ArrowFunctionBodyExpression(this.expression);
 		},
@@ -196,15 +196,15 @@ this.ArrowContextStatement = function(ArrowFunctionBodyExpression){
 		 */
 		try: function(parser, context){
 			// 如果是逗号
-			if(context.content == ","){
-				// 跳出语句并设置 body
-				this.out().body = new ArrowFunctionBodyExpression(this.expression);
+			if(context.content === ","){
+				this.requestOut(parser, context);
 			}
 		}
 	});
 
 	return ArrowContextStatement;
 }(
+	this.SingleStatement,
 	this.ArrowFunctionBodyExpression
 );
 

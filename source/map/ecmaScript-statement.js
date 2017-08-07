@@ -16,17 +16,17 @@ this.ECMAScriptStatement = ECMAScriptStatement = function(Statement){
 	Rexjs.Statement
 );
 
-this.ECMABoxStatement = ECMABoxStatement = function(){
+this.BoxStatement = BoxStatement = function(){
 	/**
 	 * 盒子语句，一般用于重写时，“过渡” 或 “连接” 父子语句，使其 “达到” 或 “模拟” 之前重写前的效果
 	 * @param {Statements} statements - 该语句将要所处的语句块
 	 */
-	function ECMABoxStatement(statements){
+	function BoxStatement(statements){
 		ECMAScriptStatement.call(this, statements);
 	};
-	ECMABoxStatement = new Rexjs(ECMABoxStatement, ECMAScriptStatement);
+	BoxStatement = new Rexjs(BoxStatement, ECMAScriptStatement);
 
-	ECMABoxStatement.props({
+	BoxStatement.props({
 		/**
 		 * 捕获处理异常
 		 * @param {SyntaxParser} parser - 语法解析器
@@ -48,7 +48,7 @@ this.ECMABoxStatement = ECMABoxStatement = function(){
 		}
 	});
 
-	return ECMABoxStatement;
+	return BoxStatement;
 }();
 
 this.ConditionStatement = function(){
@@ -88,6 +88,57 @@ this.ConditionStatement = function(){
 	});
 	
 	return ConditionStatement;
+}();
+
+this.SingleStatement = function(){
+	/**
+	 * 单语句，即与上下文无关的语句，一般用于 if、for、while 等等语句的主体
+	 * @param {Statements} statements - 该语句将要所处的语句块
+	 */
+	function SingleStatement(statements){
+		ECMAScriptStatement.call(this, statements);
+	};
+	SingleStatement = new Rexjs(SingleStatement, ECMAScriptStatement);
+	
+	SingleStatement.props({
+		/**
+		 * 捕获处理异常
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 语法标签上下文
+		 */
+		catch: function(parser, context){
+			switch(false){
+				// 如果不是分号
+				case context.content === ";":
+					break;
+
+				// 如果分号不是标识着语句结束
+				case context.tag.class.statementEnd:
+					break;
+
+				// 如果当前表达式已经标识着语句结束
+				case (this.expression.state & STATE_STATEMENT_END) !== STATE_STATEMENT_END:
+					break;
+
+				default:
+					// 返回该分号标签
+					return context.tag;
+			}
+
+			// 请求跳出该语句
+			return this.requestOut(parser, context);
+		},
+		/**
+		 * 请求跳出该语句
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 语法标签上下文
+		 */
+		requestOut: function(){
+			return null;
+		}
+	});
+
+	return SingleStatement;
 }();
 
 }.call(

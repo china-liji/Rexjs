@@ -33,23 +33,23 @@ this.WhileExpression = function(ConditionalExpression){
 	this.ConditionalExpression
 );
 
-this.WhileBodyStatement = function(){
+this.WhileBodyStatement = function(SingleStatement){
 	/**
 	 * while 主体语句
 	 * @param {Statements} statements - 该语句将要所处的语句块
 	 */
 	function WhileBodyStatement(statements){
-		ECMAScriptStatement.call(this, statements);
+		SingleStatement.call(this, statements);
 	};
-	WhileBodyStatement = new Rexjs(WhileBodyStatement, ECMAScriptStatement);
+	WhileBodyStatement = new Rexjs(WhileBodyStatement, SingleStatement);
 	
 	WhileBodyStatement.props({
 		/**
-		 * 捕获处理异常
+		 * 请求跳出该语句
 		 * @param {SyntaxParser} parser - 语法解析器
 		 * @param {Context} context - 语法标签上下文
 		 */
-		catch: function(parser, context){
+		requestOut: function(parser, context){
 			// 跳出语句并设置 body
 			this.out().body = this.expression;
 		},
@@ -57,7 +57,9 @@ this.WhileBodyStatement = function(){
 	});
 	
 	return WhileBodyStatement;
-}();
+}(
+	this.SingleStatement
+);
 
 this.WhileTag = function(WhileExpression){
 	/**

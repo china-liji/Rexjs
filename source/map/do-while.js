@@ -54,23 +54,23 @@ this.DoExpression = function(ConditionalExpression){
 	this.ConditionalExpression
 );
 
-this.DoStatement = function(){
+this.DoStatement = function(SingleStatement){
 	/**
 	 * do 语句
 	 * @param {Statements} statements - 该语句将要所处的语句块
 	 */
 	function DoStatement(statements){
-		ECMAScriptStatement.call(this, statements);
+		SingleStatement.call(this, statements);
 	};
-	DoStatement = new Rexjs(DoStatement, ECMAScriptStatement);
+	DoStatement = new Rexjs(DoStatement, SingleStatement);
 	
 	DoStatement.props({
 		/**
-		 * 捕获处理异常
+		 * 请求跳出该语句
 		 * @param {SyntaxParser} parser - 语法解析器
 		 * @param {Context} context - 语法标签上下文
 		 */
-		catch: function(parser, context){
+		requestOut: function(parser, context){
 			var expression = this.expression;
 			
 			switch(false){
@@ -81,7 +81,7 @@ this.DoStatement = function(){
 				// 如果表达式没有结束
 				case (expression.state & STATE_STATEMENT_ENDABLE) === STATE_STATEMENT_ENDABLE:
 					break;
-					
+
 				default:
 					// 跳出语句并设置 body
 					this.out().body = expression;
@@ -89,21 +89,15 @@ this.DoStatement = function(){
 					return this.bindingOf();
 			}
 
-			var tag = context.tag;
-
-			// 如果是语句结束标签
-			if(tag.class.statementEnd){
-				// 返回该标签
-				return tag;
-			}
-			
 			// 报错
 			parser.error(context);
 		}
 	});
 	
 	return DoStatement;
-}();
+}(
+	this.SingleStatement
+);
 
 this.DoTag = function(DoExpression, DoStatement){
 	/**

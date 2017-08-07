@@ -5,7 +5,7 @@ new function(
 	// 表达式相关
 	Expression, ListExpression, EmptyExpression, DefaultExpression, PartnerExpression, LeftHandSideExpression,
 	// ECMAScript 相关
-	ECMAScriptStatement, ECMABoxStatement, ECMAScriptErrors, ECMAScriptOrders, ECMAScriptConfig,
+	ECMAScriptStatement, BoxStatement, ECMAScriptErrors, ECMAScriptOrders, ECMAScriptConfig,
 	// 标签相关类
 	SyntaxTag, TagType,
 	// 标签分类相关
@@ -246,17 +246,17 @@ this.ECMAScriptStatement = ECMAScriptStatement = function(Statement){
 	Rexjs.Statement
 );
 
-this.ECMABoxStatement = ECMABoxStatement = function(){
+this.BoxStatement = BoxStatement = function(){
 	/**
 	 * 盒子语句，一般用于重写时，“过渡” 或 “连接” 父子语句，使其 “达到” 或 “模拟” 之前重写前的效果
 	 * @param {Statements} statements - 该语句将要所处的语句块
 	 */
-	function ECMABoxStatement(statements){
+	function BoxStatement(statements){
 		ECMAScriptStatement.call(this, statements);
 	};
-	ECMABoxStatement = new Rexjs(ECMABoxStatement, ECMAScriptStatement);
+	BoxStatement = new Rexjs(BoxStatement, ECMAScriptStatement);
 
-	ECMABoxStatement.props({
+	BoxStatement.props({
 		/**
 		 * 捕获处理异常
 		 * @param {SyntaxParser} parser - 语法解析器
@@ -278,7 +278,7 @@ this.ECMABoxStatement = ECMABoxStatement = function(){
 		}
 	});
 
-	return ECMABoxStatement;
+	return BoxStatement;
 }();
 
 this.ConditionStatement = function(){
@@ -318,6 +318,57 @@ this.ConditionStatement = function(){
 	});
 	
 	return ConditionStatement;
+}();
+
+this.SingleStatement = function(){
+	/**
+	 * 单语句，即与上下文无关的语句，一般用于 if、for、while 等等语句的主体
+	 * @param {Statements} statements - 该语句将要所处的语句块
+	 */
+	function SingleStatement(statements){
+		ECMAScriptStatement.call(this, statements);
+	};
+	SingleStatement = new Rexjs(SingleStatement, ECMAScriptStatement);
+	
+	SingleStatement.props({
+		/**
+		 * 捕获处理异常
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 语法标签上下文
+		 */
+		catch: function(parser, context){
+			switch(false){
+				// 如果不是分号
+				case context.content === ";":
+					break;
+
+				// 如果分号不是标识着语句结束
+				case context.tag.class.statementEnd:
+					break;
+
+				// 如果当前表达式已经标识着语句结束
+				case (this.expression.state & STATE_STATEMENT_END) !== STATE_STATEMENT_END:
+					break;
+
+				default:
+					// 返回该分号标签
+					return context.tag;
+			}
+
+			// 请求跳出该语句
+			return this.requestOut(parser, context);
+		},
+		/**
+		 * 请求跳出该语句
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 语法标签上下文
+		 */
+		requestOut: function(){
+			return null;
+		}
+	});
+
+	return SingleStatement;
 }();
 
 }.call(
@@ -8054,24 +8105,24 @@ this.ArrowFunctionBodyExpression = function(FunctionBodyExpression){
 	this.FunctionBodyExpression
 );
 
-this.ArrowContextStatement = function(ArrowFunctionBodyExpression){
+this.ArrowContextStatement = function(SingleStatement, ArrowFunctionBodyExpression){
 	/**
 	 * 箭头符号上下文语句
 	 * @param {Statements} statements - 该语句将要所处的语句块
 	 */
 	function ArrowContextStatement(statements){
-		ECMAScriptStatement.call(this, statements);
+		SingleStatement.call(this, statements);
 	};
-	ArrowContextStatement = new Rexjs(ArrowContextStatement, ECMAScriptStatement);
+	ArrowContextStatement = new Rexjs(ArrowContextStatement, SingleStatement);
 
 	ArrowContextStatement.props({
 		expression: new DefaultExpression(),
 		/**
-		 * 捕获处理异常
+		 * 请求跳出该语句
 		 * @param {SyntaxParser} parser - 语法解析器
 		 * @param {Context} context - 语法标签上下文
 		 */
-		catch: function(parser, context){
+		requestOut: function(parser, context){
 			// 跳出语句并设置 body
 			this.out().body = new ArrowFunctionBodyExpression(this.expression);
 		},
@@ -8082,15 +8133,15 @@ this.ArrowContextStatement = function(ArrowFunctionBodyExpression){
 		 */
 		try: function(parser, context){
 			// 如果是逗号
-			if(context.content == ","){
-				// 跳出语句并设置 body
-				this.out().body = new ArrowFunctionBodyExpression(this.expression);
+			if(context.content === ","){
+				this.requestOut(parser, context);
 			}
 		}
 	});
 
 	return ArrowContextStatement;
 }(
+	this.SingleStatement,
 	this.ArrowFunctionBodyExpression
 );
 
@@ -11015,7 +11066,7 @@ this.DeclarationPropertyNameSeparatorTag = function(visitor){
 	this.PropertyNameSeparatorTag,
 	// initBoxStatement
 	function(statement, statements){
-		var boxStatement = new ECMABoxStatement(statements);
+		var boxStatement = new BoxStatement(statements);
 	
 		// 设置盒子语句的表达式，以模拟非解构时的语句环境
 		boxStatement.expression = statement.expression;
@@ -12628,23 +12679,23 @@ this.IfExpression = function(ConditionalExpression){
 	this.ConditionalExpression
 );
 
-this.IfBodyStatement = function(){
+this.IfBodyStatement = function(SingleStatement){
 	/**
 	 * if 主体语句
 	 * @param {Statements} statements - 该语句将要所处的语句块
 	 */
 	function IfBodyStatement(statements){
-		ECMAScriptStatement.call(this, statements);
+		SingleStatement.call(this, statements);
 	};
-	IfBodyStatement = new Rexjs(IfBodyStatement, ECMAScriptStatement);
+	IfBodyStatement = new Rexjs(IfBodyStatement, SingleStatement);
 	
 	IfBodyStatement.props({
 		/**
-		 * 捕获处理异常
+		 * 请求跳出该语句
 		 * @param {SyntaxParser} parser - 语法解析器
 		 * @param {Context} context - 语法标签上下文
 		 */
-		catch: function(parser, context){
+		requestOut: function(parser, context){
 			var expression = this.expression;
 
 			// 跳出语句并设置 if 表达式的主体
@@ -12670,7 +12721,9 @@ this.IfBodyStatement = function(){
 	});
 	
 	return IfBodyStatement;
-}();
+}(
+	this.SingleStatement
+);
 
 this.ElseBodyStatement = function(IfBodyStatement){
 	/**
@@ -12914,23 +12967,23 @@ this.WhileExpression = function(ConditionalExpression){
 	this.ConditionalExpression
 );
 
-this.WhileBodyStatement = function(){
+this.WhileBodyStatement = function(SingleStatement){
 	/**
 	 * while 主体语句
 	 * @param {Statements} statements - 该语句将要所处的语句块
 	 */
 	function WhileBodyStatement(statements){
-		ECMAScriptStatement.call(this, statements);
+		SingleStatement.call(this, statements);
 	};
-	WhileBodyStatement = new Rexjs(WhileBodyStatement, ECMAScriptStatement);
+	WhileBodyStatement = new Rexjs(WhileBodyStatement, SingleStatement);
 	
 	WhileBodyStatement.props({
 		/**
-		 * 捕获处理异常
+		 * 请求跳出该语句
 		 * @param {SyntaxParser} parser - 语法解析器
 		 * @param {Context} context - 语法标签上下文
 		 */
-		catch: function(parser, context){
+		requestOut: function(parser, context){
 			// 跳出语句并设置 body
 			this.out().body = this.expression;
 		},
@@ -12938,7 +12991,9 @@ this.WhileBodyStatement = function(){
 	});
 	
 	return WhileBodyStatement;
-}();
+}(
+	this.SingleStatement
+);
 
 this.WhileTag = function(WhileExpression){
 	/**
@@ -13127,23 +13182,23 @@ this.DoExpression = function(ConditionalExpression){
 	this.ConditionalExpression
 );
 
-this.DoStatement = function(){
+this.DoStatement = function(SingleStatement){
 	/**
 	 * do 语句
 	 * @param {Statements} statements - 该语句将要所处的语句块
 	 */
 	function DoStatement(statements){
-		ECMAScriptStatement.call(this, statements);
+		SingleStatement.call(this, statements);
 	};
-	DoStatement = new Rexjs(DoStatement, ECMAScriptStatement);
+	DoStatement = new Rexjs(DoStatement, SingleStatement);
 	
 	DoStatement.props({
 		/**
-		 * 捕获处理异常
+		 * 请求跳出该语句
 		 * @param {SyntaxParser} parser - 语法解析器
 		 * @param {Context} context - 语法标签上下文
 		 */
-		catch: function(parser, context){
+		requestOut: function(parser, context){
 			var expression = this.expression;
 			
 			switch(false){
@@ -13154,7 +13209,7 @@ this.DoStatement = function(){
 				// 如果表达式没有结束
 				case (expression.state & STATE_STATEMENT_ENDABLE) === STATE_STATEMENT_ENDABLE:
 					break;
-					
+
 				default:
 					// 跳出语句并设置 body
 					this.out().body = expression;
@@ -13162,21 +13217,15 @@ this.DoStatement = function(){
 					return this.bindingOf();
 			}
 
-			var tag = context.tag;
-
-			// 如果是语句结束标签
-			if(tag.class.statementEnd){
-				// 返回该标签
-				return tag;
-			}
-			
 			// 报错
 			parser.error(context);
 		}
 	});
 	
 	return DoStatement;
-}();
+}(
+	this.SingleStatement
+);
 
 this.DoTag = function(DoExpression, DoStatement){
 	/**
@@ -13429,31 +13478,33 @@ this.ForExpression = function(ConditionalExpression, config, compileOf){
 	}
 );
 
-this.ForBodyStatement = function(){
+this.ForBodyStatement = function(SingleStatement){
 	/**
 	 * for 主体语句
 	 * @param {Statements} statements - 该语句将要所处的语句块
 	 */
 	function ForBodyStatement(statements){
-		ECMAScriptStatement.call(this, statements);
+		SingleStatement.call(this, statements);
 	};
-	ForBodyStatement = new Rexjs(ForBodyStatement, ECMAScriptStatement);
+	ForBodyStatement = new Rexjs(ForBodyStatement, SingleStatement);
 	
 	ForBodyStatement.props({
+		flow: ECMAScriptStatement.FLOW_CIRCULAR,
 		/**
-		 * 捕获处理异常
+		 * 请求跳出该语句
 		 * @param {SyntaxParser} parser - 语法解析器
 		 * @param {Context} context - 语法标签上下文
 		 */
-		catch: function(parser, context){
+		requestOut: function(parser, context){
 			// 跳出语句并设置 body
 			this.out().body = this.expression;
-		},
-		flow: ECMAScriptStatement.FLOW_CIRCULAR
+		}
 	});
 	
 	return ForBodyStatement;
-}();
+}(
+	this.SingleStatement
+);
 
 this.ForTag = function(ForExpression){
 	/**
@@ -20616,16 +20667,16 @@ this.ForConditionTags = function(OpenForConditionTag){
 	this.OpenForConditionTag
 );
 
-this.ForConditionContextTags = function(VarTag){
+this.ForConditionContextTags = function(VarTag, filter){
 	/**
 	 * for 条件上下文标签列表
 	 */
-	function ForConditionTags(){
+	function ForConditionContextTags(){
 		ExpressionTags.call(this);
 	};
-	ForConditionTags = new Rexjs(ForConditionTags, ExpressionTags);
+	ForConditionContextTags = new Rexjs(ForConditionContextTags, ExpressionTags);
 
-	ForConditionTags.props({
+	ForConditionContextTags.props({
 		/**
 		 * 标签过滤处理
 		 * @param {SyntaxTag} tag - 语法标签
@@ -20635,15 +20686,18 @@ this.ForConditionContextTags = function(VarTag){
 			if(tag instanceof VarTag){
 				// 设置为可匹配
 				tag.type = new TagType(TYPE_MATCHABLE);
+				return false;
 			}
-			
-			return false;
+
+			// 调用父类方法
+			return filter.call(this, tag);
 		}
 	});
 	
-	return ForConditionTags;
+	return ForConditionContextTags;
 }(
-	this.VarTag
+	this.VarTag,
+	ExpressionTags.prototype.filter
 );
 
 this.FunctionArgumentTags = function(OpenArgumentsTag){
@@ -22014,7 +22068,7 @@ Rexjs.static(this);
 	Rexjs.LeftHandSideExpression,
 	// ECMAScriptStatement
 	null,
-	// ECMABoxStatement
+	// BoxStatement
 	null,
 	// ECMAScriptErrors
 	null,

@@ -651,16 +651,16 @@ this.ForConditionTags = function(OpenForConditionTag){
 	this.OpenForConditionTag
 );
 
-this.ForConditionContextTags = function(VarTag){
+this.ForConditionContextTags = function(VarTag, filter){
 	/**
 	 * for 条件上下文标签列表
 	 */
-	function ForConditionTags(){
+	function ForConditionContextTags(){
 		ExpressionTags.call(this);
 	};
-	ForConditionTags = new Rexjs(ForConditionTags, ExpressionTags);
+	ForConditionContextTags = new Rexjs(ForConditionContextTags, ExpressionTags);
 
-	ForConditionTags.props({
+	ForConditionContextTags.props({
 		/**
 		 * 标签过滤处理
 		 * @param {SyntaxTag} tag - 语法标签
@@ -670,15 +670,18 @@ this.ForConditionContextTags = function(VarTag){
 			if(tag instanceof VarTag){
 				// 设置为可匹配
 				tag.type = new TagType(TYPE_MATCHABLE);
+				return false;
 			}
-			
-			return false;
+
+			// 调用父类方法
+			return filter.call(this, tag);
 		}
 	});
 	
-	return ForConditionTags;
+	return ForConditionContextTags;
 }(
-	this.VarTag
+	this.VarTag,
+	ExpressionTags.prototype.filter
 );
 
 this.FunctionArgumentTags = function(OpenArgumentsTag){

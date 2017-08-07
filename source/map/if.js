@@ -60,23 +60,23 @@ this.IfExpression = function(ConditionalExpression){
 	this.ConditionalExpression
 );
 
-this.IfBodyStatement = function(){
+this.IfBodyStatement = function(SingleStatement){
 	/**
 	 * if 主体语句
 	 * @param {Statements} statements - 该语句将要所处的语句块
 	 */
 	function IfBodyStatement(statements){
-		ECMAScriptStatement.call(this, statements);
+		SingleStatement.call(this, statements);
 	};
-	IfBodyStatement = new Rexjs(IfBodyStatement, ECMAScriptStatement);
+	IfBodyStatement = new Rexjs(IfBodyStatement, SingleStatement);
 	
 	IfBodyStatement.props({
 		/**
-		 * 捕获处理异常
+		 * 请求跳出该语句
 		 * @param {SyntaxParser} parser - 语法解析器
 		 * @param {Context} context - 语法标签上下文
 		 */
-		catch: function(parser, context){
+		requestOut: function(parser, context){
 			var expression = this.expression;
 
 			// 跳出语句并设置 if 表达式的主体
@@ -102,7 +102,9 @@ this.IfBodyStatement = function(){
 	});
 	
 	return IfBodyStatement;
-}();
+}(
+	this.SingleStatement
+);
 
 this.ElseBodyStatement = function(IfBodyStatement){
 	/**

@@ -98,7 +98,7 @@ this.DeclarationPropertyNameSeparatorTag = function(visitor){
 	this.PropertyNameSeparatorTag,
 	// initBoxStatement
 	function(statement, statements){
-		var boxStatement = new ECMABoxStatement(statements);
+		var boxStatement = new BoxStatement(statements);
 	
 		// 设置盒子语句的表达式，以模拟非解构时的语句环境
 		boxStatement.expression = statement.expression;

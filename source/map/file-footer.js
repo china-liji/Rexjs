@@ -10,7 +10,7 @@ Rexjs.static(this);
 	Rexjs.LeftHandSideExpression,
 	// ECMAScriptStatement
 	null,
-	// ECMABoxStatement
+	// BoxStatement
 	null,
 	// ECMAScriptErrors
 	null,
