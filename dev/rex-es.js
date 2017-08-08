@@ -45,7 +45,7 @@ this.ECMAScriptErrors = ECMAScriptErrors = function(REGEXP){
 		GETTER: "Getter must not have any formal parameters",
 		ILLEGAL_STATEMENT: "Illegal ${1} statement",
 		KEYWORD: '"${1}" keyword unexpected here',
-		LABEL: 'Undefined label "${1}"',
+		LABEL: 'Undefined ${1} label "${2}"',
 		MISSING_INITIALIZER: "Missing initializer in const declaration",
 		NEWLINE: "Illegal newline",
 		NEWLINE_AFTER_THROW: "Illegal newline after throw",
@@ -67,7 +67,7 @@ this.ECMAScriptErrors = ECMAScriptErrors = function(REGEXP){
 		/**
 		 * 将错误信息模板里的参数进行替换，并返回结果
 		 * @param {String} type - 错误信息类型
-		 * @param {String} _args - 
+		 * @param {String} _args - 需要替换的参数
 		 */
 		template: function(type){
 			var args = arguments;
@@ -105,35 +105,35 @@ this.ECMAScriptOrders = ECMAScriptOrders = function(){
 		EXPRESSION_BREAK: 101,
 		MATHEMATICAL_NUMBER: 101,
 		SPREAD: 101,
-		IDENTIFIER: 200,
-		TARGET: 201,
-		VARIABLE: 201,
-		KEYWORD_PROPERTY_NAME: 201,
-		FUNCTION_VARIABLE: 202,
-		IDENTIFIER_PROPERTY_NAME: 202,
-		WORD_PROPERTY_NAME: 203,
-		STATIC_MODIFIER: 203,
-		BINARY: 300,
-		NEGATION_SIBLING: 300,
-		PLUS_SIBLING: 300,
-		ARROW: 301,
-		GREATER_THAN_OR_EQUAL: 301,
-		LEFT_SHIFT: 301,
-		LESS_THAN_OR_EQUAL: 301,
-		LOGICAL_AND: 301,
-		LOGICAL_OR: 301,
-		RIGHT_SHIFT: 301,
-		EQUALITY: 302,
-		EXPONENTIATION: 302,
-		UNARY_ASSIGNMENT: 302,
-		POSTFIX_UNARY_ASSIGNMENT: 303,
-		INEQUALITY: 302,
-		UNSIGNED_RIGHT_SHIFT: 302,
-		IDENTITY: 303,
-		NONIDENTITY: 303,
-		DESTRUCTURING_ASSIGNMENT: 303,
-		SHORTHAND_ASSIGNMENT: 303,
-		ILLEGAL_SHORTHAND_ASSIGNMENT: 304,
+		BINARY: 200,
+		NEGATION_SIBLING: 200,
+		PLUS_SIBLING: 200,
+		ARROW: 201,
+		GREATER_THAN_OR_EQUAL: 201,
+		LEFT_SHIFT: 201,
+		LESS_THAN_OR_EQUAL: 201,
+		LOGICAL_AND: 201,
+		LOGICAL_OR: 201,
+		RIGHT_SHIFT: 201,
+		EQUALITY: 202,
+		EXPONENTIATION: 202,
+		UNARY_ASSIGNMENT: 202,
+		INEQUALITY: 202,
+		UNSIGNED_RIGHT_SHIFT: 202,
+		IDENTITY: 203,
+		NONIDENTITY: 203,
+		DESTRUCTURING_ASSIGNMENT: 203,
+		POSTFIX_UNARY_ASSIGNMENT: 203,
+		SHORTHAND_ASSIGNMENT: 203,
+		ILLEGAL_SHORTHAND_ASSIGNMENT: 204,
+		IDENTIFIER: 300,
+		TARGET: 301,
+		VARIABLE: 301,
+		KEYWORD_PROPERTY_NAME: 301,
+		FUNCTION_VARIABLE: 302,
+		IDENTIFIER_PROPERTY_NAME: 302,
+		WORD_PROPERTY_NAME: 303,
+		STATIC_MODIFIER: 303,
 		COMMENT: 400,
 		OPEN_RESTRICTED_COMMENT: 401,
 		COMMENT_CONTENT: 402,
@@ -3022,9 +3022,9 @@ this.LogicalNOTTag = function(){
 eval(
 									function(){
 										// 一元赋值标签
-~function(UnaryStatement, VariableTag){
+~function(VariableTag){
 
-this.UnaryAssignmentStatement = function(catchMethod, tryMethod, checkExpression){
+this.UnaryAssignmentStatement = function(UnaryStatement, error){
 	/**
 	 * 一元赋值语句
 	 * @param {Statements} statements - 该语句将要所处的语句块
@@ -3041,8 +3041,15 @@ this.UnaryAssignmentStatement = function(catchMethod, tryMethod, checkExpression
 		 * @param {Context} context - 语法标签上下文
 		 */
 		catch: function(parser, context){
-			// 核对表达式
-			checkExpression(parser, this, context, catchMethod);
+			// 如果满足一元赋值标签条件
+			if(this.target.expression.context.tag.operable(parser, this.expression)){
+				// 跳出语句并设置 operand
+				this.out().operand = this.expression;
+				return;
+			}
+
+			// 报错
+			error(parser, this);
 		},
 		/**
 		 * 尝试处理异常
@@ -3050,26 +3057,36 @@ this.UnaryAssignmentStatement = function(catchMethod, tryMethod, checkExpression
 		 * @param {Context} context - 语法标签上下文
 		 */
 		try: function(parser, context){
-			// 核对表达式
-			checkExpression(parser, this, context, tryMethod);
+			var expression = this.expression, tag = this.target.expression.context.tag;
+
+			switch(false){
+				// 如果不是分隔符标签
+				case tag.isSeparator(context, expression):
+					return;
+	
+				// 如果不能满足一元赋值标签条件
+				case tag.operable(parser, expression):
+					// 报错
+					error(parser, this);
+					return;
+			}
+
+			// 跳出语句并设置 operand
+			this.out().operand = expression;
 		}
 	});
 	
 	return UnaryAssignmentStatement;
 }(
-	UnaryStatement.prototype.catch,
-	UnaryStatement.prototype.try,
-	// checkExpression
-	function(parser, statement, context, method){
-		// 如果满足一元赋值标签条件
-		if(statement.target.expression.context.tag.operable(parser, statement.expression)){
-			// 调用父类方法
-			method.call(statement, parser, context);
-			return;
-		}
-
+	this.UnaryStatement,
+	// error
+	function(parser, statement){
 		// 报错
-		parser.error(statement.target.expression.context, ECMAScriptErrors.PREFIX_OPERATION, true);
+		parser.error(
+			statement.target.expression.context,
+			ECMAScriptErrors.PREFIX_OPERATION,
+			true
+		);
 	}
 );
 
@@ -3189,7 +3206,6 @@ this.PostfixUnaryAssignmentTag = function(UnaryAssignmentTag, PostfixUnaryExpres
 
 }.call(
 	this,
-	this.UnaryStatement,
 	this.VariableTag
 );
 									}
@@ -12354,7 +12370,7 @@ this.ThrowContextLineTerminatorTag = function(IllegalLineTerminatorTag){
 eval(
 									function(){
 										// 迭代中断流类相关
-~function(TerminatedFlowStatement, LabelledExpression, SCOPE_CLOSURE){
+~function(TerminatedFlowStatement, SCOPE_CLOSURE){
 
 this.TerminatedBranchFlowStatement = function(catchMethod, withoutAnyFlow){
 	/**
@@ -12409,13 +12425,11 @@ this.TerminatedBranchFlowStatement = function(catchMethod, withoutAnyFlow){
 	TerminatedFlowStatement.prototype.catch,
 	// withoutAnyFlow
 	function(statements, flow){
+		// 如果语句块存在
 		while(statements){
 			var statement = statements.statement;
 
-			/*
-				如果语句存在，这里要用循环判断，而不能使用 statements[statements.length - 1]；
-				因为这些语句没有 label 语句的必定性质，即：“ label 语句在该语句块内必定是最外层的那个语句”。
-			*/
+			// 如果语句存在
 			while(statement){
 				// 如果流一致
 				if((statement.flow & flow) === flow){
@@ -12433,7 +12447,7 @@ this.TerminatedBranchFlowStatement = function(catchMethod, withoutAnyFlow){
 	}
 );
 
-this.TerminatedBranchFlowTag = function(TerminatedFlowTag, TerminatedFlowExpression, TerminatedBranchFlowStatement){
+this.TerminatedBranchFlowTag = function(TerminatedFlowTag, TerminatedFlowExpression, TerminatedBranchFlowStatement, LabelledStatement){
 	/**
 	 * 中断分支流标签
 	 * @param {Number} _type - 标签类型
@@ -12447,9 +12461,16 @@ this.TerminatedBranchFlowTag = function(TerminatedFlowTag, TerminatedFlowExpress
 		/**
 		 * 核对标记定义语句，是否满足当前中断流所对应的标记
 		 * @param {Statement} labelStatement - 标签定义语句
+		 * @param {String} label - 需要核对的标记文本值
 		 */
-		checkFlowStatement: function(){
-			return true;
+		checkFlowStatement: function(statement, label){
+			// 如果当前语句是标记语句
+			if(statement instanceof LabelledStatement){
+				// 返回标签对比结果
+				return statement.target.expression.context.content === label;
+			}
+
+			return false;
 		},
 		flow: ECMAScriptStatement.FLOW_BRANCH,
 		/**
@@ -12478,7 +12499,8 @@ this.TerminatedBranchFlowTag = function(TerminatedFlowTag, TerminatedFlowExpress
 }(
 	this.TerminatedFlowTag,
 	this.TerminatedFlowExpression,
-	this.TerminatedBranchFlowStatement
+	this.TerminatedBranchFlowStatement,
+	this.LabelledStatement
 );
 
 this.LabelledIdentifierTag = function(LabelTag, withoutAnyFlow){
@@ -12512,7 +12534,11 @@ this.LabelledIdentifierTag = function(LabelTag, withoutAnyFlow){
 				// 报错
 				parser.error(
 					context,
-					ECMAScriptErrors.template("LABEL", context.content)
+					ECMAScriptErrors.template(
+						"LABEL",
+						statement.target.expression.context.content,
+						context.content
+					)
 				);
 
 				return;
@@ -12530,24 +12556,16 @@ this.LabelledIdentifierTag = function(LabelTag, withoutAnyFlow){
 	function(statements, terminatedFlowTag, content){
 		// 如果语句块存在
 		while(statements){
-			// 这里可以不用 while(statement) 去循环判断，因为 label 语句在该语句块内必定是最外层的那个语句
-			var statement = statements[statements.length - 1], expression = statement.expression;
+			var statement = statements.statement;
 
-			switch(false){
-				// 如果目标语句不是标记语句
-				case expression instanceof LabelledExpression:
-					break;
-
-				// 如果标记名称不符合
-				case expression.context.content === content:
-					break;
-
-				// 如果流语句核对无效
-				case terminatedFlowTag.checkFlowStatement(statement):
-					break;
-
-				default:
+			// 如果语句存在
+			while(statement){
+				// 如果流语句核对有效
+				if(terminatedFlowTag.checkFlowStatement(statement, content)){
 					return false;
+				}
+
+				statement = statement.target;
 			}
 
 			// 如果是闭包，则获取 target，否则等于 null，中断循环
@@ -12561,7 +12579,6 @@ this.LabelledIdentifierTag = function(LabelTag, withoutAnyFlow){
 }.call(
 	this,
 	this.TerminatedFlowStatement,
-	this.LabelledExpression,
 	this.ECMAScriptStatements.SCOPE_CLOSURE
 );
 									}
@@ -12595,7 +12612,7 @@ this.BreakTag = function(){
 	return BreakTag;
 }();
 
-this.ContinueTag = function(FLOW_CIRCULAR){
+this.ContinueTag = function(FLOW_CIRCULAR, checkFlowStatement){
 	/**
 	 * continue 标签
 	 * @param {Number} _type - 标签类型
@@ -12609,9 +12626,16 @@ this.ContinueTag = function(FLOW_CIRCULAR){
 		/**
 		 * 核对标记语句，是否满足当前中断流所对应的标记
 		 * @param {Statement} flowStatement - 标签语句
+		 * @param {String} label - 需要核对的标记文本值
 		 */
-		checkFlowStatement: function(flowStatement){
-			return (flowStatement.flow & FLOW_CIRCULAR) === FLOW_CIRCULAR;
+		checkFlowStatement: function(flowStatement, label){
+			// 如果语句流一致
+			if((flowStatement.flow & FLOW_CIRCULAR) === FLOW_CIRCULAR){
+				// 返回父类判断结果
+				return checkFlowStatement.call(this, flowStatement.target, label);
+			}
+
+			return false;
 		},
 		flow: FLOW_CIRCULAR,
 		regexp: /continue/
@@ -12620,7 +12644,8 @@ this.ContinueTag = function(FLOW_CIRCULAR){
 	return ContinueTag;
 }(
 	// FLOW_CIRCULAR
-	ECMAScriptStatement.FLOW_CIRCULAR
+	ECMAScriptStatement.FLOW_CIRCULAR,
+	TerminatedBranchFlowTag.prototype.checkFlowStatement
 );
 
 }.call(
@@ -13771,9 +13796,12 @@ this.DoExpression = function(ConditionalExpression){
 		extractTo: function(contentBuilder){
 			var body = this.body;
 			
+			// 追加 do 关键字
 			contentBuilder.appendContext(this.context);
+			// 追加空格
 			contentBuilder.appendSpace();
 			
+			// 提取主体
 			body.extractTo(contentBuilder);
 			
 			// 判断 do while 主体表达式是否需要加分号
@@ -13782,8 +13810,9 @@ this.DoExpression = function(ConditionalExpression){
 				contentBuilder.appendString(";");
 			}
 			
+			// 追加 while 关键字
 			contentBuilder.appendContext(this.whileContext);
-			
+			// 提取 while 条件
 			this.condition.extractTo(contentBuilder);
 		},
 		/**
@@ -13842,7 +13871,8 @@ this.DoStatement = function(SingleStatement){
 
 			// 报错
 			parser.error(context);
-		}
+		},
+		flow: ECMAScriptStatement.FLOW_CIRCULAR
 	});
 	
 	return DoStatement;

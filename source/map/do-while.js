@@ -20,9 +20,12 @@ this.DoExpression = function(ConditionalExpression){
 		extractTo: function(contentBuilder){
 			var body = this.body;
 			
+			// 追加 do 关键字
 			contentBuilder.appendContext(this.context);
+			// 追加空格
 			contentBuilder.appendSpace();
 			
+			// 提取主体
 			body.extractTo(contentBuilder);
 			
 			// 判断 do while 主体表达式是否需要加分号
@@ -31,8 +34,9 @@ this.DoExpression = function(ConditionalExpression){
 				contentBuilder.appendString(";");
 			}
 			
+			// 追加 while 关键字
 			contentBuilder.appendContext(this.whileContext);
-			
+			// 提取 while 条件
 			this.condition.extractTo(contentBuilder);
 		},
 		/**
@@ -91,7 +95,8 @@ this.DoStatement = function(SingleStatement){
 
 			// 报错
 			parser.error(context);
-		}
+		},
+		flow: ECMAScriptStatement.FLOW_CIRCULAR
 	});
 	
 	return DoStatement;

@@ -22,9 +22,9 @@ this.Uglify = function(SOURCE_PATH, childProcess){
 								"webpack",
 								`${SOURCE_PATH}/rex-core.js`,
 								`${SOURCE_PATH}/rex-syntax.js`,
-								`${SOURCE_PATH}/rex-helper.js`,
 								`${SOURCE_PATH}/rex-es.js`,
-								"../rex-min.js",
+								`${SOURCE_PATH}/rex-helper.js`,
+								"../rex.min.js",
 								"-p"
 							].join(" "),
 							(err) => {

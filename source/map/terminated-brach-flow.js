@@ -1,5 +1,5 @@
 // 迭代中断流类相关
-~function(TerminatedFlowStatement, LabelledExpression, SCOPE_CLOSURE){
+~function(TerminatedFlowStatement, SCOPE_CLOSURE){
 
 this.TerminatedBranchFlowStatement = function(catchMethod, withoutAnyFlow){
 	/**
@@ -54,13 +54,11 @@ this.TerminatedBranchFlowStatement = function(catchMethod, withoutAnyFlow){
 	TerminatedFlowStatement.prototype.catch,
 	// withoutAnyFlow
 	function(statements, flow){
+		// 如果语句块存在
 		while(statements){
 			var statement = statements.statement;
 
-			/*
-				如果语句存在，这里要用循环判断，而不能使用 statements[statements.length - 1]；
-				因为这些语句没有 label 语句的必定性质，即：“ label 语句在该语句块内必定是最外层的那个语句”。
-			*/
+			// 如果语句存在
 			while(statement){
 				// 如果流一致
 				if((statement.flow & flow) === flow){
@@ -78,7 +76,7 @@ this.TerminatedBranchFlowStatement = function(catchMethod, withoutAnyFlow){
 	}
 );
 
-this.TerminatedBranchFlowTag = function(TerminatedFlowTag, TerminatedFlowExpression, TerminatedBranchFlowStatement){
+this.TerminatedBranchFlowTag = function(TerminatedFlowTag, TerminatedFlowExpression, TerminatedBranchFlowStatement, LabelledStatement){
 	/**
 	 * 中断分支流标签
 	 * @param {Number} _type - 标签类型
@@ -92,9 +90,16 @@ this.TerminatedBranchFlowTag = function(TerminatedFlowTag, TerminatedFlowExpress
 		/**
 		 * 核对标记定义语句，是否满足当前中断流所对应的标记
 		 * @param {Statement} labelStatement - 标签定义语句
+		 * @param {String} label - 需要核对的标记文本值
 		 */
-		checkFlowStatement: function(){
-			return true;
+		checkFlowStatement: function(statement, label){
+			// 如果当前语句是标记语句
+			if(statement instanceof LabelledStatement){
+				// 返回标签对比结果
+				return statement.target.expression.context.content === label;
+			}
+
+			return false;
 		},
 		flow: ECMAScriptStatement.FLOW_BRANCH,
 		/**
@@ -123,7 +128,8 @@ this.TerminatedBranchFlowTag = function(TerminatedFlowTag, TerminatedFlowExpress
 }(
 	this.TerminatedFlowTag,
 	this.TerminatedFlowExpression,
-	this.TerminatedBranchFlowStatement
+	this.TerminatedBranchFlowStatement,
+	this.LabelledStatement
 );
 
 this.LabelledIdentifierTag = function(LabelTag, withoutAnyFlow){
@@ -157,7 +163,11 @@ this.LabelledIdentifierTag = function(LabelTag, withoutAnyFlow){
 				// 报错
 				parser.error(
 					context,
-					ECMAScriptErrors.template("LABEL", context.content)
+					ECMAScriptErrors.template(
+						"LABEL",
+						statement.target.expression.context.content,
+						context.content
+					)
 				);
 
 				return;
@@ -175,24 +185,16 @@ this.LabelledIdentifierTag = function(LabelTag, withoutAnyFlow){
 	function(statements, terminatedFlowTag, content){
 		// 如果语句块存在
 		while(statements){
-			// 这里可以不用 while(statement) 去循环判断，因为 label 语句在该语句块内必定是最外层的那个语句
-			var statement = statements[statements.length - 1], expression = statement.expression;
+			var statement = statements.statement;
 
-			switch(false){
-				// 如果目标语句不是标记语句
-				case expression instanceof LabelledExpression:
-					break;
-
-				// 如果标记名称不符合
-				case expression.context.content === content:
-					break;
-
-				// 如果流语句核对无效
-				case terminatedFlowTag.checkFlowStatement(statement):
-					break;
-
-				default:
+			// 如果语句存在
+			while(statement){
+				// 如果流语句核对有效
+				if(terminatedFlowTag.checkFlowStatement(statement, content)){
 					return false;
+				}
+
+				statement = statement.target;
 			}
 
 			// 如果是闭包，则获取 target，否则等于 null，中断循环
@@ -206,6 +208,5 @@ this.LabelledIdentifierTag = function(LabelTag, withoutAnyFlow){
 }.call(
 	this,
 	this.TerminatedFlowStatement,
-	this.LabelledExpression,
 	this.ECMAScriptStatements.SCOPE_CLOSURE
 );

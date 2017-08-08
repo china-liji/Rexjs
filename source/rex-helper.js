@@ -509,7 +509,7 @@ this.Module = function(ModuleName, ECMAScriptParser, MappingBuilder, File, STATU
 	/**
 	 * 模块，todo: 需要兼容 node 环境
 	 */
-	function Module(name, _code, _sync){
+	function Module(name, _code, _sync, _callback){
 		var moduleName = new ModuleName(name), href = moduleName.href;
 
 		this.exports = create(null);
@@ -521,11 +521,11 @@ this.Module = function(ModuleName, ECMAScriptParser, MappingBuilder, File, STATU
 		cache[href] = this;
 
 		if(typeof _code === "string"){
-			this.ready(_code, _sync);
+			this.ready(_code, _sync, _callback);
 			return;
 		}
 
-		load(this, name, href, _sync);
+		load(this, name, href, _sync, _callback);
 	};
 	Module = new Rexjs(Module);
 
@@ -650,7 +650,7 @@ this.Module = function(ModuleName, ECMAScriptParser, MappingBuilder, File, STATU
 		},
 		imports: null,
 		name: null,
-		ready: function(content, _sync){
+		ready: function(content, _sync, _callback){
 			var name = this.name;
 
 			switch(name.ext){
@@ -720,6 +720,8 @@ this.Module = function(ModuleName, ECMAScriptParser, MappingBuilder, File, STATU
 			);
 
 			this.eval();
+
+			_callback && _callback();
 		},
 		result: "",
 		status: STATUS_NONE,
@@ -772,7 +774,7 @@ this.Module = function(ModuleName, ECMAScriptParser, MappingBuilder, File, STATU
 	// nativeEval
 	eval,	
 	// load
-	function(mod, name, href, _sync){
+	function(mod, name, href, _sync, _callback){
 		var request = new XMLHttpRequest();
 
 		// 监听 onload 事件
@@ -785,7 +787,7 @@ this.Module = function(ModuleName, ECMAScriptParser, MappingBuilder, File, STATU
 					return;
 				}
 				
-				mod.ready(this.responseText, _sync);
+				mod.ready(this.responseText, _sync, _callback);
 			}
 		);
 		

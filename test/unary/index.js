@@ -24,6 +24,8 @@ test.unit(
 		test.true("带负号的前置递减", "- --b");
 		test.true("带注释的后置一元操作符", "a/* abc */++");
 		test.true("连续运算的一元操作符", "-+-+- -+ +--a+--a-a+++1");
+		test.true("前置对象属性访问器", "++this.a");
+
 		test.true("测试运算结果", source, true);
 
 		test.true(

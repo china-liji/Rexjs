@@ -1,7 +1,7 @@
 // 一元赋值标签
-~function(UnaryStatement, VariableTag){
+~function(VariableTag){
 
-this.UnaryAssignmentStatement = function(catchMethod, tryMethod, checkExpression){
+this.UnaryAssignmentStatement = function(UnaryStatement, error){
 	/**
 	 * 一元赋值语句
 	 * @param {Statements} statements - 该语句将要所处的语句块
@@ -18,8 +18,15 @@ this.UnaryAssignmentStatement = function(catchMethod, tryMethod, checkExpression
 		 * @param {Context} context - 语法标签上下文
 		 */
 		catch: function(parser, context){
-			// 核对表达式
-			checkExpression(parser, this, context, catchMethod);
+			// 如果满足一元赋值标签条件
+			if(this.target.expression.context.tag.operable(parser, this.expression)){
+				// 跳出语句并设置 operand
+				this.out().operand = this.expression;
+				return;
+			}
+
+			// 报错
+			error(parser, this);
 		},
 		/**
 		 * 尝试处理异常
@@ -27,26 +34,36 @@ this.UnaryAssignmentStatement = function(catchMethod, tryMethod, checkExpression
 		 * @param {Context} context - 语法标签上下文
 		 */
 		try: function(parser, context){
-			// 核对表达式
-			checkExpression(parser, this, context, tryMethod);
+			var expression = this.expression, tag = this.target.expression.context.tag;
+
+			switch(false){
+				// 如果不是分隔符标签
+				case tag.isSeparator(context, expression):
+					return;
+	
+				// 如果不能满足一元赋值标签条件
+				case tag.operable(parser, expression):
+					// 报错
+					error(parser, this);
+					return;
+			}
+
+			// 跳出语句并设置 operand
+			this.out().operand = expression;
 		}
 	});
 	
 	return UnaryAssignmentStatement;
 }(
-	UnaryStatement.prototype.catch,
-	UnaryStatement.prototype.try,
-	// checkExpression
-	function(parser, statement, context, method){
-		// 如果满足一元赋值标签条件
-		if(statement.target.expression.context.tag.operable(parser, statement.expression)){
-			// 调用父类方法
-			method.call(statement, parser, context);
-			return;
-		}
-
+	this.UnaryStatement,
+	// error
+	function(parser, statement){
 		// 报错
-		parser.error(statement.target.expression.context, ECMAScriptErrors.PREFIX_OPERATION, true);
+		parser.error(
+			statement.target.expression.context,
+			ECMAScriptErrors.PREFIX_OPERATION,
+			true
+		);
 	}
 );
 
@@ -166,6 +183,5 @@ this.PostfixUnaryAssignmentTag = function(UnaryAssignmentTag, PostfixUnaryExpres
 
 }.call(
 	this,
-	this.UnaryStatement,
 	this.VariableTag
 );

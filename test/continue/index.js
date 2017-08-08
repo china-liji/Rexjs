@@ -5,7 +5,8 @@ test.unit(
 
 		this.true("for 循环中最简单的 continue 语句", "for(;false;)continue");
 		this.true("while 循环中最简单的 continue 语句", "while(false)continue");
-		this.true("带标记的 continue 语句", "a:while(false)break a");
+		this.true("带标记的 continue 语句", "a:while(false)continue a");
+		this.true("多层带标记的 continue 语句", "a:while(false){b:for(;false;){continue a}}");
 
 		this.true(
 			"带语句块、换行与变量的 continue 语句",
