@@ -164,7 +164,7 @@ this.ECMAScriptParser = function(ECMAScriptTagsMap, GlobalStatements, tagsMap, p
 			// 创建新行
 			contentBuilder.newline();
 			// 追加闭包函数结束部分
-			contentBuilder.appendString("}();");
+			contentBuilder.appendString("}.call(this);");
 
 			return contentBuilder.complete();
 		},

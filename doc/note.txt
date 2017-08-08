@@ -21,8 +21,8 @@
 ~ ECMAScript 解析器中的 SyntaxTag.prototype.order 值使用说明
   order == 0，默认值
   order >= 100 && order < 200，供普通优先级的标签使用
-  order >= 200 && order < 300，供变量名类型标签使用
-  order >= 300 && order < 400，供运算符标签使用
+  order >= 200 && order < 300，供运算符标签使用
+  order >= 300 && order < 400，供变量名类型标签使用
   order >= 400 && order < 500，供注释类型标签使用
   order == Infinity，供文件位置标签使用
 

@@ -509,11 +509,16 @@ this.Module = function(ModuleName, ECMAScriptParser, MappingBuilder, File, STATU
 	/**
 	 * 模块，todo: 需要兼容 node 环境
 	 */
-	function Module(name, _code, _sync, _callback){
+	function Module(name, _code, _sync){
 		var moduleName = new ModuleName(name), href = moduleName.href;
+
+		if(cache.hasOwnProperty(href)){
+			return cache[href];
+		}
 
 		this.exports = create(null);
 		this.imports = [];
+		this.listeners = [];
 		this.name = moduleName;
 		this.status = STATUS_LOADING;
 		this.targets = [];
@@ -521,11 +526,11 @@ this.Module = function(ModuleName, ECMAScriptParser, MappingBuilder, File, STATU
 		cache[href] = this;
 
 		if(typeof _code === "string"){
-			this.ready(_code, _sync, _callback);
+			this.ready(_code, _sync);
 			return;
 		}
 
-		load(this, name, href, _sync, _callback);
+		load(this, name, href, _sync);
 	};
 	Module = new Rexjs(Module);
 
@@ -584,12 +589,6 @@ this.Module = function(ModuleName, ECMAScriptParser, MappingBuilder, File, STATU
 			}
 		},
 		import: function(name, _baseURLstring){
-			if(!cache[
-				new ModuleName(name, _baseURLstring).href
-			]){
-				debugger
-			}
-
 			return cache[
 				new ModuleName(name, _baseURLstring).href
 			]
@@ -632,6 +631,8 @@ this.Module = function(ModuleName, ECMAScriptParser, MappingBuilder, File, STATU
 				return false;
 			}
 
+			var listeners = this.listeners;
+
 			this.status = STATUS_COMPLETED;
 			exports = this.exports;
 
@@ -646,11 +647,20 @@ this.Module = function(ModuleName, ECMAScriptParser, MappingBuilder, File, STATU
 				this
 			);
 
+			listeners.forEach(
+				function(listener){
+					listener(this);
+				},
+				this
+			);
+
+			listeners.splice(0);
 			return true;
 		},
 		imports: null,
+		listeners: null,
 		name: null,
-		ready: function(content, _sync, _callback){
+		ready: function(content, _sync){
 			var name = this.name;
 
 			switch(name.ext){
@@ -720,11 +730,17 @@ this.Module = function(ModuleName, ECMAScriptParser, MappingBuilder, File, STATU
 			);
 
 			this.eval();
-
-			_callback && _callback();
 		},
 		result: "",
 		status: STATUS_NONE,
+		statusListener: function(listener){
+			if(this.status === STATUS_COMPLETED){
+				listener(this);
+				return;
+			}
+
+			this.listeners.push(listener);
+		},
 		targets: null
 	});
 
@@ -774,7 +790,7 @@ this.Module = function(ModuleName, ECMAScriptParser, MappingBuilder, File, STATU
 	// nativeEval
 	eval,	
 	// load
-	function(mod, name, href, _sync, _callback){
+	function(mod, name, href, _sync){
 		var request = new XMLHttpRequest();
 
 		// 监听 onload 事件
@@ -787,7 +803,7 @@ this.Module = function(ModuleName, ECMAScriptParser, MappingBuilder, File, STATU
 					return;
 				}
 				
-				mod.ready(this.responseText, _sync, _callback);
+				mod.ready(this.responseText, _sync);
 			}
 		);
 		
