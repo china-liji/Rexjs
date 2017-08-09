@@ -930,7 +930,7 @@ this.FileStartTag = function(FileStartExpression){
 	Rexjs.FileStartExpression
 );
 
-this.FileEndTag = function(FileEndExpression){
+this.FileEndTag = function(FileEndExpression, GlobalStatements){
 	/**
 	 * 文件结束符标签
 	 * @param {Number} _type - 标签类型
@@ -947,18 +947,34 @@ this.FileEndTag = function(FileEndExpression){
 		 * 标签访问器
 		 * @param {SyntaxParser} parser - 语法解析器
 		 */
-		visitor: function(parser, context, statement){
-			// 设置当前表达式
-			statement.expression = new FileEndExpression(context);
-			
-			// 终止解析
-			parser.regexp.break();
+		visitor: function(parser, context, statement, statements){
+			switch(false){
+				case statements instanceof GlobalStatements:
+					break;
+
+				case statement === statements[statements.length - 1]:
+					break;
+
+				case statement.expression === null:
+					break;
+
+				default:
+					// 设置当前表达式
+					statement.expression = new FileEndExpression(context);
+					
+					// 终止解析
+					parser.regexp.break();
+					return;
+			}
+
+			parser.error(context);
 		}
 	});
 	
 	return FileEndTag;
 }(
-	Rexjs.FileEndExpression
+	Rexjs.FileEndExpression,
+	this.GlobalStatements
 );
 	
 }.call(

@@ -1,1 +1,1 @@
-if (ok) {++this.pos; return ch}
+if(false){a}
