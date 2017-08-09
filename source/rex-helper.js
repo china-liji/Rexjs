@@ -262,16 +262,18 @@ this.Class = function(ClassProperty, StaticProperty, defineProperty, getPrototyp
 			return CreatedClass;
 		},
 		superOf: function(instance, depth, _willCall){
-			var sp = null;
+			var sp = instance;
 
 			for(var i = 0;i < depth;i++){
-				sp = instance = getPrototypeOf(instance);
+				sp = getPrototypeOf(sp);
 			}
 
 			return (
 				_willCall ?
 					function(){
-						sp.constructor.apply(instance, arguments);
+						var retValue = sp.constructor.apply(instance, arguments);
+
+						return (typeof retValue === "object" && retValue) || instance;
 					} :
 					sp
 			);
