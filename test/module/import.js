@@ -6,7 +6,7 @@ import { a, b, x as c, MyClass as MC, A1, B1 } from "./export.js"
 
 import "export.js"
 
-if(A1 !== 11 || B2 !== 22){
+if(A1 !== 11 || B1 !== 22){
 	console.error("解构模块值输出有误");
 }
 
