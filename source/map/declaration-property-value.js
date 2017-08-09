@@ -196,8 +196,6 @@ this.DeclarationPropertyValueTag = function(PropertyDestructuringItemExpression,
 			// 修改上下文标签，因为当前标签（即 this）的功能只能替代匹配，而不能替代解析
 			context.tag = variable;
 
-			// 收集变量名
-			variable.collectTo(parser, context, statements);
 			// 调用父类方法
 			visitor.call(this, parser, context, statement, statements);
 

@@ -1,4 +1,4 @@
-export var { a, b : e = c } = new function(){
+export var { a, b: c = 3 } = new function(){
 
 
 }();
