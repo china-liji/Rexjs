@@ -621,11 +621,7 @@ this.Module = function(ModuleName, ECMAScriptParser, MappingBuilder, File, STATU
 
 			if(
 				!this.imports.every(function(i){
-					if((i.status & STATUS_READY) === STATUS_READY){
-						return true;
-					}
-
-					return false;
+					return (i.status & STATUS_COMPLETED) === STATUS_COMPLETED;
 				})
 			){
 				return false;
@@ -656,6 +652,14 @@ this.Module = function(ModuleName, ECMAScriptParser, MappingBuilder, File, STATU
 
 			listeners.splice(0);
 			return true;
+		},
+		evalListener: function(listener){
+			if(this.status === STATUS_COMPLETED){
+				listener(this);
+				return;
+			}
+
+			this.listeners.push(listener);
 		},
 		imports: null,
 		listeners: null,
@@ -733,14 +737,6 @@ this.Module = function(ModuleName, ECMAScriptParser, MappingBuilder, File, STATU
 		},
 		result: "",
 		status: STATUS_NONE,
-		statusListener: function(listener){
-			if(this.status === STATUS_COMPLETED){
-				listener(this);
-				return;
-			}
-
-			this.listeners.push(listener);
-		},
 		targets: null
 	});
 
