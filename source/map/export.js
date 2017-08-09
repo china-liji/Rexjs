@@ -49,7 +49,8 @@ this.ExportExpression = function(config, compile){
 			}
 		},
 		file: null,
-		member: null
+		member: null,
+		name: null
 	});
 
 	return ExportExpression;
@@ -74,7 +75,7 @@ this.ExportExpression = function(config, compile){
 			// 如果是 var、let、const 表达式
 			case member instanceof VarExpression:
 				// 遍历所定义的变量并输出
-				member.variables(exportVariable, contentBuilder);
+				member.range.forEach(exportVariable, contentBuilder);
 				return;
 
 			// 如果是函数声明
@@ -82,7 +83,7 @@ this.ExportExpression = function(config, compile){
 			// 如果是类声明
 			case member instanceof ClassDeclarationExpression:
 				// 输出表达式名称变量
-				exportVariable(member.name.context, contentBuilder, true);
+				exportVariable(member.name.context.content, contentBuilder, true);
 				return;
 		}
 	}
@@ -182,8 +183,8 @@ this.ExportTag = function(ExportExpression, ExportStatement, fromTag, visitor){
 	this.FunctionDeclarationExpression,
 	this.ClassDeclarationExpression,
 	// exportVariable
-	function(context, contentBuilder, _semicolonAfter){
-		var content = context.content, str = 'Rexjs.Module.export("' + content + '", ' + content + ")";
+	function(variable, contentBuilder, _semicolonAfter){
+		var str = 'Rexjs.Module.export("' + variable + '", ' + variable + ")";
 
 		// 如果需要语句后面加分号
 		if(_semicolonAfter){

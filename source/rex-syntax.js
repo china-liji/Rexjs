@@ -117,7 +117,54 @@ this.VariableIndex = function(){
 	return VariableIndex;
 }();
 
-this.VariableCollection = function(){
+this.CollectionRange = function(){
+	/**
+	 * 变量收集器范围
+	 * @param {VariableCollection} collection - 所相关的变量收集器
+	 */
+	function CollectionRange(collection){
+		this.collection = collection;
+
+		this.start();
+	};
+	CollectionRange = new Rexjs(CollectionRange);
+
+	CollectionRange.props({
+		collection: null,
+		/**
+		 * 记录结束点（范围包括该点）
+		 */
+		end: function(){
+			this.to = this.collection.length - 1;
+		},
+		/**
+		 * 根据该范围执行回调，并传入对应变量名作为参数
+		 * @param {Function} callback - 回调函数
+		 * @param {ContentBuilder} _contentBuilder - 内容生成器
+		 * @param {ContentBuilder} _anotherBuilder - 另一个内容生成器，一般用于副内容的生成或记录
+		 */
+		forEach: function(callback, _contentBuilder, _anotherBuilder){
+			var collection = this.collection;
+
+			for(var i = this.from, j = this.to + 1;i < j;i++){
+				// 执行回调
+				callback(collection[i], _contentBuilder, _anotherBuilder);
+			}
+		},
+		from: -1,
+		/**
+		 * 记录起始点（范围包括该点）
+		 */
+		start: function(){
+			this.from = this.collection.length;
+		},
+		to: -1
+	});
+
+	return CollectionRange;
+}();
+
+this.VariableCollection = function(CollectionRange){
 	/**
 	 * 变量名收集器
 	 */
@@ -148,6 +195,12 @@ this.VariableCollection = function(){
 		},
 		length: 0,
 		/**
+		 * 返回一个收集器范围
+		 */
+		range: function(){
+			return new CollectionRange(this);
+		},
+		/**
 		 * 转化为字符串
 		 * @param {String} before - 变量之前的字符串
 		 * @param {String} join - 变量连接字符串
@@ -175,7 +228,9 @@ this.VariableCollection = function(){
 	});
 
 	return VariableCollection;
-}();
+}(
+	this.CollectionRange
+);
 
 this.VariableCollections = function(PREFIX){
 	/**

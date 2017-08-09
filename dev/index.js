@@ -1,1 +1,4 @@
-if(false){a}
+export var { a, b : e = c } = new function(){
+
+
+}();

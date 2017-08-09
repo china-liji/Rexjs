@@ -2,9 +2,13 @@ import * as Module from "./export.js"
 
 import ExportedClass from "./export.js"
 
-import { a, b, x as c, MyClass as MC } from "./export.js"
+import { a, b, x as c, MyClass as MC, A1, B1 } from "./export.js"
 
 import "export.js"
+
+if(A1 !== 11 || B2 !== 22){
+	console.error("解构模块值输出有误");
+}
 
 [Module.a, a, Module.x, c].forEach(function(value){
 	if(value !== 1){

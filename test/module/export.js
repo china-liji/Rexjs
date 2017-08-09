@@ -15,3 +15,12 @@ export { a as x, b as y, d };
 export * from "./a.js"
 
 export { i as z } from "./a.js"
+
+
+export const { A1, B1 } = new function(){
+
+this.A1 = 11
+
+this.B1 = 22;
+
+}();

@@ -1,15 +1,17 @@
 // var 语句相关
 ~function(VariableDeclarationTag, closureVariableTag, varDeclarationSeparatorTag){
 
-this.VarExpression = function(IdentifierExpression){
+this.VarExpression = function(BinaryExpression, DestructuringExpression){
 	/**
 	 * var 表达式
 	 * @param {Context} context - 标签上下文
+	 * @param {ECMAScriptVariableCollections} collections - 当前所处环境的变量收集器集合
 	 */
-	function VarExpression(context, collection){
+	function VarExpression(context, collections){
 		Expression.call(this, context);
 
 		this.list = new ListExpression(null, ",");
+		this.range = collections.declaration.range();
 	};
 	VarExpression = new Rexjs(VarExpression, Expression);
 
@@ -36,24 +38,40 @@ this.VarExpression = function(IdentifierExpression){
 		variables: function(callback, _contentBuilder, _anotherBuilder){
 			var list = this.list;
 
+			debugger
 			// 遍历 list
 			for(var i = 0, j = list.length;i < j;i++){
-				var expression = list[i];
+				var variable, expression = list[i];
+
+				// 如果是二元表达式
+				if(expression instanceof BinaryExpression){
+					var left = expression.left;
+
+					variable = (
+						// 如果是解构表达式
+						left instanceof DestructuringExpression ?
+							// 获取解构赋值表达式的临时
+							expression.variable :
+							left.context.content
+					);
+				}
+				// 如果是
+				else {
+					// 获取上下文内容
+					variable = expression.context.content;
+				}
 
 				// 执行回调
-				callback(
-					// 判断表达式类型，取变量名上下文
-					expression instanceof IdentifierExpression ? expression.context : expression.left.context,
-					_contentBuilder,
-					_anotherBuilder
-				);
+				callback(variable, _contentBuilder, _anotherBuilder);
 			}
-		}
+		},
+		range: null
 	});
 
 	return VarExpression;
 }(
-	this.IdentifierExpression
+	this.BinaryExpression,
+	this.DestructuringExpression
 );
 
 this.VarStatement = function(){
@@ -75,6 +93,9 @@ this.VarStatement = function(){
 		catch: function(parser, context){
 			// 跳出语句并添加表达式
 			this.out().list.add(this.expression);
+			// 结束 var 表达式的变量名范围
+			this.target.expression.range.end();
+
 			// 如果是逗号，返回指定的分隔符，否则返回 null
 			return context.content === "," ? this.bindingOf() : null;
 		},
@@ -140,7 +161,8 @@ this.VarTag = function(VarExpression, VarStatement){
 		 */
 		visitor: function(parser, context, statement, statements){
 			// 设置当前表达式
-			statement.expression = new VarExpression(context);
+			statement.expression = new VarExpression(context, statements.collections);
+
 			// 设置当前语句
 			statements.statement = new VarStatement(statements)
 		}
@@ -152,7 +174,7 @@ this.VarTag = function(VarExpression, VarStatement){
 	this.VarStatement
 );
 
-this.ClosureVariableTag = function(visitor){
+this.ClosureVariableTag = function(){
 	/**
 	 * 闭包内变量标签
 	 * @param {Number} _type - 标签类型
@@ -173,9 +195,7 @@ this.ClosureVariableTag = function(visitor){
 	});
 	
 	return ClosureVariableTag;
-}(
-	VariableDeclarationTag.prototype.visitor
-);
+}();
 
 this.VarDeclarationSeparatorTag = function(CommaTag, VarStatement){
 	/**
