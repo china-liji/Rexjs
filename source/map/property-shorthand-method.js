@@ -19,7 +19,7 @@ this.ShorthandMethodExpression = function(FunctionExpression){
 	this.FunctionExpression
 );
 	
-this.ShorthandMethodValueExpression = function(PropertyValueExpression){
+this.ShorthandMethodValueExpression = function(PropertyValueExpression, config){
 	/**
 	 * 简写方法值表达式
 	 */
@@ -54,6 +54,13 @@ this.ShorthandMethodValueExpression = function(PropertyValueExpression){
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
 		 */
 		extractTo: function(contentBuilder){
+			// 如果需要解析
+			if(config.value){
+				// 以定义属性的模式提取表达式文本内容
+				this.defineTo(contentBuilder);
+				return;
+			}
+
 			// 提取属性值
 			this.operand.extractTo(contentBuilder);
 		}
@@ -61,7 +68,9 @@ this.ShorthandMethodValueExpression = function(PropertyValueExpression){
 
 	return ShorthandMethodValueExpression;
 }(
-	this.PropertyValueExpression
+	this.PropertyValueExpression,
+	// config
+	ECMAScriptConfig.addBaseConfig("shorthandMethod")
 );
 
 this.ShorthandMethodValueStatement = function(PropertyValueStatement, ShorthandMethodExpression){

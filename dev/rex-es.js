@@ -9585,7 +9585,7 @@ this.IdentifierPropertyNameExpression = function(LiteralPropertyNameExpression){
 	this.LiteralPropertyNameExpression
 );
 
-this.ShorthandPropertyValueExpression = function(PropertyValueExpression){
+this.ShorthandPropertyValueExpression = function(PropertyValueExpression, config){
 	/**
 	 * 简写属性值表达式
 	 * @param {Context} context - 语法标签上下文
@@ -9621,12 +9621,20 @@ this.ShorthandPropertyValueExpression = function(PropertyValueExpression){
 		 * 提取表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
 		 */
-		extractTo: function(){}
+		extractTo: function(contentBuilder){
+			// 如果需要解析
+			if(config.value){
+				// 追加冒号和变量名
+				contentBuilder.appendString(":" + this.context.content);
+			}
+		}
 	});
 
 	return ShorthandPropertyValueExpression;
 }(
-	this.PropertyValueExpression
+	this.PropertyValueExpression,
+	// config
+	ECMAScriptConfig.addBaseConfig("shorthandProperty")
 );
 
 this.IdentifierPropertyValueStatement = function(PropertyValueStatement, ShorthandPropertyValueExpression){
@@ -10217,7 +10225,7 @@ this.ShorthandMethodExpression = function(FunctionExpression){
 	this.FunctionExpression
 );
 	
-this.ShorthandMethodValueExpression = function(PropertyValueExpression){
+this.ShorthandMethodValueExpression = function(PropertyValueExpression, config){
 	/**
 	 * 简写方法值表达式
 	 */
@@ -10252,6 +10260,13 @@ this.ShorthandMethodValueExpression = function(PropertyValueExpression){
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
 		 */
 		extractTo: function(contentBuilder){
+			// 如果需要解析
+			if(config.value){
+				// 以定义属性的模式提取表达式文本内容
+				this.defineTo(contentBuilder);
+				return;
+			}
+
 			// 提取属性值
 			this.operand.extractTo(contentBuilder);
 		}
@@ -10259,7 +10274,9 @@ this.ShorthandMethodValueExpression = function(PropertyValueExpression){
 
 	return ShorthandMethodValueExpression;
 }(
-	this.PropertyValueExpression
+	this.PropertyValueExpression,
+	// config
+	ECMAScriptConfig.addBaseConfig("shorthandMethod")
 );
 
 this.ShorthandMethodValueStatement = function(PropertyValueStatement, ShorthandMethodExpression){
