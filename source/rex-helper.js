@@ -666,8 +666,11 @@ this.Module = function(ModuleName, ECMAScriptParser, MappingBuilder, File, STATU
 		imports: null,
 		listeners: null,
 		name: null,
+		origin: "",
 		ready: function(content, _sync){
 			var name = this.name;
+
+			this.origin = content;
 
 			switch(name.ext){
 				case ".js":

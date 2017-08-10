@@ -8511,6 +8511,11 @@ this.PropertyExpression = function(BinaryExpression, ShorthandPropertyValueExpre
 				contentBuilder.appendContext(this.accessor);
 				// 追加空格
 				contentBuilder.appendSpace();
+				// 提取属性名称
+				this.name.extractTo(contentBuilder);
+				// 直接以简写形式提取表达式文本内容
+				this.value.shortTo(contentBuilder);
+				return;
 			}
 
 			// 提取属性名称
@@ -9790,8 +9795,8 @@ this.ShorthandMethodValueExpression = function(PropertyValueExpression, config){
 		defineTo: function(contentBuilder){
 			// 追加冒号
 			contentBuilder.appendString(":function");
-			// 提取属性值
-			this.operand.extractTo(contentBuilder);
+			// 直接以简写形式提取表达式文本内容
+			this.shortTo(contentBuilder);
 		},
 		/**
 		 * 提取并编译表达式文本内容
@@ -9800,8 +9805,8 @@ this.ShorthandMethodValueExpression = function(PropertyValueExpression, config){
 		compileTo: function(contentBuilder){
 			// 追加 赋值等于号 和 函数头部
 			contentBuilder.appendString("=function");
-			// 提取属性值
-			this.operand.extractTo(contentBuilder);
+			// 直接以简写形式提取表达式文本内容
+			this.shortTo(contentBuilder);
 		},
 		/**
 		 * 提取表达式文本内容
@@ -9815,6 +9820,14 @@ this.ShorthandMethodValueExpression = function(PropertyValueExpression, config){
 				return;
 			}
 
+			// 直接以简写形式提取表达式文本内容
+			this.shortTo(contentBuilder);
+		},
+		/**
+		 * 直接以简写形式提取表达式文本内容
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 */
+		shortTo: function(contentBuilder){
 			// 提取属性值
 			this.operand.extractTo(contentBuilder);
 		}
@@ -16517,8 +16530,8 @@ this.ClassPropertyExpression = function(extractTo){
 			this.name.defineTo(contentBuilder);
 			// 追加参数分隔符逗号
 			contentBuilder.appendString(",function");
-			// 提取属性值
-			this.value.extractTo(contentBuilder);
+			// 直接以简写形式提取表达式文本内容
+			this.value.shortTo(contentBuilder);
 
 			// 如果存在访问器
 			if(this.accessible){

@@ -158,6 +158,11 @@ this.PropertyExpression = function(BinaryExpression, ShorthandPropertyValueExpre
 				contentBuilder.appendContext(this.accessor);
 				// 追加空格
 				contentBuilder.appendSpace();
+				// 提取属性名称
+				this.name.extractTo(contentBuilder);
+				// 直接以简写形式提取表达式文本内容
+				this.value.shortTo(contentBuilder);
+				return;
 			}
 
 			// 提取属性名称

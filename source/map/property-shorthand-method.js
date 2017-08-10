@@ -36,8 +36,8 @@ this.ShorthandMethodValueExpression = function(PropertyValueExpression, config){
 		defineTo: function(contentBuilder){
 			// 追加冒号
 			contentBuilder.appendString(":function");
-			// 提取属性值
-			this.operand.extractTo(contentBuilder);
+			// 直接以简写形式提取表达式文本内容
+			this.shortTo(contentBuilder);
 		},
 		/**
 		 * 提取并编译表达式文本内容
@@ -46,8 +46,8 @@ this.ShorthandMethodValueExpression = function(PropertyValueExpression, config){
 		compileTo: function(contentBuilder){
 			// 追加 赋值等于号 和 函数头部
 			contentBuilder.appendString("=function");
-			// 提取属性值
-			this.operand.extractTo(contentBuilder);
+			// 直接以简写形式提取表达式文本内容
+			this.shortTo(contentBuilder);
 		},
 		/**
 		 * 提取表达式文本内容
@@ -61,6 +61,14 @@ this.ShorthandMethodValueExpression = function(PropertyValueExpression, config){
 				return;
 			}
 
+			// 直接以简写形式提取表达式文本内容
+			this.shortTo(contentBuilder);
+		},
+		/**
+		 * 直接以简写形式提取表达式文本内容
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 */
+		shortTo: function(contentBuilder){
 			// 提取属性值
 			this.operand.extractTo(contentBuilder);
 		}

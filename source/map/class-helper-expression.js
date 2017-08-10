@@ -91,8 +91,8 @@ this.ClassPropertyExpression = function(extractTo){
 			this.name.defineTo(contentBuilder);
 			// 追加参数分隔符逗号
 			contentBuilder.appendString(",function");
-			// 提取属性值
-			this.value.extractTo(contentBuilder);
+			// 直接以简写形式提取表达式文本内容
+			this.value.shortTo(contentBuilder);
 
 			// 如果存在访问器
 			if(this.accessible){
