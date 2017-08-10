@@ -507,7 +507,12 @@ this.ModuleName = function(URL, BASE_URI){
 	.href
 );
 
-this.Module = function(ModuleName, ECMAScriptParser, MappingBuilder, File, STATUS_NONE, STATUS_LOADING, STATUS_PARSING, STATUS_READY, STATUS_COMPLETED, cache, name, exports, create, defineProperty, nativeEval, load){
+this.Module = function(
+	ModuleName, ECMAScriptParser, MappingBuilder, File,
+	STATUS_NONE, STATUS_LOADING, STATUS_PARSING, STATUS_READY, STATUS_COMPLETED,
+	cache, name, exports,
+	create, defineProperty, nativeEval, load, trigger
+){
 	/**
 	 * 模块，todo: 需要兼容 node 环境
 	 */
@@ -629,8 +634,6 @@ this.Module = function(ModuleName, ECMAScriptParser, MappingBuilder, File, STATU
 				return false;
 			}
 
-			var listeners = this.listeners;
-
 			this.status = STATUS_COMPLETED;
 			exports = this.exports;
 
@@ -638,21 +641,7 @@ this.Module = function(ModuleName, ECMAScriptParser, MappingBuilder, File, STATU
 
 			exports = null;
 
-			this.targets.forEach(
-				function(target){
-					target.eval();
-				},
-				this
-			);
-
-			listeners.forEach(
-				function(listener){
-					listener(this);
-				},
-				this
-			);
-
-			listeners.splice(0);
+			trigger(this);
 			return true;
 		},
 		evalListener: function(listener){
@@ -705,12 +694,7 @@ this.Module = function(ModuleName, ECMAScriptParser, MappingBuilder, File, STATU
 					this.result = content;
 					this.status = STATUS_COMPLETED;
 
-					this.targets.forEach(
-						function(target){
-							target.eval();
-						},
-						this
-					);
+					trigger(this);
 					return;
 			}
 
@@ -812,7 +796,22 @@ this.Module = function(ModuleName, ECMAScriptParser, MappingBuilder, File, STATU
 		request.open("get", href, !_sync);
 		// 发送请求
 		request.send();
+	},
+	// trigger
+	function(mod){
+		var listeners = mod.listeners;
+
+		mod.targets.forEach(function(target){
+			target.eval();
+		});
+
+		listeners.forEach(function(listener){
+			listener(mod);
+		});
+
+		listeners.splice(0);
 	}
+
 );
 
 }.call(
