@@ -53,7 +53,7 @@ if(typeof Module.myFunction !== "function"){
 import xml from "./a.xml"
 import css from "./a.css"
 
-if(css !== "body { color: #222; z-index: 99; position: relative; }"){
+if(css instanceof HTMLStyleElement === false){
 	console.error("css 文件读取结果错误")
 }
 

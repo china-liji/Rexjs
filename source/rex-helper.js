@@ -657,16 +657,18 @@ this.Module = function(
 		name: null,
 		origin: "",
 		ready: function(content, _sync){
-			var name = this.name, txt = name.txt;
+			var name = this.name, ext = name.ext;
 
 			this.origin = content;
 
-			if(txt !== ".js"){
+			if(ext !== ".js"){
+				var result = content;
+
 				switch(ext){
 					case ".css":
-						var style = document.createElement("style");
+						var style = result = document.createElement("style");
 
-						style.type="text/css";
+						style.type = "text/css";
 
 						// ie
 						if(style.styleSheet){
@@ -680,7 +682,7 @@ this.Module = function(
 						break;
 					
 					case ".json":
-						content = parse(content);
+						result = parse(content);
 						break;
 				}
 
@@ -688,20 +690,18 @@ this.Module = function(
 					this.exports,
 					"default",
 					{
-						get: function(){ return content },
+						get: function(){ return result },
 						configurable: false,
 						enumerable: true
 					}
 				);
 				
-				this.result = content;
+				this.result = result;
 				this.status = STATUS_COMPLETED;
 
 				trigger(this);
 				return;
 			}
-
-			
 
 			var imports = this.imports, parser = new ECMAScriptParser(), file = new File(name.href, content);
 			//var builder = new MappingBuilder(file);
