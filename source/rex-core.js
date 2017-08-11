@@ -1,8 +1,8 @@
 ﻿// Rexjs 的实现
-new function(global, descriptor, defineProperty, getPrototypeOf, setPrototypeOf, getOwnPropertyNames){
+new function(Object, global, descriptor, defineProperty, getPrototypeOf, setPrototypeOf, getOwnPropertyNames){
 "use strict";
 
-this.Rexjs = function(Function, create, getPrototypeOf, getProperties, setPrototypeOf){
+this.Rexjs = function(create, getProperties, setPrototypeOf){
 	/**
 	 * 创建一个继承至指定父类的子类
 	 * @param {Function} constructor - 构造函数
@@ -41,9 +41,7 @@ this.Rexjs = function(Function, create, getPrototypeOf, getProperties, setProtot
 		return constructor;
 	};
 }(
-	Function,
 	Object.create,
-	getPrototypeOf,
 	// getProperties
 	function(constructor){
 		return {
@@ -82,15 +80,41 @@ this.Rexjs = function(Function, create, getPrototypeOf, getProperties, setProtot
 	)
 );
 
-this.value = function(Rexjs){
-	return new Rexjs(Rexjs, null);
+this.value = function(Rexjs, definePrototype){
+	return definePrototype(
+		new Rexjs(Rexjs, null)
+	);
 }(
-	this.Rexjs
+	this.Rexjs,
+	// definePrototype
+	function(rexjs){
+		/*
+			考虑到ES6初稿已经将 __proto__ 属性移除标准，所以在支持ES6的情况下，就不做处理；
+			再者，IE10及以下也没有 __proto__ 属性，也不用处理；
+			最后，就算其他支持 __proto__ 属性的浏览器，不定义 __proto__ 也没关系，
+			通过 Object.getPrototypeOf 方法一样可以获取，只不过在控制台里看不到 __proto__ 属性而已。
+		*/
+		if(!Object.prototype.hasOwnProperty("__proto__")){
+			return rexjs;
+		}
+
+		defineProperty(
+			rexjs,
+			"__proto__",
+			Object.getOwnPropertyDescriptor(
+				Object.prototype,
+				"__proto__"
+			)
+		);
+
+		return rexjs;
+	}
 );
 
 defineProperty(global, "Rexjs", this);
 }(
-	typeof window === "undefined" ? global : window,
+	Object,
+	typeof global === "undefined" ? self : global,
 	// descriptor
 	Object.getOwnPropertyDescriptor(
 		Object.prototype,
@@ -103,66 +127,74 @@ defineProperty(global, "Rexjs", this);
 );
 
 
-// 原型链属性的定义
-new function(Function, prototype, propertyIsEnumerable, hasOwnProperty, isPrototypeOf, defineProperty, getOwnPropertyDescriptor, definePrototype){
+// 静态属性
+new function(Function, __proto__){
 "use strict";
 
-this.hasOwnProperty = hasOwnProperty;
-this.isPrototypeOf = isPrototypeOf;
-this.propertyIsEnumerable = propertyIsEnumerable;
+this.apply = Function.apply;
+this.bind = Function.bind;
+this.call = Function.call;
 
-this.constructor = function(constructor, call, apply, bind, toString, getPrototypeOf, defineProperties){
-	defineProperties(
-		definePrototype(
-			// 兼容 ： IE9、IE10、Android
-			getPrototypeOf(constructor)
-		),
-		{
-			apply: apply,
-			bind: bind,
-			call: call,
-			/**
-			 * 将一个或多个属性添加到该类，并/或修改现有属性的特性
-			 * @param {Object} props - 包含一个或多个属性的键值对
-			 */
-			props: function(props){
-				defineProperties(this.prototype, props);
-			},
-			/**
-			 * 将一个或多个静态属性添加到该类，并/或修改现有属性的特性
-			 * @param {Object} props - 包含一个或多个属性的键值对
-			 */
-			static: function(props){
-				defineProperties(this, props);
-			},
-			/**
-			 * 对象字符串
-			 */
-			toString: function(){
-				return "function " + this.name + "() { native code }";
-			}
-		}
-	);
-
-	return constructor;
-}(
-	prototype.constructor,
-	Function.prototype.call,
-	Function.prototype.apply,
-	Function.prototype.bind,
-	Function.prototype.toString,
-	Object.getPrototypeOf,
-	// defineProperties
-	function(obj, props){
+this.static = function(getOwnPropertyDescriptor, defineProperty){
+	/**
+	 * 将一个或多个静态属性添加到该类，并/或修改现有属性的特性
+	 * @param {Object} props - 包含一个或多个属性的键值对
+	 */
+	return function(props){
 		for(var name in props){
 			var descriptor = getOwnPropertyDescriptor(props, name);
 
 			descriptor.enumerable = false;
 
-			defineProperty(obj, name, descriptor);
+			defineProperty(this, name, descriptor);
 		}
-	}
+	};
+}(
+	Object.getOwnPropertyDescriptor,
+	Object.defineProperty
 );
+
+this.props = function(staticMethod){
+	/**
+	 * 将一个或多个属性添加到该类，并/或修改现有属性的特性
+	 * @param {Object} props - 包含一个或多个属性的键值对
+	 */
+	return function(props){
+		staticMethod.call(this.prototype, props);
+	};
+}(
+	this.static
+);
+
+this.toString = function(){
+	return (
+		// 如果成立，说明是低版本浏览器，之前并没有能设置 Rexjs.__proto__ 属性
+		__proto__ === Function.prototype ?
+			// 取函数的 toString
+			Function.toString :
+			// 自定义 toString
+			function(){
+				return "function " + (this.name || "") + "() { native code }";
+			}
+	);
+}();
+
+this.static.call(__proto__, this);
+
+}(
+	Function,
+	// __proto__
+	Object.getPrototypeOf(Rexjs)
+);
+
+
+// 原型链属性的定义
+new function(Rexjs, Object, objectPrototype){
+"use strict";
+
+this.hasOwnProperty = objectPrototype.hasOwnProperty;
+this.isPrototypeOf = objectPrototype.isPrototypeOf;
+this.propertyIsEnumerable = objectPrototype.propertyIsEnumerable;
 
 this.toString = function(){
 	/**
@@ -193,44 +225,13 @@ this.valueOf = function(){
 	};
 }();
 
-prototype
-	.constructor
-	.static
-	.call(
-		definePrototype(prototype),
-		this
-	);
+Rexjs.static.call(Rexjs.prototype, this);
+
 }(
-	Function,
-	Rexjs.prototype,
-	Object.prototype.propertyIsEnumerable,
-	Object.prototype.hasOwnProperty,
-	Object.prototype.isPrototypeOf,
-	Object.defineProperty,
-	Object.getOwnPropertyDescriptor,
-	// definePrototype
-	function(obj){
-		/*
-			考虑到ES6初稿已经将 __proto__ 属性移除标准，所以在支持ES6的情况下，就不做处理；
-			再者，IE10及以下也没有 __proto__ 属性，也不用处理；
-			最后，就算其他支持 __proto__ 属性的浏览器，不定义 __proto__ 也没关系，
-			通过 Object.getPrototypeO f方法一样可以获取，只不过在控制台里看不到 __proto__ 属性而已。
-		*/
-		if(!Object.prototype.hasOwnProperty("__proto__")){
-			return obj;
-		}
-
-		Object.defineProperty(
-			obj,
-			"__proto__",
-			Object.getOwnPropertyDescriptor(
-				Object.prototype,
-				"__proto__"
-			)
-		);
-
-		return obj;
-	}
+	Rexjs,
+	Object,
+	// objectPrototype
+	Object.prototype
 );
 
 
@@ -354,21 +355,6 @@ this.map = function(forEach){
 }(
 	this.forEach
 );
-
-this.set = function(){
-	/**
-	 * 添加或修改指定对象的属性
-	 * @param {*} obj - 需要添加或修改属性的对象
-	 * @param {Object} props - 需要添加或修改的属性集合
-	 */
-	return function set(obj, props){
-		for(var name in props){
-			obj[name] = props[name];
-		}
-
-		return obj;
-	};
-}();
 
 this.toArray = function(slice){
 	/**
