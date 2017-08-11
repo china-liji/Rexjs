@@ -511,7 +511,7 @@ this.Module = function(
 	ModuleName, ECMAScriptParser, MappingBuilder, File,
 	STATUS_NONE, STATUS_LOADING, STATUS_PARSING, STATUS_READY, STATUS_COMPLETED,
 	cache, name, exports,
-	create, defineProperty, nativeEval, load, trigger
+	create, defineProperty, parse, nativeEval, load, trigger
 ){
 	/**
 	 * 模块，todo: 需要兼容 node 环境
@@ -657,46 +657,51 @@ this.Module = function(
 		name: null,
 		origin: "",
 		ready: function(content, _sync){
-			var name = this.name;
+			var name = this.name, txt = name.txt;
 
 			this.origin = content;
 
-			switch(name.ext){
-				case ".js":
-					break;
+			if(txt !== ".js"){
+				switch(ext){
+					case ".css":
+						var style = document.createElement("style");
 
-				case ".css":
-					var style = document.createElement("style");
+						style.type="text/css";
 
-					style.type="text/css";
-
-					// ie
-					if(style.styleSheet){
-						style.styleSheet.cssText = content;
-					}
-					else {
-						style.textContent = content;
-					}
-
-					document.head.appendChild(style);
-
-				default:
-					defineProperty(
-						this.exports,
-						"default",
-						{
-							get: function(){ return content },
-							configurable: false,
-							enumerable: true
+						// ie
+						if(style.styleSheet){
+							style.styleSheet.cssText = content;
 						}
-					);
-					
-					this.result = content;
-					this.status = STATUS_COMPLETED;
+						else {
+							style.textContent = content;
+						}
 
-					trigger(this);
-					return;
+						document.head.appendChild(style);
+						break;
+					
+					case ".json":
+						content = parse(content);
+						break;
+				}
+
+				defineProperty(
+					this.exports,
+					"default",
+					{
+						get: function(){ return content },
+						configurable: false,
+						enumerable: true
+					}
+				);
+				
+				this.result = content;
+				this.status = STATUS_COMPLETED;
+
+				trigger(this);
+				return;
 			}
+
+			
 
 			var imports = this.imports, parser = new ECMAScriptParser(), file = new File(name.href, content);
 			//var builder = new MappingBuilder(file);
@@ -772,6 +777,7 @@ this.Module = function(
 	null,
 	Object.create,
 	Object.defineProperty,
+	JSON.parse,
 	// nativeEval
 	eval,	
 	// load

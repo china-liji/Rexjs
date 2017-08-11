@@ -6,6 +6,16 @@ import { a, b, x as c, MyClass as MC, A1, B1 } from "./export.js"
 
 import "export.js"
 
+import json from "a.json";
+
+if(typeof json !== "object"){
+	console.error("json 输出格式有误");
+}
+
+if(json.a !== 1 || json.b !== 2){
+	console.error("json 输出值有误");
+}
+
 if(A1 !== 11 || B1 !== 22){
 	console.error("解构模块值输出有误");
 }
