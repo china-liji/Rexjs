@@ -1,1 +1,3 @@
-({} = {get a(){} })
+class a {
+	static
+}

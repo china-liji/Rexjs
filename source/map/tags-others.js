@@ -1582,7 +1582,7 @@ this.OpenClassBodyContextTags = function(ClassPropertyNameTags, StaticModifierTa
 	this.StaticModifierTag
 );
 
-this.StaticModifierContextTags = function(ClassPropertyNameTags, ConstructorTag, OpenShorthandMethodArgumentsTag){
+this.StaticModifierContextTags = function(ClassPropertyNameTags, ConstructorTag, CloseObjectTag, OpenShorthandMethodArgumentsTag){
 	/**
 	 * return 上下文标签列表
 	 */
@@ -1601,7 +1601,7 @@ this.StaticModifierContextTags = function(ClassPropertyNameTags, ConstructorTag,
 		 * @param {SyntaxTag} tag - 语法标签
 		 */
 		filter: function(tag){
-			return tag instanceof ConstructorTag;
+			return tag instanceof ConstructorTag || tag instanceof CloseObjectTag;
 		}
 	})
 	
@@ -1609,6 +1609,7 @@ this.StaticModifierContextTags = function(ClassPropertyNameTags, ConstructorTag,
 }(
 	this.ClassPropertyNameTags,
 	this.ConstructorTag,
+	this.CloseObjectTag,
 	this.OpenShorthandMethodArgumentsTag
 );
 
