@@ -8868,12 +8868,13 @@ this.PropertyExpression = function(BinaryExpression, ShorthandPropertyValueExpre
 		/**
 		 * 提取并编译表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 * @param {ContentBuilder} _anotherBuilder - 另一个内容生成器，一般用于副内容的生成或记录
 		 */
-		compileTo: function(contentBuilder){
+		compileTo: function(contentBuilder, anotherBuilder){
 			// 如果是访问器
 			if(this.accessible){
 				// 追加 defineProperty 的调用
-				contentBuilder.appendString("defineProperty(object,");
+				contentBuilder.appendString("Object.defineProperty(" + anotherBuilder.result + ",");
 				// 提取属性名
 				this.name.defineTo(contentBuilder);
 				// 追加属性描述符
@@ -8883,18 +8884,18 @@ this.PropertyExpression = function(BinaryExpression, ShorthandPropertyValueExpre
 				// 提取属性值
 				this.value.defineTo(contentBuilder);
 				// 追加结束调用
-				contentBuilder.appendString("});");
+				contentBuilder.appendString("}),");
 				return;
 			}
 
-			// 追加 object
-			contentBuilder.appendString("object");
+			// 追加临时变量名
+			contentBuilder.appendString(anotherBuilder.result);
 			// 编译属性名
 			this.name.compileTo(contentBuilder);
 			// 编译属性值
 			this.value.compileTo(contentBuilder);
-			// 追加分号
-			contentBuilder.appendString(";");
+			// 追加表达式分隔符逗号
+			contentBuilder.appendString(",");
 		},
 		/**
 		 * 获取标签上下文
@@ -9350,8 +9351,8 @@ visitorOfMathematicalNumeral = function(){
 	return function(parser, context, statement, statements){
 		// 如果需要编译
 		if(this.useParse()){
-			// 设置对象表达式的 useFunction 属性，表示要用函数包裹，进行封装
-			statement.target.expression.useFunction = true;
+			// 设置对象表达式的 variable 属性，表示需要启用分步设置属性
+			statement.target.expression.variable = statements.collections.generate();
 		}
 		
 		// 调用 visitor 方法
@@ -10086,8 +10087,8 @@ this.OpenComputedPropertyNameTag = function(OpenBracketTag, ComputedPropertyName
 
 			// 如果需要编译计算式名称
 			if(config.value){
-				// 设置对象表达式的 useFunction 属性，表示要用函数包裹，进行封装
-				statement.target.expression.useFunction = true;
+				// 设置对象表达式的 variable 属性，表示需要启用分步设置属性
+				statement.target.expression.variable = statements.collections.generate();
 			}
 			
 			// 设置当前属性
@@ -10867,21 +10868,27 @@ this.ObjectExpression = function(
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
 		 */
 		extractTo: function(contentBuilder){
-			// 如果需要使用函数包裹起来
-			if(this.useFunction){
+			var variable = this.variable;
+
+			// 如果存在变量名，说明需要分步设置属性
+			if(variable){
+				var anotherBuilder = new ContentBuilder();
+
+				// 追加临时变量名
+				anotherBuilder.appendString(variable);
+
 				// 追加函数闭包头部
-				contentBuilder.appendString("(function(object, defineProperty){");
+				contentBuilder.appendString("(" + variable + "={},");
 				// 编译内容
-				this.inner.forEach(compileItem, contentBuilder);
+				this.inner.forEach(compileItem, contentBuilder, anotherBuilder);
 				// 追加函数闭包尾部
-				contentBuilder.appendString("return object;}({}, Object.defineProperty))");
+				contentBuilder.appendString(variable + ")");
 				return;
 			}
 
 			// 调用父类方法
 			extractTo.call(this, contentBuilder);
 		},
-		useFunction: false,
 		/**
 		 * 转换为解构表达式
 		 * @param {SyntaxParser} parser - 语法解析器
@@ -10916,7 +10923,8 @@ this.ObjectExpression = function(
 			// 转换内部表达式
 			this.convert(parser, this.inner);
 			return expression;
-		}
+		},
+		variable: ""
 	});
 
 	return ObjectExpression;
@@ -10937,8 +10945,8 @@ this.ObjectExpression = function(
 	DestructuringExpression.config,
 	PartnerExpression.prototype.extractTo,
 	// compileItem
-	function(item, contentBuilder){
-		item.compileTo(contentBuilder);
+	function(item, contentBuilder, anotherBuilder){
+		item.compileTo(contentBuilder, anotherBuilder);
 	},
 	// collected
 	function(parser, expression, identifier){
@@ -18148,7 +18156,7 @@ this.ClassPropertyStatement = function(PropertyStatement, ClassPropertyExpressio
 		 */
 		catch: function(parser, context){
 			var classExpression = this.out(), classBodyExpression = classExpression.body, propertyExpression = this.expression;
-debugger
+
 			// 如果不是空表达式
 			if(propertyExpression.name !== null){
 				// 如果存在访问器

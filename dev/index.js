@@ -1,3 +1,1 @@
-class a {
-	static;
-}
+obj = { [1 + 2](){}, a: this.a };

@@ -190,21 +190,27 @@ this.ObjectExpression = function(
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
 		 */
 		extractTo: function(contentBuilder){
-			// 如果需要使用函数包裹起来
-			if(this.useFunction){
+			var variable = this.variable;
+
+			// 如果存在变量名，说明需要分步设置属性
+			if(variable){
+				var anotherBuilder = new ContentBuilder();
+
+				// 追加临时变量名
+				anotherBuilder.appendString(variable);
+
 				// 追加函数闭包头部
-				contentBuilder.appendString("(function(object, defineProperty){");
+				contentBuilder.appendString("(" + variable + "={},");
 				// 编译内容
-				this.inner.forEach(compileItem, contentBuilder);
+				this.inner.forEach(compileItem, contentBuilder, anotherBuilder);
 				// 追加函数闭包尾部
-				contentBuilder.appendString("return object;}({}, Object.defineProperty))");
+				contentBuilder.appendString(variable + ")");
 				return;
 			}
 
 			// 调用父类方法
 			extractTo.call(this, contentBuilder);
 		},
-		useFunction: false,
 		/**
 		 * 转换为解构表达式
 		 * @param {SyntaxParser} parser - 语法解析器
@@ -239,7 +245,8 @@ this.ObjectExpression = function(
 			// 转换内部表达式
 			this.convert(parser, this.inner);
 			return expression;
-		}
+		},
+		variable: ""
 	});
 
 	return ObjectExpression;
@@ -260,8 +267,8 @@ this.ObjectExpression = function(
 	DestructuringExpression.config,
 	PartnerExpression.prototype.extractTo,
 	// compileItem
-	function(item, contentBuilder){
-		item.compileTo(contentBuilder);
+	function(item, contentBuilder, anotherBuilder){
+		item.compileTo(contentBuilder, anotherBuilder);
 	},
 	// collected
 	function(parser, expression, identifier){

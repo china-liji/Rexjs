@@ -1,10 +1,14 @@
+new function(){
+
 var a, get, set, e = "e", f = "f", h, i, bn = parseInt(1010, 2), x = 100, y = null, z
+
+this.value = 2
 
 var obj = {
 	.1: 0.1,
 	"string": "stirng",
 	a,
-	b: 1,
+	b: arguments[1],
 	c(){
 
 	},
@@ -48,7 +52,7 @@ var obj = {
 		return 8888
 	},
 	x = 1,
-	y = 2,
+	y = this.value,
 	z = 3
 }
 
@@ -162,3 +166,5 @@ if(obj.z !== 3){
 if({ z = 99 }.z !== 99){
 	throw "最简单的默认值设置失败"
 }
+
+}(1,2,3);

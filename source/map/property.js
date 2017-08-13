@@ -108,12 +108,13 @@ this.PropertyExpression = function(BinaryExpression, ShorthandPropertyValueExpre
 		/**
 		 * 提取并编译表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 * @param {ContentBuilder} _anotherBuilder - 另一个内容生成器，一般用于副内容的生成或记录
 		 */
-		compileTo: function(contentBuilder){
+		compileTo: function(contentBuilder, anotherBuilder){
 			// 如果是访问器
 			if(this.accessible){
 				// 追加 defineProperty 的调用
-				contentBuilder.appendString("defineProperty(object,");
+				contentBuilder.appendString("Object.defineProperty(" + anotherBuilder.result + ",");
 				// 提取属性名
 				this.name.defineTo(contentBuilder);
 				// 追加属性描述符
@@ -123,18 +124,18 @@ this.PropertyExpression = function(BinaryExpression, ShorthandPropertyValueExpre
 				// 提取属性值
 				this.value.defineTo(contentBuilder);
 				// 追加结束调用
-				contentBuilder.appendString("});");
+				contentBuilder.appendString("}),");
 				return;
 			}
 
-			// 追加 object
-			contentBuilder.appendString("object");
+			// 追加临时变量名
+			contentBuilder.appendString(anotherBuilder.result);
 			// 编译属性名
 			this.name.compileTo(contentBuilder);
 			// 编译属性值
 			this.value.compileTo(contentBuilder);
-			// 追加分号
-			contentBuilder.appendString(";");
+			// 追加表达式分隔符逗号
+			contentBuilder.appendString(",");
 		},
 		/**
 		 * 获取标签上下文

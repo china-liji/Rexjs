@@ -678,6 +678,7 @@ this.Module = function(
 							style.textContent = content;
 						}
 
+						style.setAttribute("data-href", name.href);
 						document.head.appendChild(style);
 						break;
 					
