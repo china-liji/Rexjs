@@ -1063,7 +1063,7 @@ this.ExecContextTags = function(ExtendsContextTags, TargetAccessorTag, SuperTag,
 
 this.OpenArgumentsContextTags = function(ArgumentSeparatorContextTags, CloseArgumentsTag){
 	/**
-	 * 参数起始上下文标签列表
+	 * 起始参数上下文标签列表
 	 */
 	function OpenArgumentsContextTags(){
 		ArgumentSeparatorContextTags.call(this);
@@ -1078,6 +1078,24 @@ this.OpenArgumentsContextTags = function(ArgumentSeparatorContextTags, CloseArgu
 }(
 	this.ArgumentSeparatorContextTags,
 	this.CloseArgumentsTag
+);
+
+this.OpenArrayContextTags = function(ArrayItemSpreadTag){
+	/**
+	 * 起始数组上下文标签列表
+	 */
+	function OpenArrayContextTags(){
+		ExpressionTags.call(this);
+
+		this.register(
+			new ArrayItemSpreadTag()
+		);
+	};
+	OpenArrayContextTags = new Rexjs(OpenArrayContextTags, ExpressionTags);
+
+	return OpenArrayContextTags;
+}(
+	this.ArrayItemSpreadTag
 );
 
 this.OpenMultiLineCommentContextTags = function(CommentContentTag, CloseMultiLineCommentTag){

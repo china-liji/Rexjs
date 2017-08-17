@@ -274,7 +274,7 @@ this.OpenArrayTag = function(OpenBracketTag, ArrayExpression, ArrayStatement){
 		 * @param {TagsMap} tagsMap - 标签集合映射
 		 */
 		require: function(tagsMap){
-			return tagsMap.expressionTags;
+			return tagsMap.openArrayContextTags;
 		},
 		/**
 		 * 标签访问器
@@ -296,6 +296,34 @@ this.OpenArrayTag = function(OpenBracketTag, ArrayExpression, ArrayStatement){
 	this.OpenBracketTag,
 	this.ArrayExpression,
 	this.ArrayStatement
+);
+
+this.ArrayItemSpreadTag = function(SpreadTag){
+	/**
+	 * 拓展符标签
+	 * @param {Number} _type - 标签类型
+	 */
+	function ArrayItemSpreadTag(_type){
+		SpreadTag.call(this, _type);
+	};
+	ArrayItemSpreadTag = new Rexjs(ArrayItemSpreadTag, SpreadTag);
+	
+	ArrayItemSpreadTag.props({
+		/**
+		 * 标签访问器
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 标签上下文
+		 * @param {Statement} statement - 当前语句
+		 * @param {Statements} statements - 当前语句块
+		 */
+		visitor: function(parser, context, statement, statements){
+			
+		}
+	});
+	
+	return ArrayItemSpreadTag;
+}(
+	this.SpreadTag
 );
 
 this.ArrayItemSeparatorTag = function(CommaTag, ArrayStatement){

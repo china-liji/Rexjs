@@ -5556,7 +5556,7 @@ this.OpenArrayTag = function(OpenBracketTag, ArrayExpression, ArrayStatement){
 		 * @param {TagsMap} tagsMap - 标签集合映射
 		 */
 		require: function(tagsMap){
-			return tagsMap.expressionTags;
+			return tagsMap.openArrayContextTags;
 		},
 		/**
 		 * 标签访问器
@@ -5578,6 +5578,34 @@ this.OpenArrayTag = function(OpenBracketTag, ArrayExpression, ArrayStatement){
 	this.OpenBracketTag,
 	this.ArrayExpression,
 	this.ArrayStatement
+);
+
+this.ArrayItemSpreadTag = function(SpreadTag){
+	/**
+	 * 拓展符标签
+	 * @param {Number} _type - 标签类型
+	 */
+	function ArrayItemSpreadTag(_type){
+		SpreadTag.call(this, _type);
+	};
+	ArrayItemSpreadTag = new Rexjs(ArrayItemSpreadTag, SpreadTag);
+	
+	ArrayItemSpreadTag.props({
+		/**
+		 * 标签访问器
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 标签上下文
+		 * @param {Statement} statement - 当前语句
+		 * @param {Statements} statements - 当前语句块
+		 */
+		visitor: function(parser, context, statement, statements){
+			
+		}
+	});
+	
+	return ArrayItemSpreadTag;
+}(
+	this.SpreadTag
 );
 
 this.ArrayItemSeparatorTag = function(CommaTag, ArrayStatement){
@@ -22106,7 +22134,7 @@ this.ExecContextTags = function(ExtendsContextTags, TargetAccessorTag, SuperTag,
 
 this.OpenArgumentsContextTags = function(ArgumentSeparatorContextTags, CloseArgumentsTag){
 	/**
-	 * 参数起始上下文标签列表
+	 * 起始参数上下文标签列表
 	 */
 	function OpenArgumentsContextTags(){
 		ArgumentSeparatorContextTags.call(this);
@@ -22121,6 +22149,24 @@ this.OpenArgumentsContextTags = function(ArgumentSeparatorContextTags, CloseArgu
 }(
 	this.ArgumentSeparatorContextTags,
 	this.CloseArgumentsTag
+);
+
+this.OpenArrayContextTags = function(ArrayItemSpreadTag){
+	/**
+	 * 起始数组上下文标签列表
+	 */
+	function OpenArrayContextTags(){
+		ExpressionTags.call(this);
+
+		this.register(
+			new ArrayItemSpreadTag()
+		);
+	};
+	OpenArrayContextTags = new Rexjs(OpenArrayContextTags, ExpressionTags);
+
+	return OpenArrayContextTags;
+}(
+	this.ArrayItemSpreadTag
 );
 
 this.OpenMultiLineCommentContextTags = function(CommentContentTag, CloseMultiLineCommentTag){
@@ -22993,6 +23039,7 @@ this.ECMAScriptTagsMap = function(SyntaxTagsMap, dataArray){
 		"ModuleVariable",
 		"NegationContext",
 		"OpenArgumentsContext",
+		"OpenArrayContext",
 		"OpenClassBodyContext",
 		"OpenMultiLineCommentContext",
 		"OpenGroupingContext",

@@ -440,7 +440,7 @@ this.URL = function(toString, parse){
 			}
 		}
 		
-		var hasFilename, length, pathnameArray = [];
+		var pathnameArray = [], hasFilename = url.ext.length > 0;
 		
 		// 分割路径
 		pathname
@@ -468,11 +468,8 @@ this.URL = function(toString, parse){
 				}
 			});
 
-		length = pathnameArray.length;
-		hasFilename = length > 0 ? pathnameArray[length - 1].indexOf(".") > -1 : false;
-
 		url.dirname = "/" + (hasFilename ? pathnameArray.slice(0, pathnameArray.length - 1) : pathnameArray).join("/");
-		url.filename = hasFilename ? pathnameArray[length - 1] : "";
+		url.filename = hasFilename ? pathnameArray[pathnameArray.length - 1] : "";
 
 		return true;
 	}
@@ -825,7 +822,7 @@ this.Module = function(
 	this,
 	XMLHttpRequest,
 	// URL_REGEXP
-	/^([^:/?#.]+:)?(?:\/\/(?:[^/?#]*@)?([\w\d\-\u0100-\uffff.%]*)(?::([0-9]+))?)?([^?#]+?(\.[^.?#]+)?)?(?:(\?[^#]*))?(?:(#.*))?$/,
+	/^([^:/?#.]+:)?(?:\/\/(?:[^/?#]*@)?([\w\d\-\u0100-\uffff.%]*)(?::([0-9]+))?)?([^?#]+?(\.[^.?#\/]+)?)?(?:(\?[^#]*))?(?:(#.*))?$/,
 	encodeURI,
 	parseInt,
 	// getBaseHref

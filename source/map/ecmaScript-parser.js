@@ -87,6 +87,7 @@ this.ECMAScriptTagsMap = function(SyntaxTagsMap, dataArray){
 		"ModuleVariable",
 		"NegationContext",
 		"OpenArgumentsContext",
+		"OpenArrayContext",
 		"OpenClassBodyContext",
 		"OpenMultiLineCommentContext",
 		"OpenGroupingContext",

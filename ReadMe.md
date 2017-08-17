@@ -1,4 +1,23 @@
-这是个 JavaScript 语言解析器，解析 ES6 语法，
-正在开发中...
+### Rexjs - Made in China 的 ECMAScript 语言解析器
 
-于 2015 年 chrome 43 的升级，导致 jQun.js 需要大改，继ECMAScript6 正式定为标准，并与 jQun.js 的面向对象在一定层面上，显示出更大优势，但现存的主流解析器善不够理想（traceur.js 太大；babel.js 速率太慢，比前者不是慢了一个等级，而且代码超过一定质量都不能解析），最主要是没有具备 jQun.js 所有优势机制，遂计划做一套超越前者、属于自己的、Made in China 的 ECMAScript 语言解析器，即 Rex.js - 帝王脚本（取自霸王龙英文名 Tyrannosaurus Rex，因化石刚被挖掘出土时，则命名为 Rex，随后由于个人（龙）魅力震惊世界，也是我对这脚本的希冀）。
+官方网站：[http://jqun.oschina.io/rexjs.org](http://jqun.oschina.io/rexjs.org)
+
+新手教程：
+`
+<!-- 引用 rexjs -->
+<script src="http://rexjs.org/rex.min.js"></script>
+
+<!-- 使用 type 定义模块 -->
+<script type="text/rexjs">
+	import "./file.js";
+
+	export default class {};
+</script>
+
+<!-- 当然，一旦指定 src，则根据其路径来加载指定模块文件 -->
+<script src="./file.js" type="text/rexjs"></script>
+`
+
+支持浏览器：Chrome、Firefox、Safari、IE9+。
+
+因涉及到某些 DOM，目前仅支持浏览器使用，今年9、10月的 1.1.0+ 或 1.2.0+ 版本将支持 Node 或 Web Worker，多谢理解。
