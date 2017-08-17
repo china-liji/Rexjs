@@ -3,7 +3,7 @@
 官方网站：[http://jqun.oschina.io/rexjs.org](http://jqun.oschina.io/rexjs.org)
 
 新手教程：
-`
+```
 <!-- 引用 rexjs -->
 <script src="http://rexjs.org/rex.min.js"></script>
 
@@ -16,7 +16,7 @@
 
 <!-- 当然，一旦指定 src，则根据其路径来加载指定模块文件 -->
 <script src="./file.js" type="text/rexjs"></script>
-`
+```
 
 支持浏览器：Chrome、Firefox、Safari、IE9+。
 
