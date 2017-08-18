@@ -8,4 +8,4 @@
 
 - rex-helper.js：是 ECMAScript6 解析后所生成的 ECMAScript5 语法所需依赖的一些辅助类文件
 
-- elements 文件夹：[详见](elements/ReadMe.md)
+- map 文件夹：[详见](map/ReadMe.md)
