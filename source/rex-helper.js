@@ -188,11 +188,19 @@ this.Generator = function(Iterator){
 ~function(){
 
 this.ClassProperty = function(){
+	/**
+	 * 类的属性
+	 * @param {String} name - 属性名
+	 * @param {*} value - 属性值
+	 * @param {String} _type - 属性类型，分别为 get、set、value
+	 */
 	function ClassProperty(name, value, _type){
 		this.name = name;
 		this.value = value;
 
+		// 如果提供了 _type
 		if(_type){
+			// 设置 type
 			this.type = _type;
 		}
 	};
@@ -208,6 +216,12 @@ this.ClassProperty = function(){
 }();
 
 this.StaticProperty = function(ClassProperty){
+	/**
+	 * 类的静态属性
+	 * @param {String} name - 属性名
+	 * @param {*} value - 属性值
+	 * @param {String} _type - 属性类型，分别为 get、set、value
+	 */
 	function StaticProperty(name, value, _type){
 		ClassProperty.call(this, name, value, _type);
 	};
@@ -219,38 +233,55 @@ this.StaticProperty = function(ClassProperty){
 );
 
 this.Class = function(ClassProperty, StaticProperty, defineProperty, getPrototypeOf){
-	function Class(){
-
-	};
+	/**
+	 * 类
+	 */
+	function Class(){};
 	Class = new Rexjs(Class);
 
 	Class.static({
+		/**
+		 * 创建类
+		 * @param {Rexjs} SuperClass - 所需继承的父类
+		 * @param {Array} allProps - 类属性列表
+		 * @param {Number} indexOfConstructor - 构造函数在类属性列表中的索引值
+		 */
 		create: function(SuperClass, allProps, indexOfConstructor){
 			var constructor = allProps[indexOfConstructor].value;
 
+			// 如果构造函数不是函数
 			if(typeof constructor !== "function"){
+				// 报错
 				throw "Class extends value " + constructor.toString() + " is not a constructor or null";
 			}
 
 			var CreatedClass = new Rexjs(constructor, SuperClass);
 
+			// 遍历属性
 			allProps.forEach(
 				function(property, index){
+					// 如果是构造函数
 					if(index === indexOfConstructor){
 						return;
 					}
 
 					var type = property.type, descriptor = { enumerable: false, configurable: true };
 
+					// 如果是值类型的属性
 					if(type === "value"){
+						// 设置描述符可写
 						descriptor.writable = true;
+						// 设置描述符的值
 						descriptor.value = property.value;
 					}
 					else {
+						// 设置访问器
 						descriptor[type] = property.value;
 					}
 
+					// 定义属性
 					defineProperty(
+						// 如果是静态属性
 						property instanceof StaticProperty ? CreatedClass : this,
 						property.name,
 						descriptor
@@ -261,18 +292,27 @@ this.Class = function(ClassProperty, StaticProperty, defineProperty, getPrototyp
 
 			return CreatedClass;
 		},
+		/**
+		 * 获取实例的父类
+		 * @param {Rexjs} instance - 某个类的实例
+		 * @param {Number} depth - 要获取哪一层的父类
+		 * @param {Boolean} _willCall - 是否将要被调用
+		 */
 		superOf: function(instance, depth, _willCall){
 			var sp = instance;
 
+			// 根据层次获取父类
 			for(var i = 0;i < depth;i++){
 				sp = getPrototypeOf(sp);
 			}
 
 			return (
+				// 如果将要调用
 				_willCall ?
 					function(){
 						var retValue = sp.constructor.apply(instance, arguments);
 
+						// 如果构造函数返回值是对象，而且存在，则返回该对象，否则返回实例
 						return (typeof retValue === "object" && retValue) || instance;
 					} :
 					sp
@@ -293,7 +333,7 @@ this.Class = function(ClassProperty, StaticProperty, defineProperty, getPrototyp
 );
 
 
-~function(XMLHttpRequest, URL_REGEXP, encodeURI, parseInt, getBaseHref){
+~function(XMLHttpRequest, URL_REGEXP, document, encodeURI, parseInt, getBaseHref){
 
 this.URL = function(toString, parse){
 	/**
@@ -336,16 +376,28 @@ this.URL = function(toString, parse){
 		dirname : "",
 		filename: "",
 		hash : "",
+		/**
+		 * 获取主机地址
+		 */
 		get host(){
 			return this.hostname + (this.port ? ":" + this.port : "");
 		},
 		hostname : "",
+		/**
+		 * 获取完整连接
+		 */
 		get href(){
 			return this.origin + this.pathname + this.search + this.hash;	
 		},
+		/**
+		 * 获取域地址
+		 */
 		get origin(){
 			return this.protocal + "//" + this.host;	
 		},
+		/**
+		 * 获取路径名
+		 */
 		get pathname(){
 			var dirname = this.dirname;
 			
@@ -354,6 +406,9 @@ this.URL = function(toString, parse){
 		port : "",
 		protocal : "",
 		search : "",
+		/**
+		 * 转化为字符串
+		 */
 		toString : function(){
 			return this.href;
 		}
@@ -393,9 +448,13 @@ this.URL = function(toString, parse){
 		url.search = result[6] || "";
 		url.hash = result[7] || "";
 
+		// 判断协议
 		switch(protocal){
+			// 如果是 http
 			case "http:":
+			// 如果是 https
 			case "https:":
+				// 如果主机名不存在
 				if(!url.hostname){
 					return false;
 				}
@@ -470,12 +529,16 @@ this.URL = function(toString, parse){
 
 		url.dirname = "/" + (hasFilename ? pathnameArray.slice(0, pathnameArray.length - 1) : pathnameArray).join("/");
 		url.filename = hasFilename ? pathnameArray[pathnameArray.length - 1] : "";
-
 		return true;
 	}
 );
 
 this.ModuleName = function(URL, BASE_URI){
+	/**
+	 * 模块名称
+	 * @param {String} value - 模块名称
+	 * @param {String} _baseURLstring - 基础地址
+	 */
 	function ModuleName(value, _baseURLstring){
 		URL.call(
 			this,
@@ -483,8 +546,11 @@ this.ModuleName = function(URL, BASE_URI){
 			typeof _baseURLstring === "string" ? _baseURLstring : BASE_URI
 		);
 
+		// 如果文件名不存在
 		if(this.filename === ""){
+			// 设置文件名
 			this.filename = "index.js";
+			// 设置拓展名
 			this.ext = ".js";
 		}
 	};
@@ -508,15 +574,20 @@ this.Module = function(
 	ModuleName, ECMAScriptParser, MappingBuilder, File,
 	STATUS_NONE, STATUS_LOADING, STATUS_PARSING, STATUS_READY, STATUS_COMPLETED,
 	cache, name, exports,
-	create, defineProperty, parse, nativeEval, load, trigger
+	create, defineProperty, parse, nativeEval, load, trigger, appendCss
 ){
 	/**
 	 * 模块，todo: 需要兼容 node 环境
+	 * @param {String} name - 模块名称
+	 * @param {String} _code - 模块代码
+	 * @param {Boolean} _sync - 是否同步
 	 */
 	function Module(name, _code, _sync){
 		var moduleName = new ModuleName(name), href = moduleName.href;
 
+		// 如果缓存里已经存在该模块
 		if(cache.hasOwnProperty(href)){
+			// 返回该模块
 			return cache[href];
 		}
 
@@ -529,11 +600,14 @@ this.Module = function(
 
 		cache[href] = this;
 
+		// 如果提供了代码
 		if(typeof _code === "string"){
+			// 代码就绪
 			this.ready(_code, _sync);
 			return;
 		}
 
+		// 加载代码
 		load(this, name, href, _sync);
 	};
 	Module = new Rexjs(Module);
@@ -544,9 +618,17 @@ this.Module = function(
 		STATUS_PARSING: STATUS_PARSING,
 		STATUS_READY: STATUS_READY,
 		STATUS_COMPLETED: STATUS_COMPLETED,
+		/**
+		 * 获取模块缓存信息
+		 */
 		get cache(){
 			return cache;
 		},
+		/**
+		 * 获取指定模块的默认输出
+		 * @param {String} name - 模块名称
+		 * @param {String} _baseURLstring - 基础地址
+		 */
 		defaultOf: function(name, _baseURLstring){
 			return this.import(name, _baseURLstring).default;
 		},
@@ -561,18 +643,30 @@ this.Module = function(
 				}
 			);
 		},
+		/**
+		 * 输出模块成员
+		 * @param {Object} exports - 需要输出的模块成员
+		 * @param {String} _name - 可指定的输入来源模块的名称
+		 * @param {String} _baseURLstring - 输入来源模块的基础地址
+		 */
 		exportAs: function(exports, _name, _baseURLstring){
+			// 如果名称不存在
 			if(!_name){
+				// 遍历模块成员
 				for(var propertyName in exports){
+					// 输出成员
 					this.export(propertyName, exports[propertyName]);
 				}
 
 				return;
 			}
 
+			// 获取来源模块的所有输出项
 			var allExports = this.import(_name, _baseURLstring);
 
+			// 遍历模块成员
 			for(var propertyName in exports){
+				// 输出成员
 				this.export(
 					propertyName,
 					allExports[
@@ -581,29 +675,56 @@ this.Module = function(
 				);
 			}
 		},
+		/**
+		 * 根据来源模块来输出成员
+		 * @param {String} name - 输入来源模块的名称
+		 * @param {String} _baseURLstring - 输入来源模块的基础地址
+		 */
 		exportFrom: function(name, _baseURLstring){
 			var exports = this.import(name, _baseURLstring);
 
+			// 遍历模块成员
 			for(var propertyName in exports){
+				// 如果是默认输出
 				if(propertyName === "default"){
 					continue;
 				}
 
+				// 输出成员
 				this.export(propertyName, exports[propertyName]);
 			}
 		},
+		/**
+		 * 导入模块
+		 * @param {String} name - 模块名称
+		 * @param {String} _baseURLstring - 基础地址
+		 */
 		import: function(name, _baseURLstring){
 			return cache[
 				new ModuleName(name, _baseURLstring).href
 			]
 			.exports;
 		},
+		/**
+		 * 锁定模块名称，作为默认模块
+		 */
 		lock: function(n){
 			name = n;
 		},
-		memberOf: function(member, name, _baseURLstring){
-			return this.import(name, _baseURLstring)[member];
+		/**
+		 * 获取模块成员
+		 * @param {String} memberName - 成员名称
+		 * @param {String} moduleName - 模块名称
+		 * @param {String} _baseURLstring - 基础地址
+		 */
+		memberOf: function(memberName, moduleName, _baseURLstring){
+			return this.import(moduleName, _baseURLstring)[memberName];
 		},
+		/**
+		 * 获取模块
+		 * @param {String} name - 模块名称
+		 * @param {String} _baseURLstring - 基础地址
+		 */
 		moduleOf: function(name, _baseURLstring){
 			return this.import(name, _baseURLstring);
 		}
@@ -611,11 +732,17 @@ this.Module = function(
 
 	Module.props({
 		exports: null,
+		/**
+		 * 执行编译后的代码
+		 */
 		eval: function(){
+			// 判断状态
 			switch(this.status){
+				// 如果已经就绪
 				case STATUS_READY:
 					break;
 
+				// 如果已经执行完成过
 				case STATUS_COMPLETED:
 					return true;
 
@@ -623,67 +750,78 @@ this.Module = function(
 					return false;
 			}
 
-			if(
-				!this.imports.every(function(i){
-					return (i.status & STATUS_COMPLETED) === STATUS_COMPLETED;
-				})
-			){
+			// 如果所有需要引用的依赖模块的代码没有执行完成
+			if(!this.imports.every(function(i){
+				// 判断是否已经执行完成
+				return (i.status & STATUS_COMPLETED) === STATUS_COMPLETED;
+			})){
 				return false;
 			}
 
+			// 设置状态为已完成
 			this.status = STATUS_COMPLETED;
+			// 缓存输出
 			exports = this.exports;
 
+			// 执行代码
 			nativeEval(this.result);
 
+			// 清空缓存
 			exports = null;
 
+			// 触发依赖该模块的其他模块的执行方法
 			trigger(this);
 			return true;
 		},
+		/**
+		 * 执行监听器
+		 * @param {Function} listener - 需要添加的监听器
+		 */
 		evalListener: function(listener){
+			// 如果已经执行完成
 			if(this.status === STATUS_COMPLETED){
+				// 直接调用该监听器
 				listener(this);
 				return;
 			}
 
+			// 添加到等待列表中
 			this.listeners.push(listener);
 		},
 		imports: null,
 		listeners: null,
 		name: null,
 		origin: "",
+		/**
+		 * 代码准备就绪处理函数
+		 * @param {String} content - 代码内容
+		 * @param {Boolean} _sync - 是否同步
+		 */
 		ready: function(content, _sync){
 			var name = this.name, ext = name.ext;
 
 			this.origin = content;
 
+			// 如果不是 js 文件
 			if(ext !== ".js"){
 				var result = content;
 
+				// 判断拓展名
 				switch(ext){
+					// 如果是 css
 					case ".css":
-						var style = result = document.createElement("style");
-
-						style.type = "text/css";
-
-						// ie
-						if(style.styleSheet){
-							style.styleSheet.cssText = content;
-						}
-						else {
-							style.textContent = content;
-						}
-
-						style.setAttribute("data-href", name.href);
-						document.head.appendChild(style);
+						// 添加 css
+						appendCss(content);
 						break;
 					
+					// 如果是 json
 					case ".json":
+						// 解析 json
 						result = parse(content);
 						break;
 				}
 
+				// 定义默认输出
 				defineProperty(
 					this.exports,
 					"default",
@@ -694,36 +832,51 @@ this.Module = function(
 					}
 				);
 				
+				// 设置模块解析结果
 				this.result = result;
+				// 设置状态为已完成
 				this.status = STATUS_COMPLETED;
 
+				// 触发依赖该模块的其他模块的执行方法
 				trigger(this);
 				return;
 			}
 
-			var imports = this.imports, parser = new ECMAScriptParser(), file = new File(name.href, content);
+			var imports = this.imports, parser = new ECMAScriptParser();
 			
+			// 设置状态为解析中
 			this.status = STATUS_PARSING;
 
-			parser.parse(file);
+			// 解析代码
+			parser.parse(
+				// 初始化文件
+				new File(name.href, content)
+			);
 			
+			// 设置模块解析结果
 			this.result = parser.build();
+			// 设置状态为已就绪
 			this.status = STATUS_READY;
 
+			// 遍历依赖
 			parser.deps.forEach(
 				function(dep){
 					var href = new ModuleName(dep, name.href).href, mod = cache.hasOwnProperty(href) ? cache[href] : new Module(href, null, _sync);
 
+					// 如果是重复导入
 					if(imports.indexOf(mod) > -1){
 						return;
 					}
 
+					// 添加需要导入的模块
 					imports.push(mod);
+					// 给导入模块添加目标模块
 					mod.targets.push(this);
 				},
 				this
 			);
 
+			// 执行代码
 			this.eval();
 		},
 		result: "",
@@ -736,19 +889,24 @@ this.Module = function(
 		function(){
 			var count = 0;
 
+			// 遍历元素
 			[].forEach.call(
 				document.querySelectorAll('script[type="text/rexjs"]'),
 				function(script){
+					// 如果存在 src 属性
 					if(script.hasAttribute("src")){
-						new Module(script.src);
-
+						// 如果要生成 sourceMaps
 						if(script.hasAttribute("data-sourcemaps")){
+							// 开启 sourceMaps
 							ECMAScriptParser.sourceMaps = true;
 						}
-						
+
+						// 初始化模块
+						new Module(script.src);
 						return;
 					}
 
+					// 初始化内联模块
 					new Module("inline-script-" + count++ +".js", script.textContent);
 				}
 			);
@@ -818,8 +976,28 @@ this.Module = function(
 		});
 
 		listeners.splice(0);
-	}
+	},
+	// appendCss
+	function(content){
+		var style = document.createElement("style");
+		
+		// 设置 type
+		style.type = "text/css";
+		// 追加 sourceURL
+		content += "\n/*# sourceURL=" + name.href + " */";
 
+		// ie
+		if(style.styleSheet){
+			style.styleSheet.cssText = content;
+		}
+		else {
+			style.textContent = content;
+		}
+
+		// 添加到文档头部
+		document.head.appendChild(style);
+		return style;
+	}
 );
 
 }.call(
@@ -827,6 +1005,7 @@ this.Module = function(
 	XMLHttpRequest,
 	// URL_REGEXP
 	/^([^:/?#.]+:)?(?:\/\/(?:[^/?#]*@)?([\w\d\-\u0100-\uffff.%]*)(?::([0-9]+))?)?([^?#]+?(\.[^.?#\/]+)?)?(?:(\?[^#]*))?(?:(#.*))?$/,
+	document,
 	encodeURI,
 	parseInt,
 	// getBaseHref
@@ -845,21 +1024,35 @@ this.Module = function(
 ~function(){
 
 this.Function = function(bind, empty){
+	/**
+	 * 函数
+	 */
 	function Function(){};
 	Function = new Rexjs(Function);
 
 	Function.static({
+		/**
+		 * 强制转换为函数
+		 * @param {*} object - 函数属性所处的对象
+		 * @param {String} propertyName - 函数属性所处对象内的名称
+		 */
 		convert: function(object, propertyName){
+			// 如果只有 1 个参数
 			if(arguments.length === 1){
+				// 如果是函数则返回，否则返回 empty 函数
 				return typeof object === "function" ? object : empty;
 			}
 
+			// 获取函数
 			var func = object[propertyName];
 
+			// 如果不是函数
 			if(typeof func !== "function"){
+				// 返回 empty
 				return empty;
 			}
 
+			// 返回绑定了 object 的新函数
 			return bind.call(func, object);
 		}
 	});
@@ -872,38 +1065,55 @@ this.Function = function(bind, empty){
 );
 
 this.Parameter = function(forEach, push){
+	/**
+	 * 参数
+	 * @param {*} value - 参数值
+	 */
 	function Parameter(value){
 		this.value = value;
 	};
 	Parameter = new Rexjs(Parameter);
 
 	Parameter.static({
+		/**
+		 * 转化为拓展数组
+		 */
 		toSpreadArray: function(_args){
 			var array = [];
 
+			// 遍历参数
 			forEach.call(
 				arguments,
 				function(item){
+					// 如果是 Parameter 类的实例
 					if(item instanceof Parameter){
+						// 添加多项
 						push.apply(array, item.value);
 						return;
 					}
 
+					// 添加单项
 					array.push(item);
 				}
 			);
 
 			return array;
 		},
+		/**
+		 * 转化为模板数组
+		 */
 		toTemplateArray: function(_args){
 			var templates = [], array = [templates];
 
+			// 遍历参数
 			forEach.call(
 				arguments,
 				function(item){
+					// 如果是 Parameter 类的实例
 					(
 						item instanceof Parameter ? array : templates
 					)
+					// 添加项
 					.push(
 						item.value
 					);
