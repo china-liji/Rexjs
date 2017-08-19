@@ -811,7 +811,7 @@ this.Module = function(
 					// 如果是 css
 					case ".css":
 						// 添加 css
-						appendCss(content);
+						appendCss(content, name.href);
 						break;
 					
 					// 如果是 json
@@ -978,13 +978,13 @@ this.Module = function(
 		listeners.splice(0);
 	},
 	// appendCss
-	function(content){
+	function(content, sourceURL){
 		var style = document.createElement("style");
 		
 		// 设置 type
 		style.type = "text/css";
 		// 追加 sourceURL
-		content += "\n/*# sourceURL=" + name.href + " */";
+		content += "\n/*# sourceURL=" + sourceURL + " */";
 
 		// ie
 		if(style.styleSheet){
