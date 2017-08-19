@@ -14,8 +14,11 @@
 	export default class {};
 </script>
 
-<!-- 当然，一旦指定 src，则根据其路径来加载指定模块文件 -->
-<script src="./file.js" type="text/rexjs"></script>
+<!--
+	当然，一旦指定 src，则根据其路径来加载指定入口模块文件，
+	而且，一旦提供 data-sourcemaps 属性时，不管值是什么，都将启用“源代码映射”功能。
+-->
+<script src="./file.js" type="text/rexjs" data-sourcemaps></script>
 ```
 
 支持浏览器：Chrome、Firefox、Safari、IE9+。

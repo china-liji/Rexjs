@@ -131,7 +131,7 @@ this.ECMAScriptTagsMap = function(SyntaxTagsMap, dataArray){
 	)
 );
 
-this.ECMAScriptParser = function(ECMAScriptTagsMap, GlobalStatements, tagsMap, parse){
+this.ECMAScriptParser = function(MappingBuilder, ECMAScriptTagsMap, GlobalStatements, tagsMap, sourceMaps, parse){
 	/**
 	 * ECMAScript 语法解析器
 	 */
@@ -142,32 +142,51 @@ this.ECMAScriptParser = function(ECMAScriptTagsMap, GlobalStatements, tagsMap, p
 	};
 	ECMAScriptParser = new Rexjs(ECMAScriptParser, SyntaxParser);
 
+	ECMAScriptParser.static({
+		/**
+		 * 获取是否应该生成 sourceMaps
+		 */
+		get sourceMaps(){
+			return sourceMaps;
+		},
+		/**
+		 * 设置是否应该生成 sourceMaps
+		 * @param {Boolean} value - 是否应该生成 sourceMaps
+		 */
+		set sourceMaps(value){
+			sourceMaps = value;
+		}
+	});
+
 	ECMAScriptParser.props({
 		/**
 		 * 将解析后的语法生成字符串
 		 * @param {ContentBuilder} _contentBuilder - 内容生成器
 		 */
 		build: function(_contentBuilder){
-			var contentBuilder = _contentBuilder || new ContentBuilder();
+			// 如果没有提供内容生成器
+			if(!_contentBuilder){
+				_contentBuilder = sourceMaps ? new MappingBuilder(this.file) : new ContentBuilder();
+			}
 			
 			// 追加闭包函数起始部分
-			contentBuilder.appendString("~function(){");
+			_contentBuilder.appendString("~function(){");
 			// 创建新行
-			contentBuilder.newline();
+			_contentBuilder.newline();
 			// 追加严格表达式字符串
-			contentBuilder.appendString('"use strict";');
+			_contentBuilder.appendString('"use strict";');
 			// 创建新行
-			contentBuilder.newline();
+			_contentBuilder.newline();
 
 			// 提取语法列表内容
-			this.statements.extractTo(contentBuilder);
+			this.statements.extractTo(_contentBuilder);
 			
 			// 创建新行
-			contentBuilder.newline();
+			_contentBuilder.newline();
 			// 追加闭包函数结束部分
-			contentBuilder.appendString("}.call(this);");
+			_contentBuilder.appendString("}.call(this);");
 
-			return contentBuilder.complete();
+			return _contentBuilder.complete();
 		},
 		defaultExported: false,
 		deps: null,
@@ -193,13 +212,16 @@ this.ECMAScriptParser = function(ECMAScriptTagsMap, GlobalStatements, tagsMap, p
 
 	return ECMAScriptParser;
 }(
+	Rexjs.MappingBuilder,
 	this.ECMAScriptTagsMap,
 	this.GlobalStatements,
 	// tagsMap
 	null,
+	// sourceMaps
+	false,
 	SyntaxParser.prototype.parse
 );
-	
+
 }.call(
 	this,
 	Rexjs.SyntaxParser

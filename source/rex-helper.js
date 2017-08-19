@@ -702,7 +702,6 @@ this.Module = function(
 			}
 
 			var imports = this.imports, parser = new ECMAScriptParser(), file = new File(name.href, content);
-			//var builder = new MappingBuilder(file);
 			
 			this.status = STATUS_PARSING;
 
@@ -742,6 +741,11 @@ this.Module = function(
 				function(script){
 					if(script.hasAttribute("src")){
 						new Module(script.src);
+
+						if(script.hasAttribute("data-sourcemaps")){
+							ECMAScriptParser.sourceMaps = true;
+						}
+						
 						return;
 					}
 

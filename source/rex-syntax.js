@@ -416,8 +416,19 @@ this.Base64VLQ = function(base64, parseInt){
 		 * @param {Number} num - 所需提供的数字
 		 */
 		encode: function(num){
-			// 将数字转化为二进制，并在后面加 0，表示正数
-			var result = "", binary = num.toString(2) + "0", length = binary.length;
+			var binary, length, result = "";
+
+			// 如果数字小于 0
+			if(num < 0){
+				// 将数字以正数形式转化为二进制，并在后面加 1，表示负数
+				binary = (-num).toString(2) + "1";
+			}
+			else {
+				// 将数字转化为二进制，并在后面加 0，表示正数
+				binary = num.toString(2) + "0";
+			}
+
+			length = binary.length;
 			
 			// 字符串从后往前逆序循环，当长度大于 5 时
 			while(length > 5){
@@ -507,12 +518,10 @@ this.MappingBuilder = function(MappingPosition, Base64VLQ, JSON, appendContext, 
 		 * @param {Context} context - 标签内容上下文
 		 */
 		appendContext: function(context){
-			var contextPosition = context.position, builderPosition = this.position,
+			var diff, diffVLQ, contextPosition = context.position, builderPosition = this.position,
 			
-				line = contextPosition.line, column = contextPosition.column,
-				
-				generatedColumnDiff = builderPosition.generatedColumnDiff;
-				
+				line = contextPosition.line, column = contextPosition.column;
+
 			// 如果不是空行
 			if(builderPosition.generatedLineOffset !== builderPosition.generatedColumnOffset){
 				// 追加逗号
@@ -521,27 +530,46 @@ this.MappingBuilder = function(MappingPosition, Base64VLQ, JSON, appendContext, 
 
 			// 追加映射当前信息
 			this.appendMappings(
-				Base64VLQ.encode(generatedColumnDiff) +
+				Base64VLQ.encode(builderPosition.generatedColumnDiff) +
 				"A" +
 				Base64VLQ.encode(line - builderPosition.line) +
-				Base64VLQ.encode(line === builderPosition.line ? column - builderPosition.column : column)
+				Base64VLQ.encode(column - builderPosition.column)
 			);
 			
-			// 记录源码的行
-			builderPosition.line = line;
-			// 记录源码的列
-			builderPosition.column = column;
-			// 记录列的偏移量
-			builderPosition.generatedColumnOffset += generatedColumnDiff;
-			// 清空列的差值
+			// 先要清空一次列的差值
 			builderPosition.generatedColumnDiff = 0;
 
 			// 调用父类方法
 			appendContext.call(this, context);
+
+			// 获取刚刚上下文所产生的生成列偏移值
+			diff = builderPosition.generatedColumnDiff;
+			// 获取对应 vlq 编码
+			diffVLQ = Base64VLQ.encode(diff);
+
+			/*
+				将映射点向右移动等同于 生成列偏移值 的量，并指向原来的位置，
+				如：context 所添加的值为 var，
+				在此之前，位置是在 var 之前，即 v 的索引位置，
+				那么下面的代码，目的是将位置移动到 var 之后，即 r 后面的索引位置，
+				而且源代码的位置还是在 var 之前。
+			*/
+			this.appendMappings("," + diffVLQ + "AAA");
+			// 这段代码的目的就是将上面源代码的位置，也移动到 var 之后
+			this.appendMappings(",AAA" + diffVLQ);
+
+			// 记录源码的行
+			builderPosition.line = line;
+			// 记录源码的列
+			builderPosition.column = column + diff;
+			// 记录列的偏移量
+			builderPosition.generatedColumnOffset += diff;
+			// 清空列的差值
+			builderPosition.generatedColumnDiff = 0;
 		},
 		/**
 		 * 追加映射内容
-		 * @param {String} mappings - 映射内容
+		 * @param {String} content - 映射内容
 		 */
 		appendMappings: function(content){
 			this.mappings += content;

@@ -1,6 +1,6 @@
 {
 	"name": "rexjs",
-	"version": "1.0.0",
+	"version": "1.0.1",
 	"description": "这是个 JavaScript 语言解析器，用于解析 ES6 语法",
 	"main": "node/index.js",
 	"repository": {
