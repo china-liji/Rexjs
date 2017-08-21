@@ -16560,15 +16560,15 @@ this.CaseBodyStatement = function(BlockBodyStatement, isCase, isCloseBrace){
 	}
 );
 
-this.CaseBodyStatements = function(BlockBodyStatements, CaseBodyStatement){
+this.CaseBodyStatements = function(SwitchBodyStatements, CaseBodyStatement){
 	/**
 	 * case 语句块
 	 * @param {ECMAScriptVariableCollections} prevCollections - 可参考的上一个变量名收集器
 	 */
 	function CaseBodyStatements(prevCollections){
-		BlockBodyStatements.call(this, prevCollections);
+		SwitchBodyStatements.call(this, prevCollections);
 	};
-	CaseBodyStatements = new Rexjs(CaseBodyStatements, BlockBodyStatements);
+	CaseBodyStatements = new Rexjs(CaseBodyStatements, SwitchBodyStatements);
 
 	CaseBodyStatements.props({
 		/**
@@ -16581,7 +16581,7 @@ this.CaseBodyStatements = function(BlockBodyStatements, CaseBodyStatement){
 
 	return CaseBodyStatements;
 }(
-	this.BlockBodyStatements,
+	this.SwitchBodyStatements,
 	this.CaseBodyStatement
 );
 
