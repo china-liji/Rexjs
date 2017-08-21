@@ -79,6 +79,19 @@ this.ObjectExpression = function(
 
 	ObjectExpression.props({
 		/**
+		 * 自动化生成变量
+		 * @param {ECMAScriptStatements} statements - 当前语句块
+		 */
+		autoVariable: function(statements){
+			// 如果已经记录了变量
+			if(this.variable){
+				return;
+			}
+
+			// 记录变量
+			this.variable = statements.collections.generate();
+		},
+		/**
 		 * 将数组每一项转换为解构项表达式
 		 * @param {SyntaxParser} parser - 语法解析器
 		 */

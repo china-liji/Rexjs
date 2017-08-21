@@ -48,8 +48,8 @@ visitorOfMathematicalNumeral = function(){
 	return function(parser, context, statement, statements){
 		// 如果需要用 parseInt
 		if(this.useParse()){
-			// 设置对象表达式的 variable 属性，表示需要启用分步设置属性
-			statement.target.expression.variable = statements.collections.generate();
+			// 自动化生成变量
+			statement.target.expression.autoVariable(statements);
 		}
 		
 		// 调用 visitor 方法

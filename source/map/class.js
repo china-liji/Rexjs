@@ -12,6 +12,11 @@ this.ClassExpression = function(DefaultExtendsExpression, config){
 	ClassExpression = new Rexjs(ClassExpression, Expression);
 
 	ClassExpression.props({
+		/**
+		 * 自动化生成变量，以模拟 ObjectExpression 环境
+		 * @param {ECMAScriptStatements} statements - 当前语句块
+		 */
+		autoVariable: function(statements){},
 		name: new DefaultExpression(),
 		extends: new DefaultExtendsExpression(),
 		/**
