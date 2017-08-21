@@ -27,7 +27,7 @@ this.RestArgumentExpression = function(ArgumentExpression, config){
 				// 将默认参数名追加至临时生成器
 				anotherBuilder.appendContext(this.name);
 				// 将赋值运算追加至临时生成器
-				anotherBuilder.appendString("=[].slice.call(arguments," + this.index + ");");
+				anotherBuilder.appendString("=Rexjs.toArray(arguments," + this.index + ");");
 			}
 			else {
 				// 直接正式添加省略符
@@ -147,7 +147,7 @@ this.RestArgumentSeparatorTag = function(ArgumentSeparatorTag){
 		 */
 		visitor: function(parser, context, statement, statements){
 			// 报错
-			parser.error(statement.expression.context, ECMAScriptErrors.REST);
+			parser.error(statement.expression.context, ECMAScriptErrors.REST_PARAMETER);
 		}
 	});
 

@@ -226,24 +226,24 @@ this.GroupingContextStatement = function(ArgumentsExpression, BinaryExpression, 
 
 		// 如果是省略参数表达式
 		if(expression instanceof RestArgumentExpression){
+			// 如果省略参数不是最后一项
+			if(i !== j - 1){
+				// 报错
+				parser.error(expression.context, ECMAScriptErrors.REST_PARAMETER);
+				return j;
+			}
+
 			var operand = expression.operand;
 
 			// 如果省略符的操作对象是标识符表达式
 			if(operand instanceof IdentifierExpression){
-				// 如果省略参数不是最后一项
-				if(i !== j - 1){
-					// 报错
-					parser.error(expression.context, ECMAScriptErrors.REST);
-					return j;
-				}
+				context = operand.context;
 			}
 			else {
 				// 报错
 				parser.error(expression.operand.context);
 				return j;
 			}
-
-			context = operand.context;
 		}
 		// 如果不是省略参数表达式，那么就是普通形式的参数
 		else {

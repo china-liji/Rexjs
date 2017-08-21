@@ -51,6 +51,8 @@ this.ECMAScriptTagsMap = function(SyntaxTagsMap, dataArray){
 		"ConstructorBody",
 		"DeclarationArrayItemContext",
 		"DeclarationArrayItemSeparator",
+		"DeclarationArrayRestItemContext",
+		"DeclarationArrayRestItem",
 		"DeclarationPropertyNameSeparator",
 		"DeclarationPropertyName",
 		"DeclarationPropertySeparator",

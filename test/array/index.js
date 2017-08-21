@@ -10,6 +10,7 @@ test.unit(
 		this.true("带空项的数组", "[1, true,, !true, 2 + 3,, 'string',, a += 5 + !false - 0]");
 		this.true("小括号内的数组", "([1,2,,3])");
 		this.true("连续的赋值运算符", "[a + 5, a += 5, , , a + 6, , a -= 100]");
+		this.true("数组拓展项", "[...arr, 1, ...[2], , ...[3]]");
 
 		this.true(
 			"全空项数组",

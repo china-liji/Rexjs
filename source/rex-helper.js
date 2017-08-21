@@ -811,7 +811,7 @@ this.Module = function(
 					// 如果是 css
 					case ".css":
 						// 添加 css
-						appendCss(content, name.href);
+						result = appendCss(content, name.href);
 						break;
 					
 					// 如果是 json
@@ -1064,29 +1064,29 @@ this.Function = function(bind, empty){
 	function(){}
 );
 
-this.Parameter = function(forEach, push){
+this.SpreadItem = function(forEach, push){
 	/**
-	 * 参数
-	 * @param {*} value - 参数值
+	 * 拓展项
+	 * @param {*} value - 拓展项的值
 	 */
-	function Parameter(value){
+	function SpreadItem(value){
 		this.value = value;
 	};
-	Parameter = new Rexjs(Parameter);
+	SpreadItem = new Rexjs(SpreadItem);
 
-	Parameter.static({
+	SpreadItem.static({
 		/**
-		 * 转化为拓展数组
+		 * 合并所有拓展项
 		 */
-		toSpreadArray: function(_args){
+		combine: function(_args){
 			var array = [];
 
 			// 遍历参数
 			forEach.call(
 				arguments,
 				function(item){
-					// 如果是 Parameter 类的实例
-					if(item instanceof Parameter){
+					// 如果是 SpreadItem 类的实例
+					if(item instanceof SpreadItem){
 						// 添加多项
 						push.apply(array, item.value);
 						return;
@@ -1100,35 +1100,19 @@ this.Parameter = function(forEach, push){
 			return array;
 		},
 		/**
-		 * 转化为模板数组
+		 * 通过一个拓展项列表合并所有拓展项
+		 * @param {Array} list - 拓展项列表
 		 */
-		toTemplateArray: function(_args){
-			var templates = [], array = [templates];
-
-			// 遍历参数
-			forEach.call(
-				arguments,
-				function(item){
-					// 如果是 Parameter 类的实例
-					(
-						item instanceof Parameter ? array : templates
-					)
-					// 添加项
-					.push(
-						item.value
-					);
-				}
-			);
-
-			return array;
+		combineBy: function(list){
+			return this.combine.apply(this, list);
 		}
 	});
 
-	Parameter.props({
+	SpreadItem.props({
 		value: null
 	});
 
-	return Parameter;
+	return SpreadItem;
 }(
 	Array.prototype.forEach,
 	Array.prototype.push

@@ -67,8 +67,7 @@ this.DeclarationArrayItemAssignmentReadyStatement = function(){
 	});
 
 	return DeclarationArrayItemAssignmentReadyStatement;
-}(
-);
+}();
 
 this.OpenDeclarationArrayTag = function(OpenArrayTag, DeclarationArrayExpression, ArrayStatement){
 	/**

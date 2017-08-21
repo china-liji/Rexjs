@@ -5,7 +5,7 @@
 新手教程：
 ```
 <!-- 引用 rexjs -->
-<script src="http://rexjs.org/rex.min.js"></script>
+<script src="http://jqun.oschina.io/rexjs.org/rex.min.js"></script>
 
 <!-- 使用 type 定义模块 -->
 <script type="text/rexjs">

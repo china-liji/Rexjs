@@ -46,7 +46,7 @@ visitorOfMathematicalNumeral = function(){
 	 * @param {Statements} statements - 当前语句块
 	 */
 	return function(parser, context, statement, statements){
-		// 如果需要编译
+		// 如果需要用 parseInt
 		if(this.useParse()){
 			// 设置对象表达式的 variable 属性，表示需要启用分步设置属性
 			statement.target.expression.variable = statements.collections.generate();

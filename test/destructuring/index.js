@@ -10,6 +10,7 @@ test.unit(
 		this.true("多项数组解构", "[a, b, c, d] = arr");
 		this.true("带空项的数组解构", "[, a, , b, c, ,] = arr");
 		this.true("全空项的数组解构", "[,,,,] = arr");
+		this.true("省略项解构", "[a, b, , c, ...d] = arr");
 		this.true("多层数组解构", "[a, [window.b, [c], ], window.d, ] = arr");
 		this.true("嵌套对象解构的数组解构", "[ { a, b: [c] }, x, { y } ] = arr");
 		this.true("连等解构", "[] = [a, [window.b, [c = 100,], ], window.d, ] = $ = [x, [y, ], , z, ] = arr");
@@ -21,6 +22,7 @@ test.unit(
 		this.true("数组声明解构 - 多项数组解构", "var [a, b, c, d] = arr");
 		this.true("数组声明解构 - 带空项的数组解构", "var [, a, , b, c, ,] = arr");
 		this.true("数组声明解构 - 全空项的数组解构", "var [,,,,] = arr");
+		this.true("数组声明解构 - 省略项解构", "var [a, b, , c, ...d] = arr");
 		this.true("数组声明解构 - 多层数组解构", "var [a, [b, [c], ], d, ] = arr");
 		this.true("数组声明解构 - 嵌套对象解构的数组解构", "var [ { a, b: [c] }, x, { y } ] = arr");
 		this.true("var 数组声明解构 - 连等解构", "var [a, [, [c], ], , ] = $ = [, window.b, x, [y, window.d], , z, ] = arr");
@@ -157,6 +159,44 @@ test.unit(
 				return err.context.content === "=" ? "" : "没有识别出赋值运算符";
 			}
 		);
+
+		this.false(
+			"非赋值表达式的省略项",
+			"[...[]] = arr",
+			function(parser, err){
+				return err.context.content !== "[";
+			},
+			function(parser, err){
+				return err.context.position.column !== 4;
+			}
+		);
+
+		this.false(
+			"非最后一项的省略项",
+			"[...a, b] = arr",
+			function(parser, err){
+				return err.context.content !== "...";
+			}
+		);
+
+		this.false(
+			"常量省略项",
+			"const a = 1;[...a] = arr",
+			function(parser, err){
+				return err.context.content !== "a";
+			},
+			function(parser, err){
+				return err.context.position.column !== 16;
+			}
+		);
+
+		this.false(
+			"默认值省略项",
+			"[...a = 5] = arr",
+			function(parser, err){
+				return err.context.content !== "=";
+			}
+		);
 		
 		this.false(
 			"数组声明解构 - 解构表达式不完整",
@@ -287,6 +327,44 @@ test.unit(
 			},
 			function(parser, err){
 				return err.context.position.column === 13 ? "" : "没有找到正确的错误地方";
+			}
+		);
+		
+		this.false(
+			"数组声明解构 - 非赋值表达式的省略项",
+			"var [...[]] = arr",
+			function(parser, err){
+				return err.context.content !== "[";
+			},
+			function(parser, err){
+				return err.context.position.column !== 8;
+			}
+		);
+
+		this.false(
+			"数组声明解构 - 非最后一项的省略项",
+			"var [...a,] = arr",
+			function(parser, err){
+				return err.context.content !== "...";
+			}
+		);
+
+		this.false(
+			"数组声明解构 - 重复声明的省略项",
+			"let a;var [...a] = arr",
+			function(parser, err){
+				return err.context.content !== "a";
+			},
+			function(parser, err){
+				return err.context.position.column !== 14;
+			}
+		);
+
+		this.false(
+			"数组声明解构 - 默认值省略项",
+			"var [...a = 5] = arr",
+			function(parser, err){
+				return err.context.content !== "=";
 			}
 		);
 

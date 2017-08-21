@@ -126,6 +126,7 @@ this.DestructuringItemExpression = function(DestructuringExpression){
 
 			return builder;
 		},
+		rest: false,
 		variable: ""
 	});
 

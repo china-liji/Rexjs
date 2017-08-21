@@ -1,7 +1,7 @@
 // 函数调用相关
 ~function(BracketAccessorExpression, UnaryKeywordTag, parameterSeparatorTag, closeCallTag, extractTo){
 
-this.CallExpression = function(ExecutableExpression, AccessorExpression, UnaryStatement, config, compileWithAccessor, compileWithNew, compileDefault){
+this.CallExpression = function(ExecutableExpression, AccessorExpression, UnaryStatement, compileWithAccessor, compileWithNew, compileDefault){
 	/**
 	 * 函数调用表达式
 	 * @param {Context} open - 起始标签上下文
@@ -13,10 +13,9 @@ this.CallExpression = function(ExecutableExpression, AccessorExpression, UnarySt
 		this.operand = statement.expression;
 		this.inner = new ListExpression(null, ",");
 
+		// 如果是一元语句
 		if(statement instanceof UnaryStatement){
-			if(statement.target.expression.context.content === "new"){
-				this.new = true;
-			}
+			this.new = statement.target.expression.context.content === "new";
 		}
 	};
 	CallExpression = new Rexjs(CallExpression, ExecutableExpression);
@@ -29,8 +28,8 @@ this.CallExpression = function(ExecutableExpression, AccessorExpression, UnarySt
 		extractTo: function(contentBuilder){
 			var operand = this.operand;
 
-			// 如果有拓展符且需要编译
-			if(this.hasSpread && config.value){
+			// 如果需要编译拓展符
+			if(this.needCompileSpread){
 				switch(true){
 					// 如果是 new 实例化
 					case this.new:
@@ -55,9 +54,10 @@ this.CallExpression = function(ExecutableExpression, AccessorExpression, UnarySt
 			// 调用父类方法
 			extractTo.call(this, contentBuilder);
 		},
-		hasSpread: false,
+		needCompileSpread: false,
 		new: false,
 		operand: null,
+		spread: false,
 		variable: ""
 	});
 
@@ -66,8 +66,6 @@ this.CallExpression = function(ExecutableExpression, AccessorExpression, UnarySt
 	this.ExecutableExpression,
 	this.AccessorExpression,
 	this.UnaryStatement,
-	// config
-	ECMAScriptConfig.addBaseConfig("spread"),
 	// compileWithAccessor
 	function(contentBuilder, expression, operand, variable){
 		// 追加临时变量名
@@ -90,7 +88,7 @@ this.CallExpression = function(ExecutableExpression, AccessorExpression, UnarySt
 		}
 		
 		// 追加 apply 方法
-		contentBuilder.appendString(".apply(" + variable + ",Rexjs.Parameter.toSpreadArray");
+		contentBuilder.appendString(".apply(" + variable + ",Rexjs.SpreadItem.combine");
 		// 调用父类方法
 		extractTo.call(expression, contentBuilder);
 		// 追加 apply 方法的结束小括号
@@ -103,7 +101,7 @@ this.CallExpression = function(ExecutableExpression, AccessorExpression, UnarySt
 		// 提取该调用的方法
 		operand.extractTo(contentBuilder);
 		// 追加拓展符编译的方法
-		contentBuilder.appendString(",Rexjs.Parameter.toSpreadArray");
+		contentBuilder.appendString(",Rexjs.SpreadItem.combine");
 		// 追加函数调用的起始小括号
 		contentBuilder.appendContext(expression.open);
 		// 追加 bind 所指定的 this
@@ -122,7 +120,7 @@ this.CallExpression = function(ExecutableExpression, AccessorExpression, UnarySt
 		// 提取操作对象
 		operand.extractTo(contentBuilder);
 		// 追加 apply 方法的参数
-		contentBuilder.appendString(",void 0,Rexjs.Parameter.toSpreadArray");
+		contentBuilder.appendString(",void 0,Rexjs.SpreadItem.combine");
 		// 调用父类方法
 		extractTo.call(expression, contentBuilder);
 		// 追加 apply 方法的结束小括号
