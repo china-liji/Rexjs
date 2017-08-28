@@ -1,6 +1,6 @@
 new function(PROJECT_PATH){
 
-this.Uglify = function(SOURCE_PATH, childProcess){
+this.Uglify = function(SOURCE_PATH, childProcess, webpack){
 	return class Uglify {
 		constructor(){
 			new Promise(function(res, req){
@@ -17,18 +17,24 @@ this.Uglify = function(SOURCE_PATH, childProcess){
 
 						console.log("webpack ../source/rex-*.js ../rex.min.js -p");
 
-						childProcess.exec(
-							[
-								"webpack",
-								`${SOURCE_PATH}/rex-core.js`,
-								`${SOURCE_PATH}/rex-syntax.js`,
-								`${SOURCE_PATH}/rex-es.js`,
-								`${SOURCE_PATH}/rex-helper.js`,
-								"../rex.min.js",
-								"-p"
-							].join(" "),
-							(err) => {
-								if(err){
+						webpack(
+							{
+								entry: [
+									`${SOURCE_PATH}/rex-core.js`,
+									`${SOURCE_PATH}/rex-syntax.js`,
+									`${SOURCE_PATH}/rex-es.js`,
+									`${SOURCE_PATH}/rex-helper.js`
+								],
+								output: {
+									path: PROJECT_PATH,
+									filename: "rex.min.js"
+								},
+								plugins: [
+									new webpack.optimize.UglifyJsPlugin()
+								]
+							},
+							function(err, stats){
+								if(err || stats.hasErrors()){
 									req(err);
 									return;
 								}
@@ -48,7 +54,9 @@ this.Uglify = function(SOURCE_PATH, childProcess){
 	// SOURCE_PATH
 	`${PROJECT_PATH}/source`,
 	// childProcess
-	require("child_process")
+	require("child_process"),
+	// webpack
+	require("webpack")
 );
 
 new this.Uglify();
