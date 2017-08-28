@@ -69,15 +69,15 @@ this.DeclarationArrayRestItemTag = function(DeclarationArrayItemTag, IdentifierE
 	this.IdentifierExpression
 );
 
-this.DeclarationArrayRestTag = function(ArraySpreadItemTag, ArrayRestDestructuringItemExpression, ArraySpreadItemExpression, DeclarationArrayRestStatement){
+this.DeclarationArrayRestTag = function(ArraySpreadTag, ArrayRestDestructuringItemExpression, ArraySpreadItemExpression, DeclarationArrayRestStatement){
 	/**
 	 * 变量声明数组省略项拓展符标签
 	 * @param {Number} _type - 标签类型
 	 */
 	function DeclarationArrayRestTag(_type){
-		ArraySpreadItemTag.call(this, _type);
+		ArraySpreadTag.call(this, _type);
 	};
-	DeclarationArrayRestTag = new Rexjs(DeclarationArrayRestTag, ArraySpreadItemTag);
+	DeclarationArrayRestTag = new Rexjs(DeclarationArrayRestTag, ArraySpreadTag);
 	
 	DeclarationArrayRestTag.props({
 		/**
@@ -107,7 +107,7 @@ this.DeclarationArrayRestTag = function(ArraySpreadItemTag, ArrayRestDestructuri
 
 	return DeclarationArrayRestTag;
 }(
-	this.ArraySpreadItemTag,
+	this.ArraySpreadTag,
 	this.ArrayRestDestructuringItemExpression,
 	this.ArraySpreadItemExpression,
 	this.DeclarationArrayRestStatement

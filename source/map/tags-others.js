@@ -1118,7 +1118,7 @@ this.OpenArgumentsContextTags = function(ArgumentSeparatorContextTags, CloseArgu
 	this.CloseArgumentsTag
 );
 
-this.OpenArrayContextTags = function(ArraySpreadItemTag){
+this.OpenArrayContextTags = function(ArraySpreadTag){
 	/**
 	 * 起始数组上下文标签列表
 	 */
@@ -1126,14 +1126,14 @@ this.OpenArrayContextTags = function(ArraySpreadItemTag){
 		ExpressionTags.call(this);
 
 		this.register(
-			new ArraySpreadItemTag()
+			new ArraySpreadTag()
 		);
 	};
 	OpenArrayContextTags = new Rexjs(OpenArrayContextTags, ExpressionTags);
 
 	return OpenArrayContextTags;
 }(
-	this.ArraySpreadItemTag
+	this.ArraySpreadTag
 );
 
 this.OpenMultiLineCommentContextTags = function(CommentContentTag, CloseMultiLineCommentTag){
@@ -1362,7 +1362,8 @@ this.PropertyNameTags = function(list){
 		this.StringPropertyNameTag,
 		this.OpenComputedPropertyNameTag,
 		this.GetTag,
-		this.SetTag
+		this.SetTag,
+		this.PropertySpreadTag
 	]
 );
 

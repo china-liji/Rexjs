@@ -1,4 +1,4 @@
-class a {
-	a(){}
-	static b(){}
+var a = {
+	...a,
+	b: 2
 }

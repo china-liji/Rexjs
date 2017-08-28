@@ -5838,17 +5838,17 @@ this.ArraySpreadItemExpression = function(SpreadExpression){
 	this.SpreadExpression
 );
 
-this.ArraySpreadItemTag = function(SpreadTag, ArraySpreadItemExpression, SpreadStatement){
+this.ArraySpreadTag = function(SpreadTag, ArraySpreadItemExpression, SpreadStatement){
 	/**
-	 * 数组拓展项标签
+	 * 数组拓展符标签
 	 * @param {Number} _type - 标签类型
 	 */
-	function ArraySpreadItemTag(_type){
+	function ArraySpreadTag(_type){
 		SpreadTag.call(this, _type);
 	};
-	ArraySpreadItemTag = new Rexjs(ArraySpreadItemTag, SpreadTag);
+	ArraySpreadTag = new Rexjs(ArraySpreadTag, SpreadTag);
 	
-	ArraySpreadItemTag.props({
+	ArraySpreadTag.props({
 		/**
 		 * 获取是否需要编译
 		 */
@@ -5873,7 +5873,7 @@ this.ArraySpreadItemTag = function(SpreadTag, ArraySpreadItemExpression, SpreadS
 		}
 	});
 	
-	return ArraySpreadItemTag;
+	return ArraySpreadTag;
 }(
 	this.SpreadTag,
 	this.ArraySpreadItemExpression,
@@ -6252,15 +6252,15 @@ this.DeclarationArrayRestItemTag = function(DeclarationArrayItemTag, IdentifierE
 	this.IdentifierExpression
 );
 
-this.DeclarationArrayRestTag = function(ArraySpreadItemTag, ArrayRestDestructuringItemExpression, ArraySpreadItemExpression, DeclarationArrayRestStatement){
+this.DeclarationArrayRestTag = function(ArraySpreadTag, ArrayRestDestructuringItemExpression, ArraySpreadItemExpression, DeclarationArrayRestStatement){
 	/**
 	 * 变量声明数组省略项拓展符标签
 	 * @param {Number} _type - 标签类型
 	 */
 	function DeclarationArrayRestTag(_type){
-		ArraySpreadItemTag.call(this, _type);
+		ArraySpreadTag.call(this, _type);
 	};
-	DeclarationArrayRestTag = new Rexjs(DeclarationArrayRestTag, ArraySpreadItemTag);
+	DeclarationArrayRestTag = new Rexjs(DeclarationArrayRestTag, ArraySpreadTag);
 	
 	DeclarationArrayRestTag.props({
 		/**
@@ -6290,7 +6290,7 @@ this.DeclarationArrayRestTag = function(ArraySpreadItemTag, ArrayRestDestructuri
 
 	return DeclarationArrayRestTag;
 }(
-	this.ArraySpreadItemTag,
+	this.ArraySpreadTag,
 	this.ArrayRestDestructuringItemExpression,
 	this.ArraySpreadItemExpression,
 	this.DeclarationArrayRestStatement
@@ -9362,6 +9362,36 @@ this.PropertyExpression = function(BinaryExpression, ShorthandPropertyValueExpre
 	this.ShorthandPropertyValueExpression3
 );
 
+this.EmptyPropertyNameExpression = function(){
+	/**
+	 * 空的属性名表达式
+	 */
+	function EmptyPropertyNameExpression(){
+		EmptyExpression.call(this, null);
+	};
+	EmptyPropertyNameExpression = new Rexjs(EmptyPropertyNameExpression, EmptyExpression);
+
+	EmptyPropertyNameExpression.props({
+		/**
+		 * 以定义属性的模式提取表达式文本内容
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 */
+		defineTo: function(){},
+		/**
+		 * 以解构方式提取表达式文本内容
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 */
+		destructTo: function(){},
+		/**
+		 * 提取并编译表达式文本内容
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 */
+		compileTo: function(){}
+	});
+
+	return EmptyPropertyNameExpression;
+}();
+
 this.LiteralPropertyNameExpression = function(){
 	/**
 	 * 对象字面量属性名表达式
@@ -11038,6 +11068,103 @@ this.SetTag = function(PropertyAccessorTag){
 										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
 									)[1] +
 									"\n//# sourceURL=http://rexjs.org/property-accessor.js"
+								);
+
+
+eval(
+									function(){
+										// 对象属性拓展项相关
+~function(config){
+
+this.PropertySpreadItemExpression = function(SpreadExpression){
+	/**
+	 * 对象属性拓展项表达式
+	 * @param {Context} open - 起始标签上下文
+	 */
+	function PropertySpreadItemExpression(context){
+		SpreadExpression.call(this, context);
+	};
+	PropertySpreadItemExpression = new Rexjs(PropertySpreadItemExpression, SpreadExpression);
+
+	PropertySpreadItemExpression.props({
+		/**
+		 * 提取表达式文本内容
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 */
+		extractTo: function(contentBuilder){debugger
+			// 如果需要编译拓展符
+			if(config.value){
+				// 追加初始化拓展项
+				contentBuilder.appendString("new Rexjs.SpreadItem(");
+				// 提取操作对象
+				this.operand.extractTo(contentBuilder);
+				// 追加初始化拓展项的结束小括号
+				contentBuilder.appendString(")");
+				return;
+			}
+
+			// 追加拓展符上下文
+			contentBuilder.appendContext(this.context);
+			// 提取参数
+			this.operand.extractTo(contentBuilder);
+		}
+	});
+
+	return PropertySpreadItemExpression;
+}(
+	this.SpreadExpression
+);
+
+this.PropertySpreadTag = function(SpreadTag, EmptyPropertyNameExpression, PropertySpreadItemExpression, SpreadStatement){
+	/**
+	 * 对象属性拓展项标签
+	 * @param {Number} _type - 标签类型
+	 */
+	function PropertySpreadTag(_type){
+		SpreadTag.call(this, _type);
+	};
+	PropertySpreadTag = new Rexjs(PropertySpreadTag, SpreadTag);
+	
+	PropertySpreadTag.props({
+		/**
+		 * 标签访问器
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 标签上下文
+		 * @param {Statement} statement - 当前语句
+		 * @param {Statements} statements - 当前语句块
+		 */
+		visitor: function(parser, context, statement, statements){
+			var propertyExpression = statement.expression;
+
+			// 告知数组表达式，是否需要编译拓展符
+			//statement.target.expression.needCompileSpread = config.value;
+			propertyExpression.name = new EmptyPropertyNameExpression();
+			propertyExpression.value = new PropertySpreadItemExpression(context);
+
+			// 设置当前语句
+			statements.statement = new SpreadStatement(statements);
+		}
+	});
+	
+	return PropertySpreadTag;
+}(
+	this.SpreadTag,
+	this.EmptyPropertyNameExpression,
+	this.PropertySpreadItemExpression,
+	this.SpreadStatement
+);
+
+}.call(
+	this,
+	// config
+	ECMAScriptConfig.addBaseConfig("propertySpreadItem")
+);
+									}
+									.toString()
+									.match(
+										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+									)[1] +
+									"\n//# sourceURL=http://rexjs.org/property-spread-item.js"
 								);
 
 
@@ -22550,7 +22677,7 @@ this.OpenArgumentsContextTags = function(ArgumentSeparatorContextTags, CloseArgu
 	this.CloseArgumentsTag
 );
 
-this.OpenArrayContextTags = function(ArraySpreadItemTag){
+this.OpenArrayContextTags = function(ArraySpreadTag){
 	/**
 	 * 起始数组上下文标签列表
 	 */
@@ -22558,14 +22685,14 @@ this.OpenArrayContextTags = function(ArraySpreadItemTag){
 		ExpressionTags.call(this);
 
 		this.register(
-			new ArraySpreadItemTag()
+			new ArraySpreadTag()
 		);
 	};
 	OpenArrayContextTags = new Rexjs(OpenArrayContextTags, ExpressionTags);
 
 	return OpenArrayContextTags;
 }(
-	this.ArraySpreadItemTag
+	this.ArraySpreadTag
 );
 
 this.OpenMultiLineCommentContextTags = function(CommentContentTag, CloseMultiLineCommentTag){
@@ -22794,7 +22921,8 @@ this.PropertyNameTags = function(list){
 		this.StringPropertyNameTag,
 		this.OpenComputedPropertyNameTag,
 		this.GetTag,
-		this.SetTag
+		this.SetTag,
+		this.PropertySpreadTag
 	]
 );
 

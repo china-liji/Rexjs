@@ -161,6 +161,7 @@ console.timeEnd("time");
 		"property-computed-name.js",
 		"property-shorthand-method.js",
 		"property-accessor.js",
+		"property-spread-item.js",
 		"object.js",
 		"declaration-object.js",
 		"declaration-property-name.js",
