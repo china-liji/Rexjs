@@ -85,7 +85,11 @@ this.ClassPropertyExpression = function(extractTo){
 		 */
 		compileTo: function(contentBuilder){
 			// 追加 实例化类的属性
-			contentBuilder.appendString(this.static ? "new StaticProperty(" : "new ClassProperty(");
+			contentBuilder.appendString(
+				"new Rexjs." +
+				(this.static ? "Static" : "Class") +
+				"Property("
+			);
 
 			// 提取属性名
 			this.name.defineTo(contentBuilder);

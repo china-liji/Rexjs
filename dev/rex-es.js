@@ -17652,7 +17652,11 @@ this.ClassPropertyExpression = function(extractTo){
 		 */
 		compileTo: function(contentBuilder){
 			// 追加 实例化类的属性
-			contentBuilder.appendString(this.static ? "new StaticProperty(" : "new ClassProperty(");
+			contentBuilder.appendString(
+				"new Rexjs." +
+				(this.static ? "Static" : "Class") +
+				"Property("
+			);
 
 			// 提取属性名
 			this.name.defineTo(contentBuilder);
@@ -17754,7 +17758,7 @@ this.ClassExpression = function(DefaultExtendsExpression, config){
 				var body = this.body;
 				
 				// 追加闭包头部
-				contentBuilder.appendString("(function(ClassProperty, StaticProperty){return Rexjs.Class.create(");
+				contentBuilder.appendString("(Rexjs.Class.create(");
 				// 编译继承表达式
 				this.extends.compileTo(contentBuilder);
 				// 追加 父类 与 属性数组的起始中括号
@@ -17762,7 +17766,7 @@ this.ClassExpression = function(DefaultExtendsExpression, config){
 				// 编译类主体
 				body.compileTo(contentBuilder);
 				// 追加 属性数组的结束中括号 和 构造函数的索引值，并传入闭包参数，目的是 更快的访问 及 更小的压缩代码
-				contentBuilder.appendString("], " + body.indexOfConstructor.toString() + ");}(Rexjs.ClassProperty, Rexjs.StaticProperty))");
+				contentBuilder.appendString("], " + body.indexOfConstructor.toString() + "))");
 				return;
 			}
 
@@ -18088,7 +18092,7 @@ this.DefaultConstructorExpression = function(ClassPropertyExpression){
 
 			// 追加构造函数
 			contentBuilder.appendString(
-				'new ClassProperty("constructor",function' +
+				'new Rexjs.ClassProperty("constructor",function' +
 				(name === null ? "" : " " + name.content) +
 				"(){" + 
 					(

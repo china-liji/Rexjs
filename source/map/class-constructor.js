@@ -62,7 +62,7 @@ this.DefaultConstructorExpression = function(ClassPropertyExpression){
 
 			// 追加构造函数
 			contentBuilder.appendString(
-				'new ClassProperty("constructor",function' +
+				'new Rexjs.ClassProperty("constructor",function' +
 				(name === null ? "" : " " + name.content) +
 				"(){" + 
 					(
