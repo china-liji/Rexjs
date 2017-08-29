@@ -11248,7 +11248,7 @@ this.ObjectExpression = function(
 		 * 将数组每一项转换为解构项表达式
 		 * @param {SyntaxParser} parser - 语法解析器
 		 */
-		convert: function(parser){debugger
+		convert: function(parser){
 			var exp, inner = this.inner;
 
 			outerBlock:
@@ -11257,91 +11257,87 @@ this.ObjectExpression = function(
 				for(var i = inner.min, j = inner.length;i < j;i++){
 					var expression = inner[i], name = expression.name, value = expression.value, operand = value.operand;
 					
+					exp = operand;
+
 					// 判断属性名
 					switch(true){
 						// 如果是字面量属性名
 						case name instanceof LiteralPropertyNameExpression:
-							break;
-
-						// 如果是计算式属性名
-						case name instanceof ComputedPropertyNameExpression:
-							break;
-
-						// 如果是默认表达式
-						case name.default:
-							break;
-
-						default:
-							exp = name;
-							break outerBlock;
-					}
-
-					exp = operand;
-
-					// 判断属性值，这里一定会对应上面的属性名判断，因为在匹配标签上下文的时候，就已经保护了表达式的正确性
-					switch(true){
-						// 如果是简写属性默认值表达式
-						case value instanceof PropertyInitializerExpression:
-							// 转化表达式
-							expression = new PropertyDestructuringDefaultItemExpression(expression, expression, parser.statements);
-							break;
-
-						// 如果是简写属性
-						case operand === null:
-							// 如果已经被收集到常量内
-							if(collected(parser, name, true)){
-								break outerBlock;
+							// 如果是简写属性默认值表达式
+							if(value instanceof PropertyInitializerExpression){
+								// 转化表达式
+								expression = new PropertyDestructuringDefaultItemExpression(expression, expression, parser.statements);
+								break;
 							}
-
-							// 转化表达式
-							expression = new PropertyDestructuringItemExpression(expression);
-							break;
 							
-						// 如果是可赋值的属性值
-						case operand instanceof AssignableExpression:
-							// 如果已经被收集到常量内
-							if(collected(parser, operand, operand instanceof IdentifierExpression)){
-								break outerBlock;
-							}
-
-							// 转化表达式
-							expression = new PropertyDestructuringItemExpression(expression);
-							break;
-
-						// 如果是二元表达式
-						case operand instanceof BinaryExpression:
-							// 如果二元运算表达式的标签是赋值符号
-							if(operand.context.tag instanceof BasicAssignmentTag){
-								// 如果二元表达式左侧是解构表达式
-								if(operand.left instanceof DestructuringExpression){
+							// 如果是简写属性
+							if(operand === null){
+								// 如果已经被收集到常量内
+								if(collected(parser, name, true)){
 									break outerBlock;
 								}
 
 								// 转化表达式
-								expression = new PropertyDestructuringDefaultItemExpression(expression, operand, parser.statements);
+								expression = new PropertyDestructuringItemExpression(expression);
 								break;
 							}
 
-							break outerBlock;
+						// 如果是计算式属性名
+						case name instanceof ComputedPropertyNameExpression:
+							// 判断属性值，这里一定会对应上面的属性名判断，因为在匹配标签上下文的时候，就已经保护了表达式的正确性
+							switch(true){
+								// 如果是可赋值的属性值
+								case operand instanceof AssignableExpression:
+									// 如果已经被收集到常量内
+									if(collected(parser, operand, operand instanceof IdentifierExpression)){
+										break outerBlock;
+									}
 
-						// 如果是可解构的表达式
-						case operand instanceof DestructibleExpression:
-							// 表明是嵌套解构子项
-							value.destructuringItem = true;
-							// 转化为解构子项
-							value.operand = operand.toDestructuringItem(parser);
+									// 转化表达式
+									expression = new PropertyDestructuringItemExpression(expression);
+									break;
 
-							// 转化表达式
-							expression = new PropertyDestructuringItemExpression(expression);
+								// 如果是二元表达式
+								case operand instanceof BinaryExpression:
+									// 如果二元运算表达式的标签是赋值符号
+									if(operand.context.tag instanceof BasicAssignmentTag){
+										// 如果二元表达式左侧是解构表达式
+										if(operand.left instanceof DestructuringExpression){
+											break outerBlock;
+										}
+
+										// 转化表达式
+										expression = new PropertyDestructuringDefaultItemExpression(expression, operand, parser.statements);
+										break;
+									}
+
+									break outerBlock;
+
+								// 如果是可解构的表达式
+								case operand instanceof DestructibleExpression:
+									// 表明是嵌套解构子项
+									value.destructuringItem = true;
+									// 转化为解构子项
+									value.operand = operand.toDestructuringItem(parser);
+
+									// 转化表达式
+									expression = new PropertyDestructuringItemExpression(expression);
+									break;
+
+								// 如果是简写表达式
+								case operand instanceof ShorthandMethodExpression:
+									// 设置需要报错的表达式
+									exp = expression.accessible ? name : operand.arguments;
+									break outerBlock;
+
+								default:
+									break outerBlock;
+							}
+
 							break;
 
-						// 如果是简写表达式
-						case operand instanceof ShorthandMethodExpression:
-							// 设置需要报错的表达式
-							exp = expression.accessible ? name : operand.arguments;
-							break outerBlock;
-
 						default:
+							exp = name;
 							break outerBlock;
 					}
 
