@@ -1,46 +1,51 @@
 // 对象属性拓展项相关
 ~function(config){
 
-this.PropertySpreadItemExpression = function(SpreadExpression){
+this.SpreadPropertyExpression = function(PropertyExpression, SpreadExpression){
 	/**
-	 * 对象属性拓展项表达式
-	 * @param {Context} open - 起始标签上下文
+	 * 拓展属性表达式
+	 * @param {Context} context - 语法标签上下文
 	 */
-	function PropertySpreadItemExpression(context){
-		SpreadExpression.call(this, context);
-	};
-	PropertySpreadItemExpression = new Rexjs(PropertySpreadItemExpression, SpreadExpression);
+	function SpreadPropertyExpression(context){
+		PropertyExpression.call(this);
 
-	PropertySpreadItemExpression.props({
+		// 设置属性值
+		this.value = new SpreadExpression(context);
+	};
+	SpreadPropertyExpression = new Rexjs(SpreadPropertyExpression, PropertyExpression);
+
+	SpreadPropertyExpression.props({
+		/**
+		 * 提取并编译表达式文本内容
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 * @param {ContentBuilder} _anotherBuilder - 另一个内容生成器，一般用于副内容的生成或记录
+		 */
+		compileTo: function(contentBuilder, anotherBuilder){
+			// 追加对象赋值方法
+			contentBuilder.appendString("Rexjs.SpreadItem.assign(" + anotherBuilder.result + ",");
+			// 提取操作对象
+			this.value.operand.extractTo(contentBuilder);
+			// 追加方法结束小括号以及属性分隔符逗号
+			contentBuilder.appendString("),");
+		},
 		/**
 		 * 提取表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
 		 */
-		extractTo: function(contentBuilder){debugger
-			// 如果需要编译拓展符
-			if(config.value){
-				// 追加初始化拓展项
-				contentBuilder.appendString("new Rexjs.SpreadItem(");
-				// 提取操作对象
-				this.operand.extractTo(contentBuilder);
-				// 追加初始化拓展项的结束小括号
-				contentBuilder.appendString(")");
-				return;
-			}
-
-			// 追加拓展符上下文
-			contentBuilder.appendContext(this.context);
-			// 提取参数
-			this.operand.extractTo(contentBuilder);
-		}
+		extractTo: function(contentBuilder){
+			// 直接提取属性值
+			this.value.extractTo(contentBuilder);
+		},
+		name: new DefaultExpression()
 	});
 
-	return PropertySpreadItemExpression;
+	return SpreadPropertyExpression;
 }(
+	this.PropertyExpression,
 	this.SpreadExpression
 );
 
-this.PropertySpreadTag = function(SpreadTag, EmptyPropertyNameExpression, PropertySpreadItemExpression, SpreadStatement){
+this.PropertySpreadTag = function(SpreadTag, SpreadPropertyExpression, SpreadStatement){
 	/**
 	 * 对象属性拓展项标签
 	 * @param {Number} _type - 标签类型
@@ -59,14 +64,21 @@ this.PropertySpreadTag = function(SpreadTag, EmptyPropertyNameExpression, Proper
 		 * @param {Statements} statements - 当前语句块
 		 */
 		visitor: function(parser, context, statement, statements){
-			var propertyExpression = statement.expression;
+			var expression = new SpreadPropertyExpression(context), boxStatement = new BoxStatement(statements);
 
-			// 告知数组表达式，是否需要编译拓展符
-			//statement.target.expression.needCompileSpread = config.value;
-			propertyExpression.name = new EmptyPropertyNameExpression();
-			propertyExpression.value = new PropertySpreadItemExpression(context);
+			// 如果需要编译对象属性拓展项
+			if(config.value){
+				// 让对象表达式自动生成临时变量
+				statement.target.expression.autoVariable(statements);
+			}
 
-			// 设置当前语句
+			// 设置当前语句的表达式
+			statement.expression = expression;
+			// 设置盒语句的表达式，以模拟环境
+			boxStatement.expression = expression.value;
+			// 设置当前语句，以模拟环境
+			statements.statement = boxStatement;
+			// 再次设置当前语句
 			statements.statement = new SpreadStatement(statements);
 		}
 	});
@@ -74,8 +86,7 @@ this.PropertySpreadTag = function(SpreadTag, EmptyPropertyNameExpression, Proper
 	return PropertySpreadTag;
 }(
 	this.SpreadTag,
-	this.EmptyPropertyNameExpression,
-	this.PropertySpreadItemExpression,
+	this.SpreadPropertyExpression,
 	this.SpreadStatement
 );
 

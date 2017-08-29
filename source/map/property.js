@@ -235,36 +235,6 @@ this.PropertyExpression = function(BinaryExpression, ShorthandPropertyValueExpre
 	this.ShorthandPropertyValueExpression3
 );
 
-this.EmptyPropertyNameExpression = function(){
-	/**
-	 * 空的属性名表达式
-	 */
-	function EmptyPropertyNameExpression(){
-		EmptyExpression.call(this, null);
-	};
-	EmptyPropertyNameExpression = new Rexjs(EmptyPropertyNameExpression, EmptyExpression);
-
-	EmptyPropertyNameExpression.props({
-		/**
-		 * 以定义属性的模式提取表达式文本内容
-		 * @param {ContentBuilder} contentBuilder - 内容生成器
-		 */
-		defineTo: function(){},
-		/**
-		 * 以解构方式提取表达式文本内容
-		 * @param {ContentBuilder} contentBuilder - 内容生成器
-		 */
-		destructTo: function(){},
-		/**
-		 * 提取并编译表达式文本内容
-		 * @param {ContentBuilder} contentBuilder - 内容生成器
-		 */
-		compileTo: function(){}
-	});
-
-	return EmptyPropertyNameExpression;
-}();
-
 this.LiteralPropertyNameExpression = function(){
 	/**
 	 * 对象字面量属性名表达式

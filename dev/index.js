@@ -1,4 +1,6 @@
-var a = {
-	...a,
-	b: 2
-}
+var a;
+
+({
+	...a
+} = {})
+debugger

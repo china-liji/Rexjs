@@ -121,7 +121,7 @@ this.ObjectExpression = function(
 
 					exp = operand;
 
-					// 判断属性值
+					// 判断属性值，这里一定会对应上面的属性名判断，因为在匹配标签上下文的时候，就已经保护了表达式的正确性
 					switch(true){
 						// 如果是简写属性默认值表达式
 						case value instanceof PropertyInitializerExpression:

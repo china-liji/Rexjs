@@ -96,6 +96,14 @@ test.unit(
 			}
 		);
 
+		this.false(
+			"类的拓展属性",
+			"class A { ...a }",
+			function(parser, err){
+				return err.context.content !== "...";
+			}
+		);
+
 		this.groupEnd();
 	}
 );

@@ -1076,13 +1076,30 @@ this.SpreadItem = function(forEach, push){
 
 	SpreadItem.static({
 		/**
-		 * 合并所有拓展项
+		 * 给对象赋值，即将另一个对象合并
+		 * @param {Object} object - 需要赋值的对象
+		 * @param {Object} target - 被赋值或合并的对象
+		 */
+		assign: function(object, target){
+			// 遍历
+			forEach(
+				target,
+				function(value, name){
+					// 赋值
+					object[name] = value;
+				}
+			);
+
+			return object;
+		},
+		/**
+		 * 合并所有数组拓展项
 		 */
 		combine: function(_args){
 			var array = [];
 
 			// 遍历参数
-			forEach.call(
+			forEach(
 				arguments,
 				function(item){
 					// 如果是 SpreadItem 类的实例
@@ -1094,7 +1111,9 @@ this.SpreadItem = function(forEach, push){
 
 					// 添加单项
 					array.push(item);
-				}
+				},
+				null,
+				true
 			);
 
 			return array;
@@ -1114,7 +1133,7 @@ this.SpreadItem = function(forEach, push){
 
 	return SpreadItem;
 }(
-	Array.prototype.forEach,
+	Rexjs.forEach,
 	Array.prototype.push
 );
 
