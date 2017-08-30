@@ -1,29 +1,5 @@
 // 声明数组省略项相关
-~function(SpreadStatement){
-
-this.DeclarationArrayRestStatement = function(out){
-	/**
-	 * 变量声明数组省略项拓展语句
-	 * @param {Statements} statements - 该语句将要所处的语句块
-	 */
-	function DeclarationArrayRestStatement(statements){
-		SpreadStatement.call(this, statements);
-	};
-	DeclarationArrayRestStatement = new Rexjs(DeclarationArrayRestStatement, SpreadStatement);
-
-	DeclarationArrayRestStatement.props({
-		/**
-		 * 跳出该语句
-		 */
-		out: function(){
-			return out.call(this).origin;
-		}
-	});
-
-	return DeclarationArrayRestStatement;
-}(
-	SpreadStatement.prototype.out
-);
+~function(){
 
 this.DeclarationArrayRestItemTag = function(DeclarationArrayItemTag, IdentifierExpression){
 	/**
@@ -69,7 +45,7 @@ this.DeclarationArrayRestItemTag = function(DeclarationArrayItemTag, IdentifierE
 	this.IdentifierExpression
 );
 
-this.DeclarationArrayRestTag = function(ArraySpreadTag, ArrayDestructuringRestItemExpression, ArraySpreadItemExpression, DeclarationArrayRestStatement){
+this.DeclarationArrayRestTag = function(ArraySpreadTag, ArrayDestructuringRestItemExpression, ArraySpreadItemExpression, DeclarationRestStatement){
 	/**
 	 * 变量声明数组省略项拓展符标签
 	 * @param {Number} _type - 标签类型
@@ -101,7 +77,7 @@ this.DeclarationArrayRestTag = function(ArraySpreadTag, ArrayDestructuringRestIt
 			);
 
 			// 设置当前语句
-			statements.statement = new DeclarationArrayRestStatement(statements);
+			statements.statement = new DeclarationRestStatement(statements);
 		}
 	});
 
@@ -110,40 +86,9 @@ this.DeclarationArrayRestTag = function(ArraySpreadTag, ArrayDestructuringRestIt
 	this.ArraySpreadTag,
 	this.ArrayDestructuringRestItemExpression,
 	this.ArraySpreadItemExpression,
-	this.DeclarationArrayRestStatement
-);
-
-this.DeclarationArrayRestItemSeparatorTag = function(DeclarationArrayItemSeparatorTag){
-	/**
-	 * 变量声明数组省略项分隔符标签
-	 * @param {Number} _type - 标签类型
-	 */
-	function DeclarationArrayRestItemSeparatorTag(_type){
-		DeclarationArrayItemSeparatorTag.call(this, _type);
-	};
-	DeclarationArrayRestItemSeparatorTag = new Rexjs(DeclarationArrayRestItemSeparatorTag, DeclarationArrayItemSeparatorTag);
-	
-	DeclarationArrayRestItemSeparatorTag.props({
-		$type: TYPE_MATCHABLE,
-		/**
-		 * 标签访问器
-		 * @param {SyntaxParser} parser - 语法解析器
-		 * @param {Context} context - 标签上下文
-		 * @param {Statement} statement - 当前语句
-		 * @param {Statements} statements - 当前语句块
-		 */
-		visitor: function(parser, context, statement, statements){
-			// 报错
-			parser.error(statement.target.expression.context, ECMAScriptErrors.REST_ELEMENT);
-		}
-	});
-
-	return DeclarationArrayRestItemSeparatorTag;
-}(
-	this.DeclarationArrayItemSeparatorTag
+	this.DeclarationRestStatement
 );
 
 }.call(
-	this,
-	this.SpreadStatement
+	this
 );

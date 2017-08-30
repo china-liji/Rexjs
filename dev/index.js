@@ -8,8 +8,8 @@ Object.defineProperty(obj, "d", { enumerable: true, get: function(){} })
 
 Object.defineProperty(obj, "e", { enumerable: false, get: function(){} });
 
-({
+var {
 	e,...a
-} = obj)
+} = obj
 
 debugger

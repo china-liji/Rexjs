@@ -5010,6 +5010,69 @@ this.DestructuringDefaultItemExpression = function(DestructuringItemExpression){
 );
 
 
+// 声明数组省略项相关
+~function(SpreadStatement){
+
+this.DeclarationRestStatement = function(out){
+	/**
+	 * 变量声明省略项拓展语句
+	 * @param {Statements} statements - 该语句将要所处的语句块
+	 */
+	function DeclarationRestStatement(statements){
+		SpreadStatement.call(this, statements);
+	};
+	DeclarationRestStatement = new Rexjs(DeclarationRestStatement, SpreadStatement);
+
+	DeclarationRestStatement.props({
+		/**
+		 * 跳出该语句
+		 */
+		out: function(){
+			return out.call(this).origin;
+		}
+	});
+
+	return DeclarationRestStatement;
+}(
+	SpreadStatement.prototype.out
+);
+
+this.DeclarationRestItemSeparatorTag = function(CommaTag){
+	/**
+	 * 变量声明省略项分隔符标签
+	 * @param {Number} _type - 标签类型
+	 */
+	function DeclarationRestItemSeparatorTag(_type){
+		CommaTag.call(this, _type);
+	};
+	DeclarationRestItemSeparatorTag = new Rexjs(DeclarationRestItemSeparatorTag, CommaTag);
+	
+	DeclarationRestItemSeparatorTag.props({
+		$type: TYPE_MATCHABLE,
+		/**
+		 * 标签访问器
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 标签上下文
+		 * @param {Statement} statement - 当前语句
+		 * @param {Statements} statements - 当前语句块
+		 */
+		visitor: function(parser, context, statement, statements){
+			// 报错
+			parser.error(statement.target.expression.context, ECMAScriptErrors.REST_ELEMENT);
+		}
+	});
+
+	return DeclarationRestItemSeparatorTag;
+}(
+	this.CommaTag
+);
+
+}.call(
+	this,
+	this.SpreadStatement
+);
+
+
 // 数组相关
 ~function(DestructibleExpression, DestructuringExpression, DestructuringItemExpression, DestructuringDefaultItemExpression, IdentifierExpression, AssignableExpression, BinaryExpression, BasicAssignmentTag, closeArrayTag, arrayItemSeparatorTag, destructItem){
 
@@ -5883,31 +5946,7 @@ closeDeclarationArrayTag = new this.CloseDeclarationArrayTag();
 
 
 // 声明数组省略项相关
-~function(SpreadStatement){
-
-this.DeclarationArrayRestStatement = function(out){
-	/**
-	 * 变量声明数组省略项拓展语句
-	 * @param {Statements} statements - 该语句将要所处的语句块
-	 */
-	function DeclarationArrayRestStatement(statements){
-		SpreadStatement.call(this, statements);
-	};
-	DeclarationArrayRestStatement = new Rexjs(DeclarationArrayRestStatement, SpreadStatement);
-
-	DeclarationArrayRestStatement.props({
-		/**
-		 * 跳出该语句
-		 */
-		out: function(){
-			return out.call(this).origin;
-		}
-	});
-
-	return DeclarationArrayRestStatement;
-}(
-	SpreadStatement.prototype.out
-);
+~function(){
 
 this.DeclarationArrayRestItemTag = function(DeclarationArrayItemTag, IdentifierExpression){
 	/**
@@ -5953,7 +5992,7 @@ this.DeclarationArrayRestItemTag = function(DeclarationArrayItemTag, IdentifierE
 	this.IdentifierExpression
 );
 
-this.DeclarationArrayRestTag = function(ArraySpreadTag, ArrayDestructuringRestItemExpression, ArraySpreadItemExpression, DeclarationArrayRestStatement){
+this.DeclarationArrayRestTag = function(ArraySpreadTag, ArrayDestructuringRestItemExpression, ArraySpreadItemExpression, DeclarationRestStatement){
 	/**
 	 * 变量声明数组省略项拓展符标签
 	 * @param {Number} _type - 标签类型
@@ -5985,7 +6024,7 @@ this.DeclarationArrayRestTag = function(ArraySpreadTag, ArrayDestructuringRestIt
 			);
 
 			// 设置当前语句
-			statements.statement = new DeclarationArrayRestStatement(statements);
+			statements.statement = new DeclarationRestStatement(statements);
 		}
 	});
 
@@ -5994,42 +6033,11 @@ this.DeclarationArrayRestTag = function(ArraySpreadTag, ArrayDestructuringRestIt
 	this.ArraySpreadTag,
 	this.ArrayDestructuringRestItemExpression,
 	this.ArraySpreadItemExpression,
-	this.DeclarationArrayRestStatement
-);
-
-this.DeclarationArrayRestItemSeparatorTag = function(DeclarationArrayItemSeparatorTag){
-	/**
-	 * 变量声明数组省略项分隔符标签
-	 * @param {Number} _type - 标签类型
-	 */
-	function DeclarationArrayRestItemSeparatorTag(_type){
-		DeclarationArrayItemSeparatorTag.call(this, _type);
-	};
-	DeclarationArrayRestItemSeparatorTag = new Rexjs(DeclarationArrayRestItemSeparatorTag, DeclarationArrayItemSeparatorTag);
-	
-	DeclarationArrayRestItemSeparatorTag.props({
-		$type: TYPE_MATCHABLE,
-		/**
-		 * 标签访问器
-		 * @param {SyntaxParser} parser - 语法解析器
-		 * @param {Context} context - 标签上下文
-		 * @param {Statement} statement - 当前语句
-		 * @param {Statements} statements - 当前语句块
-		 */
-		visitor: function(parser, context, statement, statements){
-			// 报错
-			parser.error(statement.target.expression.context, ECMAScriptErrors.REST_ELEMENT);
-		}
-	});
-
-	return DeclarationArrayRestItemSeparatorTag;
-}(
-	this.DeclarationArrayItemSeparatorTag
+	this.DeclarationRestStatement
 );
 
 }.call(
-	this,
-	this.SpreadStatement
+	this
 );
 
 
@@ -11248,6 +11256,7 @@ this.CloseDeclarationObjectTag = function(CloseObjectTag){
 	CloseDeclarationObjectTag = new Rexjs(CloseDeclarationObjectTag, CloseObjectTag);
 
 	CloseDeclarationObjectTag.props({
+		$type: TYPE_UNEXPECTED,
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
@@ -11905,6 +11914,127 @@ closeObjectDeclarationPropertyValueTag = new this.CloseObjectDeclarationProperty
 	null,
 	// closeObjectDeclarationPropertyValueTag
 	null
+);
+
+
+// 对象解构声明的省略属性相关
+~function(DeclarationRestStatement){
+
+this.DeclarationPropertyRestStatement = function(out){
+	/**
+	 * 变量声明省略项拓展语句
+	 * @param {Statements} statements - 该语句将要所处的语句块
+	 */
+	function DeclarationPropertyRestStatement(statements){
+		DeclarationRestStatement.call(this, statements);
+	};
+	DeclarationPropertyRestStatement = new Rexjs(DeclarationPropertyRestStatement, DeclarationRestStatement);
+
+	DeclarationPropertyRestStatement.props({
+		/**
+		 * 跳出该语句
+		 */
+		out: function(){
+			return out.call(this).value;
+		}
+	});
+
+	return DeclarationPropertyRestStatement;
+}(
+	DeclarationRestStatement.prototype.out
+);
+
+this.DeclarationPropertyRestItemTag = function(IdentifierDeclarationPropertyNameTag, IdentifierExpression){
+	/**
+	 * 变量声明对象属性省略项标签
+	 * @param {Number} _type - 标签类型
+	 */
+	function DeclarationPropertyRestItemTag(_type){
+		IdentifierDeclarationPropertyNameTag.call(this, _type);
+	};
+	DeclarationPropertyRestItemTag = new Rexjs(DeclarationPropertyRestItemTag, IdentifierDeclarationPropertyNameTag);
+
+	DeclarationPropertyRestItemTag.props({
+		/**
+		 * 获取此标签接下来所需匹配的标签列表
+		 * @param {TagsMap} tagsMap - 标签集合映射
+		 */
+		require: function(tagsMap){
+			return tagsMap.declarationPropertyRestItemContextTags;
+		},
+		/**
+		 * 标签访问器
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 标签上下文
+		 * @param {Statement} statement - 当前语句
+		 * @param {Statements} statements - 当前语句块
+		 */
+		visitor: function(parser, context, statement, statements){
+			(
+				// 修改上下文标签，因为当前标签（即 this）的功能只能替代匹配，而不能替代解析
+				context.tag = statement.target.target.expression.objectOf.context.tag.variable
+			)
+			// 收集变量名
+			.collectTo(parser, context, statements);
+
+			// 设置当前表达式
+			statement.expression = new IdentifierExpression(context);
+		}
+	});
+
+	return DeclarationPropertyRestItemTag;
+}(
+	this.IdentifierDeclarationPropertyNameTag,
+	this.IdentifierExpression
+);
+
+this.DeclarationPropertyRestTag = function(PropertySpreadTag, PropertyDestructuringRestItemExpression, SpreadPropertyExpression, DeclarationPropertyRestStatement){
+	/**
+	 * 变量声明对象属性省略项拓展符标签
+	 * @param {Number} _type - 标签类型
+	 */
+	function DeclarationPropertyRestTag(_type){
+		PropertySpreadTag.call(this, _type);
+	};
+	DeclarationPropertyRestTag = new Rexjs(DeclarationPropertyRestTag, PropertySpreadTag);
+	
+	DeclarationPropertyRestTag.props({
+		/**
+		 * 获取此标签接下来所需匹配的标签列表
+		 * @param {TagsMap} tagsMap - 标签集合映射
+		 */
+		require: function(tagsMap){
+			return tagsMap.declarationPropertyRestItemTags;
+		},
+		/**
+		 * 标签访问器
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 标签上下文
+		 * @param {Statement} statement - 当前语句
+		 * @param {Statements} statements - 当前语句块
+		 */
+		visitor: function(parser, context, statement, statements){
+			// 设置当前表达式
+			statement.expression = new PropertyDestructuringRestItemExpression(
+				new SpreadPropertyExpression(context)
+			);
+
+			// 设置当前语句
+			statements.statement = new DeclarationPropertyRestStatement(statements);
+		}
+	});
+
+	return DeclarationPropertyRestTag;
+}(
+	this.PropertySpreadTag,
+	this.PropertyDestructuringRestItemExpression,
+	this.SpreadPropertyExpression,
+	this.DeclarationPropertyRestStatement
+);
+
+}.call(
+	this,
+	this.DeclarationRestStatement
 );
 
 
@@ -20995,7 +21125,7 @@ this.DeclarationArrayItemContextTags = function(DeclarationArrayItemSeparatorTag
 	this.DeclarationArrayItemAssignmentTag
 );
 
-this.DeclarationArrayRestItemContextTags = function(DeclarationArrayItemSeparatorTags, DeclarationArrayRestItemSeparatorTag, DeclarationArrayItemSeparatorTag){
+this.DeclarationArrayRestItemContextTags = function(DeclarationArrayItemSeparatorTags, DeclarationRestItemSeparatorTag){
 	/**
 	 * 变量声明数组省略项上下文标签列表
 	 */
@@ -21003,7 +21133,7 @@ this.DeclarationArrayRestItemContextTags = function(DeclarationArrayItemSeparato
 		DeclarationArrayItemSeparatorTags.call(this);
 		
 		this.register(
-			new DeclarationArrayRestItemSeparatorTag()
+			new DeclarationRestItemSeparatorTag()
 		);
 	};
 	DeclarationArrayRestItemContextTags = new Rexjs(DeclarationArrayRestItemContextTags, DeclarationArrayItemSeparatorTags);
@@ -21011,8 +21141,7 @@ this.DeclarationArrayRestItemContextTags = function(DeclarationArrayItemSeparato
 	return DeclarationArrayRestItemContextTags; 
 }(
 	this.DeclarationArrayItemSeparatorTags,
-	this.DeclarationArrayRestItemSeparatorTag,
-	this.DeclarationArrayItemSeparatorTag
+	this.DeclarationRestItemSeparatorTag
 );
 
 this.DeclarationArrayRestItemTags = function(DeclarationArrayRestItemTag){
@@ -21028,7 +21157,7 @@ this.DeclarationArrayRestItemTags = function(DeclarationArrayRestItemTag){
 	};
 	DeclarationArrayRestItemTags = new Rexjs(DeclarationArrayRestItemTags, IllegalTags);
 
-	return DeclarationArrayRestItemTags; 
+	return DeclarationArrayRestItemTags;
 }(
 	this.DeclarationArrayRestItemTag
 );
@@ -21062,7 +21191,7 @@ this.DeclarationPropertyNameTags = function(list){
 	};
 	DeclarationPropertyNameTags = new Rexjs(DeclarationPropertyNameTags, IllegalTags);
 
-	return DeclarationPropertyNameTags; 
+	return DeclarationPropertyNameTags;
 }(
 	// list
 	[
@@ -21073,8 +21202,27 @@ this.DeclarationPropertyNameTags = function(list){
 		this.KeywordDeclarationPropertyNameTag,
 		this.StringDeclarationPropertyNameTag,
 		this.OpenComputedDeclarationPropertyNameTag,
+		this.DeclarationPropertyRestTag,
 		this.CloseDeclarationObjectTag
 	]
+);
+
+this.DeclarationPropertyRestItemTags = function(DeclarationPropertyRestItemTag){
+	/**
+	 * 变量声明对象属性省略项标签列表
+	 */
+	function DeclarationPropertyRestItemTags(){
+		IllegalTags.call(this);
+
+		this.register(
+			new DeclarationPropertyRestItemTag()
+		);
+	};
+	DeclarationPropertyRestItemTags = new Rexjs(DeclarationPropertyRestItemTags, IllegalTags);
+
+	return DeclarationPropertyRestItemTags;
+}(
+	this.DeclarationPropertyRestItemTag
 );
 
 this.DeclarationPropertySeparatorTags = function(DeclarationPropertySeparatorTag, CloseDeclarationObjectTag){
@@ -21086,7 +21234,7 @@ this.DeclarationPropertySeparatorTags = function(DeclarationPropertySeparatorTag
 
 		this.register(
 			new DeclarationPropertySeparatorTag(),
-			new CloseDeclarationObjectTag(TYPE_UNEXPECTED)
+			new CloseDeclarationObjectTag()
 		);
 	};
 	DeclarationPropertySeparatorTags = new Rexjs(DeclarationPropertySeparatorTags, IllegalTags);
@@ -21095,6 +21243,25 @@ this.DeclarationPropertySeparatorTags = function(DeclarationPropertySeparatorTag
 }(
 	this.DeclarationPropertySeparatorTag,
 	this.CloseDeclarationObjectTag
+);
+
+this.DeclarationPropertyRestItemContextTags = function(DeclarationPropertySeparatorTags, DeclarationRestItemSeparatorTag){
+	/**
+	 * 变量声明对象属性省略项上下文标签列表
+	 */
+	function DeclarationPropertyRestItemContextTags(){
+		DeclarationPropertySeparatorTags.call(this);
+		
+		this.register(
+			new DeclarationRestItemSeparatorTag()
+		);
+	};
+	DeclarationPropertyRestItemContextTags = new Rexjs(DeclarationPropertyRestItemContextTags, DeclarationPropertySeparatorTags);
+
+	return DeclarationPropertyRestItemContextTags; 
+}(
+	this.DeclarationPropertySeparatorTags,
+	this.DeclarationRestItemSeparatorTag
 );
 
 this.DeclarationPropertyValueContextTags = function(DeclarationPropertySeparatorTags, DeclarationPropertyValueInitializerTag){
@@ -22552,7 +22719,7 @@ this.WhileConditionTags = function(OpenWhileConditionTag){
 
 
 // ECMAScript 解析器相关
-~function(SyntaxParser){
+~function(SyntaxParser, ECMAScriptTags){
 
 this.ECMAScriptTagsMap = function(SyntaxTagsMap, dataArray){
 	/**
@@ -22577,113 +22744,23 @@ this.ECMAScriptTagsMap = function(SyntaxTagsMap, dataArray){
 }(
 	Rexjs.SyntaxTagsMap,
 	// dataArray
-	[
-		// 基类标签列表
-		"Expression",
-		"ExpressionContext",
-		"Mistakable",
-		"Illegal",
-		"Statement",
-		"StatementEnd",
-		// 其他标签列表
-		"AccessorDescriptorContext",
-		"ArgumentNameContext",
-		"ArgumentSeparatorContext",
-		"ArrowContext",
-		"Block",
-		"CatchedException",
-		"ClassContext",
-		"ClassNameContext",
-		"ClassPropertyName",
-		"ClassVariable",
-		"CloseArrowFunctionBodyContext",
-		"CloseCatchedException",
-		"ClosureVariableContext",
-		"ConstContext",
-		"ConstructorArguments",
-		"ConstructorBody",
-		"DeclarationArrayItemContext",
-		"DeclarationArrayItemSeparator",
-		"DeclarationArrayRestItemContext",
-		"DeclarationArrayRestItem",
-		"DeclarationPropertyNameSeparator",
-		"DeclarationPropertyName",
-		"DeclarationPropertySeparator",
-		"DeclarationPropertyValueContext",
-		"DeclarationPropertyValue",
-		"DestructibleExpressionContext",
-		"DestructuringAssignment",
-		"DoWhileCondition",
-		"DotAccessorContext",
-		"ExceptionVariable",
-		"ExecContext",
-		"ExportContext",
-		"ExtendsContext",
-		"FileStart",
-		"ForCondition",
-		"ForConditionContext",
-		"FunctionArgument",
-		"FunctionBody",
-		"FunctionContext",
-		"FunctionDeclarationContext",
-		"IdentifierPropertyNameContext",
-		"IfCondition",
-		"IdentifierDeclarationPropertyNameContext",
-		"ImportContext",
-		"LabelContext",
-		"LetContext",
-		"MemberAliasVariable",
-		"MemberContext",
-		"MemberSeparatorContext",
-		"MemberSeparator",
-		"MemberVariable",
-		"ModuleAlias",
-		"ModuleName",
-		"ModuleVariable",
-		"NegationContext",
-		"OpenArgumentsContext",
-		"OpenArrayContext",
-		"OpenClassBodyContext",
-		"OpenMultiLineCommentContext",
-		"OpenGroupingContext",
-		"OpenRestrictedCommentContext",
-		"OpenSwitchBodyContext",
-		"OpenDeclarationArrayContext",
-		"Parameter",
-		"PlusContext",
-		"PropertyAccessorContext",
-		"PropertyName",
-		"PropertyNameContext",
-		"PropertySeparator",
-		"RestArgumentName",
-		"RestArgumentNameContext",
-		"RestrictedExpressionContext",
-		"ReturnContext",
-		"ShorthandMethodArguments",
-		"ShorthandMethodBody",
-		"ShorthandMethodName",
-		"StaticModifierContext",
-		"SwitchBlock",
-		"SwitchCondition",
-		"TargetAccessorContext",
-		"TemplateContent",
-		"TerminatedBranchFlowContext",
-		"ThrowContext",
-		"TryContext",
-		"Unexpected",
-		"VarContext",
-		"VariableDeclaration",
-		"WhileCondition"
-	]
-	.map(
-		function(prefix){
-			return {
-				name: prefix[0].toLowerCase() + prefix.substring(1) + "Tags",
-				tags: this[prefix + "Tags"]
-			};
-		},
-		this
-	)
+	Object
+		.getOwnPropertyNames(this)
+		.filter(
+			function(name, i){
+				return this[name].prototype instanceof ECMAScriptTags;
+			},
+			this
+		)
+		.map(
+			function(name){
+				return {
+					name: name[0].toLowerCase() + name.substring(1),
+					tags: this[name]
+				};
+			},
+			this
+		)
 );
 
 this.ECMAScriptParser = function(MappingBuilder, ECMAScriptTagsMap, GlobalStatements, tagsMap, sourceMaps, parse){
@@ -22779,7 +22856,8 @@ this.ECMAScriptParser = function(MappingBuilder, ECMAScriptTagsMap, GlobalStatem
 
 }.call(
 	this,
-	Rexjs.SyntaxParser
+	Rexjs.SyntaxParser,
+	this.ECMAScriptTags
 );
 
 

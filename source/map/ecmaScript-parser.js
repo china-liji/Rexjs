@@ -1,5 +1,5 @@
 // ECMAScript 解析器相关
-~function(SyntaxParser){
+~function(SyntaxParser, ECMAScriptTags){
 
 this.ECMAScriptTagsMap = function(SyntaxTagsMap, dataArray){
 	/**
@@ -24,113 +24,23 @@ this.ECMAScriptTagsMap = function(SyntaxTagsMap, dataArray){
 }(
 	Rexjs.SyntaxTagsMap,
 	// dataArray
-	[
-		// 基类标签列表
-		"Expression",
-		"ExpressionContext",
-		"Mistakable",
-		"Illegal",
-		"Statement",
-		"StatementEnd",
-		// 其他标签列表
-		"AccessorDescriptorContext",
-		"ArgumentNameContext",
-		"ArgumentSeparatorContext",
-		"ArrowContext",
-		"Block",
-		"CatchedException",
-		"ClassContext",
-		"ClassNameContext",
-		"ClassPropertyName",
-		"ClassVariable",
-		"CloseArrowFunctionBodyContext",
-		"CloseCatchedException",
-		"ClosureVariableContext",
-		"ConstContext",
-		"ConstructorArguments",
-		"ConstructorBody",
-		"DeclarationArrayItemContext",
-		"DeclarationArrayItemSeparator",
-		"DeclarationArrayRestItemContext",
-		"DeclarationArrayRestItem",
-		"DeclarationPropertyNameSeparator",
-		"DeclarationPropertyName",
-		"DeclarationPropertySeparator",
-		"DeclarationPropertyValueContext",
-		"DeclarationPropertyValue",
-		"DestructibleExpressionContext",
-		"DestructuringAssignment",
-		"DoWhileCondition",
-		"DotAccessorContext",
-		"ExceptionVariable",
-		"ExecContext",
-		"ExportContext",
-		"ExtendsContext",
-		"FileStart",
-		"ForCondition",
-		"ForConditionContext",
-		"FunctionArgument",
-		"FunctionBody",
-		"FunctionContext",
-		"FunctionDeclarationContext",
-		"IdentifierPropertyNameContext",
-		"IfCondition",
-		"IdentifierDeclarationPropertyNameContext",
-		"ImportContext",
-		"LabelContext",
-		"LetContext",
-		"MemberAliasVariable",
-		"MemberContext",
-		"MemberSeparatorContext",
-		"MemberSeparator",
-		"MemberVariable",
-		"ModuleAlias",
-		"ModuleName",
-		"ModuleVariable",
-		"NegationContext",
-		"OpenArgumentsContext",
-		"OpenArrayContext",
-		"OpenClassBodyContext",
-		"OpenMultiLineCommentContext",
-		"OpenGroupingContext",
-		"OpenRestrictedCommentContext",
-		"OpenSwitchBodyContext",
-		"OpenDeclarationArrayContext",
-		"Parameter",
-		"PlusContext",
-		"PropertyAccessorContext",
-		"PropertyName",
-		"PropertyNameContext",
-		"PropertySeparator",
-		"RestArgumentName",
-		"RestArgumentNameContext",
-		"RestrictedExpressionContext",
-		"ReturnContext",
-		"ShorthandMethodArguments",
-		"ShorthandMethodBody",
-		"ShorthandMethodName",
-		"StaticModifierContext",
-		"SwitchBlock",
-		"SwitchCondition",
-		"TargetAccessorContext",
-		"TemplateContent",
-		"TerminatedBranchFlowContext",
-		"ThrowContext",
-		"TryContext",
-		"Unexpected",
-		"VarContext",
-		"VariableDeclaration",
-		"WhileCondition"
-	]
-	.map(
-		function(prefix){
-			return {
-				name: prefix[0].toLowerCase() + prefix.substring(1) + "Tags",
-				tags: this[prefix + "Tags"]
-			};
-		},
-		this
-	)
+	Object
+		.getOwnPropertyNames(this)
+		.filter(
+			function(name, i){
+				return this[name].prototype instanceof ECMAScriptTags;
+			},
+			this
+		)
+		.map(
+			function(name){
+				return {
+					name: name[0].toLowerCase() + name.substring(1),
+					tags: this[name]
+				};
+			},
+			this
+		)
 );
 
 this.ECMAScriptParser = function(MappingBuilder, ECMAScriptTagsMap, GlobalStatements, tagsMap, sourceMaps, parse){
@@ -226,5 +136,6 @@ this.ECMAScriptParser = function(MappingBuilder, ECMAScriptTagsMap, GlobalStatem
 
 }.call(
 	this,
-	Rexjs.SyntaxParser
+	Rexjs.SyntaxParser,
+	this.ECMAScriptTags
 );

@@ -353,7 +353,7 @@ this.DeclarationArrayItemContextTags = function(DeclarationArrayItemSeparatorTag
 	this.DeclarationArrayItemAssignmentTag
 );
 
-this.DeclarationArrayRestItemContextTags = function(DeclarationArrayItemSeparatorTags, DeclarationArrayRestItemSeparatorTag, DeclarationArrayItemSeparatorTag){
+this.DeclarationArrayRestItemContextTags = function(DeclarationArrayItemSeparatorTags, DeclarationRestItemSeparatorTag){
 	/**
 	 * 变量声明数组省略项上下文标签列表
 	 */
@@ -361,7 +361,7 @@ this.DeclarationArrayRestItemContextTags = function(DeclarationArrayItemSeparato
 		DeclarationArrayItemSeparatorTags.call(this);
 		
 		this.register(
-			new DeclarationArrayRestItemSeparatorTag()
+			new DeclarationRestItemSeparatorTag()
 		);
 	};
 	DeclarationArrayRestItemContextTags = new Rexjs(DeclarationArrayRestItemContextTags, DeclarationArrayItemSeparatorTags);
@@ -369,8 +369,7 @@ this.DeclarationArrayRestItemContextTags = function(DeclarationArrayItemSeparato
 	return DeclarationArrayRestItemContextTags; 
 }(
 	this.DeclarationArrayItemSeparatorTags,
-	this.DeclarationArrayRestItemSeparatorTag,
-	this.DeclarationArrayItemSeparatorTag
+	this.DeclarationRestItemSeparatorTag
 );
 
 this.DeclarationArrayRestItemTags = function(DeclarationArrayRestItemTag){
@@ -386,7 +385,7 @@ this.DeclarationArrayRestItemTags = function(DeclarationArrayRestItemTag){
 	};
 	DeclarationArrayRestItemTags = new Rexjs(DeclarationArrayRestItemTags, IllegalTags);
 
-	return DeclarationArrayRestItemTags; 
+	return DeclarationArrayRestItemTags;
 }(
 	this.DeclarationArrayRestItemTag
 );
@@ -420,7 +419,7 @@ this.DeclarationPropertyNameTags = function(list){
 	};
 	DeclarationPropertyNameTags = new Rexjs(DeclarationPropertyNameTags, IllegalTags);
 
-	return DeclarationPropertyNameTags; 
+	return DeclarationPropertyNameTags;
 }(
 	// list
 	[
@@ -431,8 +430,27 @@ this.DeclarationPropertyNameTags = function(list){
 		this.KeywordDeclarationPropertyNameTag,
 		this.StringDeclarationPropertyNameTag,
 		this.OpenComputedDeclarationPropertyNameTag,
+		this.DeclarationPropertyRestTag,
 		this.CloseDeclarationObjectTag
 	]
+);
+
+this.DeclarationPropertyRestItemTags = function(DeclarationPropertyRestItemTag){
+	/**
+	 * 变量声明对象属性省略项标签列表
+	 */
+	function DeclarationPropertyRestItemTags(){
+		IllegalTags.call(this);
+
+		this.register(
+			new DeclarationPropertyRestItemTag()
+		);
+	};
+	DeclarationPropertyRestItemTags = new Rexjs(DeclarationPropertyRestItemTags, IllegalTags);
+
+	return DeclarationPropertyRestItemTags;
+}(
+	this.DeclarationPropertyRestItemTag
 );
 
 this.DeclarationPropertySeparatorTags = function(DeclarationPropertySeparatorTag, CloseDeclarationObjectTag){
@@ -444,7 +462,7 @@ this.DeclarationPropertySeparatorTags = function(DeclarationPropertySeparatorTag
 
 		this.register(
 			new DeclarationPropertySeparatorTag(),
-			new CloseDeclarationObjectTag(TYPE_UNEXPECTED)
+			new CloseDeclarationObjectTag()
 		);
 	};
 	DeclarationPropertySeparatorTags = new Rexjs(DeclarationPropertySeparatorTags, IllegalTags);
@@ -453,6 +471,25 @@ this.DeclarationPropertySeparatorTags = function(DeclarationPropertySeparatorTag
 }(
 	this.DeclarationPropertySeparatorTag,
 	this.CloseDeclarationObjectTag
+);
+
+this.DeclarationPropertyRestItemContextTags = function(DeclarationPropertySeparatorTags, DeclarationRestItemSeparatorTag){
+	/**
+	 * 变量声明对象属性省略项上下文标签列表
+	 */
+	function DeclarationPropertyRestItemContextTags(){
+		DeclarationPropertySeparatorTags.call(this);
+		
+		this.register(
+			new DeclarationRestItemSeparatorTag()
+		);
+	};
+	DeclarationPropertyRestItemContextTags = new Rexjs(DeclarationPropertyRestItemContextTags, DeclarationPropertySeparatorTags);
+
+	return DeclarationPropertyRestItemContextTags; 
+}(
+	this.DeclarationPropertySeparatorTags,
+	this.DeclarationRestItemSeparatorTag
 );
 
 this.DeclarationPropertyValueContextTags = function(DeclarationPropertySeparatorTags, DeclarationPropertyValueInitializerTag){

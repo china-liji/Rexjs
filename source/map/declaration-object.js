@@ -117,6 +117,7 @@ this.CloseDeclarationObjectTag = function(CloseObjectTag){
 	CloseDeclarationObjectTag = new Rexjs(CloseDeclarationObjectTag, CloseObjectTag);
 
 	CloseDeclarationObjectTag.props({
+		$type: TYPE_UNEXPECTED,
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
