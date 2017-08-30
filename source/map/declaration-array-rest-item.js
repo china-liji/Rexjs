@@ -69,7 +69,7 @@ this.DeclarationArrayRestItemTag = function(DeclarationArrayItemTag, IdentifierE
 	this.IdentifierExpression
 );
 
-this.DeclarationArrayRestTag = function(ArraySpreadTag, ArrayRestDestructuringItemExpression, ArraySpreadItemExpression, DeclarationArrayRestStatement){
+this.DeclarationArrayRestTag = function(ArraySpreadTag, ArrayDestructuringRestItemExpression, ArraySpreadItemExpression, DeclarationArrayRestStatement){
 	/**
 	 * 变量声明数组省略项拓展符标签
 	 * @param {Number} _type - 标签类型
@@ -96,7 +96,7 @@ this.DeclarationArrayRestTag = function(ArraySpreadTag, ArrayRestDestructuringIt
 		 */
 		visitor: function(parser, context, statement, statements){
 			// 设置当前表达式
-			statement.expression = new ArrayRestDestructuringItemExpression(
+			statement.expression = new ArrayDestructuringRestItemExpression(
 				new ArraySpreadItemExpression(context)
 			);
 
@@ -108,7 +108,7 @@ this.DeclarationArrayRestTag = function(ArraySpreadTag, ArrayRestDestructuringIt
 	return DeclarationArrayRestTag;
 }(
 	this.ArraySpreadTag,
-	this.ArrayRestDestructuringItemExpression,
+	this.ArrayDestructuringRestItemExpression,
 	this.ArraySpreadItemExpression,
 	this.DeclarationArrayRestStatement
 );

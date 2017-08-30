@@ -55,17 +55,17 @@ this.ArrayDestructuringItemExpression = function(){
 	return ArrayDestructuringItemExpression;
 }();
 
-this.ArrayRestDestructuringItemExpression = function(){
+this.ArrayDestructuringRestItemExpression = function(){
 	/**
-	 * 数组省略解构项表达式
+	 * 数组解构省略项表达式
 	 * @param {Expression} origin - 解构项源表达式
 	 */
-	function ArrayRestDestructuringItemExpression(origin){
+	function ArrayDestructuringRestItemExpression(origin){
 		DestructuringItemExpression.call(this, origin);
 	};
-	ArrayRestDestructuringItemExpression = new Rexjs(ArrayRestDestructuringItemExpression, DestructuringItemExpression);
+	ArrayDestructuringRestItemExpression = new Rexjs(ArrayDestructuringRestItemExpression, DestructuringItemExpression);
 
-	ArrayRestDestructuringItemExpression.props({
+	ArrayDestructuringRestItemExpression.props({
 		/**
 		 * 提取并编译表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
@@ -82,10 +82,10 @@ this.ArrayRestDestructuringItemExpression = function(){
 		rest: true
 	});
 
-	return ArrayRestDestructuringItemExpression;
+	return ArrayDestructuringRestItemExpression;
 }();
 
-this.ArrayExpression = function(ArrayDestructuringExpression, ArrayDestructuringItemExpression, ArrayRestDestructuringItemExpression, SpreadExpression, config, extractTo, collected, error){
+this.ArrayExpression = function(ArrayDestructuringExpression, ArrayDestructuringItemExpression, ArrayDestructuringRestItemExpression, SpreadExpression, config, extractTo, collected, error){
 	/**
 	 * 数组表达式
 	 * @param {Context} open - 起始标签上下文
@@ -163,7 +163,7 @@ this.ArrayExpression = function(ArrayDestructuringExpression, ArrayDestructuring
 							}
 
 							// 转化表达式
-							expression = new ArrayRestDestructuringItemExpression(expression);
+							expression = new ArrayDestructuringRestItemExpression(expression);
 							break;
 						}
 
@@ -248,7 +248,7 @@ this.ArrayExpression = function(ArrayDestructuringExpression, ArrayDestructuring
 }(
 	this.ArrayDestructuringExpression,
 	this.ArrayDestructuringItemExpression,
-	this.ArrayRestDestructuringItemExpression,
+	this.ArrayDestructuringRestItemExpression,
 	this.SpreadExpression,
 	// config
 	ECMAScriptConfig.destructuring,

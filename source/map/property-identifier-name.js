@@ -25,16 +25,6 @@ this.IdentifierPropertyNameExpression = function(LiteralPropertyNameExpression){
 			contentBuilder.appendString('"');
 		},
 		/**
-		 * 以解构方式提取表达式文本内容
-		 * @param {ContentBuilder} contentBuilder - 内容生成器
-		 */
-		destructTo: function(contentBuilder){
-			// 追加对象访问符
-			contentBuilder.appendString(".");
-			// 追加属性名上下文
-			contentBuilder.appendContext(this.context);
-		},
-		/**
 		 * 提取并编译表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
 		 */

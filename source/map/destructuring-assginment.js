@@ -1,7 +1,7 @@
 // 解构赋值表达式相关
-~function(BinaryExpression, ArrayExpression, ObjectExpression, BasicAssignmentTag, config){
+~function(BinaryExpression, ArrayExpression, ObjectExpression, ObjectDestructuringExpression, BasicAssignmentTag, config){
 
-this.DestructuringAssignmentExpression = function(extractTo){
+this.DestructuringAssignmentExpression = function(extractTo, extractRight){
 	/**
 	 * 解构赋值表达式
 	 * @param {Context} context - 语法标签上下文
@@ -32,7 +32,7 @@ this.DestructuringAssignmentExpression = function(extractTo){
 					// 追加等于号上下文
 					contentBuilder.appendContext(this.context);
 					// 提取右侧表达式
-					this.right.extractTo(contentBuilder);
+					extractRight(left, this.right, contentBuilder);
 					// 提取并编译表达式文本内容
 					left.compileTo(contentBuilder, builder);
 					return;
@@ -43,7 +43,7 @@ this.DestructuringAssignmentExpression = function(extractTo){
 				// 追加等于号上下文
 				contentBuilder.appendContext(this.context);
 				// 提取右侧表达式
-				this.right.extractTo(contentBuilder);
+				extractRight(left, this.right, contentBuilder);
 				// 提取并编译表达式文本内容
 				left.compileTo(contentBuilder, builder);
 				// 追加逗号与变量名及结束小括号
@@ -58,7 +58,23 @@ this.DestructuringAssignmentExpression = function(extractTo){
 
 	return DestructuringAssignmentExpression;
 }(
-	BinaryExpression.prototype.extractTo
+	BinaryExpression.prototype.extractTo,
+	// extractRight
+	function(left, right, contentBuilder){
+		// 如果是对象解构
+		if(left instanceof ObjectDestructuringExpression){
+			// 追加初始化解构目标起始代码
+			contentBuilder.appendString("new Rexjs.ObjectDestructuringTarget(");
+			// 提取右侧表达式
+			right.extractTo(contentBuilder);
+			// 追加初始化解构目标结束代码
+			contentBuilder.appendString(")");
+			return;
+		}
+		
+		// 提取右侧表达式
+		right.extractTo(contentBuilder);
+	}
 );
 
 this.DestructuringAssignmentTag = function(DestructuringAssignmentExpression, visitor, destructible, setVariable){
@@ -146,6 +162,7 @@ this.DestructuringAssignmentTag = function(DestructuringAssignmentExpression, vi
 	this.BinaryExpression,
 	this.ArrayExpression,
 	this.ObjectExpression,
+	this.ObjectDestructuringExpression,
 	this.BasicAssignmentTag,
 	// config
 	ECMAScriptConfig.destructuring

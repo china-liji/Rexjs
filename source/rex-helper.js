@@ -1137,6 +1137,64 @@ this.SpreadItem = function(forEach, push){
 	Array.prototype.push
 );
 
+this.ObjectDestructuringTarget = function(getOwnPropertyNames, getOwnPropertyDescriptor){
+	/**
+	 * 解构目标
+	 * @param {Object} origin - 源解构对象
+	 */
+	function ObjectDestructuringTarget(origin){
+		this.destructed = [];
+		this.origin = origin;
+	};
+	ObjectDestructuringTarget = new Rexjs(ObjectDestructuringTarget);
+
+	ObjectDestructuringTarget.props({
+		destructed: null,
+		/**
+		 * 获取解构对象指定名称的属性
+		 * @param {String} name - 解构属性名称
+		 */
+		get: function(name){
+			// 记录名称
+			this.destructed.push(name);
+
+			// 返回值
+			return this.origin[name];
+		},
+		origin: null,
+		/**
+		 * 获取没有记录过的其他属性
+		 */
+		get rest(){
+			var rest = {}, origin = this.origin;
+
+			// 获取源对象的所有自身属性并遍历
+			getOwnPropertyNames(origin).forEach(
+				function(name){
+					// 如果已经被解构过
+					if(this.indexOf(name) > -1){
+						return;
+					}
+
+					// 如果是可以枚举的
+					if(getOwnPropertyDescriptor(origin, name).enumerable){
+						// 设置属性
+						rest[name] = origin[name];
+					}
+				},
+				this.destructed
+			);
+
+			return rest;
+		}
+	});
+
+	return ObjectDestructuringTarget;
+}(
+	Object.getOwnPropertyNames,
+	Object.getOwnPropertyDescriptor
+);
+
 }.call(
 	this
 );

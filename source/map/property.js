@@ -1,7 +1,7 @@
 // 对象属性相关
-~function(){
+~function(DestructuringItemExpression){
 
-this.PropertyDestructuringItemExpression = function(DestructuringItemExpression){
+this.PropertyDestructuringItemExpression = function(){
 	/**
 	 * 属性解构项表达式
 	 * @param {Expression} origin - 解构赋值源表达式
@@ -20,20 +20,49 @@ this.PropertyDestructuringItemExpression = function(DestructuringItemExpression)
 		compileTo: function(contentBuilder, anotherBuilder){
 			var origin = this.origin, builder = new ContentBuilder();
 
-			// 追加属性对象
-			builder.appendString(anotherBuilder.result);
-
+			// 追加获取属性方法起始代码
+			builder.appendString(anotherBuilder.result + ".get(");
 			// 解构属性名
-			origin.name.destructTo(builder);
+			origin.name.defineTo(builder);
+			// 追加获取属性方法结束代码
+			builder.appendString(")");
 			// 解构属性值
 			origin.value.destructTo(contentBuilder, builder);
 		}
 	});
 
 	return PropertyDestructuringItemExpression;
-}(
-	this.DestructuringItemExpression
-);
+}();
+
+this.PropertyDestructuringRestItemExpression = function(){
+	/**
+	 * 对象属性结构省略项表达式
+	 * @param {Expression} origin - 解构项源表达式
+	 */
+	function PropertyDestructuringRestItemExpression(origin){
+		DestructuringItemExpression.call(this, origin);
+	};
+	PropertyDestructuringRestItemExpression = new Rexjs(PropertyDestructuringRestItemExpression, DestructuringItemExpression);
+
+	PropertyDestructuringRestItemExpression.props({
+		/**
+		 * 提取并编译表达式文本内容
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 * @param {ContentBuilder} anotherBuilder - 另一个内容生成器，一般用于副内容的生成或记录
+		 */
+		compileTo: function(contentBuilder, anotherBuilder){
+			var builder = new ContentBuilder();
+			
+			// 提取源表达式到临时内容生成器
+			this.origin.value.operand.extractTo(builder);
+			// 追加赋值操作
+			contentBuilder.appendString("," + builder.result + "=" + anotherBuilder.result + ".rest");
+		},
+		rest: true
+	});
+
+	return PropertyDestructuringRestItemExpression;
+}();
 
 this.PropertyDestructuringDefaultItemExpression = function(DestructuringDefaultItemExpression){
 	/**
@@ -73,10 +102,12 @@ this.PropertyDestructuringDefaultItemExpression = function(DestructuringDefaultI
 		compileTo: function(contentBuilder, anotherBuilder){
 			var origin = this.origin, builder = new ContentBuilder();
 
-			// 追加属性对象
-			builder.appendString(anotherBuilder.result);
+			// 追加获取属性方法起始代码
+			builder.appendString(anotherBuilder.result + ".get(");
 			// 解构属性名
-			origin.name.destructTo(builder);
+			origin.name.defineTo(builder);
+			// 追加获取属性方法结束代码
+			builder.appendString(")");
 
 			// 将默认值表达式转换为三元表达式
 			this.toTernary(this.assignment, contentBuilder, builder);
@@ -234,50 +265,6 @@ this.PropertyExpression = function(BinaryExpression, ShorthandPropertyValueExpre
 	this.BinaryExpression,
 	this.ShorthandPropertyValueExpression3
 );
-
-this.LiteralPropertyNameExpression = function(){
-	/**
-	 * 对象字面量属性名表达式
-	 * @param {Context} context - 语法标签上下文
-	 */
-	function LiteralPropertyNameExpression(context){
-		Expression.call(this, context);
-	};
-	LiteralPropertyNameExpression = new Rexjs(LiteralPropertyNameExpression, Expression);
-
-	LiteralPropertyNameExpression.props({
-		/**
-		 * 以定义属性的模式提取表达式文本内容
-		 * @param {ContentBuilder} contentBuilder - 内容生成器
-		 */
-		defineTo: function(contentBuilder){
-			// 追加属性名上下文
-			contentBuilder.appendContext(this.context);
-		},
-		/**
-		 * 以解构方式提取表达式文本内容
-		 * @param {ContentBuilder} contentBuilder - 内容生成器
-		 */
-		destructTo: function(contentBuilder){
-			// 调用编译表达式
-			this.compileTo(contentBuilder);
-		},
-		/**
-		 * 提取并编译表达式文本内容
-		 * @param {ContentBuilder} contentBuilder - 内容生成器
-		 */
-		compileTo: function(contentBuilder){
-			// 追加起始中括号
-			contentBuilder.appendString("[");
-			// 追加属性名上下文
-			contentBuilder.appendContext(this.context);
-			// 追加结束中括号
-			contentBuilder.appendString("]");
-		}
-	});
-
-	return LiteralPropertyNameExpression;
-}();
 
 this.PropertyValueExpression = function(){
 	/**
@@ -528,5 +515,6 @@ this.PropertyNameSeparatorTag = function(ColonTag, PropertyValueExpression, Prop
 );
 
 }.call(
-	this
+	this,
+	this.DestructuringItemExpression
 );

@@ -1,6 +1,42 @@
 // 对象字面量属性名相关
 ~function(require, requireOfMethodName, visitor, visitorOfMathematicalNumeral){
 
+this.LiteralPropertyNameExpression = function(){
+	/**
+	 * 对象字面量属性名表达式
+	 * @param {Context} context - 语法标签上下文
+	 */
+	function LiteralPropertyNameExpression(context){
+		Expression.call(this, context);
+	};
+	LiteralPropertyNameExpression = new Rexjs(LiteralPropertyNameExpression, Expression);
+
+	LiteralPropertyNameExpression.props({
+		/**
+		 * 以定义属性的模式提取表达式文本内容
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 */
+		defineTo: function(contentBuilder){
+			// 追加属性名上下文
+			contentBuilder.appendContext(this.context);
+		},
+		/**
+		 * 提取并编译表达式文本内容
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 */
+		compileTo: function(contentBuilder){
+			// 追加起始中括号
+			contentBuilder.appendString("[");
+			// 追加属性名上下文
+			contentBuilder.appendContext(this.context);
+			// 追加结束中括号
+			contentBuilder.appendString("]");
+		}
+	});
+
+	return LiteralPropertyNameExpression;
+}();
+
 require = function(){
 	/**
 	 * 获取此标签接下来所需匹配的标签列表

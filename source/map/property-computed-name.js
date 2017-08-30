@@ -30,14 +30,6 @@ this.ComputedPropertyNameExpression = function(){
 			this.inner.extractTo(contentBuilder);
 			// 追加结束小括号
 			contentBuilder.appendString(")");
-		},
-		/**
-		 * 以解构方式提取表达式文本内容
-		 * @param {ContentBuilder} contentBuilder - 内容生成器
-		 */
-		destructTo: function(contentBuilder){
-			// 直接提取
-			this.extractTo(contentBuilder);
 		}
 	});
 

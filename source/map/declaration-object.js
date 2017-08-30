@@ -16,7 +16,7 @@ this.DeclarationObjectExpression = function(ObjectExpression){
 
 	DeclarationObjectExpression.props({
 		/**
-		 * 将数组每一项转换为解构项表达式
+		 * 将对象每一项转换为解构项表达式
 		 * @param {SyntaxParser} parser - 语法解析器
 		 */
 		convert: function(){},
