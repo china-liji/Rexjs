@@ -803,7 +803,7 @@ this.SyntaxRegExp = function(RegExp, Infinity){
 				// 存在中间未捕获的内容
 				if(diff === 0){
 					content = result[0];
-					index = result.lastIndexOf("") - 1;
+					index = result.indexOf("", 1) - 1;
 				}
 				else {
 					// 取第一个字符

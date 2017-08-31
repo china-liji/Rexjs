@@ -1,4 +1,4 @@
-var a,b, e;
+var a,b, c, e;
 
 var obj = Object.create({ b: 2 });
 
@@ -8,8 +8,9 @@ Object.defineProperty(obj, "d", { enumerable: true, get: function(){} })
 
 Object.defineProperty(obj, "e", { enumerable: false, get: function(){} });
 
-var {
-	e,...a
-} = obj
+({
+	c = 5,
+	...a
+} = obj)
 
 debugger

@@ -10875,6 +10875,10 @@ this.ObjectExpression = function(
 							break;
 						}
 
+						// 报错
+						error(parser, operand);
+						return;
+
 					default:
 						// 报错
 						error(parser, name);

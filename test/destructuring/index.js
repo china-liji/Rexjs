@@ -32,6 +32,8 @@ test.unit(
 
 		this.true("空的对象解构", "({} = obj)");
 		this.true("简写单项对象解构", "({ a } = obj)");
+		this.true("变量省略项解构", "({a, b, c, ...d} = obj)");
+		this.true("属性省略项解构", "({a, b, c, ...window.d} = obj)");
 
 		this.true("键值对单项对象解构 - 标识符名称", "({ a: b } = obj)");
 		this.true("键值对单项对象解构 - 字符串名称", "({ 'a': b } = obj)");
@@ -50,15 +52,16 @@ test.unit(
 		this.true("默认值键值对单项对象解构 - 计算式名称", "({ ['hello']: b = 5 } = obj)");
 		this.true("默认值键值对单项对象解构 - 进制名称", "({ 0b10101: b = 5 } = obj)");
 		this.true("默认值键值对单项对象解构 - 属性访问器值", "({ a: (function(){}.toString() + '123').a = 5 } = obj)");
-		
+
 		this.true("嵌套数组解构的对象解构", "({ a: [a] } = obj)");
 		this.true("嵌套对象解构的对象解构", "({ a: {a} } = obj)");
 
-		this.true("多项对象解构", "({ a, 2: b = 99, c, 'x': x = 1, ['y']: window.y, null: window.value = 1, 3: { c: [d = 100] } } = obj)");
+		this.true("多项对象解构", "({ a, 2: b = 99, c, 'x': x = 1, ['y']: window.y, null: window.value = 1, 3: { c: [d = 100] }, ...x } = obj)");
 
 
 		this.true("对象声明解构 - 空的对象解构", "var {} = obj");
 		this.true("对象声明解构 - 简写单项对象解构", "var { a, } = obj");
+		this.true("对象声明解构 - 省略项解构", "var {a, b, c, ...d} = obj");
 		this.true("对象声明解构 - let - 简写单项对象解构", "let { a } = obj");
 		this.true("对象声明解构 - const - 简写单项对象解构", "const { a, } = obj");
 
@@ -67,6 +70,7 @@ test.unit(
 		this.true("对象声明解构 - 键值对单项对象解构 - 数字名称", "var { 1: b } = obj");
 		this.true("对象声明解构 - 键值对单项对象解构 - 关键字名称", "var { null: b } = obj");
 		this.true("对象声明解构 - 键值对单项对象解构 - 计算式名称", "var { ['hello']: b } = obj");
+		
 		this.true("对象声明解构 - 键值对单项对象解构 - 进制名称", "var { 0b10101: b } = obj");
 		
 		this.true("对象声明解构 - 简写属性默认值对象解构", "var { a = 5, b = c = d = 5, } = obj");
@@ -81,7 +85,7 @@ test.unit(
 		this.true("对象声明解构 - 嵌套数组解构的对象解构", "let { a: [], } = obj");
 		this.true("对象声明解构 - 嵌套对象解构的对象解构", "const { a: {} } = obj");
 
-		this.true("对象声明解构 - 多项对象解构", "var { a, 2: b = 99, c, 'x': x = 1, ['y']: [{y}], null: value = 1, 3: { c: [d = 100] } } = obj");
+		this.true("对象声明解构 - 多项对象解构", "var { a, 2: b = 99, c, 'x': x = 1, ['y']: [{y}], null: value = 1, 3: { c: [d = 100] }, ...x } = obj");
 
 		this.true("运算结果测试", source, true);
 
@@ -369,6 +373,14 @@ test.unit(
 		);
 
 		this.false(
+			"数组声明解构 - 属性访问器省略项",
+			"var [...window.a] = arr",
+			function(parser, err){
+				return err.context.content !== ".";
+			}
+		);
+
+		this.false(
 			"对象解构 - 简写的属性 - 数字",
 			"({ 2 } = obj)",
 			function(parser, err){
@@ -491,6 +503,44 @@ test.unit(
 			},
 			function(parser, err){
 				return err.context.position.column === 18 ? "" : "没有找到正确的错误地方";
+			}
+		);
+
+		this.false(
+			"对象解构 - 非赋值表达式的省略项",
+			"({...{}} = obj)",
+			function(parser, err){
+				return err.context.content !== "{";
+			},
+			function(parser, err){
+				return err.context.position.column !== 5;
+			}
+		);
+
+		this.false(
+			"对象解构 - 非最后一项的省略项",
+			"({...a, b} = obj)",
+			function(parser, err){
+				return err.context.content !== "...";
+			}
+		);
+
+		this.false(
+			"对象解构 - 常量省略项",
+			"const a = 1;({...a} = obj);",
+			function(parser, err){
+				return err.context.content !== "a";
+			},
+			function(parser, err){
+				return err.context.position.column !== 17;
+			}
+		);
+
+		this.false(
+			"对象解构 - 默认值省略项",
+			"({...a = 5} = obj)",
+			function(parser, err){
+				return err.context.content !== "=";
 			}
 		);
 
@@ -676,6 +726,52 @@ test.unit(
 			},
 			function(parser, err){
 				return err.context.position.column === 18 ? "" : "没有找到正确的错误地方";
+			}
+		);
+		
+		this.false(
+			"对象声明解构 - 非赋值表达式的省略项",
+			"var {...{}} = obj",
+			function(parser, err){
+				return err.context.content !== "{";
+			},
+			function(parser, err){
+				return err.context.position.column !== 8;
+			}
+		);
+
+		this.false(
+			"对象声明解构 - 非最后一项的省略项",
+			"var {...a,} = obj",
+			function(parser, err){
+				return err.context.content !== "...";
+			}
+		);
+
+		this.false(
+			"对象声明解构 - 重复声明的省略项",
+			"let a;var {...a} = obj",
+			function(parser, err){
+				return err.context.content !== "a";
+			},
+			function(parser, err){
+				return err.context.position.column !== 14;
+			}
+		);
+
+		this.false(
+			"对象声明解构 - 默认值省略项",
+			"var {...a = 5} = obj",
+			function(parser, err){
+				return err.context.content !== "=";
+			}
+		);
+
+		this.false(
+			"对象声明解构 - 属性访问器省略项",
+			"var {...window.a} = obj",
+			function(parser, err){
+				return err.context.content !== ".";
 			}
 		);
 

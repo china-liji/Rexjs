@@ -65,9 +65,80 @@ if(e !== 1){
 	throw "数组单项解构造成了多次访问";
 }
 
-var a, b, c, d, e, f, g, h, i, j = 9, k, l, m, n, get, set, aa
+var a, b, c, d, e, f, g, h, i, j = 9, k, l, m, n, get, set, aa, restObject
 
 obj = {};
+
+new function(){
+
+var obj = Object.create({ b: 2 });
+
+obj.c = 3;
+
+Object.defineProperty(obj, "d", { enumerable: true, get: function(){ return 5; } });
+
+Object.defineProperty(obj, "e", { enumerable: false, get: function(){} });
+
+({
+	c = 5,
+	...a
+} = obj)
+
+var names = Object.getOwnPropertyNames(a);
+
+if(typeof a !== "object"){
+	throw "对象省略项解构不是个对象";
+}
+
+if(names.length > 1){
+	throw "对象省略项解构长度有问题";
+}
+
+if(names[0] !== "d"){
+	throw "对象省略项解构没有识别出枚举属性";
+}
+
+if(Object.getOwnPropertyDescriptor(a, "d").value !== 5){
+	throw "对象省略项的值不对";
+}
+
+}();
+
+new function(){
+
+var obj = Object.create({ b: 2 });
+
+obj.c = 3;
+
+Object.defineProperty(obj, "d", { enumerable: true, get: function(){ return 5; } });
+
+Object.defineProperty(obj, "e", { enumerable: false, get: function(){} });
+
+var {
+	c = 5,
+	...a
+} = obj;
+
+var names = Object.getOwnPropertyNames(a);
+
+if(typeof a !== "object"){
+	throw "对象声明解构 - 对象省略项解构不是个对象";
+}
+
+if(names.length > 1){
+	throw "对象声明解构 - 对象省略项解构长度有问题";
+}
+
+if(names[0] !== "d"){
+	throw "对象声明解构 - 对象省略项解构没有识别出枚举属性";
+}
+
+if(Object.getOwnPropertyDescriptor(a, "d").value !== 5){
+	throw "对象声明解构 - 对象省略项的值不对";
+}
+
+}();
+
 
 new function(){
 	
@@ -89,7 +160,8 @@ new function(){
 	"4": { 4.1: [h = 50, i = 5] },
 	[j]: j = 99,
 	n = 88,
-	bb: aa
+	bb: aa,
+	...restObject
 } = {
 	0.1: 0.1,
 	a: 1,
@@ -104,7 +176,9 @@ new function(){
 	null: 10,
 	33: [, { 3.2: 11 }],
 	4: { 4.1: [, 55] },
-	9: 97
+	9: 97,
+	x: 100,
+	y: 200
 });
 
 if([
@@ -126,7 +200,9 @@ if([
 	h === 50,
 	i === 55,
 	j === 97,
-	n === 88
+	n === 88,
+	restObject.x === 100,
+	restObject.y === 200
 ].indexOf(false) > -1){
 	throw "对象解构失败";
 }
@@ -244,7 +320,7 @@ if([
 
 
 new function(){
-var a, b, c, d, e, f, g, h, i, j = 9, k, l, m, get, set
+var a, b, c, d, e, f, g, h, i, j = 9, k, l, m, get, set, restObject
 
 ({
 	x: [
@@ -267,7 +343,8 @@ var a, b, c, d, e, f, g, h, i, j = 9, k, l, m, get, set
 		,
 		h,
 		i = 66
-	]
+	],
+	...restObject
 } = {
 	x: [
 		0,
@@ -285,7 +362,9 @@ var a, b, c, d, e, f, g, h, i, j = 9, k, l, m, get, set
 		],
 		,
 		7
-	]
+	],
+	y: 100,
+	z: 200
 });
 
 if([
@@ -296,7 +375,9 @@ if([
 	g === 6,
 	h === 7,
 	m === 99,
-	i === 66
+	i === 66,
+	restObject.y === 100,
+	restObject.z === 200
 ].indexOf(false) > -1){
 	throw "对象的嵌套解构有误";
 }
@@ -339,7 +420,8 @@ var {
 		,
 		h,
 		i = 66
-	]
+	],
+	...restObject
 } = {
 	x: [
 		0,
@@ -357,7 +439,9 @@ var {
 		],
 		,
 		7
-	]
+	],
+	y: 100,
+	z: 200
 };
 
 if([
@@ -368,7 +452,9 @@ if([
 	g === 6,
 	h === 7,
 	m === 99,
-	i === 66
+	i === 66,
+	restObject.y === 100,
+	restObject.z === 200
 ].indexOf(false) > -1){
 	throw "对象声明解构 - 对象的嵌套解构有误";
 }
