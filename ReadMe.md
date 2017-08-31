@@ -1,11 +1,11 @@
 ### Rexjs - Made in China 的 ECMAScript 语言解析器
 
-官方网站：[http://jqun.oschina.io/rexjs.org](http://jqun.oschina.io/rexjs.org)
+官方网站：[https://china-liji.github.io/Rexjs.org](https://china-liji.github.io/Rexjs.org)
 
 新手教程：
 ```
 <!-- 引用 rexjs -->
-<script src="http://jqun.oschina.io/rexjs.org/rex.min.js"></script>
+<script src="https://china-liji.github.io/Rexjs.org/rex.min.js"></script>
 
 <!-- 使用 type 定义模块 -->
 <script type="text/rexjs">
