@@ -1,5 +1,5 @@
 // import 关键字相关
-~function(ModuleTag, config){
+!function(ModuleTag, config){
 
 this.ImportExpression = function(compileMember){
 	/**

@@ -1,5 +1,5 @@
 // 模块默认成员标签相关
-~function(){
+!function(){
 
 this.DefaultMemberExpression = function(MemberExpression){
 	/**

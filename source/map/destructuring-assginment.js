@@ -1,5 +1,5 @@
 // 解构赋值表达式相关
-~function(BinaryExpression, ArrayExpression, ObjectExpression, ObjectDestructuringExpression, BasicAssignmentTag, config){
+!function(BinaryExpression, ArrayExpression, ObjectExpression, ObjectDestructuringExpression, BasicAssignmentTag, config){
 
 this.DestructuringAssignmentExpression = function(extractTo, extractRight){
 	/**

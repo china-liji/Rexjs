@@ -1,5 +1,5 @@
 // 输出所有成员符号标签相关
-~function(){
+!function(){
 
 this.ExportAllMembersExpression = function(){
 	/**

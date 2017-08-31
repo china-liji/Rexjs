@@ -1,5 +1,5 @@
 // 语句相关
-~function(){
+!function(){
 
 this.ECMAScriptStatement = ECMAScriptStatement = function(Statement){
 	/**

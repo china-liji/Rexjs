@@ -1,5 +1,5 @@
 // 迭代中断流子类相关
-~function(TerminatedBranchFlowTag){
+!function(TerminatedBranchFlowTag){
 
 this.BreakTag = function(){
 	/**

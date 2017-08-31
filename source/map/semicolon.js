@@ -1,5 +1,5 @@
 // 分号标签
-~function(SemicolonTag){
+!function(SemicolonTag){
 
 this.EmptyStatementTag = function(){
 	/**

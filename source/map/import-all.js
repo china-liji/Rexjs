@@ -1,5 +1,5 @@
 // 所有模块成员表达式相关
-~function(){
+!function(){
 
 this.AllMembersExpression = function(MemberAliasExpression){
 	/**

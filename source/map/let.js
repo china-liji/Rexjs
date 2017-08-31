@@ -1,5 +1,5 @@
 // let 语句相关
-~function(ClosureVariableTag, localVariableTag, letDeclarationSeparatorTag){
+!function(ClosureVariableTag, localVariableTag, letDeclarationSeparatorTag){
 
 this.LetTag = function(VarTag, config){
 	/**

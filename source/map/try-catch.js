@@ -1,5 +1,5 @@
 // try catch 语句相关
-~function(TryFunctionExpression, TryFunctionStatement, tryFunctionTag, catchTag, finallyTag){
+!function(TryFunctionExpression, TryFunctionStatement, tryFunctionTag, catchTag, finallyTag){
 	
 this.TryExpression = function(){
 	/**

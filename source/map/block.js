@@ -1,5 +1,5 @@
 // 语句块相关
-~function(closeBlockTag){
+!function(closeBlockTag){
 
 this.BlockExpression = function(){
 	/**

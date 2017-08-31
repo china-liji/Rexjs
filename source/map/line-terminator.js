@@ -1,5 +1,5 @@
 // 行结束符标签
-~function(SpecialLineTerminatorTag, visitor){
+!function(SpecialLineTerminatorTag, visitor){
 
 this.IllegalLineTerminatorTag = function(){
 	/**

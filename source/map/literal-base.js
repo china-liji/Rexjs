@@ -1,5 +1,5 @@
 // 字面量标签相关
-~function(){
+!function(){
 
 this.LiteralExpression = function(){
 	/**

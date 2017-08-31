@@ -1,5 +1,5 @@
 // export default 标签相关
-~function(){
+!function(){
 
 this.DefaultExportExpression = function(ExportExpression){
 	/**

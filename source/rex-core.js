@@ -111,9 +111,11 @@ this.value = function(Rexjs, definePrototype){
 	}
 );
 
+// 定义全局变量
 defineProperty(global, "Rexjs", this);
 }(
 	Object,
+	// global
 	typeof global === "undefined" ? self : global,
 	// descriptor
 	Object.getOwnPropertyDescriptor(
@@ -125,7 +127,6 @@ defineProperty(global, "Rexjs", this);
 	Object.setPrototypeOf,
 	Object.getOwnPropertyNames
 );
-
 
 // 静态属性
 new function(Function, __proto__){

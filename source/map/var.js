@@ -1,5 +1,5 @@
 // var 语句相关
-~function(VariableDeclarationTag, closureVariableTag, varDeclarationSeparatorTag){
+!function(VariableDeclarationTag, closureVariableTag, varDeclarationSeparatorTag){
 
 this.VarExpression = function(BinaryExpression, DestructuringExpression){
 	/**

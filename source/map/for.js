@@ -1,5 +1,5 @@
 // for 语句相关
-~function(){
+!function(){
 
 this.ForExpression = function(ConditionalExpression, config, compileOf){
 	/**

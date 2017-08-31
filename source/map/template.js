@@ -1,5 +1,5 @@
 // 模板相关
-~function(closeTemplateTag){
+!function(closeTemplateTag){
 
 this.TemplateExpression = function(config, extractTo, compileItem){
 	/**

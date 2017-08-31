@@ -1,5 +1,5 @@
 //ECMAScript 辅助类
-~function(){
+!function(){
 
 this.ECMAScriptErrors = ECMAScriptErrors = function(REGEXP){
 	/**

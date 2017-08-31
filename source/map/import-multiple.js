@@ -1,5 +1,5 @@
 // 模块多成员表达式相关
-~function(multipleMembersSeparatorTag, closeMultipleMembersTag){
+!function(multipleMembersSeparatorTag, closeMultipleMembersTag){
 
 this.MultipleMembersExpression = function(importMember, exportMember, exportMemberAs){
 	/**

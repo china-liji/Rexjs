@@ -1,5 +1,5 @@
 // 对象计算式属性相关
-~function(closeComputedPropertyNameTag, closeComputedMethodNameTag){
+!function(closeComputedPropertyNameTag, closeComputedMethodNameTag){
 
 this.ComputedPropertyNameExpression = function(){
 	/**

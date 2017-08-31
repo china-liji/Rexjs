@@ -1,5 +1,5 @@
 // while 语句相关
-~function(closeWhileConditionTag){
+!function(closeWhileConditionTag){
 
 this.WhileExpression = function(ConditionalExpression){
 	/**

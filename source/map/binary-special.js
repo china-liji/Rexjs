@@ -1,5 +1,5 @@
 // 特殊的二元标签
-~function(BinaryTag, AssignableExpression, IdentifierExpression, VariableDeclarationTag){
+!function(BinaryTag, AssignableExpression, IdentifierExpression, VariableDeclarationTag){
 
 this.AssignmentTag = function(BinaryExpression, BinaryStatement, isSeparator, assignable){
 	/**

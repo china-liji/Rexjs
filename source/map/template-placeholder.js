@@ -1,5 +1,5 @@
 // 模板占位符（模板参数）标签相关
-~function(closePlaceHolderTag){
+!function(closePlaceHolderTag){
 
 this.PlaceHolderExpression = function(){
 	/**

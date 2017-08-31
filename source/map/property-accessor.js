@@ -1,5 +1,5 @@
 // 对象属性访问器相关
-~function(WordPropertyNameTag){
+!function(WordPropertyNameTag){
 
 this.PropertyAccessorTag = function(FunctionExpression, AccessorStatement, visitor){
 	/**

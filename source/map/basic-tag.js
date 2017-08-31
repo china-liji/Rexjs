@@ -1,5 +1,5 @@
 // 一些 基类 或 独立的 标签
-~function(RegExp){
+!function(RegExp){
 	
 this.AsTag = function(AsExpression){
 	/**

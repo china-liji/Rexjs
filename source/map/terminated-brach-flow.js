@@ -1,5 +1,5 @@
 // 迭代中断流类相关
-~function(TerminatedFlowStatement, SCOPE_CLOSURE){
+!function(TerminatedFlowStatement, SCOPE_CLOSURE){
 
 this.TerminatedBranchFlowStatement = function(catchMethod, withoutAnyFlow){
 	/**

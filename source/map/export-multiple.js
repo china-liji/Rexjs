@@ -1,5 +1,5 @@
 // 模块输出多成员表达式相关
-~function(CloseMultipleMembersTag, closeExportMultipleMembersTag){
+!function(CloseMultipleMembersTag, closeExportMultipleMembersTag){
 
 this.PseudoImportExpression = function(ImportExpression){
 	/**

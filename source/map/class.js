@@ -1,5 +1,5 @@
 // 类标签相关
-~function(){
+!function(){
 
 this.ClassExpression = function(DefaultExtendsExpression, config){
 	/**

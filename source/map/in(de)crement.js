@@ -1,5 +1,5 @@
 // 递增和递减标签
-~function(UnaryAssignmentTag, PostfixUnaryAssignmentTag){
+!function(UnaryAssignmentTag, PostfixUnaryAssignmentTag){
 
 this.IncrementTag = function(){
 	/**

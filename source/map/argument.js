@@ -1,5 +1,5 @@
 // 函数参数表达式相关
-~function(argumentSeparatorTag, closeArgumentsTag){
+!function(argumentSeparatorTag, closeArgumentsTag){
 
 this.ArgumentsExpression = function(VariableCollection){
 	/**

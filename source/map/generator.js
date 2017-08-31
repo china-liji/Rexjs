@@ -1,5 +1,5 @@
 // 函数生成器符号相关
-~function(){
+!function(){
 
 this.GeneratorHeaderExpression = function(){
 	function GeneratorHeaderExpression(context){

@@ -1,5 +1,5 @@
 // 语句块组件相关
-~function(OpenBlockTag, CloseBlockTag, closeBlockComponentTag){
+!function(OpenBlockTag, CloseBlockTag, closeBlockComponentTag){
 
 this.BlockComponentStatement = function(){
 	/**

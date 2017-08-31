@@ -1,5 +1,5 @@
 // for 循环迭代符表达式相关
-~function(){
+!function(){
 
 this.IterationStatement = function(BinaryStatement){
 	/**

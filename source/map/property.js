@@ -1,5 +1,5 @@
 // 对象属性相关
-~function(DestructuringItemExpression){
+!function(DestructuringItemExpression){
 
 this.PropertyDestructuringItemExpression = function(){
 	/**

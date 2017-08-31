@@ -1,5 +1,5 @@
 // 所有具体的二元标签
-~function(BinaryTag, AssignmentTag, BinaryKeywordTag){
+!function(BinaryTag, AssignmentTag, BinaryKeywordTag){
 
 this.BasicAssignmentTag = function(){
 	/**

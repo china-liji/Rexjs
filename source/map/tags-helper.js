@@ -1,5 +1,5 @@
 // 辅助性的标签列表相关
-~function(SyntaxTags){
+!function(SyntaxTags){
 
 this.OnlyStatementEndTags = function(LastStatementEndTag, StatementBreakTag, StatementEndTag){
 	/**

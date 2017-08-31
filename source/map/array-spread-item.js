@@ -1,5 +1,5 @@
 // 数组拓展项相关
-~function(config){
+!function(config){
 
 this.ArraySpreadItemExpression = function(SpreadExpression){
 	/**

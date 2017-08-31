@@ -1,5 +1,5 @@
 // 默认函数参数相关
-~function(BasicAssignmentTag){
+!function(BasicAssignmentTag){
 
 this.DefaultArgumentExpression = function(ArgumentExpression, config){
 	/**

@@ -1,5 +1,5 @@
 // 公用的表达式
-~function(){
+!function(){
 
 this.AssignableExpression = function(){
 	/**

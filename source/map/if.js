@@ -1,5 +1,5 @@
 // if 语句相关
-~function(closeIfConditionTag, elseTag){
+!function(closeIfConditionTag, elseTag){
 
 this.IfExpression = function(ConditionalExpression){
 	/**

@@ -1,5 +1,5 @@
 // 中括号属性访问器
-~function(closeBracketAccessorTag){
+!function(closeBracketAccessorTag){
 	
 this.BracketAccessorExpression = function(AccessorExpression){
 	/**

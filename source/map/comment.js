@@ -1,5 +1,5 @@
 // 注释标签
-~function(CommentTag, tags){
+!function(CommentTag, tags){
 
 this.SingleLineCommentTag = function(){
 	/**

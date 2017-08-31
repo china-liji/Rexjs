@@ -1,5 +1,5 @@
 // 箭头函数相关
-~function(FunctionExpression, ArgumentsExpression, OpenFunctionBodyTag, CloseFunctionBodyTag, closeArrowFunctionBodyTag){
+!function(FunctionExpression, ArgumentsExpression, OpenFunctionBodyTag, CloseFunctionBodyTag, closeArrowFunctionBodyTag){
 
 this.ArrowFunctionExpression = function(config){
 	/**

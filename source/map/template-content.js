@@ -1,5 +1,5 @@
 // 模板内容标签相关
-~function(LineTerminatorTag, getUnicode){
+!function(LineTerminatorTag, getUnicode){
 
 this.TemplateUnicodeExpression = function(){
 	/**

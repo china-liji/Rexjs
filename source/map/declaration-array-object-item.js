@@ -1,5 +1,5 @@
 // 数组声明解构内的对象解构相关
-~function(CloseDeclarationObjectTag, closeObjectDeclarationArrayItemTag){
+!function(CloseDeclarationObjectTag, closeObjectDeclarationArrayItemTag){
 
 this.OpenObjectDeclarationArrayItemTag = function(OpenDeclarationObjectTag, DeclarationObjectExpression, PropertyStatement){
 	/**

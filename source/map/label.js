@@ -1,5 +1,5 @@
 // 标记标签相关
-~function(){
+!function(){
 
 this.LabelledExpression = function(){
 	/**

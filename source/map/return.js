@@ -1,5 +1,5 @@
 // 中断流标签子类相关
-~function(TerminatedFlowTag){
+!function(TerminatedFlowTag){
 
 this.ReturnTag = function(SCOPE_CLOSURE, visitor){
 	/**

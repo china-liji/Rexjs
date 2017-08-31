@@ -1,5 +1,5 @@
 // 函数主体表达式相关
-~function(BlockExpression, closeFunctionBodyTag){
+!function(BlockExpression, closeFunctionBodyTag){
 
 this.FunctionBodyExpression = function(extractTo, insertDefaults){
 	/**

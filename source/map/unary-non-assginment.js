@@ -1,5 +1,5 @@
 // 非赋值一元标签
-~function(UnaryTag, UnaryKeywordTag){
+!function(UnaryTag, UnaryKeywordTag){
 
 this.DeleteTag = function(){
 	/**

@@ -1,5 +1,5 @@
 // 幂运算表达式相关
-~function(BinaryExpression){
+!function(BinaryExpression){
 
 this.ExponentiationExpression = function(config, extractTo){
 	/**

@@ -1,5 +1,5 @@
 // 变量声明数组项标签相关
-~function(CloseDeclarationArrayTag, closeNestedDeclarationArrayItemTag){
+!function(CloseDeclarationArrayTag, closeNestedDeclarationArrayItemTag){
 
 this.OpenNestedDeclarationArrayItemTag = function(OpenDeclarationArrayTag, DeclarationArrayExpression, ArrayStatement){
 	/**

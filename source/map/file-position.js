@@ -1,5 +1,5 @@
 // 文件位置标签相关
-~function(FilePositionTag){
+!function(FilePositionTag){
 
 this.FileStartTag = function(FileStartExpression){
 	/**

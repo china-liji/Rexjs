@@ -1,5 +1,5 @@
 // 中断流相关
-~function(){
+!function(){
 
 this.TerminatedFlowExpression = function(){
 	/**

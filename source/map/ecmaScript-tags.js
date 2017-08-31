@@ -1,5 +1,5 @@
 // ECMAScript 标签列表相关
-~function(){
+!function(){
 
 this.ECMAScriptTags = function(DefaultTags, list){
 	/**

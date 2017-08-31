@@ -1,5 +1,5 @@
 // 函数省略参数相关
-~function(){
+!function(){
 
 this.RestArgumentExpression = function(ArgumentExpression, config){
 	/**

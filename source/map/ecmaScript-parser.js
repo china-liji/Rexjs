@@ -1,5 +1,5 @@
 // ECMAScript 解析器相关
-~function(SyntaxParser, ECMAScriptTags){
+!function(SyntaxParser, ECMAScriptTags){
 
 this.ECMAScriptTagsMap = function(SyntaxTagsMap, dataArray){
 	/**
@@ -82,7 +82,7 @@ this.ECMAScriptParser = function(MappingBuilder, ECMAScriptTagsMap, GlobalStatem
 			}
 			
 			// 追加闭包函数起始部分
-			_contentBuilder.appendString("~function(){");
+			_contentBuilder.appendString("!function(){");
 			// 创建新行
 			_contentBuilder.newline();
 			// 追加严格表达式字符串

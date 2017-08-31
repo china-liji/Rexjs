@@ -1,5 +1,5 @@
 // 变量标签相关
-~function(){
+!function(){
 
 this.VariableTag = function(IdentifierTag){
 	/**

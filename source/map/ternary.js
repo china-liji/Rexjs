@@ -1,5 +1,5 @@
 // 三元表达式相关
-~function(colonTag){
+!function(colonTag){
 
 this.TernaryExpression = function(){
 	/**

@@ -1,5 +1,5 @@
 // 一元赋值标签
-~function(VariableTag){
+!function(VariableTag){
 
 this.UnaryAssignmentStatement = function(UnaryStatement, error){
 	/**

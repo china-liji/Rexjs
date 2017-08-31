@@ -1,5 +1,5 @@
 // 对象相关
-~function(DestructuringExpression, propertySeparatorTag, closeObjectTag, destructItem){
+!function(DestructuringExpression, propertySeparatorTag, closeObjectTag, destructItem){
 
 this.ObjectDestructuringExpression = function(){
 	/**

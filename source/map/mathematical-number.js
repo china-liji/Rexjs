@@ -1,5 +1,5 @@
 // 算数标签相关
-~function(){
+!function(){
 
 this.MathematicalNumberTag = function(NumberTag){
 	/**

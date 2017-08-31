@@ -1,5 +1,5 @@
 // 标识符标签相关
-~function(){
+!function(){
 
 this.IdentifierExpression = function(AssignableExpression){
 	/**

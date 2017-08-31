@@ -1,5 +1,5 @@
 // 函数声明标签相关
-~function(FunctionNameTag){
+!function(FunctionNameTag){
 
 this.FunctionDeclarationExpression = function(FunctionExpression){
 	/**

@@ -1,5 +1,5 @@
 // 二元标签基类
-~function(){
+!function(){
 
 this.BinaryExpression = function(){
 	/**

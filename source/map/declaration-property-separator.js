@@ -1,5 +1,5 @@
 // 对象解构声明的属性名分隔符相关
-~function(PropertyInitializerTag, PropertyNameSeparatorTag, initBoxStatement){
+!function(PropertyInitializerTag, PropertyNameSeparatorTag, initBoxStatement){
 
 this.DeclarationPropertyNameInitializerTag = function(PropertyDestructuringDefaultItemExpression, visitor){
 	/**

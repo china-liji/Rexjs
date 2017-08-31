@@ -1,5 +1,5 @@
 // 对象简写方法相关
-~function(OpenArgumentsTag, closeShorthandMethodArgumentsTag, closeShorthandMethodBodyTag){
+!function(OpenArgumentsTag, closeShorthandMethodArgumentsTag, closeShorthandMethodBodyTag){
 
 this.ShorthandMethodExpression = function(FunctionExpression){
 	/**

@@ -1,5 +1,5 @@
 // 基类标签列表相关
-~function(ECMAScriptTags, OnlyStatementEndTags){
+!function(ECMAScriptTags, OnlyStatementEndTags){
 
 this.ExpressionTags = function(list){
 	/**

@@ -1,5 +1,5 @@
 // case 表达式相关
-~function(caseTag, defaultTag, caseValueSeparatorTag){
+!function(caseTag, defaultTag, caseValueSeparatorTag){
 
 this.CaseExpression = function(){
 	/**

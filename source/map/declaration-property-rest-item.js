@@ -1,5 +1,5 @@
 // 对象解构声明的省略属性相关
-~function(DeclarationRestStatement){
+!function(DeclarationRestStatement){
 
 this.DeclarationPropertyRestStatement = function(out){
 	/**

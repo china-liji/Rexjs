@@ -1,7 +1,7 @@
 new function(Rexjs){
 
 // 迭代器相关
-~function(){
+!function(){
 
 this.IteratorIndex = function(){
 	/**
@@ -185,7 +185,7 @@ this.Generator = function(Iterator){
 
 
 // 类相关
-~function(){
+!function(){
 
 this.ClassProperty = function(){
 	/**
@@ -333,7 +333,7 @@ this.Class = function(ClassProperty, StaticProperty, defineProperty, getPrototyp
 );
 
 
-~function(XMLHttpRequest, URL_REGEXP, document, encodeURI, parseInt, getBaseHref){
+!function(XMLHttpRequest, URL_REGEXP, document, encodeURI, parseInt, getBaseHref){
 
 this.URL = function(toString, parse){
 	/**
@@ -1021,7 +1021,7 @@ this.Module = function(
 
 
 // 其他
-~function(){
+!function(){
 
 this.Function = function(bind, empty){
 	/**

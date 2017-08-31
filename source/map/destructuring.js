@@ -1,5 +1,5 @@
 // 解构表达式相关
-~function(config){
+!function(config){
 
 this.DestructibleExpression = function(){
 	/**

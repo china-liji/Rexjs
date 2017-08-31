@@ -1,5 +1,5 @@
 // 对象声明解构赋值相关
-~function(variableDeclarationPropertySeparatorTag, closeDeclarationObjectTag){
+!function(variableDeclarationPropertySeparatorTag, closeDeclarationObjectTag){
 	
 this.DeclarationObjectExpression = function(ObjectExpression){
 	/**

@@ -1,5 +1,5 @@
 // 对象属性拓展项相关
-~function(config){
+!function(config){
 
 this.SpreadPropertyExpression = function(PropertyExpression, SpreadExpression){
 	/**

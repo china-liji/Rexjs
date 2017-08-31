@@ -1,5 +1,5 @@
 // 静态标签相关
-~function(){
+!function(){
 
 this.StaticTag = function(){
 	/**

@@ -1,5 +1,5 @@
 // 点属性访问器相关
-~function(){
+!function(){
 
 this.AccessorExpression = function(AssignableExpression){
 	/**

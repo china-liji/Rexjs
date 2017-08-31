@@ -1,5 +1,5 @@
 // 一些类的辅助表达式相关
-~function(PropertyExpression){
+!function(PropertyExpression){
 
 this.ExtendsExpression = function(){
 	/**

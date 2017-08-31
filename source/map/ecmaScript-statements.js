@@ -1,5 +1,5 @@
 // 语句块相关
-~function(Statements){
+!function(Statements){
 
 this.ECMAScriptVariableCollections = function(VariableCollections, VariableCollection){
 	/**

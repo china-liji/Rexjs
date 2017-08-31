@@ -1,5 +1,5 @@
 // switch 语句相关
-~function(closeSwitchConditionTag){
+!function(closeSwitchConditionTag){
 
 this.SwitchVariableCollections = function(ECMAScriptVariableCollections){
 	/**

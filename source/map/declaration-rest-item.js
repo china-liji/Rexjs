@@ -1,5 +1,5 @@
 // 声明数组省略项相关
-~function(SpreadStatement){
+!function(SpreadStatement){
 
 this.DeclarationRestStatement = function(out){
 	/**

@@ -1,5 +1,5 @@
 // 一元标签基类
-~function(){
+!function(){
 	
 this.UnaryExpression = function(){
 	/**

@@ -1,5 +1,5 @@
 // 对象标识符属性名相关
-~function(PropertySeparatorTag, RegExp){
+!function(PropertySeparatorTag, RegExp){
 
 this.IdentifierPropertyNameExpression = function(LiteralPropertyNameExpression){
 	/**

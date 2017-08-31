@@ -1,5 +1,5 @@
 // 中断流标签子类相关
-~function(){
+!function(){
 
 this.ThrowTag = function(TerminatedFlowTag){
 	/**

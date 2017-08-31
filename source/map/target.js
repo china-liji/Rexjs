@@ -1,5 +1,5 @@
 // new.target 表达式相关
-~function(ECMAScriptStatements, PropertyNameTag){
+!function(ECMAScriptStatements, PropertyNameTag){
 
 this.TargetExpression = function(AccessorExpression){
 	/**

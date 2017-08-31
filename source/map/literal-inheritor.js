@@ -1,5 +1,5 @@
 // 字面量子类标签相关
-~function(LiteralTag){
+!function(LiteralTag){
 
 this.BooleanTag = function(){
 	/**

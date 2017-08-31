@@ -1,5 +1,5 @@
 // 父类相关
-~function(){
+!function(){
 
 this.SuperExpression = function(LiteralExpression, config){
 	/**

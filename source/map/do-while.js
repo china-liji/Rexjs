@@ -1,5 +1,5 @@
 // do while 语句相关
-~function(doWhileTag, closeDoWhileConditionTag){
+!function(doWhileTag, closeDoWhileConditionTag){
 	
 this.DoExpression = function(ConditionalExpression){
 	/**

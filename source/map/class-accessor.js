@@ -1,5 +1,5 @@
 // 类属性访问器标签相关
-~function(require){
+!function(require){
 
 this.GetDescriptorTag = function(GetTag){
 	/**

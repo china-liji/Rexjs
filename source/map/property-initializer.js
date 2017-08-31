@@ -1,5 +1,5 @@
 // 属性初始值标签相关
-~function(PropertyValueExpression){
+!function(PropertyValueExpression){
 
 this.PropertyInitializerExpression = function(config, extractTo, toTernary){
 	/**

@@ -1,5 +1,5 @@
 // 对象字面量属性名相关
-~function(require, requireOfMethodName, visitor, visitorOfMathematicalNumeral){
+!function(require, requireOfMethodName, visitor, visitorOfMathematicalNumeral){
 
 this.LiteralPropertyNameExpression = function(){
 	/**

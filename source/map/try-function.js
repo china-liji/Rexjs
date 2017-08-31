@@ -1,4 +1,4 @@
-~function(UnaryExpression, CallExpression, FunctionConvertorExpression, config){
+!function(UnaryExpression, CallExpression, FunctionConvertorExpression, config){
 
 this.TryFunctionExpression = function(extractTo){
 	/**

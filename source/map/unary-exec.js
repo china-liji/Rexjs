@@ -1,5 +1,5 @@
 // 执行函数的一元操作符相关
-~function(UnaryKeywordTag){
+!function(UnaryKeywordTag){
 
 this.ExecutableExpression = function(){
 	/**

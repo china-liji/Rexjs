@@ -1,5 +1,5 @@
 // 模板参数相关
-~function(TemplateExpression, PlaceHolderExpression){
+!function(TemplateExpression, PlaceHolderExpression){
 
 this.TemplateParameterExpression = function(config, extractTo, compileInner){
 	/**

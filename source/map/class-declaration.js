@@ -1,5 +1,5 @@
 // 类声明标签相关
-~function(ClassExpression, ClassNameTag){
+!function(ClassExpression, ClassNameTag){
 
 this.ClassDeclarationExpression = function(config, extractTo){
 	/**

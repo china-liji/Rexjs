@@ -1,5 +1,5 @@
 // 继承标签相关
-~function(){
+!function(){
 
 this.ExtendsStatement = function(){
 	function ExtendsStatement(statements){

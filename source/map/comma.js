@@ -1,5 +1,5 @@
 // 逗号相关
-~function(commaSiblingTag){
+!function(commaSiblingTag){
 
 this.CommaExpression = function(){
 	/**

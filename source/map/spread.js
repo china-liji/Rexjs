@@ -1,5 +1,5 @@
 // 拓展参数相关
-~function(config){
+!function(config){
 
 this.SpreadExpression = function(){
 	/**
