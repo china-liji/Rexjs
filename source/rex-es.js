@@ -20333,11 +20333,11 @@ this.DestructuringAssignmentExpression = function(extractTo, extractRight){
 		// 如果是对象解构
 		if(left instanceof ObjectDestructuringExpression){
 			// 追加初始化解构目标起始代码
-			contentBuilder.appendString("new Rexjs.ObjectDestructuringTarget(");
+			contentBuilder.appendString("new Rexjs.ObjectDestructuringTarget((");
 			// 提取右侧表达式
 			right.extractTo(contentBuilder);
 			// 追加初始化解构目标结束代码
-			contentBuilder.appendString(")");
+			contentBuilder.appendString("))");
 			return;
 		}
 		
