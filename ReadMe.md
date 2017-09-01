@@ -1,12 +1,14 @@
 ### Rexjs - Made in China 的 ECMAScript 语言解析器
--------------
+------
 
-官方网站：[https://china-liji.github.io/Rexjs.org](https://china-liji.github.io/Rexjs.org)
+#### 官方网站：
+[https://china-liji.github.io/Rexjs.org](https://china-liji.github.io/Rexjs.org)
 
-新手教程：
+
+#### 浏览器应用：
 ```html
 <!-- 引用 rexjs -->
-<script src="https://china-liji.github.io/Rexjs.org/rex.min.js"></script>
+<script src="./rex.min.js"></script>
 
 <!-- 使用 type 定义模块 -->
 <script type="text/rexjs">
@@ -23,6 +25,61 @@
 <script src="./file.js" type="text/rexjs" data-sourcemaps></script>
 ```
 
-支持浏览器：Chrome、Firefox、Safari、IE9+。
+支持 Chrome、Firefox、Safari、IE9+ 等现代浏览器。
 
-因涉及到某些 DOM 或 浏览器特有 API，目前仅支持浏览器使用，今年9、10月的 1.1.0+ 或 1.2.0+ 版本将支持 Node 及 Web Worker，多谢理解。
+
+#### Rexjs API 应用：
+- JavaScript 代码
+```js
+// 引入 rex api 文件
+
+// Nodejs
+let Rexjs = require("./rex-api.min.js");
+
+// Web Worker
+importScripts("./rex-api.min.js");
+let Rexjs = self.Rexjs;
+
+// 浏览器：先引用文件 <script src="./rex-api.min.js"></script>
+let Rexjs = window.Rexjs;
+
+
+// 初始化解析器，以便多次使用
+let es5Code = "", parser = new Rexjs.ECMAScriptParser();
+
+// 开始解析文件语法
+parser.parse(
+	// 初始化文件
+	new Rexjs.File(
+		// 文件名
+		"./filename.js",
+		/*
+			文件内容：
+			1. Nodejs 可以用 fs 读取等
+			2. Web Worker 可以用 self.onmessage 接收等
+			3. 浏览器使用 Ajax 从服务器获取 或 使用 FileReader 读取等
+		*/
+		"class Car {}"
+	)
+);
+
+/*
+	生成并获取编译后的代码：
+	1. Node 可以交由打包工具 或 直接输出到页面等
+	2. Web Worker 通过 self.postMessage 输出内容等
+	3. 浏览器使用 eval 或 new Function 直接运行代码等
+*/
+es5Code = parser.build();
+```
+
+- HTML 代码
+```html
+<!--
+	该文件是编译后代码所需依赖的 API，
+	所以，该文件内容必须在编译输出之前引用 或 在编译内容之前打包进项目。
+-->
+<script src="./rex-browser-helper.min.js"></script>
+```
+
+------
+如果你喜欢 Rexjs，请将它分享给你的开发者朋友，谢谢！

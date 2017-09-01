@@ -3,19 +3,20 @@ new function(PROJECT_PATH){
 this.Uglify = function(SOURCE_PATH, childProcess, fs, console){
 	return class Uglify {
 		constructor(){
-			var apiFiles, cmds, execCmd;
+			var files, cmds, execCmd;
 
-			apiFiles = [
+			files = [
 				`${SOURCE_PATH}/rex-core.js`,
 				`${SOURCE_PATH}/rex-syntax.js`,
-				`${SOURCE_PATH}/rex-es.js`
-			]
-			.join(" ");
+				`${SOURCE_PATH}/rex-es.js`,
+				`${SOURCE_PATH}/rex-helper.js`
+			];
 
 			cmds = [
 				"node index.js",
-				`webpack ${apiFiles} ${PROJECT_PATH}/rex-api.min.js -p`,
-				`webpack ${apiFiles} ${SOURCE_PATH}/rex-helper.js ${PROJECT_PATH}/rex.min.js -p`,
+				`webpack ${files[0]} ${files[3]} ${PROJECT_PATH}/rex-browser-helper.min.js -p`,
+				`webpack ${files.slice(0, -1).join(" ")} ${PROJECT_PATH}/rex-api.min.js -p`,
+				`webpack ${files.join(" ")} ${PROJECT_PATH}/rex.min.js -p`,
 			];
 			
 			execCmd = (cmd) => {
