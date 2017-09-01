@@ -55,9 +55,9 @@ parser.parse(
 		"./filename.js",
 		/*
 			文件内容：
-			1. Nodejs 可以用 fs 读取等
-			2. Web Worker 可以用 self.onmessage 接收等
-			3. 浏览器使用 Ajax 从服务器获取 或 使用 FileReader 读取等
+			1. Nodejs 可以用 fs 读取等；
+			2. Web Worker 可以用 self.onmessage 接收等；
+			3. 浏览器使用 Ajax 从服务器获取 或 使用 FileReader 读取等。
 		*/
 		"class Car {}"
 	)
@@ -65,9 +65,9 @@ parser.parse(
 
 /*
 	生成并获取编译后的代码：
-	1. Node 可以交由打包工具 或 直接输出到页面等
-	2. Web Worker 通过 self.postMessage 输出内容等
-	3. 浏览器使用 eval 或 new Function 直接运行代码等
+	1. Nodejs 可以交由打包工具 或 直接输出到页面等；
+	2. Web Worker 通过 self.postMessage 输出内容等；
+	3. 浏览器使用 eval(es5Code) 或 new Function(es5Code) 直接运行代码等。
 */
 es5Code = parser.build();
 ```
