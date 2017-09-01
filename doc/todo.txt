@@ -4,7 +4,6 @@
 yield
 await
 async
-拓展对象：{ ...window.location }
 
 可省略 super
 可选参数
@@ -107,6 +106,8 @@ async
 --------
 已完成功能 ↓
 --------
+拓展对象：{ ...window.location } - 2017.08.30
+
 拓展数组：[...[1,2,3]] - 2017.08.21
 
 修改 ECMAScript6Config 为 ECMAScriptConfig，并优化解析配置项机制 - 2017.08.06

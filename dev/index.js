@@ -1,16 +1,13 @@
-var a,b, c, e;
+var a = function*(){
+	var a 
 
-var obj = Object.create({ b: 2 });
+	{
+		var b
 
-obj.c = 3;
+		const d = 1, e =2
 
-Object.defineProperty(obj, "d", { enumerable: true, get: function(){} })
-
-Object.defineProperty(obj, "e", { enumerable: false, get: function(){} });
-
-({
-	c = 5,
-	...a
-} = obj)
-
-debugger
+		{
+			let c
+		}
+	}
+}

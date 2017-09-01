@@ -1,7 +1,7 @@
 // 函数表达式相关
 !function(){
 
-this.FunctionExpression = function(config){
+this.FunctionExpression = function(){
 	/**
 	 * 函数表达式
 	 * @param {Context} context - 语法标签上下文
@@ -28,7 +28,6 @@ this.FunctionExpression = function(config){
 		},
 		body: null,
 		head: null,
-		generator: null,
 		name: new DefaultExpression(),
 		/**
 		 * 提取表达式文本内容
@@ -49,10 +48,7 @@ this.FunctionExpression = function(config){
 	});
 
 	return FunctionExpression;
-}(
-	// config
-	ECMAScriptConfig.addBaseConfig("generator")
-);
+}();
 
 this.FunctionTag = function(FunctionExpression){
 	/**

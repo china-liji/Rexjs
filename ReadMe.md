@@ -67,7 +67,7 @@ parser.parse(
 	生成并获取编译后的代码：
 	1. Nodejs 可以交由打包工具 或 直接输出到页面等；
 	2. Web Worker 通过 self.postMessage 输出内容等；
-	3. 浏览器使用 eval(es5Code) 或 new Function(es5Code) 直接运行代码等。
+	3. 浏览器使用 eval(es5Code) 或 new Function(es5Code)() 直接运行代码等。
 */
 es5Code = parser.build();
 ```

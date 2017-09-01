@@ -490,12 +490,6 @@ this.ECMAScriptStatements = function(ECMAScriptStatement, extractTo){
 
 	ECMAScriptStatements.props({
 		/**
-		 * 获取当前所处闭包
-		 */
-		get closure(){
-			return this.target.closure;
-		},
-		/**
 		 * 申请应用 super 关键字
 		 * @param {SyntaxParser} parser - 语法解析器
 		 * @param {Context} context - super 关键字上下文
@@ -525,6 +519,12 @@ this.ECMAScriptStatements = function(ECMAScriptStatement, extractTo){
 		 */
 		applyThis: function(){
 			// 什么也不做，即默认允许应用
+		},
+		/**
+		 * 获取当前所处闭包
+		 */
+		get closure(){
+			return this.target.closure;
 		},
 		collections: null,
 		/**
@@ -6867,7 +6867,7 @@ eval(
 										// 函数表达式相关
 !function(){
 
-this.FunctionExpression = function(config){
+this.FunctionExpression = function(){
 	/**
 	 * 函数表达式
 	 * @param {Context} context - 语法标签上下文
@@ -6894,7 +6894,6 @@ this.FunctionExpression = function(config){
 		},
 		body: null,
 		head: null,
-		generator: null,
 		name: new DefaultExpression(),
 		/**
 		 * 提取表达式文本内容
@@ -6915,10 +6914,7 @@ this.FunctionExpression = function(config){
 	});
 
 	return FunctionExpression;
-}(
-	// config
-	ECMAScriptConfig.addBaseConfig("generator")
-);
+}();
 
 this.FunctionTag = function(FunctionExpression){
 	/**
@@ -7144,19 +7140,114 @@ this.FunctionVariableTag = function(visitor){
 eval(
 									function(){
 										// 函数生成器符号相关
-!function(){
+!function(FunctionExpression){
 
-this.GeneratorHeaderExpression = function(){
-	function GeneratorHeaderExpression(context){
+this.GeneratorHeadExpression = function(){
+	/**
+	 * 生成器头部表达式
+	 * @param {Context} context - 语法标签上下文
+	 * @param {Context} generator - 生成器标签上下文
+	 */
+	function GeneratorHeadExpression(context, generator){
 		Expression.call(this, context);
+
+		this.generator = generator;
 	};
-	GeneratorHeaderExpression = new Rexjs(GeneratorHeaderExpression, Expression);
+	GeneratorHeadExpression = new Rexjs(GeneratorHeadExpression, Expression);
 
+	GeneratorHeadExpression.props({
+		/**
+		 * 提取表达式文本内容
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 */
+		extractTo: function(contentBuilder){
+			// 提取关键字
+			contentBuilder.appendContext(this.context);
+			// 提取 *
+			contentBuilder.appendContext(this.generator);
+		},
+		generator: null
+	});
 
-	return GeneratorHeaderExpression;
+	return GeneratorHeadExpression;
 }();
 
-this.GeneratorTag = function(){
+this.GeneratorExpression = function(GeneratorHeadExpression, config, extractTo){
+	/**
+	 * 生成器表达式
+	 * @param {Context} context - 语法标签上下文
+	 * @param {Context} generator - 生成器标签上下文
+	 */
+	function GeneratorExpression(context, generator){
+		FunctionExpression.call(this, context);
+
+		this.head = new GeneratorHeadExpression(context, generator);
+		this.ranges = [];
+	};
+	GeneratorExpression = new Rexjs(GeneratorExpression, FunctionExpression);
+
+	GeneratorExpression.static({
+		/**
+		 * 判断指定闭包是否为生成器闭包且将要被编译
+		 * @param {FunctionBodyStatements} closure - 需要判断的闭包
+		 * @param {CollectionRange} _range - 需要记录的变量收集器范围
+		 */
+		willCompile: function(closure, _range){
+			// 如果闭包存在
+			if(closure){
+				var expression = closure.target.statement.target.expression;
+
+				// 如果是生成器表达式
+				if(expression instanceof GeneratorExpression){
+					// 如果变量收集器范围存在
+					if(_range){
+						// 添加变量收集器范围
+						expression.ranges.push(_range);
+					}
+					
+					// 返回是否需要编译
+					return config.value;
+				}
+			}
+
+			return false;
+		}
+	});
+
+	GeneratorExpression.props({
+		/**
+		 * 提取表达式文本内容
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 */
+		extractTo: function(contentBuilder){
+			if(config.value){
+				var str = [];
+
+				this.ranges.forEach(function(range){
+					range.forEach(function(variable){
+						str.push(variable);
+					})
+				});
+
+				debugger
+
+				return;
+			}
+
+			extractTo.call(this, contentBuilder);
+		},
+		ranges: null
+	});
+
+	return GeneratorExpression;
+}(
+	this.GeneratorHeadExpression,
+	// config
+	ECMAScriptConfig.addBaseConfig("generator"),
+	FunctionExpression.prototype.extractTo
+);
+
+this.GeneratorTag = function(GeneratorExpression){
 	/**
 	 * 函数生成器标签
 	 * @param {Number} _type - 标签类型
@@ -7176,16 +7267,19 @@ this.GeneratorTag = function(){
 		 * @param {Statements} statements - 当前语句块
 		 */
 		visitor: function(parser, context, statement, statements){
-			// 设置函数表达式的 generator 属性
-			statement.expression.generator = context;
+			// 设置当前表达式
+			statement.expression = new GeneratorExpression(statement.expression.context, context);
 		}
 	});
 
 	return GeneratorTag;
-}();
+}(
+	this.GeneratorExpression
+);
 
 }.call(
-	this
+	this,
+	this.FunctionExpression
 );
 									}
 									.toString()
@@ -13394,77 +13488,52 @@ eval(
 										// var 语句相关
 !function(VariableDeclarationTag, closureVariableTag, varDeclarationSeparatorTag){
 
-this.VarExpression = function(BinaryExpression, DestructuringExpression){
+this.VarExpression = function(BinaryExpression, GeneratorExpression){
 	/**
 	 * var 表达式
 	 * @param {Context} context - 标签上下文
-	 * @param {ECMAScriptVariableCollections} collections - 当前所处环境的变量收集器集合
+	 * @param {Statements} statements - 当前所处环境的变量收集器集合
 	 */
-	function VarExpression(context, collections){
+	function VarExpression(context, statements){
 		Expression.call(this, context);
 
 		this.list = new ListExpression(null, ",");
-		this.range = collections.declaration.range();
+		this.range = statements.collections.declaration.range();
+		
+		// 如果将要编译生成器
+		if(GeneratorExpression.willCompile(statements.closure, this.range)){
+			// 那么，该表达式将转化为普通的赋值表达式，不再是声明。
+			this.declaration = false;
+		}
 	};
 	VarExpression = new Rexjs(VarExpression, Expression);
 
 	VarExpression.props({
+		declaration: true,
 		/**
 		 * 提取表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
 		 */
 		extractTo: function(contentBuilder){
-			// 提取 var 关键字
-			contentBuilder.appendContext(this.context);
+			// 如果是声明
+			if(this.declaration){
+				// 提取 var 关键字
+				contentBuilder.appendContext(this.context);
+			}
+		
 			// 添加空格
 			contentBuilder.appendSpace();
-
 			// 提取变量列表
 			this.list.extractTo(contentBuilder);
 		},
 		list: null,
-		/**
-		 * 遍历该表达式中所有的变量名，执行指定回调
-		 * @param {ContentBuilder} _contentBuilder - 内容生成器
-		 * @param {ContentBuilder} _anotherBuilder - 另一个内容生成器，一般用于副内容的生成或记录
-		 */
-		variables: function(callback, _contentBuilder, _anotherBuilder){
-			var list = this.list;
-
-			debugger
-			// 遍历 list
-			for(var i = 0, j = list.length;i < j;i++){
-				var variable, expression = list[i];
-
-				// 如果是二元表达式
-				if(expression instanceof BinaryExpression){
-					var left = expression.left;
-
-					variable = (
-						// 如果是解构表达式
-						left instanceof DestructuringExpression ?
-							// 获取解构赋值表达式的临时
-							expression.variable :
-							left.context.content
-					);
-				}
-				// 如果是
-				else {
-					// 获取上下文内容
-					variable = expression.context.content;
-				}
-
-				// 执行回调
-				callback(variable, _contentBuilder, _anotherBuilder);
-			}
-		},
 		range: null
 	});
 
 	return VarExpression;
 }(
 	this.BinaryExpression,
-	this.DestructuringExpression
+	this.GeneratorExpression
 );
 
 this.VarStatement = function(){
@@ -13554,10 +13623,9 @@ this.VarTag = function(VarExpression, VarStatement){
 		 */
 		visitor: function(parser, context, statement, statements){
 			// 设置当前表达式
-			statement.expression = new VarExpression(context, statements.collections);
-
+			statement.expression = new VarExpression(context, statements);
 			// 设置当前语句
-			statements.statement = new VarStatement(statements)
+			statements.statement = new VarStatement(statements);
 		}
 	});
 
@@ -13889,7 +13957,7 @@ this.ConstTag = function(LetTag, ConstStatement, config){
 		 */
 		visitor: function(parser, context, statement, statements){
 			// 设置当前表达式
-			statement.expression = new VarExpression(context, statements.collections);
+			statement.expression = new VarExpression(context, statements);
 			// 设置当前语句
 			statements.statement = new ConstStatement(statements);
 		}
@@ -22544,7 +22612,7 @@ this.FunctionContextTags = function(GeneratorTag, FunctionNameTag, OpenArguments
 		IllegalTags.call(this);
 		
 		this.register(
-			// new GeneratorTag(),
+			new GeneratorTag(),
 			new FunctionNameTag(),
 			new OpenArgumentsTag()
 		);

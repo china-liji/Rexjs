@@ -101,7 +101,7 @@ this.ConstTag = function(LetTag, ConstStatement, config){
 		 */
 		visitor: function(parser, context, statement, statements){
 			// 设置当前表达式
-			statement.expression = new VarExpression(context, statements.collections);
+			statement.expression = new VarExpression(context, statements);
 			// 设置当前语句
 			statements.statement = new ConstStatement(statements);
 		}

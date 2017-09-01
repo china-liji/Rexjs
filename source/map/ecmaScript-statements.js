@@ -82,12 +82,6 @@ this.ECMAScriptStatements = function(ECMAScriptStatement, extractTo){
 
 	ECMAScriptStatements.props({
 		/**
-		 * 获取当前所处闭包
-		 */
-		get closure(){
-			return this.target.closure;
-		},
-		/**
 		 * 申请应用 super 关键字
 		 * @param {SyntaxParser} parser - 语法解析器
 		 * @param {Context} context - super 关键字上下文
@@ -117,6 +111,12 @@ this.ECMAScriptStatements = function(ECMAScriptStatement, extractTo){
 		 */
 		applyThis: function(){
 			// 什么也不做，即默认允许应用
+		},
+		/**
+		 * 获取当前所处闭包
+		 */
+		get closure(){
+			return this.target.closure;
 		},
 		collections: null,
 		/**

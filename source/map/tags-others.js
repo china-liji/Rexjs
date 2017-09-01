@@ -803,7 +803,7 @@ this.FunctionContextTags = function(GeneratorTag, FunctionNameTag, OpenArguments
 		IllegalTags.call(this);
 		
 		this.register(
-			// new GeneratorTag(),
+			new GeneratorTag(),
 			new FunctionNameTag(),
 			new OpenArgumentsTag()
 		);
