@@ -13,19 +13,6 @@ this.FunctionExpression = function(){
 
 	FunctionExpression.props({
 		arguments: null,
-		/**
-		 * 获取表达式主体语句块
-		 */
-		get block(){
-			return this.body;
-		},
-		/**
-		 * 设置表达式主体语句块
-		 * @param {BlockExpression} value - 需要设置的表达式主体语句块
-		 */
-		set block(value){
-			this.body = value;
-		},
 		body: null,
 		head: null,
 		name: new DefaultExpression(),

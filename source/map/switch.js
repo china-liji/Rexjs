@@ -1,31 +1,6 @@
 // switch 语句相关
 !function(closeSwitchConditionTag){
 
-this.SwitchVariableCollections = function(ECMAScriptVariableCollections){
-	/**
-	 * 变量名收集器集合
-	 * @param {ECMAScriptVariableCollections} prevCollections - 可参考上一个收集器集合
-	 */
-	function SwitchVariableCollections(prevCollections){
-		ECMAScriptVariableCollections.call(this, prevCollections.index, prevCollections);
-	};
-	SwitchVariableCollections = new Rexjs(SwitchVariableCollections, ECMAScriptVariableCollections);
-
-	SwitchVariableCollections.props({
-		/**
-		 * 初始化 rex 临时变量名
-		 * @param {ECMAScriptVariableCollections} prevCollections - 可参考上一个收集器集合
-		 */
-		initRex: function(prevCollections){
-			this.rex = prevCollections.rex;
-		}
-	});
-
-	return SwitchVariableCollections;
-}(
-	this.ECMAScriptVariableCollections
-);
-
 this.SwitchExpression = function(ConditionalExpression){
 	/**
 	 * switch 表达式
@@ -83,15 +58,15 @@ this.SwitchExpression = function(ConditionalExpression){
 	this.ConditionalExpression
 );
 
-this.SwitchBodyStatement = function(BlockBodyStatement){
+this.SwitchBodyStatement = function(BraceBodyStatement){
 	/**
 	 * switch 主体语句
 	 * @param {Statements} statements - 该语句将要所处的语句块
 	 */
 	function SwitchBodyStatement(statements){
-		BlockBodyStatement.call(this, statements);
+		BraceBodyStatement.call(this, statements);
 	};
-	SwitchBodyStatement = new Rexjs(SwitchBodyStatement, BlockBodyStatement);
+	SwitchBodyStatement = new Rexjs(SwitchBodyStatement, BraceBodyStatement);
 
 	SwitchBodyStatement.props({
 		/**
@@ -121,28 +96,20 @@ this.SwitchBodyStatement = function(BlockBodyStatement){
 
 	return SwitchBodyStatement;
 }(
-	this.BlockBodyStatement
+	this.BraceBodyStatement
 );
 
 this.SwitchBodyStatements = function(BlockBodyStatements, SwitchBodyStatement, SwitchVariableCollections){
 	/**
 	 * switch 主体语句块
-	 * @param {ECMAScriptVariableCollections} prevCollections - 可参考的上一个变量名收集器集合
+	 * @param {Statements} target - 目标语句块，即上一层语句块
 	 */
-	function SwitchBodyStatements(prevCollections){
-		BlockBodyStatements.call(
-			this,
-			new SwitchVariableCollections(prevCollections)
-		);
+	function SwitchBodyStatements(target){
+		BlockBodyStatements.call(this, target);
 	};
 	SwitchBodyStatements = new Rexjs(SwitchBodyStatements, BlockBodyStatements);
 
 	SwitchBodyStatements.props({
-		/**
-		 * 声明变量名
-		 * @param {ContentBuilder} contentBuilder - 内容生成器
-		 */
-		declareTo: function(){},
 		/**
 		 * 初始化语句
 		 */
@@ -294,11 +261,7 @@ this.OpenSwitchBodyTag = function(OpenBlockComponentTag, SwitchBodyStatements){
 		 */
 		in: function(parser, statements){
 			// 设置当前语句块
-			(
-				parser.statements = new SwitchBodyStatements(statements.collections)
-			)
-			// 记录当前语句块
-			.target = statements;
+			parser.statements = new SwitchBodyStatements(statements);
 		},
 		/**
 		 * 获取此标签接下来所需匹配的标签列表

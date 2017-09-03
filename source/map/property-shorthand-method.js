@@ -122,9 +122,10 @@ this.ShorthandMethodValueStatement = function(PropertyValueStatement, ShorthandM
 this.ShorthandMethodBodyStatements = function(FunctionBodyStatements){
 	/**
 	 * 简写方法主体语句块
+	 * @param {Statements} target - 目标语句块，即上一层语句块
 	 */
-	function ShorthandMethodBodyStatements(){
-		FunctionBodyStatements.call(this);
+	function ShorthandMethodBodyStatements(target){
+		FunctionBodyStatements.call(this, target);
 	};
 	ShorthandMethodBodyStatements = new Rexjs(ShorthandMethodBodyStatements, FunctionBodyStatements);
 
@@ -253,10 +254,7 @@ this.OpenShorthandMethodBodyTag = function(OpenFunctionBodyTag, ShorthandMethodB
 		 */
 		in: function(parser, statements){
 			// 设置当前语句块
-			(
-				parser.statements = new ShorthandMethodBodyStatements()
-			)
-			.target = statements;
+			parser.statements = new ShorthandMethodBodyStatements(statements);
 		}
 	});
 

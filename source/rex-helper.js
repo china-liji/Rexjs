@@ -1,7 +1,7 @@
 new function(Rexjs){
 
 // 迭代器相关
-!function(){
+!function(Infinity){
 
 this.IteratorIndex = function(){
 	/**
@@ -50,7 +50,7 @@ this.IteratorResult = function(){
 	return IteratorResult;
 }();
 
-this.Iterator = function(IteratorIndex, IteratorResult, Infinity){
+this.Iterator = function(IteratorIndex, IteratorResult){
 	/**
 	 * 迭代器
 	 * @param {*} iterable - 可迭代的对象
@@ -134,18 +134,54 @@ this.Iterator = function(IteratorIndex, IteratorResult, Infinity){
 	return Iterator;
 }(
 	this.IteratorIndex,
+	this.IteratorResult
+);
+
+this.FunctionIterator = function(Iterator, IteratorResult, toArray){
+	/**
+	 * 函数迭代器
+	 * @param {Function} func - 需要迭代的函数
+	 */
+	function FunctionIterator(func, boundThis, boundArguments){
+		Iterator.call(this, func);
+
+		this.boundThis = boundThis;
+		this.boundArguments = toArray(boundArguments);
+
+		this.index.max = Infinity;
+	};
+	FunctionIterator = new Rexjs(FunctionIterator, Iterator);
+
+	FunctionIterator.props({
+		boundThis: null,
+		boundArguments: null,
+		/**
+		 * 获取当前迭代结果
+		 */
+		get result(){
+			// 返回结果
+			return new IteratorResult(
+				this.iterable.apply(this.boundThis, this.boundArguments),
+				this.closed
+			);
+		}
+	});
+
+	return FunctionIterator;
+}(
+	this.Iterator,
 	this.IteratorResult,
-	Infinity
+	Rexjs.toArray
 );
 
 this.Generator = function(Iterator){
 	/**
 	 * 生成器
-	 * @param {*} iterable - 可迭代的对象
+	 * @param {Iterator, *} iterator - 迭代器
 	 */
-	function Generator(iterable){
+	function Generator(iterator){
 		// 初始化迭代器
-		this.iterator = new Iterator(iterable);
+		this.iterator = iterator instanceof Iterator ? iterator : new Iterator(iterator);
 	};
 	Generator = new Rexjs(Generator);
 
@@ -180,7 +216,8 @@ this.Generator = function(Iterator){
 );
 
 }.call(
-	this
+	this,
+	Infinity
 );
 
 

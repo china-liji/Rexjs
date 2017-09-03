@@ -70,10 +70,11 @@ this.ECMAScriptVariableCollections = function(VariableCollections, VariableColle
 this.ECMAScriptStatements = function(ECMAScriptStatement, extractTo){
 	/**
 	 * ECMAScript 语句块
+	 * @param {Statements} target - 目标语句块，即上一层语句块
 	 * @param {ECMAScriptVariableCollections} collections - 变量名收集器集合
 	 */
-	function ECMAScriptStatements(collections){
-		Statements.call(this);
+	function ECMAScriptStatements(target, collections){
+		Statements.call(this, target);
 
 		// 初始化变量名集合
 		this.collections = collections;
@@ -112,12 +113,7 @@ this.ECMAScriptStatements = function(ECMAScriptStatement, extractTo){
 		applyThis: function(){
 			// 什么也不做，即默认允许应用
 		},
-		/**
-		 * 获取当前所处闭包
-		 */
-		get closure(){
-			return this.target.closure;
-		},
+		closure: null,
 		collections: null,
 		/**
 		 * 声明变量名
@@ -160,21 +156,13 @@ this.GlobalStatements = function(ECMAScriptStatements, ECMAScriptVariableCollect
 	function GlobalStatements(){
 		ECMAScriptStatements.call(
 			this,
+			null,
 			new ECMAScriptVariableCollections(
 				new VariableIndex()
 			)
 		);
 	};
 	GlobalStatements = new Rexjs(GlobalStatements, ECMAScriptStatements);
-
-	GlobalStatements.props({
-		/**
-		 * 获取当前所处闭包
-		 */
-		get closure(){
-			return null;
-		}
-	});
 
 	return GlobalStatements;
 }(

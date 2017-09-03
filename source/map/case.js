@@ -131,15 +131,15 @@ this.DefaultValueStatement = function(CaseValueStatement){
 	this.CaseValueStatement
 );
 
-this.CaseBodyStatement = function(BlockBodyStatement, isCase, isCloseBrace){
+this.CaseBodyStatement = function(BraceBodyStatement, isCase, isCloseBrace){
 	/**
 	 * case 语句
 	 * @param {Statements} statements - 该语句将要所处的语句块
 	 */
 	function CaseBodyStatement(statements){
-		BlockBodyStatement.call(this, statements);
+		BraceBodyStatement.call(this, statements);
 	};
-	CaseBodyStatement = new Rexjs(CaseBodyStatement, BlockBodyStatement);
+	CaseBodyStatement = new Rexjs(CaseBodyStatement, BraceBodyStatement);
 	
 	CaseBodyStatement.props({
 		/**
@@ -171,7 +171,7 @@ this.CaseBodyStatement = function(BlockBodyStatement, isCase, isCloseBrace){
 	
 	return CaseBodyStatement;
 }(
-	this.BlockBodyStatement,
+	this.BraceBodyStatement,
 	// isCase
 	function(parser, statement, context){
 		var statements = statement.statements, targetStatements = statements.target,
@@ -209,10 +209,10 @@ this.CaseBodyStatement = function(BlockBodyStatement, isCase, isCloseBrace){
 this.CaseBodyStatements = function(SwitchBodyStatements, CaseBodyStatement){
 	/**
 	 * case 语句块
-	 * @param {ECMAScriptVariableCollections} prevCollections - 可参考的上一个变量名收集器
+	 * @param {Statements} target - 目标语句块，即上一层语句块
 	 */
-	function CaseBodyStatements(prevCollections){
-		SwitchBodyStatements.call(this, prevCollections);
+	function CaseBodyStatements(target){
+		SwitchBodyStatements.call(this, target);
 	};
 	CaseBodyStatements = new Rexjs(CaseBodyStatements, SwitchBodyStatements);
 
@@ -369,13 +369,8 @@ this.CaseValueSeparatorTag = function(ColonTag, CaseBodyStatements){
 		visitor: function(parser, context, statement, statements){
 			// 设置表达式的 separator
 			statement.expression.separator = context;
-
 			// 设置当前语句块
-			(
-				parser.statements = new CaseBodyStatements(statements.collections)
-			)
-			// 设置 target
-			.target = statements;
+			parser.statements = new CaseBodyStatements(statements);
 		}
 	});
 

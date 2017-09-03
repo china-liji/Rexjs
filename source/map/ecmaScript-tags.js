@@ -104,7 +104,8 @@ this.ECMAScriptTags = function(DefaultTags, list){
 		this.VarTag,
 		this.VoidTag,
 		this.WhileTag,
-		this.WithTag
+		this.WithTag,
+		this.YieldTag
 	]
 );
 	

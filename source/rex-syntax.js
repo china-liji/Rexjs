@@ -1547,10 +1547,14 @@ this.Statement = function(){
 this.Statements = function(Statement, STATE_STATEMENT_ENDED, parseInt){
 	/**
 	 * 语句块
+	 * @param {Statements} target - 目标语句块，即上一层语句块
 	 */
 	function Statements(target){
 		SyntaxElement.call(this);
 		
+		// 记录目标语句块
+		this.target = target;
+
 		// 初始化语句
 		this.newStatement();
 	};

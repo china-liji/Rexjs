@@ -86,10 +86,11 @@ this.DefaultConstructorExpression = function(ClassPropertyExpression){
 this.ConstructorBodyStatements = function(ShorthandMethodBodyStatements){
 	/**
 	 * 简写方法主体语句块
+	 * @param {Statements} target - 目标语句块，即上一层语句块
 	 * @param {Number} phase - 该语句块的父类调用阶段
 	 */
-	function ConstructorBodyStatements(phase){
-		ShorthandMethodBodyStatements.call(this);
+	function ConstructorBodyStatements(target, phase){
+		ShorthandMethodBodyStatements.call(this, target);
 
 		this.phase = phase;
 	};
@@ -306,15 +307,13 @@ this.OpenConstructorBodyTag = function(OpenShorthandMethodBodyTag, ConstructorBo
 		 */
 		in: function(parser, statements){
 			// 设置当前语句块
-			(
-				parser.statements = new ConstructorBodyStatements(
-					// 如果有父类
-					getClassPropertyStatement(parser.statements).target.expression.extends.context ?
-						PHASE_WAITING_CALL :
-						PHASE_NONE
-				)
-			)
-			.target = statements;
+			parser.statements = new ConstructorBodyStatements(
+				statements,
+				// 如果有父类
+				getClassPropertyStatement(parser.statements).target.expression.extends.context ?
+					PHASE_WAITING_CALL :
+					PHASE_NONE
+			);
 		}
 	});
 

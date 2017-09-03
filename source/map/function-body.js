@@ -70,45 +70,21 @@ this.FunctionBodyExpression = function(extractTo, insertDefaults){
 	}
 );
 
-this.GeneratorBodyExpression = function(FunctionBodyExpression){
-	/**
-	 * 函数主体语句块表达式
-	 * @param {Context} open - 起始标签上下文
-	 */
-	function GeneratorBodyExpression(open){
-		FunctionBodyExpression.call(this, open);
-	};
-	GeneratorBodyExpression = new Rexjs(GeneratorBodyExpression, FunctionBodyExpression);
-
-	GeneratorBodyExpression.props({
-		/**
-		 * 提取表达式文本内容
-		 * @param {ContentBuilder} contentBuilder - 内容生成器
-		 * @param {ContentBuilder} defaultArgumentBuilder - 默认参数生成器
-		 */
-		// extractTo: function(contentBuilder, defaultArgumentBuilder){debugger
-			
-		// }
-	});
-	
-	return GeneratorBodyExpression;
-}(
-	this.FunctionBodyExpression
-);
-
-this.FunctionBodyStatements = function(BlockBodyStatements, ECMAScriptVariableCollections, VariableIndex){
+this.FunctionBodyStatements = function(ECMAScriptStatements, ECMAScriptVariableCollections, BraceBodyStatement, VariableIndex){
 	/**
 	 * 函数主体语句块
+	 * @param {Statements} target - 目标语句块，即上一层语句块
 	 */
-	function FunctionBodyStatements(){
-		BlockBodyStatements.call(
+	function FunctionBodyStatements(target){
+		ECMAScriptStatements.call(
 			this,
+			target,
 			new ECMAScriptVariableCollections(
 				new VariableIndex()
 			)
 		);
 	};
-	FunctionBodyStatements = new Rexjs(FunctionBodyStatements, BlockBodyStatements);
+	FunctionBodyStatements = new Rexjs(FunctionBodyStatements, ECMAScriptStatements);
 	
 	FunctionBodyStatements.props({
 		/**
@@ -117,25 +93,37 @@ this.FunctionBodyStatements = function(BlockBodyStatements, ECMAScriptVariableCo
 		get closure(){
 			return this;
 		},
-		scope: BlockBodyStatements.SCOPE_CLOSURE
+		/**
+		 * 设置当前所处闭包
+		 * @param {Statements} - 需要设置的闭包
+		 */
+		set closure(value){},
+		/**
+		 * 初始化语句
+		 */
+		initStatement: function(){
+			return new BraceBodyStatement(this);
+		},
+		scope: ECMAScriptStatements.SCOPE_CLOSURE
 	});
 	
 	return FunctionBodyStatements;
 }(
-	this.BlockBodyStatements,
+	this.ECMAScriptStatements,
 	this.ECMAScriptVariableCollections,
+	this.BraceBodyStatement,
 	Rexjs.VariableIndex
 );
 
-this.OpenFunctionBodyTag = function(OpenBlockComponentTag, FunctionBodyExpression, GeneratorBodyExpression, FunctionBodyStatements, BlockComponentStatement, config, forEach){
+this.OpenFunctionBodyTag = function(OpenBraceTag, FunctionBodyExpression, FunctionBodyStatements, BlockComponentStatement, forEach){
 	/**
 	 * 起始函数主体标签
 	 * @param {Number} _type - 标签类型
 	 */
 	function OpenFunctionBodyTag(_type){
-		OpenBlockComponentTag.call(this, _type);
+		OpenBraceTag.call(this, _type);
 	};
-	OpenFunctionBodyTag = new Rexjs(OpenFunctionBodyTag, OpenBlockComponentTag);
+	OpenFunctionBodyTag = new Rexjs(OpenFunctionBodyTag, OpenBraceTag);
 
 	OpenFunctionBodyTag.props({
 		/**
@@ -150,12 +138,8 @@ this.OpenFunctionBodyTag = function(OpenBlockComponentTag, FunctionBodyExpressio
 		 * @param {Statements} statements - 当前语句块
 		 */
 		in: function(parser, statements){
-			(
-				// 设置当前语句块
-				parser.statements = new FunctionBodyStatements()
-			)
-			// 设置目标语句块
-			.target = statements;
+			// 设置当前语句块
+			parser.statements = new FunctionBodyStatements(statements);
 		},
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
@@ -172,21 +156,14 @@ this.OpenFunctionBodyTag = function(OpenBlockComponentTag, FunctionBodyExpressio
 		 * @param {Statements} statements - 当前语句块
 		 */
 		visitor: function(parser, context, statement, statements){
-			var declarationCollection, functionBodyExpression, expression = statement.expression;
+			var declarationCollection;
 			
-			functionBodyExpression = (
-				// 如果有生成器并且需要解析
-				expression.generator && config.value ?
-					new GeneratorBodyExpression(context):
-					new FunctionBodyExpression(context)
-			);
-
 			(
 				// 设置当前语句
 				statements.statement = new BlockComponentStatement(statements)
 			)
 			// 设置表达式
-			.expression = functionBodyExpression;
+			.expression = new FunctionBodyExpression(context);
 
 			// 进入函数主体语句块内部
 			this.in(parser, statements);
@@ -196,7 +173,7 @@ this.OpenFunctionBodyTag = function(OpenBlockComponentTag, FunctionBodyExpressio
 
 			// 收集参数名到声明集合下
 			forEach(
-				expression.arguments.collection,
+				statement.expression.arguments.collection,
 				declarationCollection.collect,
 				declarationCollection
 			);
@@ -205,25 +182,22 @@ this.OpenFunctionBodyTag = function(OpenBlockComponentTag, FunctionBodyExpressio
 
 	return OpenFunctionBodyTag;
 }(
-	this.OpenBlockComponentTag,
+	this.OpenBraceTag,
 	this.FunctionBodyExpression,
-	this.GeneratorBodyExpression,
 	this.FunctionBodyStatements,
 	this.BlockComponentStatement,
-	// config
-	ECMAScriptConfig.generator,
 	Rexjs.forEach
 );
 
-this.CloseFunctionBodyTag = function(CloseBlockComponentTag){
+this.CloseFunctionBodyTag = function(CloseBraceTag){
 	/**
 	 * 结束函数主体标签
 	 * @param {Number} _type - 标签类型
 	 */
 	function CloseFunctionBodyTag(_type){
-		CloseBlockComponentTag.call(this, _type);
+		CloseBraceTag.call(this, _type);
 	};
-	CloseFunctionBodyTag = new Rexjs(CloseFunctionBodyTag, CloseBlockComponentTag);
+	CloseFunctionBodyTag = new Rexjs(CloseFunctionBodyTag, CloseBraceTag);
 
 	CloseFunctionBodyTag.props({
 		/**
@@ -237,12 +211,26 @@ this.CloseFunctionBodyTag = function(CloseBlockComponentTag){
 					tagsMap.mistakableTags :
 					tagsMap.expressionContextTags
 			);
+		},
+		/**
+		 * 标签访问器
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 标签上下文
+		 * @param {Statement} statement - 当前语句
+		 * @param {Statements} statements - 当前语句块
+		 */
+		visitor: function(parser, context, statement, statements){
+			// 设置表达式的 close
+			statement.expression.close = context;
+
+			// 跳出语句并设置表达式的 body 属性
+			statement.out().body = statement.expression;
 		}
 	});
 
 	return CloseFunctionBodyTag;
 }(
-	this.CloseBlockComponentTag
+	this.CloseBraceTag
 );
 
 closeFunctionBodyTag = new this.CloseFunctionBodyTag();

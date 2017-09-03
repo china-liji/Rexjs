@@ -43,7 +43,7 @@ this.ReturnTag = function(SCOPE_CLOSURE, visitor){
 			// 报错
 			parser.error(
 				context,
-				ECMAScriptErrors.template("ILLEGAL_STATEMENT", "return")
+				ECMAScriptErrors.template("ILLEGAL_STATEMENT", context.content)
 			);
 		}
 	});

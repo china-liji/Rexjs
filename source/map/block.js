@@ -1,6 +1,31 @@
 // 语句块相关
 !function(closeBlockTag){
 
+this.BlockVariableCollections = function(ECMAScriptVariableCollections){
+	/**
+	 * 块级区域变量名收集器集合
+	 * @param {ECMAScriptVariableCollections} prevCollections - 可参考上一个收集器集合
+	 */
+	function BlockVariableCollections(prevCollections){
+		ECMAScriptVariableCollections.call(this, prevCollections.index, prevCollections);
+	};
+	BlockVariableCollections = new Rexjs(BlockVariableCollections, ECMAScriptVariableCollections);
+
+	BlockVariableCollections.props({
+		/**
+		 * 初始化 rex 临时变量名
+		 * @param {ECMAScriptVariableCollections} prevCollections - 可参考上一个收集器集合
+		 */
+		initRex: function(prevCollections){
+			this.rex = prevCollections.rex;
+		}
+	});
+
+	return BlockVariableCollections;
+}(
+	this.ECMAScriptVariableCollections
+);
+
 this.BlockExpression = function(){
 	/**
 	 * 语句块表达式
@@ -27,92 +52,19 @@ this.BlockExpression = function(){
 	return BlockExpression;
 }();
 
-this.DefaultBlockBodyExpression = function(){
-	/**
-	 * 默认语句块主体表达式
-	 */
-	function DefaultBlockBodyExpression(){
-		DefaultExpression.call(this);
-	};
-	DefaultBlockBodyExpression = new Rexjs(DefaultBlockBodyExpression, DefaultExpression);
-
-	DefaultBlockBodyExpression.props({
-		/**
-		 * 获取表达式状态
-		 */
-		get state(){
-			return STATE_STATEMENT_ENDED;
-		},
-		/**
-		 * 设置表达式状态
-		 */
-		set state(value){}
-	});
-
-	return DefaultBlockBodyExpression;
-}();
-
-this.BlockBodyStatement = function(DefaultBlockBodyExpression){
-	/**
-	 * 语句块主体语句
-	 * @param {Statements} statements - 该语句将要所处的语句块
-	 */
-	function BlockBodyStatement(statements){
-		ECMAScriptStatement.call(this, statements);
-	};
-	BlockBodyStatement = new Rexjs(BlockBodyStatement, ECMAScriptStatement);
-	
-	BlockBodyStatement.props({
-		/**
-		 * 捕获处理异常
-		 * @param {SyntaxParser} parser - 语法解析器
-		 * @param {Context} context - 语法标签上下文
-		 */
-		catch: function(parser, context){
-			// 如果不是关闭大括号
-			if(context.content !== "}"){
-				return null;
-			}
-
-			// 跳出语句并设置 inner
-			this.out(parser).inner = this.statements;
-			// 返回结束语句块标签
-			return this.bindingOf();
-		},
-		expression: new DefaultBlockBodyExpression(),
-		/**
-		 * 跳出该语句
-		 * @param {SyntaxParser} parser - 语法解析器
-		 */
-		out: function(parser){
-			// 返回语句块表达式
-			return (
-				// 恢复语句块
-				parser.statements = this.statements.target
-			)
-			.statement
-			.expression;
-		},
-		/**
-		 * 获取该语句 try、catch 方法中所需使用到的标签，一般是指向实例化该语句的标签
-		 */
-		tagOf: function(){
-			return this.statements.target.statement.expression.context.tag;
-		}
-	});
-	
-	return BlockBodyStatement;
-}(
-	this.DefaultBlockBodyExpression
-);
-
-this.BlockBodyStatements = function(ECMAScriptStatements, BlockBodyStatement){
+this.BlockBodyStatements = function(ECMAScriptStatements, BraceBodyStatement, BlockVariableCollections){
 	/**
 	 * 语句块
-	 * @param {ECMAScriptVariableCollections} collections - 变量名收集器集合
+	 * @param {Statements} target - 目标语句块，即上一层语句块
 	 */
-	function BlockBodyStatements(collections){
-		ECMAScriptStatements.call(this, collections);
+	function BlockBodyStatements(target){
+		ECMAScriptStatements.call(
+			this,
+			target,
+			new BlockVariableCollections(target.collections)
+		);
+
+		this.closure = target.closure;
 	};
 	BlockBodyStatements = new Rexjs(BlockBodyStatements, ECMAScriptStatements);
 	
@@ -137,10 +89,15 @@ this.BlockBodyStatements = function(ECMAScriptStatements, BlockBodyStatement){
 			return this.target.applySuperCall(parser, context, open);
 		},
 		/**
+		 * 声明变量名
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 */
+		declareTo: function(){},
+		/**
 		 * 初始化语句
 		 */
 		initStatement: function(){
-			return new BlockBodyStatement(this);
+			return new BraceBodyStatement(this);
 		},
 		scope: ECMAScriptStatements.SCOPE_BLOCK
 	});
@@ -148,10 +105,11 @@ this.BlockBodyStatements = function(ECMAScriptStatements, BlockBodyStatement){
 	return BlockBodyStatements;
 }(
 	this.ECMAScriptStatements,
-	this.BlockBodyStatement
+	this.BraceBodyStatement,
+	this.BlockVariableCollections
 );
 
-this.OpenBlockTag = function(OpenBraceTag, BlockExpression, BlockBodyStatements, ECMAScriptVariableCollections){
+this.OpenBlockTag = function(OpenBraceTag, BlockExpression, BlockBodyStatements, BlockVariableCollections){
 	/**
 	 * 起始语句块标签
 	 * @param {Number} _type - 标签类型
@@ -176,15 +134,7 @@ this.OpenBlockTag = function(OpenBraceTag, BlockExpression, BlockBodyStatements,
 		 */
 		in: function(parser, statements){
 			// 设置当前语句块
-			(
-				parser.statements = new BlockBodyStatements(
-					// 初始化变量名收集器集合
-					new ECMAScriptVariableCollections(
-						statements.collections.index
-					)
-				)
-			)
-			.target = statements;
+			parser.statements = new BlockBodyStatements(statements);
 		},
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
@@ -214,7 +164,7 @@ this.OpenBlockTag = function(OpenBraceTag, BlockExpression, BlockBodyStatements,
 	this.OpenBraceTag,
 	this.BlockExpression,
 	this.BlockBodyStatements,
-	this.ECMAScriptVariableCollections
+	this.BlockVariableCollections
 );
 
 this.CloseBlockTag = function(CloseBraceTag){

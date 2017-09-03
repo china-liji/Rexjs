@@ -1,5 +1,5 @@
 // 函数生成器符号相关
-!function(FunctionExpression){
+!function(FunctionExpression, ReturnTag, appendVariable){
 
 this.GeneratorHeadExpression = function(){
 	/**
@@ -31,7 +31,7 @@ this.GeneratorHeadExpression = function(){
 	return GeneratorHeadExpression;
 }();
 
-this.GeneratorExpression = function(GeneratorHeadExpression, config, extractTo){
+this.GeneratorExpression = function(GeneratorHeadExpression, config, extractFunctionExpressionTo, extractStatementsTo, expressionOf, appendRange){
 	/**
 	 * 生成器表达式
 	 * @param {Context} context - 语法标签上下文
@@ -47,26 +47,33 @@ this.GeneratorExpression = function(GeneratorHeadExpression, config, extractTo){
 
 	GeneratorExpression.static({
 		/**
+		 * 判断指定闭包是否为生成器
+		 * @param {Statements} closure - 需要判断的闭包
+		 */
+		is: function(closure){
+			// 如果闭包存在
+			if(closure){
+				return expressionOf(closure) instanceof GeneratorExpression;
+			}
+
+			return false;
+		},
+		/**
 		 * 判断指定闭包是否为生成器闭包且将要被编译
-		 * @param {FunctionBodyStatements} closure - 需要判断的闭包
+		 * @param {Statements} closure - 需要判断的闭包
 		 * @param {CollectionRange} _range - 需要记录的变量收集器范围
 		 */
 		willCompile: function(closure, _range){
-			// 如果闭包存在
-			if(closure){
-				var expression = closure.target.statement.target.expression;
-
-				// 如果是生成器表达式
-				if(expression instanceof GeneratorExpression){
-					// 如果变量收集器范围存在
-					if(_range){
-						// 添加变量收集器范围
-						expression.ranges.push(_range);
-					}
-					
-					// 返回是否需要编译
-					return config.value;
+			// 如果是生成器
+			if(this.is(closure)){
+				// 如果变量收集器范围存在
+				if(_range){
+					// 添加变量收集器范围
+					expressionOf(closure).ranges.push(_range);
 				}
+
+				// 返回是否需要编译
+				return config.value;
 			}
 
 			return false;
@@ -80,22 +87,47 @@ this.GeneratorExpression = function(GeneratorHeadExpression, config, extractTo){
 		 */
 		extractTo: function(contentBuilder){
 			if(config.value){
-				var str = [];
+				var inner = this.body.inner, collections = inner.collections,
+				
+					variable = collections.generate(), defaultArgumentBuilder = new ContentBuilder();
 
-				this.ranges.forEach(function(range){
-					range.forEach(function(variable){
-						str.push(variable);
-					})
-				});
+				// 提取 function 关键字
+				contentBuilder.appendContext(this.head.context);
+				
+				// 提取函数名称
+				this.name.extractTo(contentBuilder);
+				// 提取函数参数
+				this.arguments.extractTo(contentBuilder, defaultArgumentBuilder);
+
+				contentBuilder.appendString(
+					"{var " + collections.rex.toString("", ",", "")
+				);
+				
+				this.ranges.forEach(appendRange, contentBuilder);
+				
+				contentBuilder.appendString(
+					";" +
+					defaultArgumentBuilder.result +
+					variable +
+					"= new Rexjs.FunctionIterator(function(){switch(" +
+					variable +
+					".index.current){case 0:"
+				);
+				
+				// 提取函数主体
+				extractStatementsTo.call(inner, contentBuilder);
+				
+				contentBuilder.appendString("break;}},this,arguments);return new Rexjs.Generator(" + variable + ");}");
 
 				debugger
 
 				return;
 			}
 
-			extractTo.call(this, contentBuilder);
+			extractFunctionExpressionTo.call(this, contentBuilder);
 		},
-		ranges: null
+		ranges: null,
+		variable: ""
 	});
 
 	return GeneratorExpression;
@@ -103,7 +135,16 @@ this.GeneratorExpression = function(GeneratorHeadExpression, config, extractTo){
 	this.GeneratorHeadExpression,
 	// config
 	ECMAScriptConfig.addBaseConfig("generator"),
-	FunctionExpression.prototype.extractTo
+	FunctionExpression.prototype.extractTo,
+	Rexjs.Statements.prototype.extractTo,
+	// expressionOf
+	function(closure){
+		return closure.target.statement.target.expression;
+	},
+	// appendRange
+	function(range){
+		range.forEach(appendVariable, this);
+	}
 );
 
 this.GeneratorTag = function(GeneratorExpression){
@@ -136,7 +177,53 @@ this.GeneratorTag = function(GeneratorExpression){
 	this.GeneratorExpression
 );
 
+this.YieldTag = function(GeneratorExpression, visitor){
+	/**
+	 * yield 关键字标签
+	 * @param {Number} _type - 标签类型
+	 */
+	function YieldTag(_type){
+		ReturnTag.call(this, _type);
+	};
+	YieldTag = new Rexjs(YieldTag, ReturnTag);
+
+	YieldTag.props({
+		regexp: /yield/,
+		/**
+		 * 标签访问器
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 标签上下文
+		 * @param {Statement} statement - 当前语句
+		 * @param {Statements} statements - 当前语句块
+		 */
+		visitor: function(parser, context, statement, statements){
+			// 如果在生成器闭包内
+			if(GeneratorExpression.is(statements.closure)){
+				// 调用父类访问器
+				visitor.call(this, parser, context, statement, statements);
+				return;
+			}
+
+			// 报错
+			parser.error(
+				context,
+				ECMAScriptErrors.template("ILLEGAL_STATEMENT", context.content)
+			);
+		}
+	});
+
+	return YieldTag;
+}(
+	this.GeneratorExpression,
+	ReturnTag.prototype.visitor
+);
+
 }.call(
 	this,
-	this.FunctionExpression
+	this.FunctionExpression,
+	this.ReturnTag,
+	// appendVariable
+	function(variable, contentBuilder){
+		contentBuilder.appendString("," + variable);
+	}
 );
