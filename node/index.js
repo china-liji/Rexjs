@@ -177,6 +177,7 @@ console.timeEnd("time");
 		"terminated-brach-flow.js",
 		"break-continue.js",
 		"generator.js",
+		"yield.js",
 		"var.js",
 		"let.js",
 		"const.js",

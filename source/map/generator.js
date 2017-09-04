@@ -1,5 +1,5 @@
 // 函数生成器符号相关
-!function(FunctionExpression, ReturnTag, appendVariable){
+!function(FunctionExpression, appendVariable){
 
 this.GeneratorHeadExpression = function(){
 	/**
@@ -177,51 +177,9 @@ this.GeneratorTag = function(GeneratorExpression){
 	this.GeneratorExpression
 );
 
-this.YieldTag = function(GeneratorExpression, visitor){
-	/**
-	 * yield 关键字标签
-	 * @param {Number} _type - 标签类型
-	 */
-	function YieldTag(_type){
-		ReturnTag.call(this, _type);
-	};
-	YieldTag = new Rexjs(YieldTag, ReturnTag);
-
-	YieldTag.props({
-		regexp: /yield/,
-		/**
-		 * 标签访问器
-		 * @param {SyntaxParser} parser - 语法解析器
-		 * @param {Context} context - 标签上下文
-		 * @param {Statement} statement - 当前语句
-		 * @param {Statements} statements - 当前语句块
-		 */
-		visitor: function(parser, context, statement, statements){
-			// 如果在生成器闭包内
-			if(GeneratorExpression.is(statements.closure)){
-				// 调用父类访问器
-				visitor.call(this, parser, context, statement, statements);
-				return;
-			}
-
-			// 报错
-			parser.error(
-				context,
-				ECMAScriptErrors.template("ILLEGAL_STATEMENT", context.content)
-			);
-		}
-	});
-
-	return YieldTag;
-}(
-	this.GeneratorExpression,
-	ReturnTag.prototype.visitor
-);
-
 }.call(
 	this,
 	this.FunctionExpression,
-	this.ReturnTag,
 	// appendVariable
 	function(variable, contentBuilder){
 		contentBuilder.appendString("," + variable);

@@ -4,6 +4,8 @@ var a = function*(){
 	yield;
 }
 
+debugger
+
 // var a = function*(x = 1, ...y){
 // 	var a 
 
