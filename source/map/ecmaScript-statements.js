@@ -116,6 +116,24 @@ this.ECMAScriptStatements = function(ECMAScriptStatement, extractTo){
 		closure: null,
 		collections: null,
 		/**
+		 * 获取当前上下文中的生成器
+		 */
+		get contextGenerator(){
+			var closure = this.closure;
+
+			// 如果闭包存在，则返回 contextGenerator
+			return closure ? closure.contextGenerator : null;
+		},
+		/**
+		 * 获取当前上下文中需要编译的生成器
+		 */
+		get contextGeneratorIfNeedCompile(){
+			var closure = this.closure;
+
+			// 如果闭包存在，则返回 contextGeneratorIfNeedCompile
+			return closure ? closure.contextGeneratorIfNeedCompile : null;
+		},
+		/**
 		 * 声明变量名
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
 		 */
@@ -163,6 +181,21 @@ this.GlobalStatements = function(ECMAScriptStatements, ECMAScriptVariableCollect
 		);
 	};
 	GlobalStatements = new Rexjs(GlobalStatements, ECMAScriptStatements);
+
+	GlobalStatements.props({
+		/**
+		 * 获取当前上下文中的生成器
+		 */
+		get contextGenerator(){
+			return null;
+		},
+		/**
+		 * 获取当前上下文中需要编译的生成器
+		 */
+		get contextGeneratorIfNeedCompile(){
+			return null;
+		}
+	});
 
 	return GlobalStatements;
 }(

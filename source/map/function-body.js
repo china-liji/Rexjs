@@ -70,7 +70,7 @@ this.FunctionBodyExpression = function(extractTo, insertDefaults){
 	}
 );
 
-this.FunctionBodyStatements = function(ECMAScriptStatements, ECMAScriptVariableCollections, BraceBodyStatement, VariableIndex){
+this.FunctionBodyStatements = function(ECMAScriptStatements, ECMAScriptVariableCollections, BraceBodyStatement, GeneratorExpression, VariableIndex, generatorConfig){
 	/**
 	 * 函数主体语句块
 	 * @param {Statements} target - 目标语句块，即上一层语句块
@@ -99,6 +99,23 @@ this.FunctionBodyStatements = function(ECMAScriptStatements, ECMAScriptVariableC
 		 */
 		set closure(value){},
 		/**
+		 * 获取当前上下文中的生成器
+		 */
+		get contextGenerator(){
+			// 获取函数表达式
+			var expression = this.target.statement.target.expression;
+
+			// 如果是生成器表达式，则返回表达式
+			return expression instanceof GeneratorExpression ? expression : null;
+		},
+		/**
+		 * 获取当前上下文中需要编译的生成器
+		 */
+		get contextGeneratorIfNeedCompile(){
+			// 如果 需要编译 且 闭包存在，则返回 contextGenerator
+			return generatorConfig.value ? this.contextGenerator : null;
+		},
+		/**
 		 * 初始化语句
 		 */
 		initStatement: function(){
@@ -112,7 +129,10 @@ this.FunctionBodyStatements = function(ECMAScriptStatements, ECMAScriptVariableC
 	this.ECMAScriptStatements,
 	this.ECMAScriptVariableCollections,
 	this.BraceBodyStatement,
-	Rexjs.VariableIndex
+	this.GeneratorExpression,
+	Rexjs.VariableIndex,
+	// generatorConfig
+	ECMAScriptConfig.generator
 );
 
 this.OpenFunctionBodyTag = function(OpenBraceTag, FunctionBodyExpression, FunctionBodyStatements, BlockComponentStatement, forEach){

@@ -6,7 +6,7 @@ new function(Rexjs){
 this.IteratorIndex = function(){
 	/**
 	 * 迭代器索引
-	 * @param {Number} max - 索引最大值
+	 * @param {Number} max - 索引最大值，但不包括该最大值
 	 */
 	function IteratorIndex(max){
 		this.max = max;
@@ -22,7 +22,7 @@ this.IteratorIndex = function(){
 		increase: function(value){
 			var current = this.current + value, max = this.max;
 
-			this.current = current > max ? max + 1 : current;
+			this.current = current >= max ? max : current;
 		},
 		max: 0
 	});
@@ -77,7 +77,7 @@ this.Iterator = function(IteratorIndex, IteratorResult){
 			}
 
 			// 初始化索引
-			this.index = new IteratorIndex(length - 1);
+			this.index = new IteratorIndex(length);
 			// 记录对象
 			this.iterable = iterable;
 			return;
@@ -105,7 +105,7 @@ this.Iterator = function(IteratorIndex, IteratorResult){
 		get closed(){
 			var index = this.index;
 
-			return index.current > index.max;
+			return index.current >= index.max;
 		},
 		index: null,
 		iterable: null,
@@ -156,13 +156,24 @@ this.FunctionIterator = function(Iterator, IteratorResult, toArray){
 		boundThis: null,
 		boundArguments: null,
 		/**
+		 * 获取下一个迭代结果
+		 */
+		get next(){
+			// 索引交给函数逻辑去处理，这里只需返回结果
+			return this.result;
+		},
+		/**
 		 * 获取当前迭代结果
 		 */
 		get result(){
+			var closed = this.closed;
+			
 			// 返回结果
 			return new IteratorResult(
-				this.iterable.apply(this.boundThis, this.boundArguments),
-				this.closed
+				closed ?
+					void 0 :
+					this.iterable.apply(this.boundThis, this.boundArguments),
+				closed
 			);
 		}
 	});

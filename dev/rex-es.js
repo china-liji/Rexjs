@@ -524,6 +524,24 @@ this.ECMAScriptStatements = function(ECMAScriptStatement, extractTo){
 		closure: null,
 		collections: null,
 		/**
+		 * 获取当前上下文中的生成器
+		 */
+		get contextGenerator(){
+			var closure = this.closure;
+
+			// 如果闭包存在，则返回 contextGenerator
+			return closure ? closure.contextGenerator : null;
+		},
+		/**
+		 * 获取当前上下文中需要编译的生成器
+		 */
+		get contextGeneratorIfNeedCompile(){
+			var closure = this.closure;
+
+			// 如果闭包存在，则返回 contextGeneratorIfNeedCompile
+			return closure ? closure.contextGeneratorIfNeedCompile : null;
+		},
+		/**
 		 * 声明变量名
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
 		 */
@@ -571,6 +589,21 @@ this.GlobalStatements = function(ECMAScriptStatements, ECMAScriptVariableCollect
 		);
 	};
 	GlobalStatements = new Rexjs(GlobalStatements, ECMAScriptStatements);
+
+	GlobalStatements.props({
+		/**
+		 * 获取当前上下文中的生成器
+		 */
+		get contextGenerator(){
+			return null;
+		},
+		/**
+		 * 获取当前上下文中需要编译的生成器
+		 */
+		get contextGeneratorIfNeedCompile(){
+			return null;
+		}
+	});
 
 	return GlobalStatements;
 }(
@@ -6574,7 +6607,7 @@ this.BlockVariableCollections = function(ECMAScriptVariableCollections){
 	this.ECMAScriptVariableCollections
 );
 
-this.BlockExpression = function(){
+this.BlockExpression = function(extractTo){
 	/**
 	 * 语句块表达式
 	 * @param {Context} open - 起始标签上下文
@@ -6585,6 +6618,18 @@ this.BlockExpression = function(){
 	BlockExpression = new Rexjs(BlockExpression, PartnerExpression);
 	
 	BlockExpression.props({
+		/**
+		 * 提取表达式文本内容
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 */
+		extractTo: function(contentBuilder){
+			if(this.generator){
+				debugger
+			}
+
+			extractTo.call(this, contentBuilder);
+		},
+		generator: null,
 		/**
 		 * 获取状态
 		 */
@@ -6598,7 +6643,9 @@ this.BlockExpression = function(){
 	});
 	
 	return BlockExpression;
-}();
+}(
+	PartnerExpression.prototype.extractTo
+);
 
 this.BlockBodyStatements = function(ECMAScriptStatements, BraceBodyStatement, BlockVariableCollections){
 	/**
@@ -7155,6 +7202,196 @@ this.FunctionVariableTag = function(visitor){
 										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
 									)[1] +
 									"\n//# sourceURL=http://rexjs.org/function-declaration.js"
+								);
+
+
+eval(
+									function(){
+										// 函数生成器符号相关
+!function(FunctionExpression, appendVariable){
+
+this.GeneratorHeadExpression = function(){
+	/**
+	 * 生成器头部表达式
+	 * @param {Context} context - 语法标签上下文
+	 * @param {Context} generator - 生成器标签上下文
+	 */
+	function GeneratorHeadExpression(context, generator){
+		Expression.call(this, context);
+
+		this.generator = generator;
+	};
+	GeneratorHeadExpression = new Rexjs(GeneratorHeadExpression, Expression);
+
+	GeneratorHeadExpression.props({
+		/**
+		 * 提取表达式文本内容
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 */
+		extractTo: function(contentBuilder){
+			// 提取关键字
+			contentBuilder.appendContext(this.context);
+			// 提取 *
+			contentBuilder.appendContext(this.generator);
+		},
+		generator: null
+	});
+
+	return GeneratorHeadExpression;
+}();
+
+this.GeneratorExpression = function(GeneratorHeadExpression, config, extractFunctionExpressionTo, extractStatementsTo, appendRange, setIndex){
+	/**
+	 * 生成器表达式
+	 * @param {Context} context - 语法标签上下文
+	 * @param {Context} generator - 生成器标签上下文
+	 */
+	function GeneratorExpression(context, generator){
+		FunctionExpression.call(this, context);
+
+		this.head = new GeneratorHeadExpression(context, generator);
+		this.ranges = [];
+	};
+	GeneratorExpression = new Rexjs(GeneratorExpression, FunctionExpression);
+
+	GeneratorExpression.props({
+		/**
+		 * 追加索引值的判断
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 */
+		caseIndex: function(contentBuilder){
+			contentBuilder.appendString(
+				"case " + this.index + ":"
+			);
+		},
+		/**
+		 * 提取表达式文本内容
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 */
+		extractTo: function(contentBuilder){
+			if(config.value){
+				var inner = this.body.inner, collections = inner.collections,
+				
+					variable = collections.generate(), defaultArgumentBuilder = new ContentBuilder();
+
+				this.variable = variable;
+
+				// 提取 function 关键字
+				contentBuilder.appendContext(this.head.context);
+				
+				// 提取函数名称
+				this.name.extractTo(contentBuilder);
+				// 提取函数参数
+				this.arguments.extractTo(contentBuilder, defaultArgumentBuilder);
+
+				contentBuilder.appendString(
+					"{var " + collections.rex.toString("", ",", "")
+				);
+				
+				this.ranges.forEach(appendRange, contentBuilder);
+				
+				contentBuilder.appendString(
+					";" +
+					defaultArgumentBuilder.result +
+					variable +
+					"= new Rexjs.FunctionIterator(function(){for(;;){switch(" +
+					variable +
+					".index.current){"
+				);
+
+				this.caseIndex(contentBuilder);
+				// 提取函数主体
+				extractStatementsTo.call(inner, contentBuilder);
+				
+				setIndex(this, contentBuilder, variable + ".index.max");
+
+				contentBuilder.appendString(
+					"return;}}},this,arguments);return new Rexjs.Generator(" + variable + ");}"
+				);
+
+				debugger
+
+				return;
+			}
+
+			extractFunctionExpressionTo.call(this, contentBuilder);
+		},
+		index: 0,
+		/**
+		 * 设置下一个索引
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 */
+		nextIndex: function(contentBuilder){
+			setIndex(this, contentBuilder, ++this.index);
+		},
+		ranges: null,
+		variable: ""
+	});
+
+	return GeneratorExpression;
+}(
+	this.GeneratorHeadExpression,
+	// config
+	ECMAScriptConfig.addBaseConfig("generator"),
+	FunctionExpression.prototype.extractTo,
+	Rexjs.Statements.prototype.extractTo,
+	// appendRange
+	function(range){
+		range.forEach(appendVariable, this);
+	},
+	// setIndex
+	function(expression, contentBuilder, index){
+		// 追加赋值字符串
+		contentBuilder.appendString(
+			expression.variable + ".index.current=" + index + ";"
+		);
+	}
+);
+
+this.GeneratorTag = function(GeneratorExpression){
+	/**
+	 * 函数生成器标签
+	 * @param {Number} _type - 标签类型
+	 */
+	function GeneratorTag(_type){
+		SyntaxTag.call(this, _type);
+	};
+	GeneratorTag = new Rexjs(GeneratorTag, SyntaxTag);
+
+	GeneratorTag.props({
+		regexp: /\*/,
+		/**
+		 * 标签访问器
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 标签上下文
+		 * @param {Statement} statement - 当前语句
+		 * @param {Statements} statements - 当前语句块
+		 */
+		visitor: function(parser, context, statement, statements){
+			// 设置当前表达式
+			statement.expression = new GeneratorExpression(statement.expression.context, context);
+		}
+	});
+
+	return GeneratorTag;
+}(
+	this.GeneratorExpression
+);
+
+}.call(
+	this,
+	this.FunctionExpression,
+	// appendVariable
+	function(variable, contentBuilder){
+		contentBuilder.appendString("," + variable);
+	}
+);
+									}
+									.toString()
+									.match(
+										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+									)[1] +
+									"\n//# sourceURL=http://rexjs.org/generator.js"
 								);
 
 
@@ -7865,7 +8102,7 @@ this.FunctionBodyExpression = function(extractTo, insertDefaults){
 	}
 );
 
-this.FunctionBodyStatements = function(ECMAScriptStatements, ECMAScriptVariableCollections, BraceBodyStatement, VariableIndex){
+this.FunctionBodyStatements = function(ECMAScriptStatements, ECMAScriptVariableCollections, BraceBodyStatement, GeneratorExpression, VariableIndex, generatorConfig){
 	/**
 	 * 函数主体语句块
 	 * @param {Statements} target - 目标语句块，即上一层语句块
@@ -7894,6 +8131,23 @@ this.FunctionBodyStatements = function(ECMAScriptStatements, ECMAScriptVariableC
 		 */
 		set closure(value){},
 		/**
+		 * 获取当前上下文中的生成器
+		 */
+		get contextGenerator(){
+			// 获取函数表达式
+			var expression = this.target.statement.target.expression;
+
+			// 如果是生成器表达式，则返回表达式
+			return expression instanceof GeneratorExpression ? expression : null;
+		},
+		/**
+		 * 获取当前上下文中需要编译的生成器
+		 */
+		get contextGeneratorIfNeedCompile(){
+			// 如果 需要编译 且 闭包存在，则返回 contextGenerator
+			return generatorConfig.value ? this.contextGenerator : null;
+		},
+		/**
 		 * 初始化语句
 		 */
 		initStatement: function(){
@@ -7907,7 +8161,10 @@ this.FunctionBodyStatements = function(ECMAScriptStatements, ECMAScriptVariableC
 	this.ECMAScriptStatements,
 	this.ECMAScriptVariableCollections,
 	this.BraceBodyStatement,
-	Rexjs.VariableIndex
+	this.GeneratorExpression,
+	Rexjs.VariableIndex,
+	// generatorConfig
+	ECMAScriptConfig.generator
 );
 
 this.OpenFunctionBodyTag = function(OpenBraceTag, FunctionBodyExpression, FunctionBodyStatements, BlockComponentStatement, forEach){
@@ -13339,331 +13596,28 @@ this.ContinueTag = function(FLOW_CIRCULAR, checkFlowStatement){
 
 eval(
 									function(){
-										// 函数生成器符号相关
-!function(FunctionExpression, appendVariable){
-
-this.GeneratorHeadExpression = function(){
-	/**
-	 * 生成器头部表达式
-	 * @param {Context} context - 语法标签上下文
-	 * @param {Context} generator - 生成器标签上下文
-	 */
-	function GeneratorHeadExpression(context, generator){
-		Expression.call(this, context);
-
-		this.generator = generator;
-	};
-	GeneratorHeadExpression = new Rexjs(GeneratorHeadExpression, Expression);
-
-	GeneratorHeadExpression.props({
-		/**
-		 * 提取表达式文本内容
-		 * @param {ContentBuilder} contentBuilder - 内容生成器
-		 */
-		extractTo: function(contentBuilder){
-			// 提取关键字
-			contentBuilder.appendContext(this.context);
-			// 提取 *
-			contentBuilder.appendContext(this.generator);
-		},
-		generator: null
-	});
-
-	return GeneratorHeadExpression;
-}();
-
-this.GeneratorExpression = function(GeneratorHeadExpression, config, extractFunctionExpressionTo, extractStatementsTo, expressionOf, appendRange){
-	/**
-	 * 生成器表达式
-	 * @param {Context} context - 语法标签上下文
-	 * @param {Context} generator - 生成器标签上下文
-	 */
-	function GeneratorExpression(context, generator){
-		FunctionExpression.call(this, context);
-
-		this.head = new GeneratorHeadExpression(context, generator);
-		this.ranges = [];
-	};
-	GeneratorExpression = new Rexjs(GeneratorExpression, FunctionExpression);
-
-	GeneratorExpression.static({
-		/**
-		 * 判断指定闭包是否为生成器
-		 * @param {Statements} closure - 需要判断的闭包
-		 */
-		is: function(closure){
-			// 如果闭包存在
-			if(closure){
-				return expressionOf(closure) instanceof GeneratorExpression;
-			}
-
-			return false;
-		},
-		/**
-		 * 判断指定闭包是否为生成器闭包且将要被编译
-		 * @param {Statements} closure - 需要判断的闭包
-		 * @param {CollectionRange} _range - 需要记录的变量收集器范围
-		 */
-		willCompile: function(closure, _range){
-			// 如果是生成器
-			if(this.is(closure)){
-				// 如果变量收集器范围存在
-				if(_range){
-					// 添加变量收集器范围
-					expressionOf(closure).ranges.push(_range);
-				}
-
-				// 返回是否需要编译
-				return config.value;
-			}
-
-			return false;
-		}
-	});
-
-	GeneratorExpression.props({
-		/**
-		 * 提取表达式文本内容
-		 * @param {ContentBuilder} contentBuilder - 内容生成器
-		 */
-		extractTo: function(contentBuilder){
-			if(config.value){
-				var inner = this.body.inner, collections = inner.collections,
-				
-					variable = collections.generate(), defaultArgumentBuilder = new ContentBuilder();
-
-				// 提取 function 关键字
-				contentBuilder.appendContext(this.head.context);
-				
-				// 提取函数名称
-				this.name.extractTo(contentBuilder);
-				// 提取函数参数
-				this.arguments.extractTo(contentBuilder, defaultArgumentBuilder);
-
-				contentBuilder.appendString(
-					"{var " + collections.rex.toString("", ",", "")
-				);
-				
-				this.ranges.forEach(appendRange, contentBuilder);
-				
-				contentBuilder.appendString(
-					";" +
-					defaultArgumentBuilder.result +
-					variable +
-					"= new Rexjs.FunctionIterator(function(){switch(" +
-					variable +
-					".index.current){case 0:"
-				);
-				
-				// 提取函数主体
-				extractStatementsTo.call(inner, contentBuilder);
-				
-				contentBuilder.appendString("break;}},this,arguments);return new Rexjs.Generator(" + variable + ");}");
-
-				debugger
-
-				return;
-			}
-
-			extractFunctionExpressionTo.call(this, contentBuilder);
-		},
-		ranges: null,
-		variable: ""
-	});
-
-	return GeneratorExpression;
-}(
-	this.GeneratorHeadExpression,
-	// config
-	ECMAScriptConfig.addBaseConfig("generator"),
-	FunctionExpression.prototype.extractTo,
-	Rexjs.Statements.prototype.extractTo,
-	// expressionOf
-	function(closure){
-		return closure.target.statement.target.expression;
-	},
-	// appendRange
-	function(range){
-		range.forEach(appendVariable, this);
-	}
-);
-
-this.GeneratorTag = function(GeneratorExpression){
-	/**
-	 * 函数生成器标签
-	 * @param {Number} _type - 标签类型
-	 */
-	function GeneratorTag(_type){
-		SyntaxTag.call(this, _type);
-	};
-	GeneratorTag = new Rexjs(GeneratorTag, SyntaxTag);
-
-	GeneratorTag.props({
-		regexp: /\*/,
-		/**
-		 * 标签访问器
-		 * @param {SyntaxParser} parser - 语法解析器
-		 * @param {Context} context - 标签上下文
-		 * @param {Statement} statement - 当前语句
-		 * @param {Statements} statements - 当前语句块
-		 */
-		visitor: function(parser, context, statement, statements){
-			// 设置当前表达式
-			statement.expression = new GeneratorExpression(statement.expression.context, context);
-		}
-	});
-
-	return GeneratorTag;
-}(
-	this.GeneratorExpression
-);
-
-}.call(
-	this,
-	this.FunctionExpression,
-	// appendVariable
-	function(variable, contentBuilder){
-		contentBuilder.appendString("," + variable);
-	}
-);
-									}
-									.toString()
-									.match(
-										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-									)[1] +
-									"\n//# sourceURL=http://rexjs.org/generator.js"
-								);
-
-
-eval(
-									function(){
-										// yield 表达式相关
-!function(TerminatedFlowExpression, config){
-
-this.YieldExpression = function(extractTo){
-	/**
-	 * yield 表达式
-	 * @param {Context} context - 语法标签上下文
-	 */
-	function YieldExpression(context){
-		TerminatedFlowExpression.call(this, context);
-	};
-	YieldExpression = new Rexjs(YieldExpression, TerminatedFlowExpression);
-	
-	YieldExpression.props({
-		/**
-		 * 提取表达式文本内容
-		 * @param {ContentBuilder} contentBuilder - 内容生成器
-		 */
-		extractTo: function(contentBuilder){
-			if(config.value){debugger
-				return;
-			}
-
-			// 调用父类方法
-			extractTo.call(this, contentBuilder);
-		}
-	});
-	
-	return YieldExpression;
-}(
-	TerminatedFlowExpression.prototype.extractTo
-);
-
-this.YieldTag = function(ReturnTag, YieldExpression, GeneratorExpression, TerminatedFlowStatement){
-	/**
-	 * yield 关键字标签
-	 * @param {Number} _type - 标签类型
-	 */
-	function YieldTag(_type){
-		ReturnTag.call(this, _type);
-	};
-	YieldTag = new Rexjs(YieldTag, ReturnTag);
-
-	YieldTag.props({
-		/**
-		 * 提取文本内容
-		 * @param {ContentBuilder} contentBuilder - 内容生成器
-		 * @param {String} content - 标签内容
-		 */
-		extractTo: function(contentBuilder, content){
-			// 追加标签内容
-			contentBuilder.appendString(config.value ? "return" : content);
-		},
-		regexp: /yield/,
-		/**
-		 * 标签访问器
-		 * @param {SyntaxParser} parser - 语法解析器
-		 * @param {Context} context - 标签上下文
-		 * @param {Statement} statement - 当前语句
-		 * @param {Statements} statements - 当前语句块
-		 */
-		visitor: function(parser, context, statement, statements){
-			// 如果在生成器闭包内
-			if(GeneratorExpression.is(statements.closure)){
-				// 设置表达式
-				statement.expression = new YieldExpression(context);
-				
-				(
-					// 设置当前语句
-					statements.statement = new TerminatedFlowStatement(statements)
-				)
-				// 设置表达式为空表达式
-				.expression = new EmptyExpression(null);
-
-				return;
-			}
-
-			// 报错
-			parser.error(
-				context,
-				ECMAScriptErrors.template("ILLEGAL_STATEMENT", context.content)
-			);
-		}
-	});
-
-	return YieldTag;
-}(
-	this.ReturnTag,
-	this.YieldExpression,
-	this.GeneratorExpression,
-	this.TerminatedFlowStatement
-);
-
-}.call(
-	this,
-	this.TerminatedFlowExpression,
-	// config
-	ECMAScriptConfig.generator
-);
-									}
-									.toString()
-									.match(
-										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-									)[1] +
-									"\n//# sourceURL=http://rexjs.org/yield.js"
-								);
-
-
-eval(
-									function(){
 										// var 语句相关
 !function(VariableDeclarationTag, closureVariableTag, varDeclarationSeparatorTag){
 
-this.VarExpression = function(BinaryExpression, GeneratorExpression){
+this.VarExpression = function(BinaryExpression){
 	/**
 	 * var 表达式
 	 * @param {Context} context - 标签上下文
 	 * @param {Statements} statements - 当前所处环境的变量收集器集合
 	 */
 	function VarExpression(context, statements){
+		var range = statements.collections.declaration.range(), compiledGenerator = statements.contextGeneratorIfNeedCompile;
+
 		Expression.call(this, context);
 
 		this.list = new ListExpression(null, ",");
-		this.range = statements.collections.declaration.range();
+		this.range = range;
 		
-		// 如果将要编译生成器
-		if(GeneratorExpression.willCompile(statements.closure, this.range)){
+		// 如果需要编译的生成器存在
+		if(compiledGenerator){
+			// 添加变量收集器范围
+			compiledGenerator.ranges.push(range);
+
 			// 那么，该表达式将转化为普通的赋值表达式，不再是声明。
 			this.declaration = false;
 		}
@@ -13694,8 +13648,7 @@ this.VarExpression = function(BinaryExpression, GeneratorExpression){
 
 	return VarExpression;
 }(
-	this.BinaryExpression,
-	this.GeneratorExpression
+	this.BinaryExpression
 );
 
 this.VarStatement = function(){
@@ -17251,6 +17204,158 @@ caseValueSeparatorTag = new this.CaseValueSeparatorTag();
 										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
 									)[1] +
 									"\n//# sourceURL=http://rexjs.org/case.js"
+								);
+
+
+eval(
+									function(){
+										// yield 表达式相关
+!function(TerminatedFlowExpression, SingleStatement, config){
+
+this.YieldExpression = function(extractTo){
+	/**
+	 * yield 表达式
+	 * @param {Context} context - 语法标签上下文
+	 * @param {GeneratorExpression} generator - 生成器表达式
+	 */
+	function YieldExpression(context, generator){
+		TerminatedFlowExpression.call(this, context);
+
+		this.generator = generator;
+	};
+	YieldExpression = new Rexjs(YieldExpression, TerminatedFlowExpression);
+	
+	YieldExpression.props({
+		/**
+		 * 提取表达式文本内容
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 */
+		extractTo: function(contentBuilder){
+			// 如果需要编译
+			if(config.value){
+				var generator = this.generator;
+
+				generator.nextIndex(contentBuilder);
+
+				// 调用父类方法
+				extractTo.call(this, contentBuilder);
+
+				if((this.state & STATE_STATEMENT_ENDED) !== STATE_STATEMENT_ENDED){
+					contentBuilder.appendString(";");
+					
+					this.state = STATE_STATEMENT_ENDED;
+				}
+
+				generator.caseIndex(contentBuilder);
+				return;
+			}
+
+			// 调用父类方法
+			extractTo.call(this, contentBuilder);
+		},
+		generator: null
+	});
+	
+	return YieldExpression;
+}(
+	TerminatedFlowExpression.prototype.extractTo
+);
+
+this.YieldTag = function(ReturnTag, YieldExpression, TerminatedFlowStatement, notice){
+	/**
+	 * yield 关键字标签
+	 * @param {Number} _type - 标签类型
+	 */
+	function YieldTag(_type){
+		ReturnTag.call(this, _type);
+	};
+	YieldTag = new Rexjs(YieldTag, ReturnTag);
+
+	YieldTag.props({
+		/**
+		 * 提取文本内容
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 * @param {String} content - 标签内容
+		 */
+		extractTo: function(contentBuilder, content){
+			// 追加标签内容
+			contentBuilder.appendString(config.value ? "return" : content);
+		},
+		regexp: /yield/,
+		/**
+		 * 标签访问器
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 标签上下文
+		 * @param {Statement} statement - 当前语句
+		 * @param {Statements} statements - 当前语句块
+		 */
+		visitor: function(parser, context, statement, statements){
+			var generatorExpression = statements.contextGenerator;
+
+			// 如果在生成器内
+			if(generatorExpression){
+				// 如果需要编译
+				if(config.value){
+					notice(statements);
+				}
+
+				// 设置表达式
+				statement.expression = new YieldExpression(context, generatorExpression);
+				
+				(
+					// 设置当前语句
+					statements.statement = new TerminatedFlowStatement(statements)
+				)
+				// 设置表达式为空表达式
+				.expression = new EmptyExpression(null);
+
+				return;
+			}
+
+			// 报错
+			parser.error(
+				context,
+				ECMAScriptErrors.template("ILLEGAL_STATEMENT", context.content)
+			);
+		}
+	});
+
+	return YieldTag;
+}(
+	this.ReturnTag,
+	this.YieldExpression,
+	this.TerminatedFlowStatement,
+	// notice
+	function(statements){
+		var closure = statements.closure;
+
+		do {
+			debugger
+
+			switch(true){
+				case statements.statement instanceof SingleStatement:
+					break;
+			}
+
+			statements = statements.target;
+		}
+		while(statements !== closure);
+	}
+);
+
+}.call(
+	this,
+	this.TerminatedFlowExpression,
+	this.SingleStatement,
+	// config
+	ECMAScriptConfig.generator
+);
+									}
+									.toString()
+									.match(
+										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+									)[1] +
+									"\n//# sourceURL=http://rexjs.org/yield.js"
 								);
 
 

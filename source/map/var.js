@@ -1,20 +1,25 @@
 // var 语句相关
 !function(VariableDeclarationTag, closureVariableTag, varDeclarationSeparatorTag){
 
-this.VarExpression = function(BinaryExpression, GeneratorExpression){
+this.VarExpression = function(BinaryExpression){
 	/**
 	 * var 表达式
 	 * @param {Context} context - 标签上下文
 	 * @param {Statements} statements - 当前所处环境的变量收集器集合
 	 */
 	function VarExpression(context, statements){
+		var range = statements.collections.declaration.range(), compiledGenerator = statements.contextGeneratorIfNeedCompile;
+
 		Expression.call(this, context);
 
 		this.list = new ListExpression(null, ",");
-		this.range = statements.collections.declaration.range();
+		this.range = range;
 		
-		// 如果将要编译生成器
-		if(GeneratorExpression.willCompile(statements.closure, this.range)){
+		// 如果需要编译的生成器存在
+		if(compiledGenerator){
+			// 添加变量收集器范围
+			compiledGenerator.ranges.push(range);
+
 			// 那么，该表达式将转化为普通的赋值表达式，不再是声明。
 			this.declaration = false;
 		}
@@ -45,8 +50,7 @@ this.VarExpression = function(BinaryExpression, GeneratorExpression){
 
 	return VarExpression;
 }(
-	this.BinaryExpression,
-	this.GeneratorExpression
+	this.BinaryExpression
 );
 
 this.VarStatement = function(){

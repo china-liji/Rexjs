@@ -26,7 +26,7 @@ this.BlockVariableCollections = function(ECMAScriptVariableCollections){
 	this.ECMAScriptVariableCollections
 );
 
-this.BlockExpression = function(){
+this.BlockExpression = function(extractTo){
 	/**
 	 * 语句块表达式
 	 * @param {Context} open - 起始标签上下文
@@ -37,6 +37,18 @@ this.BlockExpression = function(){
 	BlockExpression = new Rexjs(BlockExpression, PartnerExpression);
 	
 	BlockExpression.props({
+		/**
+		 * 提取表达式文本内容
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 */
+		extractTo: function(contentBuilder){
+			if(this.generator){
+				debugger
+			}
+
+			extractTo.call(this, contentBuilder);
+		},
+		generator: null,
 		/**
 		 * 获取状态
 		 */
@@ -50,7 +62,9 @@ this.BlockExpression = function(){
 	});
 	
 	return BlockExpression;
-}();
+}(
+	PartnerExpression.prototype.extractTo
+);
 
 this.BlockBodyStatements = function(ECMAScriptStatements, BraceBodyStatement, BlockVariableCollections){
 	/**

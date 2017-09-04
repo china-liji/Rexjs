@@ -31,7 +31,7 @@ this.GeneratorHeadExpression = function(){
 	return GeneratorHeadExpression;
 }();
 
-this.GeneratorExpression = function(GeneratorHeadExpression, config, extractFunctionExpressionTo, extractStatementsTo, expressionOf, appendRange){
+this.GeneratorExpression = function(GeneratorHeadExpression, config, extractFunctionExpressionTo, extractStatementsTo, appendRange, setIndex){
 	/**
 	 * 生成器表达式
 	 * @param {Context} context - 语法标签上下文
@@ -45,42 +45,16 @@ this.GeneratorExpression = function(GeneratorHeadExpression, config, extractFunc
 	};
 	GeneratorExpression = new Rexjs(GeneratorExpression, FunctionExpression);
 
-	GeneratorExpression.static({
-		/**
-		 * 判断指定闭包是否为生成器
-		 * @param {Statements} closure - 需要判断的闭包
-		 */
-		is: function(closure){
-			// 如果闭包存在
-			if(closure){
-				return expressionOf(closure) instanceof GeneratorExpression;
-			}
-
-			return false;
-		},
-		/**
-		 * 判断指定闭包是否为生成器闭包且将要被编译
-		 * @param {Statements} closure - 需要判断的闭包
-		 * @param {CollectionRange} _range - 需要记录的变量收集器范围
-		 */
-		willCompile: function(closure, _range){
-			// 如果是生成器
-			if(this.is(closure)){
-				// 如果变量收集器范围存在
-				if(_range){
-					// 添加变量收集器范围
-					expressionOf(closure).ranges.push(_range);
-				}
-
-				// 返回是否需要编译
-				return config.value;
-			}
-
-			return false;
-		}
-	});
-
 	GeneratorExpression.props({
+		/**
+		 * 追加索引值的判断
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 */
+		caseIndex: function(contentBuilder){
+			contentBuilder.appendString(
+				"case " + this.index + ":"
+			);
+		},
 		/**
 		 * 提取表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
@@ -90,6 +64,8 @@ this.GeneratorExpression = function(GeneratorHeadExpression, config, extractFunc
 				var inner = this.body.inner, collections = inner.collections,
 				
 					variable = collections.generate(), defaultArgumentBuilder = new ContentBuilder();
+
+				this.variable = variable;
 
 				// 提取 function 关键字
 				contentBuilder.appendContext(this.head.context);
@@ -109,15 +85,20 @@ this.GeneratorExpression = function(GeneratorHeadExpression, config, extractFunc
 					";" +
 					defaultArgumentBuilder.result +
 					variable +
-					"= new Rexjs.FunctionIterator(function(){switch(" +
+					"= new Rexjs.FunctionIterator(function(){for(;;){switch(" +
 					variable +
-					".index.current){case 0:"
+					".index.current){"
 				);
-				
+
+				this.caseIndex(contentBuilder);
 				// 提取函数主体
 				extractStatementsTo.call(inner, contentBuilder);
 				
-				contentBuilder.appendString("break;}},this,arguments);return new Rexjs.Generator(" + variable + ");}");
+				setIndex(this, contentBuilder, variable + ".index.max");
+
+				contentBuilder.appendString(
+					"return;}}},this,arguments);return new Rexjs.Generator(" + variable + ");}"
+				);
 
 				debugger
 
@@ -125,6 +106,14 @@ this.GeneratorExpression = function(GeneratorHeadExpression, config, extractFunc
 			}
 
 			extractFunctionExpressionTo.call(this, contentBuilder);
+		},
+		index: 0,
+		/**
+		 * 设置下一个索引
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 */
+		nextIndex: function(contentBuilder){
+			setIndex(this, contentBuilder, ++this.index);
 		},
 		ranges: null,
 		variable: ""
@@ -137,13 +126,16 @@ this.GeneratorExpression = function(GeneratorHeadExpression, config, extractFunc
 	ECMAScriptConfig.addBaseConfig("generator"),
 	FunctionExpression.prototype.extractTo,
 	Rexjs.Statements.prototype.extractTo,
-	// expressionOf
-	function(closure){
-		return closure.target.statement.target.expression;
-	},
 	// appendRange
 	function(range){
 		range.forEach(appendVariable, this);
+	},
+	// setIndex
+	function(expression, contentBuilder, index){
+		// 追加赋值字符串
+		contentBuilder.appendString(
+			expression.variable + ".index.current=" + index + ";"
+		);
 	}
 );
 

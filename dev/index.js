@@ -1,7 +1,9 @@
 var a = function*(){
 	var b;
 
-	yield;
+	if(1){ {yield 5 } }
+
+	123
 }
 
 debugger

@@ -2,7 +2,7 @@
 ------
 
 #### 官方网站：
-[https://china-liji.github.io/Rexjs.org](https://china-liji.github.io/Rexjs.org)
+[http://jqun.oschina.io/rexjs.org](http://jqun.oschina.io/rexjs.org)
 
 
 #### 浏览器应用：

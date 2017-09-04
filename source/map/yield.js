@@ -1,13 +1,16 @@
 // yield 表达式相关
-!function(TerminatedFlowExpression, config){
+!function(TerminatedFlowExpression, SingleStatement, config){
 
 this.YieldExpression = function(extractTo){
 	/**
 	 * yield 表达式
 	 * @param {Context} context - 语法标签上下文
+	 * @param {GeneratorExpression} generator - 生成器表达式
 	 */
-	function YieldExpression(context){
+	function YieldExpression(context, generator){
 		TerminatedFlowExpression.call(this, context);
+
+		this.generator = generator;
 	};
 	YieldExpression = new Rexjs(YieldExpression, TerminatedFlowExpression);
 	
@@ -18,13 +21,28 @@ this.YieldExpression = function(extractTo){
 		 */
 		extractTo: function(contentBuilder){
 			// 如果需要编译
-			if(config.value){debugger
+			if(config.value){
+				var generator = this.generator;
+
+				generator.nextIndex(contentBuilder);
+
+				// 调用父类方法
+				extractTo.call(this, contentBuilder);
+
+				if((this.state & STATE_STATEMENT_ENDED) !== STATE_STATEMENT_ENDED){
+					contentBuilder.appendString(";");
+					
+					this.state = STATE_STATEMENT_ENDED;
+				}
+
+				generator.caseIndex(contentBuilder);
 				return;
 			}
 
 			// 调用父类方法
 			extractTo.call(this, contentBuilder);
-		}
+		},
+		generator: null
 	});
 	
 	return YieldExpression;
@@ -32,7 +50,7 @@ this.YieldExpression = function(extractTo){
 	TerminatedFlowExpression.prototype.extractTo
 );
 
-this.YieldTag = function(ReturnTag, YieldExpression, GeneratorExpression, TerminatedFlowStatement){
+this.YieldTag = function(ReturnTag, YieldExpression, TerminatedFlowStatement, notice){
 	/**
 	 * yield 关键字标签
 	 * @param {Number} _type - 标签类型
@@ -61,10 +79,17 @@ this.YieldTag = function(ReturnTag, YieldExpression, GeneratorExpression, Termin
 		 * @param {Statements} statements - 当前语句块
 		 */
 		visitor: function(parser, context, statement, statements){
-			// 如果在生成器闭包内
-			if(GeneratorExpression.is(statements.closure)){
+			var generatorExpression = statements.contextGenerator;
+
+			// 如果在生成器内
+			if(generatorExpression){
+				// 如果需要编译
+				if(config.value){
+					notice(statements);
+				}
+
 				// 设置表达式
-				statement.expression = new YieldExpression(context);
+				statement.expression = new YieldExpression(context, generatorExpression);
 				
 				(
 					// 设置当前语句
@@ -88,13 +113,29 @@ this.YieldTag = function(ReturnTag, YieldExpression, GeneratorExpression, Termin
 }(
 	this.ReturnTag,
 	this.YieldExpression,
-	this.GeneratorExpression,
-	this.TerminatedFlowStatement
+	this.TerminatedFlowStatement,
+	// notice
+	function(statements){
+		var closure = statements.closure;
+
+		do {
+			debugger
+
+			switch(true){
+				case statements.statement instanceof SingleStatement:
+					break;
+			}
+
+			statements = statements.target;
+		}
+		while(statements !== closure);
+	}
 );
 
 }.call(
 	this,
 	this.TerminatedFlowExpression,
+	this.SingleStatement,
 	// config
 	ECMAScriptConfig.generator
 );
