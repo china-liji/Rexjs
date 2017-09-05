@@ -1,12 +1,35 @@
 var a = function*(){
 	var b;
 
-	if(1){ {yield 5 } }
+	if(1){
+		b = 1
 
-	123
+		{yield "x" }
+
+		yield "x2"
+		b += 2
+
+		return 9
+	}
+	else {
+		b = 3
+		yield "y"
+	}
+
+	4
 }
 
 debugger
+
+// label
+// for
+// switch
+// do while
+// while
+// return
+// throw
+
+
 
 // var a = function*(x = 1, ...y){
 // 	var a 

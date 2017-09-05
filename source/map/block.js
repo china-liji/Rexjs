@@ -37,18 +37,22 @@ this.BlockExpression = function(extractTo){
 	BlockExpression = new Rexjs(BlockExpression, PartnerExpression);
 	
 	BlockExpression.props({
+		contextGeneratorIfNeedCompile: null,
 		/**
 		 * 提取表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
 		 */
 		extractTo: function(contentBuilder){
-			if(this.generator){
-				debugger
+			// 如果存在需要编译的生成器
+			if(this.contextGeneratorIfNeedCompile){
+				// 直接提取 inner
+				this.inner.extractTo(contentBuilder);
+				return;
 			}
 
+			// 调用父类方法
 			extractTo.call(this, contentBuilder);
 		},
-		generator: null,
 		/**
 		 * 获取状态
 		 */

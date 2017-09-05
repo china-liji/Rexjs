@@ -5,20 +5,31 @@ this.TerminatedFlowExpression = function(){
 	/**
 	 * 中断流表达式
 	 * @param {Context} context - 语法标签上下文
+	 * @param {GeneratorExpression} contextGeneratorIfNeedCompile - 需要编译的生成器表达式
 	 */
-	function TerminatedFlowExpression(context){
+	function TerminatedFlowExpression(context, contextGeneratorIfNeedCompile){
 		Expression.call(this, context);
+
+		this.contextGeneratorIfNeedCompile = contextGeneratorIfNeedCompile;
 	};
 	TerminatedFlowExpression = new Rexjs(TerminatedFlowExpression, Expression);
 	
 	TerminatedFlowExpression.props({
+		contextGeneratorIfNeedCompile: null,
 		/**
 		 * 提取表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
 		 */
 		extractTo: function(contentBuilder){
-			var object = this.object;
+			var object = this.object, generator = this.contextGeneratorIfNeedCompile;
 
+			// 如果需要编译的生成器表达式存在
+			if(generator){
+				contentBuilder.appendString(
+					generator.currentIndexString + "=" + generator.maxIndexString + ";"
+				);
+			}
+			
 			// 追加关键字
 			contentBuilder.appendContext(this.context);
 
@@ -85,7 +96,7 @@ this.TerminatedFlowTag = function(TerminatedFlowExpression, TerminatedFlowStatem
 		 */
 		visitor: function(parser, context, statement, statements){
 			// 设置表达式
-			statement.expression = new TerminatedFlowExpression(context);
+			statement.expression = new TerminatedFlowExpression(context, statements.contextGeneratorIfNeedCompile);
 			// 设置当前语句
 			statements.statement = new TerminatedFlowStatement(statements);
 		}

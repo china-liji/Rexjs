@@ -5,12 +5,10 @@ this.YieldExpression = function(extractTo){
 	/**
 	 * yield 表达式
 	 * @param {Context} context - 语法标签上下文
-	 * @param {GeneratorExpression} generator - 生成器表达式
+	 * @param {GeneratorExpression} contextGeneratorIfNeedCompile - 需要编译的生成器表达式
 	 */
-	function YieldExpression(context, generator){
-		TerminatedFlowExpression.call(this, context);
-
-		this.generator = generator;
+	function YieldExpression(context, contextGeneratorIfNeedCompile){
+		TerminatedFlowExpression.call(this, context, contextGeneratorIfNeedCompile);
 	};
 	YieldExpression = new Rexjs(YieldExpression, TerminatedFlowExpression);
 	
@@ -22,9 +20,13 @@ this.YieldExpression = function(extractTo){
 		extractTo: function(contentBuilder){
 			// 如果需要编译
 			if(config.value){
-				var generator = this.generator;
+				var generator = this.contextGeneratorIfNeedCompile, index = generator.nextIndex();
 
-				generator.nextIndex(contentBuilder);
+				contentBuilder.appendString(
+					generator.currentIndexString + "=" + index + ";"
+				);
+
+				this.contextGeneratorIfNeedCompile = null; 
 
 				// 调用父类方法
 				extractTo.call(this, contentBuilder);
@@ -35,14 +37,13 @@ this.YieldExpression = function(extractTo){
 					this.state = STATE_STATEMENT_ENDED;
 				}
 
-				generator.caseIndex(contentBuilder);
+				contentBuilder.appendString("case " + index + ":");
 				return;
 			}
 
 			// 调用父类方法
 			extractTo.call(this, contentBuilder);
-		},
-		generator: null
+		}
 	});
 	
 	return YieldExpression;
@@ -79,17 +80,17 @@ this.YieldTag = function(ReturnTag, YieldExpression, TerminatedFlowStatement, no
 		 * @param {Statements} statements - 当前语句块
 		 */
 		visitor: function(parser, context, statement, statements){
-			var generatorExpression = statements.contextGenerator;
+			var generator = statements.contextGenerator;
 
 			// 如果在生成器内
-			if(generatorExpression){
+			if(generator){
 				// 如果需要编译
 				if(config.value){
-					notice(statements);
+					notice(statements, generator);
 				}
 
 				// 设置表达式
-				statement.expression = new YieldExpression(context, generatorExpression);
+				statement.expression = new YieldExpression(context, generator);
 				
 				(
 					// 设置当前语句
@@ -115,20 +116,25 @@ this.YieldTag = function(ReturnTag, YieldExpression, TerminatedFlowStatement, no
 	this.YieldExpression,
 	this.TerminatedFlowStatement,
 	// notice
-	function(statements){
-		var closure = statements.closure;
+	function(statements, generator){
+		var closure = statements.closure, target = closure.target;
 
-		do {
-			debugger
+		while(statements !== target){
+			var expression, t = statements.target;
 
 			switch(true){
 				case statements.statement instanceof SingleStatement:
+					expression = statements.statement.target.expression;
+					break;
+
+				case statements !== closure:
+					expression = t.statement.expression;
 					break;
 			}
 
-			statements = statements.target;
+			expression.contextGeneratorIfNeedCompile = generator;
+			statements = t;
 		}
-		while(statements !== closure);
 	}
 );
 

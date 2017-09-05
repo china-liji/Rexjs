@@ -1,5 +1,5 @@
 // 函数生成器符号相关
-!function(FunctionExpression, appendVariable){
+!function(FunctionExpression, extractTo, appendVariable){
 
 this.GeneratorHeadExpression = function(){
 	/**
@@ -31,7 +31,7 @@ this.GeneratorHeadExpression = function(){
 	return GeneratorHeadExpression;
 }();
 
-this.GeneratorExpression = function(GeneratorHeadExpression, config, extractFunctionExpressionTo, extractStatementsTo, appendRange, setIndex){
+this.GeneratorExpression = function(GeneratorHeadExpression, config, extractTo, appendRange, compileBody){
 	/**
 	 * 生成器表达式
 	 * @param {Context} context - 语法标签上下文
@@ -47,13 +47,10 @@ this.GeneratorExpression = function(GeneratorHeadExpression, config, extractFunc
 
 	GeneratorExpression.props({
 		/**
-		 * 追加索引值的判断
-		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 * 获取当前索引字符串
 		 */
-		caseIndex: function(contentBuilder){
-			contentBuilder.appendString(
-				"case " + this.index + ":"
-			);
+		get currentIndexString(){
+			return this.variable + ".index.current";
 		},
 		/**
 		 * 提取表达式文本内容
@@ -61,11 +58,9 @@ this.GeneratorExpression = function(GeneratorHeadExpression, config, extractFunc
 		 */
 		extractTo: function(contentBuilder){
 			if(config.value){
-				var inner = this.body.inner, collections = inner.collections,
-				
-					variable = collections.generate(), defaultArgumentBuilder = new ContentBuilder();
+				var inner = this.body.inner, collections = inner.collections, defaultArgumentBuilder = new ContentBuilder();
 
-				this.variable = variable;
+				this.variable = collections.generate();
 
 				// 提取 function 关键字
 				contentBuilder.appendContext(this.head.context);
@@ -81,39 +76,28 @@ this.GeneratorExpression = function(GeneratorHeadExpression, config, extractFunc
 				
 				this.ranges.forEach(appendRange, contentBuilder);
 				
-				contentBuilder.appendString(
-					";" +
-					defaultArgumentBuilder.result +
-					variable +
-					"= new Rexjs.FunctionIterator(function(){for(;;){switch(" +
-					variable +
-					".index.current){"
-				);
-
-				this.caseIndex(contentBuilder);
-				// 提取函数主体
-				extractStatementsTo.call(inner, contentBuilder);
-				
-				setIndex(this, contentBuilder, variable + ".index.max");
-
-				contentBuilder.appendString(
-					"return;}}},this,arguments);return new Rexjs.Generator(" + variable + ");}"
-				);
+				compileBody(this, defaultArgumentBuilder, inner, contentBuilder);
 
 				debugger
 
 				return;
 			}
 
-			extractFunctionExpressionTo.call(this, contentBuilder);
+			extractTo.call(this, contentBuilder);
 		},
 		index: 0,
+		/**
+		 * 获取最大索引字符串
+		 */
+		get maxIndexString(){
+			return this.variable + ".index.max";
+		},
 		/**
 		 * 设置下一个索引
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
 		 */
 		nextIndex: function(contentBuilder){
-			setIndex(this, contentBuilder, ++this.index);
+			return ++this.index;
 		},
 		ranges: null,
 		variable: ""
@@ -125,16 +109,36 @@ this.GeneratorExpression = function(GeneratorHeadExpression, config, extractFunc
 	// config
 	ECMAScriptConfig.addBaseConfig("generator"),
 	FunctionExpression.prototype.extractTo,
-	Rexjs.Statements.prototype.extractTo,
 	// appendRange
 	function(range){
 		range.forEach(appendVariable, this);
 	},
-	// setIndex
-	function(expression, contentBuilder, index){
-		// 追加赋值字符串
+	// compileBody
+	function(expression, defaultArgumentBuilder, inner, contentBuilder){
+		var variable = expression.variable, currentIndexString = expression.currentIndexString;
+
 		contentBuilder.appendString(
-			expression.variable + ".index.current=" + index + ";"
+			";" +
+			defaultArgumentBuilder.result +
+			variable +
+			"= new Rexjs.FunctionIterator(function(){for(;;){switch(" +
+			currentIndexString +
+			"){case " +
+			expression.index +
+			":"
+		);
+
+		// 提取函数主体
+		extractTo.call(inner, contentBuilder);
+		
+		contentBuilder.appendString(
+			"default:" +
+			currentIndexString +
+			"=" +
+			expression.maxIndexString +
+			";return;}}},this,arguments);return new Rexjs.Generator(" +
+			variable +
+			");}"
 		);
 	}
 );
@@ -172,6 +176,7 @@ this.GeneratorTag = function(GeneratorExpression){
 }.call(
 	this,
 	this.FunctionExpression,
+	Rexjs.Statements.prototype.extractTo,
 	// appendVariable
 	function(variable, contentBuilder){
 		contentBuilder.appendString("," + variable);

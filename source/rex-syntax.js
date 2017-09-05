@@ -351,8 +351,11 @@ this.Context = function(){
 this.ContentBuilder = function(){
 	/**
 	 * 内容生成器
+	 * @param {File} file - 生成器相关文件
 	 */
-	function ContentBuilder(){};
+	function ContentBuilder(file){
+		this.file = file;
+	};
 	ContentBuilder = new Rexjs(ContentBuilder);
 	
 	ContentBuilder.props({
@@ -381,8 +384,14 @@ this.ContentBuilder = function(){
 		 * 完成生成，返回结果
 		 */
 		complete: function(){
+			// 追加新行
+			this.newline();
+			// 追加 sourceURL
+			this.appendString("//# sourceURL=http://rexjs.org/" + this.file.filename);
+
 			return this.result;
 		},
+		file: null,
 		/**
 		 * 追加新行
 		 */
@@ -501,9 +510,8 @@ this.MappingBuilder = function(MappingPosition, Base64VLQ, JSON, appendContext, 
 	 * @param {File} file - 生成器相关文件
 	 */
 	function MappingBuilder(file){
-		ContentBuilder.call(this);
+		ContentBuilder.call(this, file);
 		
-		this.file = file;
 		this.position = new MappingPosition();
 	};
 	MappingBuilder = new Rexjs(MappingBuilder, ContentBuilder);
@@ -589,14 +597,6 @@ this.MappingBuilder = function(MappingPosition, Base64VLQ, JSON, appendContext, 
 		 * 完成生成，返回结果
 		 */
 		complete: function(){
-			var filename = this.file.filename;
-			
-			// 追加新行
-			this.newline();
-
-			// 追加 sourceURL
-			this.appendString("//# sourceURL=http://rexjs.org/" + filename);
-			
 			// 如果 btoa 存在，则添加 mappingURL，否则不支持 btao 的环境，应该也不会支持 source map
 			if(btoa){
 				// 追加新行
@@ -609,7 +609,7 @@ this.MappingBuilder = function(MappingPosition, Base64VLQ, JSON, appendContext, 
 				this.appendString(
 					btoa(
 						JSON.stringify({
-							sources: [ filename ],
+							sources: [ this.file.filename ],
 							names: [],
 							mappings: this.mappings
 						})
@@ -620,7 +620,6 @@ this.MappingBuilder = function(MappingPosition, Base64VLQ, JSON, appendContext, 
 			// 返回结果
 			return complete.call(this);
 		},
-		file: null,
 		mappings: "",
 		/**
 		 * 追加新行

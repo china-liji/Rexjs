@@ -2,13 +2,13 @@
 ------
 
 #### 官方网站：
-[http://jqun.oschina.io/rexjs.org](http://jqun.oschina.io/rexjs.org)
+[http://www.rexjs.org](http://www.rexjs.org)
 
 
 #### 浏览器应用：
 ```html
 <!-- 引用 rexjs -->
-<script src="./rex.min.js"></script>
+<script src="http://www.rexjs.org/rex.min.js"></script>
 
 <!-- 使用 type 定义模块 -->
 <script type="text/rexjs">

@@ -35,12 +35,12 @@ this.VarExpression = function(BinaryExpression){
 		extractTo: function(contentBuilder){
 			// 如果是声明
 			if(this.declaration){
-				// 提取 var 关键字
+				// 提取关键字
 				contentBuilder.appendContext(this.context);
+				// 添加空格
+				contentBuilder.appendSpace();
 			}
-		
-			// 添加空格
-			contentBuilder.appendSpace();
+
 			// 提取变量列表
 			this.list.extractTo(contentBuilder);
 		},

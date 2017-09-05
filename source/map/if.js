@@ -1,7 +1,7 @@
 // if 语句相关
-!function(closeIfConditionTag, elseTag){
+!function(closeIfConditionTag, elseTag, compileBodyWithGenerator){
 
-this.IfExpression = function(ConditionalExpression){
+this.IfExpression = function(ConditionalExpression, compileWithGenerator){
 	/**
 	 * if 表达式
 	 * @param {Context} context - 表达式上下文
@@ -15,6 +15,7 @@ this.IfExpression = function(ConditionalExpression){
 	
 	IfExpression.props({
 		body: null,
+		contextGeneratorIfNeedCompile: null,
 		elseBody: null,
 		elseContext: null,
 		/**
@@ -22,8 +23,15 @@ this.IfExpression = function(ConditionalExpression){
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
 		 */
 		extractTo: function(contentBuilder){
-			var elseContext = this.elseContext;
-			
+			var generator = this.contextGeneratorIfNeedCompile, elseContext = this.elseContext;
+
+			// 如果存在需要编译的生成器
+			if(generator){
+				// 以生成器形式编译表达式
+				compileWithGenerator(this, generator, elseContext, contentBuilder);
+				return;
+			}
+
 			// 追加 if 关键字
 			contentBuilder.appendContext(this.ifContext);
 			
@@ -57,7 +65,33 @@ this.IfExpression = function(ConditionalExpression){
 	
 	return IfExpression;
 }(
-	this.ConditionalExpression
+	this.ConditionalExpression,
+	// compileWithGenerator
+	function(expression, generator, elseContext, contentBuilder){
+		var index = generator.nextIndex(), ifIndex = generator.nextIndex(), elseIndex = elseContext ? generator.nextIndex() : index;
+
+		// 追加设置索引字符串
+		contentBuilder.appendString(
+			generator.currentIndexString + "="
+		);
+
+		// 提取条件
+		expression.condition.extractTo(contentBuilder);
+
+		// 追加条件的三元判断字符串
+		contentBuilder.appendString(
+			"?" + ifIndex + ":" + elseIndex + ";break;case " + ifIndex + ":"
+		);
+
+		// 编译 if 主体
+		compileBodyWithGenerator(expression.ifBody, generator, index, elseIndex, contentBuilder);
+
+		// 如果存在 else
+		if(elseContext){
+			// 编译 else 主体
+			compileBodyWithGenerator(expression.elseBody, generator, index, index, contentBuilder);
+		}
+	}
 );
 
 this.IfBodyStatement = function(SingleStatement){
@@ -309,5 +343,21 @@ elseTag = new this.ElseTag();
 	// closeIfConditionTag
 	null,
 	// elseTag
-	null
+	null,
+	// compileBodyWithGenerator
+	function(body, generator, currentIndex, caseIndex, contentBuilder){
+		// 提取主体内容
+		body.extractTo(contentBuilder);
+
+		// 判断主体表达式是否需要加分号
+		if((body.state & STATE_STATEMENT_ENDED) !== STATE_STATEMENT_ENDED){
+			// 追加分号
+			contentBuilder.appendString(";");
+		}
+
+		// 追加索引设置以及 case 表达式字符串
+		contentBuilder.appendString(
+			generator.currentIndexString + "=" + currentIndex + ";break;case " + caseIndex + ":"
+		);
+	}
 );

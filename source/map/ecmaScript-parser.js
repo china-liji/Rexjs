@@ -78,7 +78,7 @@ this.ECMAScriptParser = function(MappingBuilder, ECMAScriptTagsMap, GlobalStatem
 		build: function(_contentBuilder){
 			// 如果没有提供内容生成器
 			if(!_contentBuilder){
-				_contentBuilder = sourceMaps ? new MappingBuilder(this.file) : new ContentBuilder();
+				_contentBuilder = sourceMaps ? new MappingBuilder(this.file) : new ContentBuilder(this.file);
 			}
 			
 			// 追加闭包函数起始部分
