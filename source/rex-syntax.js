@@ -1645,6 +1645,32 @@ this.Statements = function(Statement, STATE_STATEMENT_ENDED, parseInt){
 // 其他表达式
 !function(Expression){
 
+this.CompiledExpression = function(){
+	/**
+	 * 已编译的表达式，一般用于将已编译过的文本作为表达式的形式委托出去使用
+	 * @param {String} value - 已编译过的代码字符串
+	 */
+	function CompiledExpression(value){
+		Expression.call(this, null);
+
+		this.value = value;
+	};
+	CompiledExpression = new Rexjs(CompiledExpression, Expression);
+	
+	CompiledExpression.props({
+		/**
+		 * 提取文本内容，空函数，不做任何处理
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 */
+		extractTo: function(contentBuilder){
+			contentBuilder.appendString(this.value);
+		},
+		value: ""
+	});
+	
+	return CompiledExpression;
+}();
+
 this.EmptyExpression = function(){
 	/**
 	 * 空表达式

@@ -8,6 +8,7 @@ test.unit(
 		this.true("仅带条件表达式的 for 循环", "for(;i < 100;)break");
 		this.true("仅带末表达式的 for 循环", "for(;;i += 1)break");
 		this.true("带声明的 for 循环", "for(var i;i < 100;i += 1){}");
+		this.true("带 in 表达式条件的循环", "for(var i;i in {};i += 1){}");
 		this.true("带的多个变量的声明 for 循环", "for(var i, j = 100;i < j;i += 1){}");
 		this.true("最简单的 for in", "for(a in b);");
 		this.true("带声明的 for in", "for(var a in b);");

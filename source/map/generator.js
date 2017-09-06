@@ -77,21 +77,12 @@ this.GeneratorExpression = function(GeneratorHeadExpression, config, extractTo, 
 				this.ranges.forEach(appendRange, contentBuilder);
 				
 				compileBody(this, defaultArgumentBuilder, inner, contentBuilder);
-
-				debugger
-
 				return;
 			}
 
 			extractTo.call(this, contentBuilder);
 		},
 		index: 0,
-		/**
-		 * 获取最大索引字符串
-		 */
-		get maxIndexString(){
-			return this.variable + ".index.max";
-		},
 		/**
 		 * 设置下一个索引
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
@@ -134,9 +125,7 @@ this.GeneratorExpression = function(GeneratorHeadExpression, config, extractTo, 
 		contentBuilder.appendString(
 			"default:" +
 			currentIndexString +
-			"=" +
-			expression.maxIndexString +
-			";return;}}},this,arguments);return new Rexjs.Generator(" +
+			"=NaN;return void 0;}}},this,arguments);return new Rexjs.Generator(" +
 			variable +
 			");}"
 		);

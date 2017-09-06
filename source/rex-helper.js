@@ -1,7 +1,7 @@
 new function(Rexjs){
 
 // 迭代器相关
-!function(Infinity){
+!function(){
 
 this.IteratorIndex = function(){
 	/**
@@ -22,7 +22,7 @@ this.IteratorIndex = function(){
 		increase: function(value){
 			var current = this.current + value, max = this.max;
 
-			this.current = current >= max ? max : current;
+			this.current = current > max ? max : current;
 		},
 		max: 0
 	});
@@ -50,7 +50,7 @@ this.IteratorResult = function(){
 	return IteratorResult;
 }();
 
-this.Iterator = function(IteratorIndex, IteratorResult){
+this.Iterator = function(IteratorIndex, IteratorResult, Infinity){
 	/**
 	 * 迭代器
 	 * @param {*} iterable - 可迭代的对象
@@ -134,10 +134,11 @@ this.Iterator = function(IteratorIndex, IteratorResult){
 	return Iterator;
 }(
 	this.IteratorIndex,
-	this.IteratorResult
+	this.IteratorResult,
+	Infinity
 );
 
-this.FunctionIterator = function(Iterator, IteratorResult, toArray){
+this.FunctionIterator = function(Iterator, IteratorResult, isNaN, toArray){
 	/**
 	 * 函数迭代器
 	 * @param {Function} func - 需要迭代的函数
@@ -147,14 +148,19 @@ this.FunctionIterator = function(Iterator, IteratorResult, toArray){
 
 		this.boundThis = boundThis;
 		this.boundArguments = toArray(boundArguments);
-
-		this.index.max = Infinity;
 	};
 	FunctionIterator = new Rexjs(FunctionIterator, Iterator);
 
 	FunctionIterator.props({
 		boundThis: null,
 		boundArguments: null,
+		/**
+		 * 判断该迭代器是否已经关闭
+		 */
+		get closed(){
+			return isNaN(this.index.current);
+		},
+		max: NaN,
 		/**
 		 * 获取下一个迭代结果
 		 */
@@ -166,14 +172,12 @@ this.FunctionIterator = function(Iterator, IteratorResult, toArray){
 		 * 获取当前迭代结果
 		 */
 		get result(){
-			var closed = this.closed;
-			
-			// 返回结果
+			// 返回结果，这里的 this.closed 必须获取两次，因为 this.iterable 是个函数，执行的时候，回改变 this.closed 的值
 			return new IteratorResult(
-				closed ?
+				this.closed ?
 					void 0 :
 					this.iterable.apply(this.boundThis, this.boundArguments),
-				closed
+				this.closed
 			);
 		}
 	});
@@ -182,6 +186,7 @@ this.FunctionIterator = function(Iterator, IteratorResult, toArray){
 }(
 	this.Iterator,
 	this.IteratorResult,
+	isNaN,
 	Rexjs.toArray
 );
 

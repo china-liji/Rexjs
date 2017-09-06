@@ -1,57 +1,7 @@
 // yield 表达式相关
-!function(TerminatedFlowExpression, SingleStatement, config){
+!function(TerminatedFlowExpression, SingleStatement, ReturnTag, config){
 
-this.YieldExpression = function(extractTo){
-	/**
-	 * yield 表达式
-	 * @param {Context} context - 语法标签上下文
-	 * @param {GeneratorExpression} contextGeneratorIfNeedCompile - 需要编译的生成器表达式
-	 */
-	function YieldExpression(context, contextGeneratorIfNeedCompile){
-		TerminatedFlowExpression.call(this, context, contextGeneratorIfNeedCompile);
-	};
-	YieldExpression = new Rexjs(YieldExpression, TerminatedFlowExpression);
-	
-	YieldExpression.props({
-		/**
-		 * 提取表达式文本内容
-		 * @param {ContentBuilder} contentBuilder - 内容生成器
-		 */
-		extractTo: function(contentBuilder){
-			// 如果需要编译
-			if(config.value){
-				var generator = this.contextGeneratorIfNeedCompile, index = generator.nextIndex();
-
-				contentBuilder.appendString(
-					generator.currentIndexString + "=" + index + ";"
-				);
-
-				this.contextGeneratorIfNeedCompile = null; 
-
-				// 调用父类方法
-				extractTo.call(this, contentBuilder);
-
-				if((this.state & STATE_STATEMENT_ENDED) !== STATE_STATEMENT_ENDED){
-					contentBuilder.appendString(";");
-					
-					this.state = STATE_STATEMENT_ENDED;
-				}
-
-				contentBuilder.appendString("case " + index + ":");
-				return;
-			}
-
-			// 调用父类方法
-			extractTo.call(this, contentBuilder);
-		}
-	});
-	
-	return YieldExpression;
-}(
-	TerminatedFlowExpression.prototype.extractTo
-);
-
-this.YieldTag = function(ReturnTag, YieldExpression, TerminatedFlowStatement, notice){
+this.YieldTag = function(visitor, notice){
 	/**
 	 * yield 关键字标签
 	 * @param {Number} _type - 标签类型
@@ -71,6 +21,13 @@ this.YieldTag = function(ReturnTag, YieldExpression, TerminatedFlowStatement, no
 			// 追加标签内容
 			contentBuilder.appendString(config.value ? "return" : content);
 		},
+		/**
+		 * 从相关生成器中获取当前所需使用的生成器索引值
+		 * @param {GeneratorExpression} generator - 相关生成器表达式
+		 */
+		getGeneratorIndex: function(generator){
+			return generator.nextIndex();
+		},
 		regexp: /yield/,
 		/**
 		 * 标签访问器
@@ -89,16 +46,8 @@ this.YieldTag = function(ReturnTag, YieldExpression, TerminatedFlowStatement, no
 					notice(statements, generator);
 				}
 
-				// 设置表达式
-				statement.expression = new YieldExpression(context, generator);
-				
-				(
-					// 设置当前语句
-					statements.statement = new TerminatedFlowStatement(statements)
-				)
-				// 设置表达式为空表达式
-				.expression = new EmptyExpression(null);
-
+				// 调用父类方法
+				visitor.call(this, parser, context, statement, statements);
 				return;
 			}
 
@@ -112,9 +61,7 @@ this.YieldTag = function(ReturnTag, YieldExpression, TerminatedFlowStatement, no
 
 	return YieldTag;
 }(
-	this.ReturnTag,
-	this.YieldExpression,
-	this.TerminatedFlowStatement,
+	ReturnTag.prototype.visitor,
 	// notice
 	function(statements, generator){
 		var closure = statements.closure, target = closure.target;
@@ -130,6 +77,9 @@ this.YieldTag = function(ReturnTag, YieldExpression, TerminatedFlowStatement, no
 				case statements !== closure:
 					expression = t.statement.expression;
 					break;
+
+				default:
+					return;
 			}
 
 			expression.contextGeneratorIfNeedCompile = generator;
@@ -142,6 +92,7 @@ this.YieldTag = function(ReturnTag, YieldExpression, TerminatedFlowStatement, no
 	this,
 	this.TerminatedFlowExpression,
 	this.SingleStatement,
+	this.ReturnTag,
 	// config
 	ECMAScriptConfig.generator
 );

@@ -218,7 +218,58 @@ this.ConditionalExpression = function(){
 	ConditionalExpression = new Rexjs(ConditionalExpression, Expression);
 
 	ConditionalExpression.props({
-		condition: null
+		/**
+		 * 以生成器形式去编译主体代码
+		 * @param {Expression} body - 主体表达式
+		 * @param {Number} nextStepIndex - 主体执行完的下一步索引值
+		 * @param {Number} negativeIndex - 条件失败时所对应的索引值
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 */
+		compileBodyWithGenerator: function(body, nextStepIndex, negativeIndex, contentBuilder){
+			// 提取主体内容
+			body.extractTo(contentBuilder);
+
+			// 判断主体表达式是否需要加分号
+			if((body.state & STATE_STATEMENT_ENDED) !== STATE_STATEMENT_ENDED){
+				// 追加分号
+				contentBuilder.appendString(";");
+			}
+
+			// 设置表达式状态为已结束
+			this.state = STATE_STATEMENT_ENDED;
+
+			// 追加索引设置以及 case 表达式字符串
+			contentBuilder.appendString(
+				this.contextGeneratorIfNeedCompile.currentIndexString + "=" + nextStepIndex + ";break;case " + negativeIndex + ":"
+			);
+		},
+		/**
+		 * 以生成器形式去编译条件代码
+		 * @param {Expression} condition - 条件表达式
+		 * @param {Number} index - 条件所处 case 代码块的索引值
+		 * @param {Number} positiveIndex - 条件成立时所对应的索引值
+		 * @param {Number} negativeIndex - 条件失败时所对应的索引值
+		 * @param {Number} caseIndex - 条件判断后的下一个 case 代码块索引值
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 */
+		compileConditionWithGenerator: function(condition, index, positiveIndex, negativeIndex, caseIndex, contentBuilder){
+			var currentIndexString = this.contextGeneratorIfNeedCompile.currentIndexString;
+
+			// 追加设置当前索引字符串与 case 表达式
+			contentBuilder.appendString(
+				currentIndexString + "=" + index + ";break;case " + index + ":" + currentIndexString + "="
+			);
+
+			// 提取条件表达式
+			condition.extractTo(contentBuilder);
+
+			// 追加条件的三元判断字符串
+			contentBuilder.appendString(
+				"?" + positiveIndex + ":" + negativeIndex + ";break;case " + caseIndex + ":"
+			);
+		},
+		condition: null,
+		contextGeneratorIfNeedCompile: null
 	});
 
 	return ConditionalExpression;
@@ -6919,21 +6970,12 @@ this.GeneratorExpression = function(GeneratorHeadExpression, config, extractTo, 
 				this.ranges.forEach(appendRange, contentBuilder);
 				
 				compileBody(this, defaultArgumentBuilder, inner, contentBuilder);
-
-				debugger
-
 				return;
 			}
 
 			extractTo.call(this, contentBuilder);
 		},
 		index: 0,
-		/**
-		 * 获取最大索引字符串
-		 */
-		get maxIndexString(){
-			return this.variable + ".index.max";
-		},
 		/**
 		 * 设置下一个索引
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
@@ -6976,9 +7018,7 @@ this.GeneratorExpression = function(GeneratorHeadExpression, config, extractTo, 
 		contentBuilder.appendString(
 			"default:" +
 			currentIndexString +
-			"=" +
-			expression.maxIndexString +
-			";return;}}},this,arguments);return new Rexjs.Generator(" +
+			"=NaN;return void 0;}}},this,arguments);return new Rexjs.Generator(" +
 			variable +
 			");}"
 		);
@@ -12469,7 +12509,7 @@ this.LabelColonTag = function(ColonTag, LabelledExpression, LabelledStatement){
 // 中断流相关
 !function(){
 
-this.TerminatedFlowExpression = function(){
+this.TerminatedFlowExpression = function(extract){
 	/**
 	 * 中断流表达式
 	 * @param {Context} context - 语法标签上下文
@@ -12489,33 +12529,56 @@ this.TerminatedFlowExpression = function(){
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
 		 */
 		extractTo: function(contentBuilder){
-			var object = this.object, generator = this.contextGeneratorIfNeedCompile;
+			var generator = this.contextGeneratorIfNeedCompile;
 
 			// 如果需要编译的生成器表达式存在
 			if(generator){
-				contentBuilder.appendString(
-					generator.currentIndexString + "=" + generator.maxIndexString + ";"
-				);
-			}
-			
-			// 追加关键字
-			contentBuilder.appendContext(this.context);
+				var generatorIndex = this.context.tag.getGeneratorIndex(generator);
 
-			// 如果是空表达式
-			if(object instanceof EmptyExpression){
+				// 追加设置生成器索引的字符串
+				contentBuilder.appendString(
+					generator.currentIndexString + "=" + generatorIndex + ";"
+				);
+
+				// 提取表达式
+				extract(this, contentBuilder);
+				// 追加分号
+				contentBuilder.appendString(";");
+				
+				// 由于上面设置了分号，表示语句已经结束，不需要再添加分号
+				this.state = STATE_STATEMENT_ENDED;
+
+				// 追加 case 表达式字符串
+				contentBuilder.appendString("case " + generatorIndex + ":");
 				return;
 			}
-
-			// 追加空格
-			contentBuilder.appendSpace();
-			// 提取对象
-			object.extractTo(contentBuilder);
+			
+			// 提取表达式
+			extract(this, contentBuilder);
 		},
 		object: null
 	});
 	
 	return TerminatedFlowExpression;
-}();
+}(
+	// extract
+	function(expression, contentBuilder){
+		var object = expression.object;
+
+		// 追加关键字
+		contentBuilder.appendContext(expression.context);
+
+		// 如果是空表达式
+		if(object instanceof EmptyExpression){
+			return;
+		}
+
+		// 追加空格
+		contentBuilder.appendSpace();
+		// 提取对象
+		object.extractTo(contentBuilder);
+	}
+);
 
 this.TerminatedFlowStatement = function(){
 	/**
@@ -12555,6 +12618,13 @@ this.TerminatedFlowTag = function(TerminatedFlowExpression, TerminatedFlowStatem
 	TerminatedFlowTag.props({
 		$class: CLASS_STATEMENT_BEGIN,
 		flow: ECMAScriptStatement.FLOW_MAIN,
+		/**
+		 * 从相关生成器中获取当前所需使用的生成器索引值
+		 * @param {GeneratorExpression} generator - 相关生成器表达式
+		 */
+		getGeneratorIndex: function(){
+			return "NaN";
+		},
 		/**
 		 * 标签访问器
 		 * @param {SyntaxParser} parser - 语法解析器
@@ -13540,7 +13610,7 @@ constDeclarationSeparatorTag = new this.ConstDeclarationSeparatorTag();
 
 
 // if 语句相关
-!function(closeIfConditionTag, elseTag, compileBodyWithGenerator){
+!function(closeIfConditionTag, elseTag){
 
 this.IfExpression = function(ConditionalExpression, compileWithGenerator){
 	/**
@@ -13556,7 +13626,6 @@ this.IfExpression = function(ConditionalExpression, compileWithGenerator){
 	
 	IfExpression.props({
 		body: null,
-		contextGeneratorIfNeedCompile: null,
 		elseBody: null,
 		elseContext: null,
 		/**
@@ -13609,28 +13678,25 @@ this.IfExpression = function(ConditionalExpression, compileWithGenerator){
 	this.ConditionalExpression,
 	// compileWithGenerator
 	function(expression, generator, elseContext, contentBuilder){
-		var index = generator.nextIndex(), ifIndex = generator.nextIndex(), elseIndex = elseContext ? generator.nextIndex() : index;
+		var index = generator.nextIndex(), positiveIndex = generator.nextIndex(), negativeIndex = elseContext ? generator.nextIndex() : index;
 
-		// 追加设置索引字符串
-		contentBuilder.appendString(
-			generator.currentIndexString + "="
-		);
-
-		// 提取条件
-		expression.condition.extractTo(contentBuilder);
-
-		// 追加条件的三元判断字符串
-		contentBuilder.appendString(
-			"?" + ifIndex + ":" + elseIndex + ";break;case " + ifIndex + ":"
+		// 以生成器形式去编译条件代码
+		expression.compileConditionWithGenerator(
+			expression.condition,
+			generator.nextIndex(),
+			positiveIndex,
+			negativeIndex,
+			positiveIndex,
+			contentBuilder
 		);
 
 		// 编译 if 主体
-		compileBodyWithGenerator(expression.ifBody, generator, index, elseIndex, contentBuilder);
+		expression.compileBodyWithGenerator(expression.ifBody, index, negativeIndex, contentBuilder);
 
 		// 如果存在 else
 		if(elseContext){
-			// 编译 else 主体
-			compileBodyWithGenerator(expression.elseBody, generator, index, index, contentBuilder);
+			// 编译 if 主体
+			expression.compileBodyWithGenerator(expression.elseBody, index, index, contentBuilder);
 		}
 	}
 );
@@ -13884,23 +13950,7 @@ elseTag = new this.ElseTag();
 	// closeIfConditionTag
 	null,
 	// elseTag
-	null,
-	// compileBodyWithGenerator
-	function(body, generator, currentIndex, caseIndex, contentBuilder){
-		// 提取主体内容
-		body.extractTo(contentBuilder);
-
-		// 判断主体表达式是否需要加分号
-		if((body.state & STATE_STATEMENT_ENDED) !== STATE_STATEMENT_ENDED){
-			// 追加分号
-			contentBuilder.appendString(";");
-		}
-
-		// 追加索引设置以及 case 表达式字符串
-		contentBuilder.appendString(
-			generator.currentIndexString + "=" + currentIndex + ";break;case " + caseIndex + ":"
-		);
-	}
+	null
 );
 
 
@@ -14371,9 +14421,9 @@ closeDoWhileConditionTag = new this.CloseDoWhileConditionTag();
 
 
 // for 语句相关
-!function(){
+!function(CompiledExpression){
 
-this.ForExpression = function(ConditionalExpression, config, compileOf){
+this.ForExpression = function(ConditionalExpression, config, compileOf, compileOfWithGenerator){
 	/**
 	 * for 表达式
 	 * @param {Context} context - 语法标签上下文
@@ -14390,11 +14440,38 @@ this.ForExpression = function(ConditionalExpression, config, compileOf){
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
 		 */
 		extractTo: function(contentBuilder){
+			var iterator = this.iterator, generator = this.contextGeneratorIfNeedCompile;
+
+			// 如果存在需要编译的生成器
+			if(generator){
+				var index = generator.nextIndex(), positiveIndex = generator.nextIndex(), negativeIndex = generator.nextIndex();
+
+				// 如果迭代符存在
+				if(iterator){
+					// 如果是 of 标签而且需要编译 of
+					if(iterator === "of" && config.value){
+						// 以生成器形式编译 of
+						compileOfWithGenerator(this, index, positiveIndex, negativeIndex, generator, contentBuilder);
+						return;
+					}
+
+					// 以生成器形式编译逻辑条件
+					this.compileConditionWithGenerator(this.condition, index, positiveIndex, negativeIndex, positiveIndex, contentBuilder);
+					// 以生成器形式编译主体
+					this.compileBodyWithGenerator(this.body, index, negativeIndex, contentBuilder);
+					return;
+				}
+
+				// 以生成器形式编译 for in
+				compileInWithGenerator(this, index, positiveIndex, negativeIndex, generator, contentBuilder);
+				return;
+			}
+
 			// 添加 for 关键字
 			contentBuilder.appendContext(this.context);
 
 			// 如果是 of 标签而且需要编译 of
-			if(this.iterator === "of" && config.value){
+			if(iterator === "of" && config.value){
 				// 编译 for of
 				compileOf(
 					this.condition,
@@ -14452,6 +14529,59 @@ this.ForExpression = function(ConditionalExpression, config, compileOf){
 		body.extractTo(contentBuilder);
 		// 追加语句块结束小括号
 		contentBuilder.appendString("}");
+	},
+	// compileOfWithGenerator
+	function(expression, index, positiveIndex, negativeIndex, generator, contentBuilder){
+		var variable = expression.variable, inner = expression.condition.inner, builder = new ContentBuilder();
+
+		// 追加 for 循环初始化语句
+		contentBuilder.appendString(variable + "=new Rexjs.Generator(");
+		// 追加生成器的对象
+		inner.right.extractTo(contentBuilder);
+		// 追加 Generator 的结束小括号与语句分隔符
+		contentBuilder.appendString(");");
+
+		// 以生成器形式编译条件
+		expression.compileConditionWithGenerator(
+			new CompiledExpression(variable + ".iterator.closed"),
+			index,
+			negativeIndex,
+			positiveIndex,
+			positiveIndex,
+			contentBuilder
+		);
+
+		// 将对象值的初始化表达式提取到新的内容生成器里，目的是防止文档位置（position）的错乱，导致 mappings 不可用 
+		inner.left.extractTo(builder);
+
+		// 追加对象值的初始化
+		contentBuilder.appendString(
+			builder.result + "=" + variable + ".next().value;"
+		);
+
+		// 以生成器形式编译主体
+		expression.compileBodyWithGenerator(expression.body, index, negativeIndex, contentBuilder);
+	},
+	// compileInWithGenerator
+	function(expression, index, positiveIndex, negativeIndex, generator, contentBuilder){
+		var inner = expression.condition.inner, finallyIndex = generator.nextIndex();
+
+		// 提取初始化条件
+		inner[0].extractTo(contentBuilder);
+		// 追加分号
+		contentBuilder.appendString(";");
+		// 以生成器形式编译逻辑条件
+		expression.compileConditionWithGenerator(inner[1], index, positiveIndex, negativeIndex, finallyIndex, contentBuilder);
+		// 提取最终条件
+		inner[2].extractTo(contentBuilder);
+
+		// 追加设置索引字符串及 case 表达式
+		contentBuilder.appendString(
+			";" + generator.currentIndexString + "=" + index + ";break;case " + positiveIndex + ":"
+		);
+
+		// 以生成器形式编译主体
+		expression.compileBodyWithGenerator(expression.body, finallyIndex, negativeIndex, contentBuilder);
 	}
 );
 
@@ -14521,7 +14651,8 @@ this.ForTag = function(ForExpression){
 );
 
 }.call(
-	this
+	this,
+	Rexjs.CompiledExpression
 );
 
 
@@ -16531,59 +16662,9 @@ caseValueSeparatorTag = new this.CaseValueSeparatorTag();
 
 
 // yield 表达式相关
-!function(TerminatedFlowExpression, SingleStatement, config){
+!function(TerminatedFlowExpression, SingleStatement, ReturnTag, config){
 
-this.YieldExpression = function(extractTo){
-	/**
-	 * yield 表达式
-	 * @param {Context} context - 语法标签上下文
-	 * @param {GeneratorExpression} contextGeneratorIfNeedCompile - 需要编译的生成器表达式
-	 */
-	function YieldExpression(context, contextGeneratorIfNeedCompile){
-		TerminatedFlowExpression.call(this, context, contextGeneratorIfNeedCompile);
-	};
-	YieldExpression = new Rexjs(YieldExpression, TerminatedFlowExpression);
-	
-	YieldExpression.props({
-		/**
-		 * 提取表达式文本内容
-		 * @param {ContentBuilder} contentBuilder - 内容生成器
-		 */
-		extractTo: function(contentBuilder){
-			// 如果需要编译
-			if(config.value){
-				var generator = this.contextGeneratorIfNeedCompile, index = generator.nextIndex();
-
-				contentBuilder.appendString(
-					generator.currentIndexString + "=" + index + ";"
-				);
-
-				this.contextGeneratorIfNeedCompile = null; 
-
-				// 调用父类方法
-				extractTo.call(this, contentBuilder);
-
-				if((this.state & STATE_STATEMENT_ENDED) !== STATE_STATEMENT_ENDED){
-					contentBuilder.appendString(";");
-					
-					this.state = STATE_STATEMENT_ENDED;
-				}
-
-				contentBuilder.appendString("case " + index + ":");
-				return;
-			}
-
-			// 调用父类方法
-			extractTo.call(this, contentBuilder);
-		}
-	});
-	
-	return YieldExpression;
-}(
-	TerminatedFlowExpression.prototype.extractTo
-);
-
-this.YieldTag = function(ReturnTag, YieldExpression, TerminatedFlowStatement, notice){
+this.YieldTag = function(visitor, notice){
 	/**
 	 * yield 关键字标签
 	 * @param {Number} _type - 标签类型
@@ -16603,6 +16684,13 @@ this.YieldTag = function(ReturnTag, YieldExpression, TerminatedFlowStatement, no
 			// 追加标签内容
 			contentBuilder.appendString(config.value ? "return" : content);
 		},
+		/**
+		 * 从相关生成器中获取当前所需使用的生成器索引值
+		 * @param {GeneratorExpression} generator - 相关生成器表达式
+		 */
+		getGeneratorIndex: function(generator){
+			return generator.nextIndex();
+		},
 		regexp: /yield/,
 		/**
 		 * 标签访问器
@@ -16621,16 +16709,8 @@ this.YieldTag = function(ReturnTag, YieldExpression, TerminatedFlowStatement, no
 					notice(statements, generator);
 				}
 
-				// 设置表达式
-				statement.expression = new YieldExpression(context, generator);
-				
-				(
-					// 设置当前语句
-					statements.statement = new TerminatedFlowStatement(statements)
-				)
-				// 设置表达式为空表达式
-				.expression = new EmptyExpression(null);
-
+				// 调用父类方法
+				visitor.call(this, parser, context, statement, statements);
 				return;
 			}
 
@@ -16644,9 +16724,7 @@ this.YieldTag = function(ReturnTag, YieldExpression, TerminatedFlowStatement, no
 
 	return YieldTag;
 }(
-	this.ReturnTag,
-	this.YieldExpression,
-	this.TerminatedFlowStatement,
+	ReturnTag.prototype.visitor,
 	// notice
 	function(statements, generator){
 		var closure = statements.closure, target = closure.target;
@@ -16662,6 +16740,9 @@ this.YieldTag = function(ReturnTag, YieldExpression, TerminatedFlowStatement, no
 				case statements !== closure:
 					expression = t.statement.expression;
 					break;
+
+				default:
+					return;
 			}
 
 			expression.contextGeneratorIfNeedCompile = generator;
@@ -16674,6 +16755,7 @@ this.YieldTag = function(ReturnTag, YieldExpression, TerminatedFlowStatement, no
 	this,
 	this.TerminatedFlowExpression,
 	this.SingleStatement,
+	this.ReturnTag,
 	// config
 	ECMAScriptConfig.generator
 );

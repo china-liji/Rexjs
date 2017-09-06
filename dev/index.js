@@ -1,34 +1,45 @@
-var a = function*(){
-	var b;
-
-	if(1){
-		b = 1
-
-		{yield "x" }
-
-		yield "x2"
-		b += 2
-
-		return 9
-	}
-	else {
-		b = 3
-		yield "y"
-	}
-
-	4
-}
-
-debugger
-
 // label
-// for
 // switch
 // do while
 // while
-// return
-// throw
 
+// for
+var a = function*(){
+	var b;
+
+	for(var i of [1,2,3,4,5])
+		yield i
+
+		123;
+}
+
+// if
+
+// var a = function*(){
+// 	var b;
+
+// 	if(1){
+// 		b = 1
+
+// 		{yield "x" }
+
+// 		yield "x2"
+// 		b += 2
+
+// 		return 9
+// 	}
+// 	else {
+// 		b = 3
+// 		yield "y"
+// 		b = 4
+// 		throw 123
+// 	}
+
+// 	5
+// 	yield "z"
+// }
+
+debugger
 
 
 // var a = function*(x = 1, ...y){

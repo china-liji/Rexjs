@@ -1,5 +1,5 @@
 // if 语句相关
-!function(closeIfConditionTag, elseTag, compileBodyWithGenerator){
+!function(closeIfConditionTag, elseTag){
 
 this.IfExpression = function(ConditionalExpression, compileWithGenerator){
 	/**
@@ -15,7 +15,6 @@ this.IfExpression = function(ConditionalExpression, compileWithGenerator){
 	
 	IfExpression.props({
 		body: null,
-		contextGeneratorIfNeedCompile: null,
 		elseBody: null,
 		elseContext: null,
 		/**
@@ -68,28 +67,25 @@ this.IfExpression = function(ConditionalExpression, compileWithGenerator){
 	this.ConditionalExpression,
 	// compileWithGenerator
 	function(expression, generator, elseContext, contentBuilder){
-		var index = generator.nextIndex(), ifIndex = generator.nextIndex(), elseIndex = elseContext ? generator.nextIndex() : index;
+		var index = generator.nextIndex(), positiveIndex = generator.nextIndex(), negativeIndex = elseContext ? generator.nextIndex() : index;
 
-		// 追加设置索引字符串
-		contentBuilder.appendString(
-			generator.currentIndexString + "="
-		);
-
-		// 提取条件
-		expression.condition.extractTo(contentBuilder);
-
-		// 追加条件的三元判断字符串
-		contentBuilder.appendString(
-			"?" + ifIndex + ":" + elseIndex + ";break;case " + ifIndex + ":"
+		// 以生成器形式去编译条件代码
+		expression.compileConditionWithGenerator(
+			expression.condition,
+			generator.nextIndex(),
+			positiveIndex,
+			negativeIndex,
+			positiveIndex,
+			contentBuilder
 		);
 
 		// 编译 if 主体
-		compileBodyWithGenerator(expression.ifBody, generator, index, elseIndex, contentBuilder);
+		expression.compileBodyWithGenerator(expression.ifBody, index, negativeIndex, contentBuilder);
 
 		// 如果存在 else
 		if(elseContext){
-			// 编译 else 主体
-			compileBodyWithGenerator(expression.elseBody, generator, index, index, contentBuilder);
+			// 编译 if 主体
+			expression.compileBodyWithGenerator(expression.elseBody, index, index, contentBuilder);
 		}
 	}
 );
@@ -343,21 +339,5 @@ elseTag = new this.ElseTag();
 	// closeIfConditionTag
 	null,
 	// elseTag
-	null,
-	// compileBodyWithGenerator
-	function(body, generator, currentIndex, caseIndex, contentBuilder){
-		// 提取主体内容
-		body.extractTo(contentBuilder);
-
-		// 判断主体表达式是否需要加分号
-		if((body.state & STATE_STATEMENT_ENDED) !== STATE_STATEMENT_ENDED){
-			// 追加分号
-			contentBuilder.appendString(";");
-		}
-
-		// 追加索引设置以及 case 表达式字符串
-		contentBuilder.appendString(
-			generator.currentIndexString + "=" + currentIndex + ";break;case " + caseIndex + ":"
-		);
-	}
+	null
 );
