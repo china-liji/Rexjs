@@ -1,7 +1,7 @@
 // for 语句相关
 !function(CompiledExpression){
 
-this.ForExpression = function(ConditionalExpression, config, compileOf, compileOfWithGenerator){
+this.ForExpression = function(ConditionalExpression, config, compileOf, compileOfWithGenerator, compileWithGenerator){
 	/**
 	 * for 表达式
 	 * @param {Context} context - 语法标签上下文
@@ -14,42 +14,42 @@ this.ForExpression = function(ConditionalExpression, config, compileOf, compileO
 	ForExpression.props({
 		body: null,
 		/**
-		 * 提取表达式文本内容
+		 * 以生成器形式的提取表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
 		 */
-		extractTo: function(contentBuilder){
+		generateTo: function(contentBuilder){
 			var iterator = this.iterator, generator = this.contextGeneratorIfNeedCompile;
 
-			// 如果存在需要编译的生成器
-			if(generator){
-				var index = generator.nextIndex(), positiveIndex = generator.nextIndex(), negativeIndex = generator.nextIndex();
-
-				// 如果迭代符存在
-				if(iterator){
-					// 如果是 of 标签而且需要编译 of
-					if(iterator === "of" && config.value){
-						// 以生成器形式编译 of
-						compileOfWithGenerator(this, index, positiveIndex, negativeIndex, generator, contentBuilder);
-						return;
-					}
-
-					// 以生成器形式编译逻辑条件
-					this.compileConditionWithGenerator(this.condition, index, positiveIndex, negativeIndex, positiveIndex, contentBuilder);
-					// 以生成器形式编译主体
-					this.compileBodyWithGenerator(this.body, index, negativeIndex, contentBuilder);
+			// 如果迭代符存在
+			if(iterator){
+				// 如果是 of 标签而且需要编译 of
+				if(iterator === "of" && config.value){
+					// 以生成器形式编译 of
+					compileOfWithGenerator(this, generator, contentBuilder);
 					return;
 				}
-
-				// 以生成器形式编译 for in
-				compileInWithGenerator(this, index, positiveIndex, negativeIndex, generator, contentBuilder);
+				
+				// 以生成器形式编译逻辑条件
+				this.compileConditionWithGenerator(this.condition, contentBuilder);
+				// 以生成器形式编译主体
+				this.compileBodyWithGenerator(this.body, contentBuilder);
 				return;
 			}
 
+			// 以生成器形式编译 for in
+			compileWithGenerator(this, generator, contentBuilder);
+		},
+		iterator: "",
+		/**
+		 * 以常规形式的提取表达式文本内容
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 */
+		normalizeTo: function(contentBuilder){
 			// 添加 for 关键字
 			contentBuilder.appendContext(this.context);
 
 			// 如果是 of 标签而且需要编译 of
-			if(iterator === "of" && config.value){
+			if(this.iterator === "of" && config.value){
 				// 编译 for of
 				compileOf(
 					this.condition,
@@ -67,7 +67,6 @@ this.ForExpression = function(ConditionalExpression, config, compileOf, compileO
 			// 提取主体
 			this.body.extractTo(contentBuilder);
 		},
-		iterator: "",
 		variable: ""
 	});
 	
@@ -109,7 +108,7 @@ this.ForExpression = function(ConditionalExpression, config, compileOf, compileO
 		contentBuilder.appendString("}");
 	},
 	// compileOfWithGenerator
-	function(expression, index, positiveIndex, negativeIndex, generator, contentBuilder){
+	function(expression, generator, contentBuilder){
 		var variable = expression.variable, inner = expression.condition.inner, builder = new ContentBuilder();
 
 		// 追加 for 循环初始化语句
@@ -121,11 +120,7 @@ this.ForExpression = function(ConditionalExpression, config, compileOf, compileO
 
 		// 以生成器形式编译条件
 		expression.compileConditionWithGenerator(
-			new CompiledExpression(variable + ".iterator.closed"),
-			index,
-			negativeIndex,
-			positiveIndex,
-			positiveIndex,
+			new CompiledExpression("!" + variable + ".iterator.closed"),
 			contentBuilder
 		);
 
@@ -138,28 +133,36 @@ this.ForExpression = function(ConditionalExpression, config, compileOf, compileO
 		);
 
 		// 以生成器形式编译主体
-		expression.compileBodyWithGenerator(expression.body, index, negativeIndex, contentBuilder);
+		expression.compileBodyWithGenerator(expression.body, contentBuilder);
 	},
-	// compileInWithGenerator
-	function(expression, index, positiveIndex, negativeIndex, generator, contentBuilder){
-		var inner = expression.condition.inner, finallyIndex = generator.nextIndex();
+	// compileWithGenerator
+	function(expression, generator, contentBuilder){
+		var inner = expression.condition.inner, logicConditionExpression = inner[1];
+
+		// 修改索引值，以配合编译 inner[2]
+		expression.adapterIndex = expression.branchFlowIndex = generator.nextIndex();
 
 		// 提取初始化条件
 		inner[0].extractTo(contentBuilder);
 		// 追加分号
 		contentBuilder.appendString(";");
+
 		// 以生成器形式编译逻辑条件
-		expression.compileConditionWithGenerator(inner[1], index, positiveIndex, negativeIndex, finallyIndex, contentBuilder);
+		expression.compileConditionWithGenerator(
+			logicConditionExpression.default ? new CompiledExpression("true") : logicConditionExpression,
+			contentBuilder
+		);
+
 		// 提取最终条件
 		inner[2].extractTo(contentBuilder);
 
 		// 追加设置索引字符串及 case 表达式
 		contentBuilder.appendString(
-			";" + generator.currentIndexString + "=" + index + ";break;case " + positiveIndex + ":"
+			";" + generator.currentIndexString + "=" + expression.conditionIndex + ";break;case " + expression.positiveIndex + ":"
 		);
 
 		// 以生成器形式编译主体
-		expression.compileBodyWithGenerator(expression.body, finallyIndex, negativeIndex, contentBuilder);
+		expression.compileBodyWithGenerator(expression.body, contentBuilder);
 	}
 );
 

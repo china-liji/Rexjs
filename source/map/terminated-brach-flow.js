@@ -1,5 +1,39 @@
 // 迭代中断流类相关
-!function(TerminatedFlowStatement, SCOPE_CLOSURE){
+!function(TerminatedFlowExpression, TerminatedFlowStatement, SCOPE_CLOSURE){
+
+this.TerminatedBranchFlowExpression = function(emptyExpression, generateTo){
+	/**
+	 * 中断流表达式
+	 * @param {Context} context - 语法标签上下文
+	 * @param {GeneratorExpression} contextGeneratorIfNeedCompile - 需要编译的生成器表达式
+	 */
+	function TerminatedBranchFlowExpression(context, contextGeneratorIfNeedCompile){
+		TerminatedFlowExpression.call(this, context, contextGeneratorIfNeedCompile);
+
+		this.contextGeneratorIfNeedCompile = contextGeneratorIfNeedCompile;
+	};
+	TerminatedBranchFlowExpression = new Rexjs(TerminatedBranchFlowExpression, TerminatedFlowExpression);
+
+	TerminatedBranchFlowExpression.props({
+		/**
+		 * 以生成器形式的提取表达式文本内容
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 */
+		generateTo: function(contentBuilder){
+			this.object = emptyExpression;
+
+			// 调用 父类方法
+			generateTo.call(this, contentBuilder);
+		},
+		owner: null
+	});
+
+	return TerminatedBranchFlowExpression;
+}(
+	// emptyExpression
+	new EmptyExpression(null),
+	TerminatedFlowExpression.prototype.generateTo
+);
 
 this.TerminatedBranchFlowStatement = function(catchMethod, withoutAnyFlow){
 	/**
@@ -20,7 +54,7 @@ this.TerminatedBranchFlowStatement = function(catchMethod, withoutAnyFlow){
 		 * @param {Context} context - 语法标签上下文
 		 */
 		catch: function(parser, context){
-			var expression = this.expression, terminatedFlowExpression = this.target.expression;
+			var expression = this.expression, terminatedBranchFlowExpression = this.target.expression;
 
 			switch(false){
 				// 如果不是空表达式，说明是属于标记表达式，而标记表达式已经经过验证
@@ -28,17 +62,17 @@ this.TerminatedBranchFlowStatement = function(catchMethod, withoutAnyFlow){
 					break;
 
 				// 如果存在指定的流语句中
-				case withoutAnyFlow(this.statements, terminatedFlowExpression.context.tag.flow):
+				case withoutAnyFlow(terminatedBranchFlowExpression, this.statements):
 					break;
 
 				// 默认
 				default:
 					// 报错
 					parser.error(
-						terminatedFlowExpression.context,
+						terminatedBranchFlowExpression.context,
 						ECMAScriptErrors.template(
 							"ILLEGAL_STATEMENT",
-							terminatedFlowExpression.context.content
+							terminatedBranchFlowExpression.context.content
 						)
 					);
 					return;
@@ -53,7 +87,9 @@ this.TerminatedBranchFlowStatement = function(catchMethod, withoutAnyFlow){
 }(
 	TerminatedFlowStatement.prototype.catch,
 	// withoutAnyFlow
-	function(statements, flow){
+	function(terminatedBranchFlowExpression, statements){
+		var flow = terminatedBranchFlowExpression.context.tag.flow;
+
 		// 如果语句块存在
 		while(statements){
 			var statement = statements.statement;
@@ -62,6 +98,8 @@ this.TerminatedBranchFlowStatement = function(catchMethod, withoutAnyFlow){
 			while(statement){
 				// 如果流一致
 				if((statement.flow & flow) === flow){
+					// 设置中断流表达式所相关的分支流表达式
+					terminatedBranchFlowExpression.owner = statement.target.expression;
 					return false;
 				}
 
@@ -76,7 +114,7 @@ this.TerminatedBranchFlowStatement = function(catchMethod, withoutAnyFlow){
 	}
 );
 
-this.TerminatedBranchFlowTag = function(TerminatedFlowTag, TerminatedFlowExpression, TerminatedBranchFlowStatement, LabelledStatement){
+this.TerminatedBranchFlowTag = function(TerminatedFlowTag, TerminatedBranchFlowExpression, TerminatedBranchFlowStatement, LabelledStatement){
 	/**
 	 * 中断分支流标签
 	 * @param {Number} _type - 标签类型
@@ -89,10 +127,10 @@ this.TerminatedBranchFlowTag = function(TerminatedFlowTag, TerminatedFlowExpress
 	TerminatedBranchFlowTag.props({
 		/**
 		 * 核对标记定义语句，是否满足当前中断流所对应的标记
-		 * @param {Statement} labelStatement - 标签定义语句
+		 * @param {Statement} statement - 需要判断的语句
 		 * @param {String} label - 需要核对的标记文本值
 		 */
-		checkFlowStatement: function(statement, label){
+		checkLabelledStatement: function(statement, label){
 			// 如果当前语句是标记语句
 			if(statement instanceof LabelledStatement){
 				// 返回标签对比结果
@@ -118,7 +156,7 @@ this.TerminatedBranchFlowTag = function(TerminatedFlowTag, TerminatedFlowExpress
 		 */
 		visitor: function(parser, context, statement, statements){
 			// 设置表达式
-			statement.expression = new TerminatedFlowExpression(context);
+			statement.expression = new TerminatedBranchFlowExpression(context, statements.contextGeneratorIfNeedCompile);
 			// 设置当前语句
 			statements.statement = new TerminatedBranchFlowStatement(statements);
 		}
@@ -127,7 +165,7 @@ this.TerminatedBranchFlowTag = function(TerminatedFlowTag, TerminatedFlowExpress
 	return TerminatedBranchFlowTag;
 }(
 	this.TerminatedFlowTag,
-	this.TerminatedFlowExpression,
+	this.TerminatedBranchFlowExpression,
 	this.TerminatedBranchFlowStatement,
 	this.LabelledStatement
 );
@@ -159,7 +197,7 @@ this.LabelledIdentifierTag = function(LabelTag, withoutAnyFlow){
 		 */
 		visitor: function(parser, context, statement, statements){
 			// 如果没有存在指定的流语句中
-			if(withoutAnyFlow(statements, statement.target.expression.context.tag, context.content)){
+			if(withoutAnyFlow(statement.target.expression, statements, context.content)){
 				// 报错
 				parser.error(
 					context,
@@ -182,19 +220,27 @@ this.LabelledIdentifierTag = function(LabelTag, withoutAnyFlow){
 }(
 	this.LabelTag,
 	// withoutAnyFlow
-	function(statements, terminatedFlowTag, content){
+	function(terminatedBranchFlowExpression, statements, content){
+		var tag = terminatedBranchFlowExpression.context.tag;
+
 		// 如果语句块存在
 		while(statements){
 			var statement = statements.statement;
 
 			// 如果语句存在
 			while(statement){
+				var target = statement.target;
+
 				// 如果流语句核对有效
-				if(terminatedFlowTag.checkFlowStatement(statement, content)){
+				if(tag.checkLabelledStatement(statement, content)){debugger
+					// 设置中断流表达式所相关的分支流表达式
+					terminatedBranchFlowExpression.owner = target.expression;
+					// 设置标记表达式的生成器
+					target.target.expression.contextGeneratorIfNeedCompile = statements.contextGeneratorIfNeedCompile;
 					return false;
 				}
 
-				statement = statement.target;
+				statement = target;
 			}
 
 			// 如果是闭包，则获取 target，否则等于 null，中断循环
@@ -207,6 +253,7 @@ this.LabelledIdentifierTag = function(LabelTag, withoutAnyFlow){
 
 }.call(
 	this,
+	this.TerminatedFlowExpression,
 	this.TerminatedFlowStatement,
 	this.ECMAScriptStatements.SCOPE_CLOSURE
 );

@@ -12,15 +12,20 @@ this.LabelledExpression = function(){
 	LabelledExpression = new Rexjs(LabelledExpression, Expression);
 
 	LabelledExpression.props({
+		contextGeneratorIfNeedCompile: null,
 		/**
 		 * 提取表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
 		 */
 		extractTo: function(contentBuilder){
-			// 追加标签名
-			contentBuilder.appendContext(this.context);
-			// 追加冒号
-			contentBuilder.appendString(":");
+			// 如果不存在需要编译的生成器
+			if(this.contextGeneratorIfNeedCompile === null){
+				// 追加标签名
+				contentBuilder.appendContext(this.context);
+				// 追加冒号
+				contentBuilder.appendString(":");
+			}
+			
 			// 提取语句表达式内容
 			this.statementExpression.extractTo(contentBuilder);
 		},

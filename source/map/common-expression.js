@@ -14,7 +14,7 @@ this.AssignableExpression = function(){
 	return AssignableExpression;
 }();
 
-this.ConditionalExpression = function(){
+this.ConditionalExpression = function(DEFAULT_INDEX){
 	/**
 	 * 带条件的表达式
 	 * @param {Context} context - 语法标签上下文
@@ -25,14 +25,14 @@ this.ConditionalExpression = function(){
 	ConditionalExpression = new Rexjs(ConditionalExpression, Expression);
 
 	ConditionalExpression.props({
+		adapterIndex: DEFAULT_INDEX,
+		branchFlowIndex: DEFAULT_INDEX,
 		/**
 		 * 以生成器形式去编译主体代码
 		 * @param {Expression} body - 主体表达式
-		 * @param {Number} nextStepIndex - 主体执行完的下一步索引值
-		 * @param {Number} negativeIndex - 条件失败时所对应的索引值
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
 		 */
-		compileBodyWithGenerator: function(body, nextStepIndex, negativeIndex, contentBuilder){
+		compileBodyWithGenerator: function(body, contentBuilder){
 			// 提取主体内容
 			body.extractTo(contentBuilder);
 
@@ -47,24 +47,20 @@ this.ConditionalExpression = function(){
 
 			// 追加索引设置以及 case 表达式字符串
 			contentBuilder.appendString(
-				this.contextGeneratorIfNeedCompile.currentIndexString + "=" + nextStepIndex + ";break;case " + negativeIndex + ":"
+				this.contextGeneratorIfNeedCompile.currentIndexString + "=" + this.branchFlowIndex + ";break;case " + this.mainFlowIndex + ":"
 			);
 		},
 		/**
 		 * 以生成器形式去编译条件代码
 		 * @param {Expression} condition - 条件表达式
-		 * @param {Number} index - 条件所处 case 代码块的索引值
-		 * @param {Number} positiveIndex - 条件成立时所对应的索引值
-		 * @param {Number} negativeIndex - 条件失败时所对应的索引值
-		 * @param {Number} caseIndex - 条件判断后的下一个 case 代码块索引值
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
 		 */
-		compileConditionWithGenerator: function(condition, index, positiveIndex, negativeIndex, caseIndex, contentBuilder){
-			var currentIndexString = this.contextGeneratorIfNeedCompile.currentIndexString;
+		compileConditionWithGenerator: function(condition, contentBuilder){
+			var currentIndexString = this.contextGeneratorIfNeedCompile.currentIndexString, conditionIndex = this.conditionIndex;
 
-			// 追加设置当前索引字符串与 case 表达式
+			// 追加设置条件索引字符串与 case 表达式
 			contentBuilder.appendString(
-				currentIndexString + "=" + index + ";break;case " + index + ":" + currentIndexString + "="
+				currentIndexString + "=" + conditionIndex + ";break;case " + conditionIndex + ":" + currentIndexString + "="
 			);
 
 			// 提取条件表达式
@@ -72,15 +68,53 @@ this.ConditionalExpression = function(){
 
 			// 追加条件的三元判断字符串
 			contentBuilder.appendString(
-				"?" + positiveIndex + ":" + negativeIndex + ";break;case " + caseIndex + ":"
+				"?" + this.positiveIndex + ":" + this.negativeIndex + ";break;case " + this.adapterIndex + ":"
 			);
 		},
 		condition: null,
-		contextGeneratorIfNeedCompile: null
+		conditionIndex: DEFAULT_INDEX,
+		contextGeneratorIfNeedCompile: null,
+		/**
+		 * 提取表达式文本内容
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 */
+		extractTo: function(contentBuilder){
+			var generator = this.contextGeneratorIfNeedCompile;
+
+			// 如果存在需要编译的生成器
+			if(generator){
+				this.conditionIndex = this.branchFlowIndex = generator.nextIndex();
+				this.positiveIndex = this.adapterIndex = generator.nextIndex();
+				this.negativeIndex = this.mainFlowIndex = generator.nextIndex();
+
+				// 以生成器形式的提取表达式文本内容
+				this.generateTo(contentBuilder);
+				return;
+			}
+
+			// 以常规形式的提取表达式文本内容
+			this.normalizeTo(contentBuilder);
+		},
+		/**
+		 * 以生成器形式的提取表达式文本内容
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 */
+		generateTo: function(){},
+		negativeIndex: DEFAULT_INDEX,
+		mainFlowIndex: DEFAULT_INDEX,
+		/**
+		 * 以常规形式的提取表达式文本内容
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 */
+		normalizeTo: function(){},
+		positiveIndex: DEFAULT_INDEX
 	});
 
 	return ConditionalExpression;
-}();
+}(
+	// DEFAULT_INDEX
+	-1
+);
 
 }.call(
 	this

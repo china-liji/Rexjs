@@ -1,3 +1,8 @@
+/**
+ * 1. for in [1,2,3]
+ * 2. label
+ */
+
 // label
 // switch
 // do while
@@ -7,9 +12,24 @@
 var a = function*(){
 	var b;
 
-	for(var i of [1,2,3,4,5])
-		yield i
+	// for(var i in obj){
+	// 	yield 6
+	// }
 
+	x:
+	for(var i of [1,2,3,4,5]){
+		var k = 8
+
+		for(;;){
+			continue x;
+			yield i + "5"
+		}
+
+		break;
+		yield i
+	}
+
+	return 8989
 		123;
 }
 

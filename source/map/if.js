@@ -14,23 +14,42 @@ this.IfExpression = function(ConditionalExpression, compileWithGenerator){
 	IfExpression = new Rexjs(IfExpression, ConditionalExpression);
 	
 	IfExpression.props({
-		body: null,
 		elseBody: null,
 		elseContext: null,
 		/**
-		 * 提取表达式文本内容
+		 * 以生成器形式的提取表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
 		 */
-		extractTo: function(contentBuilder){
-			var generator = this.contextGeneratorIfNeedCompile, elseContext = this.elseContext;
+		generateTo: function(contentBuilder){
+			var mainFlowIndex, elseContext = this.elseContext;
 
-			// 如果存在需要编译的生成器
-			if(generator){
-				// 以生成器形式编译表达式
-				compileWithGenerator(this, generator, elseContext, contentBuilder);
-				return;
+			// 如果存在 else
+			if(elseContext){
+				// 获取下一个索引，以表示新的主流索引，不直接使用 this.linearFlowIndex，是因为其将要代表 else 分支流索引
+				mainFlowIndex = this.branchFlowIndex = this.contextGeneratorIfNeedCompile.nextIndex();
 			}
 
+			// 以生成器形式去编译条件代码
+			this.compileConditionWithGenerator(this.condition.inner, contentBuilder);
+			// 编译 if 主体
+			this.compileBodyWithGenerator(this.ifBody, contentBuilder);
+
+			// 如果存在 else
+			if(elseContext){
+				// 再将其从 else 分支流中拉回到主流中
+				this.mainFlowIndex = mainFlowIndex;
+
+				// 编译 if 主体
+				this.compileBodyWithGenerator(this.elseBody, contentBuilder);
+			}
+		},
+		ifBody: null,
+		ifContext: null,
+		/**
+		 * 以常规形式的提取表达式文本内容
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 */
+		normalizeTo: function(contentBuilder){
 			// 追加 if 关键字
 			contentBuilder.appendContext(this.ifContext);
 			
@@ -40,7 +59,7 @@ this.IfExpression = function(ConditionalExpression, compileWithGenerator){
 			this.ifBody.extractTo(contentBuilder);
 			
 			// 如果没有 else 关键字
-			if(elseContext === null){
+			if(this.elseContext === null){
 				return;
 			}
 			
@@ -51,15 +70,13 @@ this.IfExpression = function(ConditionalExpression, compileWithGenerator){
 			}
 			
 			// 追加 else 关键字
-			contentBuilder.appendContext(elseContext);
+			contentBuilder.appendContext(this.elseContext);
 			// 追加空格
 			contentBuilder.appendSpace();
 			
 			// 提取 else 主体内容
 			this.elseBody.extractTo(contentBuilder);
-		},
-		ifBody: null,
-		ifContext: null
+		}
 	});
 	
 	return IfExpression;
@@ -69,24 +86,7 @@ this.IfExpression = function(ConditionalExpression, compileWithGenerator){
 	function(expression, generator, elseContext, contentBuilder){
 		var index = generator.nextIndex(), positiveIndex = generator.nextIndex(), negativeIndex = elseContext ? generator.nextIndex() : index;
 
-		// 以生成器形式去编译条件代码
-		expression.compileConditionWithGenerator(
-			expression.condition,
-			generator.nextIndex(),
-			positiveIndex,
-			negativeIndex,
-			positiveIndex,
-			contentBuilder
-		);
-
-		// 编译 if 主体
-		expression.compileBodyWithGenerator(expression.ifBody, index, negativeIndex, contentBuilder);
-
-		// 如果存在 else
-		if(elseContext){
-			// 编译 if 主体
-			expression.compileBodyWithGenerator(expression.elseBody, index, index, contentBuilder);
-		}
+		
 	}
 );
 
