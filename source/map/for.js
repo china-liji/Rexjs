@@ -1,13 +1,14 @@
 // for 语句相关
 !function(CompiledExpression){
 
-this.ForExpression = function(ConditionalExpression, config, compileOf, compileOfWithGenerator, compileWithGenerator){
+this.ForExpression = function(ConditionalExpression, config, compileOf, compileOfWithGenerator, compileInWithGenerator, compileWithGenerator){
 	/**
 	 * for 表达式
 	 * @param {Context} context - 语法标签上下文
+	 * @param {Statements} statements - 当前语句块
 	 */
-	function ForExpression(context){
-		ConditionalExpression.call(this, context);
+	function ForExpression(context, statements){
+		ConditionalExpression.call(this, context, statements);
 	};
 	ForExpression = new Rexjs(ForExpression, ConditionalExpression);
 
@@ -24,15 +25,13 @@ this.ForExpression = function(ConditionalExpression, config, compileOf, compileO
 			if(iterator){
 				// 如果是 of 标签而且需要编译 of
 				if(iterator === "of" && config.value){
-					// 以生成器形式编译 of
+					// 以生成器形式编译 for of
 					compileOfWithGenerator(this, generator, contentBuilder);
 					return;
 				}
 				
-				// 以生成器形式编译逻辑条件
-				this.compileConditionWithGenerator(this.condition, contentBuilder);
-				// 以生成器形式编译主体
-				this.compileBodyWithGenerator(this.body, contentBuilder);
+				// 以生成器形式编译 for in
+				compileInWithGenerator(this, generator, contentBuilder);
 				return;
 			}
 
@@ -119,7 +118,7 @@ this.ForExpression = function(ConditionalExpression, config, compileOf, compileO
 		contentBuilder.appendString(");");
 
 		// 以生成器形式编译条件
-		expression.compileConditionWithGenerator(
+		expression.generateConditionTo(
 			new CompiledExpression("!" + variable + ".iterator.closed"),
 			contentBuilder
 		);
@@ -133,7 +132,28 @@ this.ForExpression = function(ConditionalExpression, config, compileOf, compileO
 		);
 
 		// 以生成器形式编译主体
-		expression.compileBodyWithGenerator(expression.body, contentBuilder);
+		expression.generateBodyTo(expression.body, contentBuilder);
+	},
+	// compileInWithGenerator
+	function(expression, generator, contentBuilder){
+		var variable = expression.variable, inner = expression.condition.inner, builder = new ContentBuilder();
+
+		// 追加临时变量名赋值操作，以免每次进入生成器都会生成新的对象
+		contentBuilder.appendString(variable + "=");
+		// 提取右侧表达式，用于赋值给临时变量名
+		inner.right.extractTo(contentBuilder);
+		// 追加赋值操作的语句分号
+		contentBuilder.appendString(";");
+
+		// 重新设置右侧表达式
+		inner.right = new CompiledExpression(variable);
+
+		// 以生成器形式编译逻辑条件
+		expression.generateConditionTo(inner, builder);
+		// 追加编译后的逻辑条件代码
+		contentBuilder.appendString(builder.result);
+		// 以生成器形式编译主体
+		expression.generateBodyTo(expression.body, contentBuilder);
 	},
 	// compileWithGenerator
 	function(expression, generator, contentBuilder){
@@ -148,7 +168,7 @@ this.ForExpression = function(ConditionalExpression, config, compileOf, compileO
 		contentBuilder.appendString(";");
 
 		// 以生成器形式编译逻辑条件
-		expression.compileConditionWithGenerator(
+		expression.generateConditionTo(
 			logicConditionExpression.default ? new CompiledExpression("true") : logicConditionExpression,
 			contentBuilder
 		);
@@ -162,7 +182,7 @@ this.ForExpression = function(ConditionalExpression, config, compileOf, compileO
 		);
 
 		// 以生成器形式编译主体
-		expression.compileBodyWithGenerator(expression.body, contentBuilder);
+		expression.generateBodyTo(expression.body, contentBuilder);
 	}
 );
 
@@ -220,9 +240,9 @@ this.ForTag = function(ForExpression){
 		 * @param {Statement} statement - 当前语句
 		 * @param {Statements} statements - 当前语句块
 		 */
-		visitor: function(parser, context, statement){
+		visitor: function(parser, context, statement, statements){
 			// 设置当前表达式为 for 表达式
-			statement.expression = new ForExpression(context);
+			statement.expression = new ForExpression(context, statements);
 		}
 	});
 	

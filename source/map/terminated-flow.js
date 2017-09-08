@@ -1,37 +1,19 @@
 // 中断流相关
 !function(){
 
-this.TerminatedFlowExpression = function(){
+this.TerminatedFlowExpression = function(GenerableExpression){
 	/**
 	 * 中断流表达式
 	 * @param {Context} context - 语法标签上下文
-	 * @param {GeneratorExpression} contextGeneratorIfNeedCompile - 需要编译的生成器表达式
+	 * @param {Statements} statements - 当前语句块
 	 */
-	function TerminatedFlowExpression(context, contextGeneratorIfNeedCompile){
-		Expression.call(this, context);
-
-		this.contextGeneratorIfNeedCompile = contextGeneratorIfNeedCompile;
+	function TerminatedFlowExpression(context, statements){
+		GenerableExpression.call(this, context, statements);
 	};
-	TerminatedFlowExpression = new Rexjs(TerminatedFlowExpression, Expression);
+	TerminatedFlowExpression = new Rexjs(TerminatedFlowExpression, GenerableExpression);
 	
 	TerminatedFlowExpression.props({
 		branch: null,
-		contextGeneratorIfNeedCompile: null,
-		/**
-		 * 提取表达式文本内容
-		 * @param {ContentBuilder} contentBuilder - 内容生成器
-		 */
-		extractTo: function(contentBuilder){
-			// 如果需要编译的生成器表达式存在
-			if(this.contextGeneratorIfNeedCompile){
-				// 以生成器形式的提取表达式文本内容
-				this.generateTo(contentBuilder);
-				return;
-			}
-			
-			// 以常规形式的提取表达式文本内容
-			this.normalizeTo(contentBuilder);
-		},
 		/**
 		 * 以生成器形式的提取表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
@@ -79,7 +61,9 @@ this.TerminatedFlowExpression = function(){
 	});
 	
 	return TerminatedFlowExpression;
-}();
+}(
+	this.GenerableExpression
+);
 
 this.TerminatedFlowStatement = function(){
 	/**
@@ -144,7 +128,7 @@ this.TerminatedFlowTag = function(TerminatedFlowExpression, TerminatedFlowStatem
 		 */
 		visitor: function(parser, context, statement, statements){
 			// 设置表达式
-			statement.expression = new TerminatedFlowExpression(context, statements.contextGeneratorIfNeedCompile);
+			statement.expression = new TerminatedFlowExpression(context, statements);
 			// 设置当前语句
 			statements.statement = new TerminatedFlowStatement(statements);
 		}

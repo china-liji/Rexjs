@@ -40,13 +40,14 @@ this.ContinueTag = function(FLOW_CIRCULAR, checkLabelledStatement){
 		/**
 		 * 核对标记定义语句，是否满足当前中断流所对应的标记
 		 * @param {Statement} statement - 需要判断的语句
+		 * @param {TerminatedBranchFlowExpression} terminatedBranchFlowExpression - 中断分支流表达式
 		 * @param {String} label - 需要核对的标记文本值
 		 */
-		checkLabelledStatement: function(statement, label){
+		checkLabelledStatement: function(statement, terminatedBranchFlowExpression, label){
 			// 如果语句流一致
 			if((statement.flow & FLOW_CIRCULAR) === FLOW_CIRCULAR){
 				// 返回父类判断结果
-				return checkLabelledStatement.call(this, statement.target, label);
+				return checkLabelledStatement.call(this, statement.target, terminatedBranchFlowExpression, label);
 			}
 
 			return false;

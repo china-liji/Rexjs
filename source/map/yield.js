@@ -1,7 +1,7 @@
 // yield 表达式相关
 !function(TerminatedFlowExpression, SingleStatement, ReturnTag, config){
 
-this.YieldTag = function(visitor, notice){
+this.YieldTag = function(visitor){
 	/**
 	 * yield 关键字标签
 	 * @param {Number} _type - 标签类型
@@ -46,15 +46,8 @@ this.YieldTag = function(visitor, notice){
 		 * @param {Statements} statements - 当前语句块
 		 */
 		visitor: function(parser, context, statement, statements){
-			var generator = statements.contextGenerator;
-
 			// 如果在生成器内
-			if(generator){
-				// 如果需要编译
-				if(config.value){
-					notice(statements, generator);
-				}
-
+			if(statements.contextGenerator){
 				// 调用父类方法
 				visitor.call(this, parser, context, statement, statements);
 				return;
@@ -70,31 +63,7 @@ this.YieldTag = function(visitor, notice){
 
 	return YieldTag;
 }(
-	ReturnTag.prototype.visitor,
-	// notice
-	function(statements, generator){
-		var closure = statements.closure, target = closure.target;
-
-		while(statements !== target){
-			var expression, t = statements.target;
-
-			switch(true){
-				case statements.statement instanceof SingleStatement:
-					expression = statements.statement.target.expression;
-					break;
-
-				case statements !== closure:
-					expression = t.statement.expression;
-					break;
-
-				default:
-					return;
-			}
-
-			expression.contextGeneratorIfNeedCompile = generator;
-			statements = t;
-		}
-	}
+	ReturnTag.prototype.visitor
 );
 
 }.call(

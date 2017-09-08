@@ -1,5 +1,5 @@
 // 函数主体表达式相关
-!function(BlockExpression, closeFunctionBodyTag){
+!function(closeFunctionBodyTag){
 
 this.FunctionBodyExpression = function(extractTo, insertDefaults){
 	/**
@@ -7,9 +7,9 @@ this.FunctionBodyExpression = function(extractTo, insertDefaults){
 	 * @param {Context} open - 起始标签上下文
 	 */
 	function FunctionBodyExpression(open){
-		BlockExpression.call(this, open);
+		PartnerExpression.call(this, open);
 	};
-	FunctionBodyExpression = new Rexjs(FunctionBodyExpression, BlockExpression);
+	FunctionBodyExpression = new Rexjs(FunctionBodyExpression, PartnerExpression);
 
 	FunctionBodyExpression.props({
 		/**
@@ -30,12 +30,12 @@ this.FunctionBodyExpression = function(extractTo, insertDefaults){
 			// 插入默认参数
 			insertDefaults(contentBuilder, this, defaults);
 		},
-		state: BlockExpression.STATE_NONE
+		state: PartnerExpression.STATE_NONE
 	});
 	
 	return FunctionBodyExpression;
 }(
-	BlockExpression.prototype.extractTo,
+	PartnerExpression.prototype.extractTo,
 	// insertDefaults
 	function(contentBuilder, expression, defaults){
 		var inner = expression.inner, builder = new ContentBuilder();
@@ -135,7 +135,7 @@ this.FunctionBodyStatements = function(ECMAScriptStatements, ECMAScriptVariableC
 	ECMAScriptConfig.generator
 );
 
-this.OpenFunctionBodyTag = function(OpenBraceTag, FunctionBodyExpression, FunctionBodyStatements, BlockComponentStatement, forEach){
+this.OpenFunctionBodyTag = function(OpenBraceTag, FunctionBodyExpression, FunctionBodyStatements, forEach){
 	/**
 	 * 起始函数主体标签
 	 * @param {Number} _type - 标签类型
@@ -180,7 +180,7 @@ this.OpenFunctionBodyTag = function(OpenBraceTag, FunctionBodyExpression, Functi
 			
 			(
 				// 设置当前语句
-				statements.statement = new BlockComponentStatement(statements)
+				statements.statement = new BoxStatement(statements)
 			)
 			// 设置表达式
 			.expression = new FunctionBodyExpression(context);
@@ -205,7 +205,6 @@ this.OpenFunctionBodyTag = function(OpenBraceTag, FunctionBodyExpression, Functi
 	this.OpenBraceTag,
 	this.FunctionBodyExpression,
 	this.FunctionBodyStatements,
-	this.BlockComponentStatement,
 	Rexjs.forEach
 );
 
@@ -257,7 +256,6 @@ closeFunctionBodyTag = new this.CloseFunctionBodyTag();
 
 }.call(
 	this,
-	this.BlockExpression,
 	// closeFunctionBodyTag
 	null
 );

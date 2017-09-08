@@ -1,31 +1,35 @@
 // 标记标签相关
 !function(){
 
-this.LabelledExpression = function(){
+this.LabelledExpression = function(GenerableExpression){
 	/**
 	 * 标记表达式
 	 * @param {Context} context - 语法标签上下文
 	 */
-	function LabelledExpression(context){
-		Expression.call(this, context);
+	function LabelledExpression(context, statements){
+		GenerableExpression.call(this, context, statements);
 	};
-	LabelledExpression = new Rexjs(LabelledExpression, Expression);
+	LabelledExpression = new Rexjs(LabelledExpression, GenerableExpression);
 
 	LabelledExpression.props({
-		contextGeneratorIfNeedCompile: null,
 		/**
-		 * 提取表达式文本内容
+		 * 以生成器形式的提取表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
 		 */
-		extractTo: function(contentBuilder){
-			// 如果不存在需要编译的生成器
-			if(this.contextGeneratorIfNeedCompile === null){
-				// 追加标签名
-				contentBuilder.appendContext(this.context);
-				// 追加冒号
-				contentBuilder.appendString(":");
-			}
-			
+		generateTo: function(contentBuilder){
+			// 提取语句表达式内容
+			this.statementExpression.extractTo(contentBuilder);
+		},
+		/**
+		 * 以常规形式的提取表达式文本内容
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 */
+		normalizeTo: function(contentBuilder){
+			// 追加标签名
+			contentBuilder.appendContext(this.context);
+			// 追加冒号
+			contentBuilder.appendString(":");
+
 			// 提取语句表达式内容
 			this.statementExpression.extractTo(contentBuilder);
 		},
@@ -33,7 +37,9 @@ this.LabelledExpression = function(){
 	});
 	
 	return LabelledExpression;
-}();
+}(
+	this.GenerableExpression
+);
 
 this.LabelledStatement = function(){
 	/**
@@ -113,7 +119,7 @@ this.LabelColonTag = function(ColonTag, LabelledExpression, LabelledStatement){
 		 */
 		visitor: function(parser, context, statement, statements){
 			// 设置表达式
-			statement.expression = new LabelledExpression(statement.expression.context);
+			statement.expression = new LabelledExpression(statement.expression.context, statements);
 			// 设置当前语句
 			statements.statement = new LabelledStatement(statements);
 		}

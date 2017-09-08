@@ -1,15 +1,14 @@
 // if 语句相关
 !function(closeIfConditionTag, elseTag){
 
-this.IfExpression = function(ConditionalExpression, compileWithGenerator){
+this.IfExpression = function(ConditionalExpression){
 	/**
 	 * if 表达式
 	 * @param {Context} context - 表达式上下文
+	 * @param {Statements} statements - 当前语句块
 	 */
-	function IfExpression(context){
-		ConditionalExpression.call(this, context);
-		
-		this.ifContext = context;
+	function IfExpression(context, statements){
+		ConditionalExpression.call(this, context, statements);
 	};
 	IfExpression = new Rexjs(IfExpression, ConditionalExpression);
 	
@@ -30,9 +29,9 @@ this.IfExpression = function(ConditionalExpression, compileWithGenerator){
 			}
 
 			// 以生成器形式去编译条件代码
-			this.compileConditionWithGenerator(this.condition.inner, contentBuilder);
+			this.generateConditionTo(this.condition.inner, contentBuilder);
 			// 编译 if 主体
-			this.compileBodyWithGenerator(this.ifBody, contentBuilder);
+			this.generateBodyTo(this.ifBody, contentBuilder);
 
 			// 如果存在 else
 			if(elseContext){
@@ -40,11 +39,16 @@ this.IfExpression = function(ConditionalExpression, compileWithGenerator){
 				this.mainFlowIndex = mainFlowIndex;
 
 				// 编译 if 主体
-				this.compileBodyWithGenerator(this.elseBody, contentBuilder);
+				this.generateBodyTo(this.elseBody, contentBuilder);
 			}
 		},
 		ifBody: null,
-		ifContext: null,
+		/**
+		 * 获取 if 关键字上下文
+		 */
+		get ifContext(){
+			return this.context;
+		},
 		/**
 		 * 以常规形式的提取表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
@@ -81,13 +85,7 @@ this.IfExpression = function(ConditionalExpression, compileWithGenerator){
 	
 	return IfExpression;
 }(
-	this.ConditionalExpression,
-	// compileWithGenerator
-	function(expression, generator, elseContext, contentBuilder){
-		var index = generator.nextIndex(), positiveIndex = generator.nextIndex(), negativeIndex = elseContext ? generator.nextIndex() : index;
-
-		
-	}
+	this.ConditionalExpression
 );
 
 this.IfBodyStatement = function(SingleStatement){
@@ -195,9 +193,9 @@ this.IfTag = function(IfExpression){
 		 * @param {Statement} statement - 当前语句
 		 * @param {Statements} statements - 当前语句块
 		 */
-		visitor: function(parser, context, statement){
+		visitor: function(parser, context, statement, statements){
 			// 设置表达式
-			statement.expression = new IfExpression(context);
+			statement.expression = new IfExpression(context, statements);
 		}
 	});
 	

@@ -145,7 +145,6 @@ console.timeEnd("time");
 		"declaration-array-rest-item.js",
 		"nested-declaration-array-item.js",
 		"block.js",
-		"block-component.js",
 		"function.js",
 		"function-declaration.js",
 		"generator.js",

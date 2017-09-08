@@ -4,34 +4,94 @@
  */
 
 // label
+
 // switch
-// do while
-// while
+var a = function*(num){
+	
 
-// for
-var a = function*(){
-	var b;
+	switch(num){
+		case 1:
+			1 + 1;
+			yield "x"
+			5 + 5;
+			break;
 
-	// for(var i in obj){
-	// 	yield 6
-	// }
+		case 2:
+			1 + 2;
+			return;
 
-	x:
-	for(var i of [1,2,3,4,5]){
-		var k = 8
-
-		for(;;){
-			continue x;
-			yield i + "5"
-		}
-
-		break;
-		yield i
+		default:
+			1 + 3;
+			break;
 	}
 
-	return 8989
-		123;
-}
+	x++
+};
+
+
+// do while
+// var a = function*(){
+// 	var xx = 0
+
+// 	do {
+// 		1 + 2
+// 		yield i
+
+// 		3 + 4
+// 	}
+// 	while(i in obj);
+
+// 	var gg = 6
+// 	6
+// }
+
+
+// while
+// var a = function*(){
+// 	while(i in obj){
+// 		1 + 2
+// 		yield i
+
+// 		3 + 4
+// 	}
+
+// 	return 5
+// 	6
+// }
+
+
+// for
+// var a = function*(){
+// 	var b;
+
+// 	// for(var i in obj){
+// 	// 	yield 6
+// 	// }
+
+// 	x:
+// 	for(var i of [1,2,3,4,5]){
+// 		var k = 8
+
+// 		for(;;){
+// 			continue x;
+// 			yield i + "5"
+
+// 			for(var i in obj){
+// 				continue
+// 			}
+
+// 			i +=2
+// 		}
+
+		
+
+// 		break;
+// 		yield i
+// 	}
+
+// 	return 8989
+// 		123;
+// }
 
 // if
 

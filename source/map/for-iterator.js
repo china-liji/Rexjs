@@ -48,6 +48,13 @@ this.IteratorTag = function(BinaryKeywordTag, BinaryExpression, IterationStateme
 
 	IteratorTag.props({
 		/**
+		 * 判断编译时是否需要临时变量名
+		 * @param {Statements} statements - 当前语句块
+		 */
+		hasVariable: function(statements){
+			return statements.contextGeneratorIfNeedCompile !== null;
+		},
+		/**
 		 * 标签访问器
 		 * @param {SyntaxParser} parser - 语法解析器
 		 * @param {Context} context - 标签上下文
@@ -55,8 +62,17 @@ this.IteratorTag = function(BinaryKeywordTag, BinaryExpression, IterationStateme
 		 * @param {Statements} statements - 当前语句块
 		 */
 		visitor: function(parser, context, statement, statements){
+			var forExpression = statement.target.expression;
+
 			// 设置 for 表达式的 iterator 属性
-			statement.target.expression.iterator = context.content;
+			forExpression.iterator = context.content;
+
+			// 如果需要编译
+			if(this.hasVariable(statements)){
+				// 生成并记录临时变量名
+				forExpression.variable = statements.collections.generate();
+			}
+
 			// 设置当前表达式
 			statement.expression = new BinaryExpression(context, statement.expression);
 			// 设置当前语句
@@ -90,7 +106,7 @@ this.ForInTag = function(IteratorTag){
 	this.IteratorTag
 );
 
-this.ForOfTag = function(IteratorTag, config, visitor){
+this.ForOfTag = function(IteratorTag, config, hasVariable){
 	/**
 	 * for of 标签
 	 * @param {Number} _type - 标签类型
@@ -101,24 +117,14 @@ this.ForOfTag = function(IteratorTag, config, visitor){
 	ForOfTag = new Rexjs(ForOfTag, IteratorTag);
 
 	ForOfTag.props({
-		regexp: /of/,
 		/**
-		 * 标签访问器
-		 * @param {SyntaxParser} parser - 语法解析器
-		 * @param {Context} context - 标签上下文
-		 * @param {Statement} statement - 当前语句
+		 * 判断编译时是否需要临时变量名
 		 * @param {Statements} statements - 当前语句块
 		 */
-		visitor: function(parser, context, statement, statements){
-			// 如果需要编译 of
-			if(config.value){
-				// 生成并记录临时变量名
-				statement.target.expression.variable = statements.collections.generate();
-			}
-
-			// 调用父类方法
-			visitor.call(this, parser, context, statement, statements);
-		}
+		hasVariable(statements){
+			return config.value || hasVariable.call(this, statements);
+		},
+		regexp: /of/
 	});
 
 	return ForOfTag;
@@ -126,7 +132,7 @@ this.ForOfTag = function(IteratorTag, config, visitor){
 	this.IteratorTag,
 	// config
 	ECMAScriptConfig.of,
-	this.IteratorTag.prototype.visitor
+	this.IteratorTag.prototype.hasVariable
 );
 
 }.call(

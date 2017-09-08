@@ -1230,7 +1230,7 @@ this.OpenRestrictedCommentContextTags = function(OpenMultiLineCommentContextTags
 	this.CommentBreakTag
 );
 
-this.OpenSwitchBodyContextTags = function(CaseTag, DefaultTag, CloseBlockComponentTag){
+this.OpenSwitchBodyContextTags = function(CaseTag, DefaultTag, CloseSwitchBodyTag){
 	/**
 	 * switch 语句块起始上下文标签列表
 	 */
@@ -1240,7 +1240,7 @@ this.OpenSwitchBodyContextTags = function(CaseTag, DefaultTag, CloseBlockCompone
 		this.register(
 			new CaseTag(),
 			new DefaultTag(),
-			new CloseBlockComponentTag(TYPE_UNEXPECTED)
+			new CloseSwitchBodyTag()
 		);
 	};
 	OpenSwitchBodyContextTags = new Rexjs(OpenSwitchBodyContextTags, IllegalTags);
@@ -1249,7 +1249,7 @@ this.OpenSwitchBodyContextTags = function(CaseTag, DefaultTag, CloseBlockCompone
 }(
 	this.CaseTag,
 	this.DefaultTag,
-	this.CloseBlockComponentTag
+	this.CloseSwitchBodyTag
 );
 
 this.OpenDeclarationArrayContextTags = function(DeclarationArrayItemSeparatorTags, list){

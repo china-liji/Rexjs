@@ -5,19 +5,30 @@ this.WhileExpression = function(ConditionalExpression){
 	/**
 	 * while 表达式
 	 * @param {Context} context - 语法标签上下文
+	 * @param {Statements} statements - 当前语句块
 	 */
-	function WhileExpression(context){
-		ConditionalExpression.call(this, context);
+	function WhileExpression(context, statements){
+		ConditionalExpression.call(this, context, statements);
 	};
 	WhileExpression = new Rexjs(WhileExpression, ConditionalExpression);
 	
 	WhileExpression.props({
 		body: null,
 		/**
+		 * 以生成器形式的提取表达式文本内容
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 */
+		generateTo: function(contentBuilder){
+			// 以生成器形式编译逻辑条件
+			this.generateConditionTo(this.condition.inner, contentBuilder);
+			// 以生成器形式编译主体
+			this.generateBodyTo(this.body, contentBuilder);
+		},
+		/**
 		 * 提取表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容存储列表
 		 */
-		extractTo: function(contentBuilder){
+		normalizeTo: function(contentBuilder){
 			// 提取 while 关键字
 			contentBuilder.appendContext(this.context);
 			
@@ -90,7 +101,7 @@ this.WhileTag = function(WhileExpression){
 		 */
 		visitor: function(parser, context, statement, statements){
 			// 设置当前表达式
-			statement.expression = new WhileExpression(context);
+			statement.expression = new WhileExpression(context, statements);
 		}
 	});
 	

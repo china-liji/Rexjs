@@ -30,9 +30,12 @@ this.BlockExpression = function(extractTo){
 	/**
 	 * 语句块表达式
 	 * @param {Context} open - 起始标签上下文
+	 * @param {Statements} statements - 当前语句块
 	 */
-	function BlockExpression(open){
+	function BlockExpression(open, statements){
 		PartnerExpression.call(this, open);
+
+		this.contextGeneratorIfNeedCompile = statements.contextGeneratorIfNeedCompile;
 	};
 	BlockExpression = new Rexjs(BlockExpression, PartnerExpression);
 	
@@ -170,7 +173,7 @@ this.OpenBlockTag = function(OpenBraceTag, BlockExpression, BlockBodyStatements,
 		 */
 		visitor: function(parser, context, statement, statements){
 			// 设置表达式
-			statement.expression = new BlockExpression(context);
+			statement.expression = new BlockExpression(context, statements);
 			
 			// 进入语句块内部
 			this.in(parser, statements);

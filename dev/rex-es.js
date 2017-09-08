@@ -218,66 +218,67 @@ this.AssignableExpression = function(){
 	return AssignableExpression;
 }();
 
-this.ConditionalExpression = function(DEFAULT_INDEX){
+this.GenerableExpression = function(){
+	/**
+	 * 可生成的表达式，即在生成器内部，随着生成器需要一起编译的表达式
+	 * @param {Context} context - 语法标签上下文
+	 * @param {Statements} statements - 当前语句块
+	 */
+	function GenerableExpression(context, statements){
+		Expression.call(this, context);
+
+		this.contextGeneratorIfNeedCompile = statements.contextGeneratorIfNeedCompile;
+	};
+	GenerableExpression = new Rexjs(GenerableExpression, Expression);
+
+	GenerableExpression.props({
+		contextGeneratorIfNeedCompile: null,
+		/**
+		 * 提取表达式文本内容
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 */
+		extractTo: function(contentBuilder){
+			// 如果存在需要编译的生成器
+			if(this.contextGeneratorIfNeedCompile){
+				// 以生成器形式的提取表达式文本内容
+				this.generateTo(contentBuilder);
+				return;
+			}
+
+			// 以常规形式的提取表达式文本内容
+			this.normalizeTo(contentBuilder);
+		},
+		/**
+		 * 以生成器形式的提取表达式文本内容
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 */
+		generateTo: function(){},
+		/**
+		 * 以常规形式的提取表达式文本内容
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 */
+		normalizeTo: function(){}
+	});
+
+	return GenerableExpression;
+}();
+
+this.ConditionalExpression = function(GenerableExpression, DEFAULT_INDEX, generateBody){
 	/**
 	 * 带条件的表达式
 	 * @param {Context} context - 语法标签上下文
+	 * @param {Statements} statements - 当前语句块
 	 */
-	function ConditionalExpression(context){
-		Expression.call(this, context);
+	function ConditionalExpression(context, statements){
+		GenerableExpression.call(this, context, statements);
 	};
-	ConditionalExpression = new Rexjs(ConditionalExpression, Expression);
+	ConditionalExpression = new Rexjs(ConditionalExpression, GenerableExpression);
 
 	ConditionalExpression.props({
 		adapterIndex: DEFAULT_INDEX,
 		branchFlowIndex: DEFAULT_INDEX,
-		/**
-		 * 以生成器形式去编译主体代码
-		 * @param {Expression} body - 主体表达式
-		 * @param {ContentBuilder} contentBuilder - 内容生成器
-		 */
-		compileBodyWithGenerator: function(body, contentBuilder){
-			// 提取主体内容
-			body.extractTo(contentBuilder);
-
-			// 判断主体表达式是否需要加分号
-			if((body.state & STATE_STATEMENT_ENDED) !== STATE_STATEMENT_ENDED){
-				// 追加分号
-				contentBuilder.appendString(";");
-			}
-
-			// 设置表达式状态为已结束
-			this.state = STATE_STATEMENT_ENDED;
-
-			// 追加索引设置以及 case 表达式字符串
-			contentBuilder.appendString(
-				this.contextGeneratorIfNeedCompile.currentIndexString + "=" + this.branchFlowIndex + ";break;case " + this.mainFlowIndex + ":"
-			);
-		},
-		/**
-		 * 以生成器形式去编译条件代码
-		 * @param {Expression} condition - 条件表达式
-		 * @param {ContentBuilder} contentBuilder - 内容生成器
-		 */
-		compileConditionWithGenerator: function(condition, contentBuilder){
-			var currentIndexString = this.contextGeneratorIfNeedCompile.currentIndexString, conditionIndex = this.conditionIndex;
-
-			// 追加设置条件索引字符串与 case 表达式
-			contentBuilder.appendString(
-				currentIndexString + "=" + conditionIndex + ";break;case " + conditionIndex + ":" + currentIndexString + "="
-			);
-
-			// 提取条件表达式
-			condition.extractTo(contentBuilder);
-
-			// 追加条件的三元判断字符串
-			contentBuilder.appendString(
-				"?" + this.positiveIndex + ":" + this.negativeIndex + ";break;case " + this.adapterIndex + ":"
-			);
-		},
 		condition: null,
 		conditionIndex: DEFAULT_INDEX,
-		contextGeneratorIfNeedCompile: null,
 		/**
 		 * 提取表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
@@ -300,24 +301,80 @@ this.ConditionalExpression = function(DEFAULT_INDEX){
 			this.normalizeTo(contentBuilder);
 		},
 		/**
-		 * 以生成器形式的提取表达式文本内容
+		 * 以生成器形式去编译（后置）主体代码
+		 * @param {Expression} body - 主体表达式
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
 		 */
-		generateTo: function(){},
+		generateBodyTo: function(body, contentBuilder){
+			// 以生成器形式去编译主体代码
+			generateBody(this, body, contentBuilder);
+
+			// 追加索引设置以及 case 表达式字符串
+			contentBuilder.appendString(
+				this.contextGeneratorIfNeedCompile.currentIndexString + "=" + this.branchFlowIndex + ";break;case " + this.mainFlowIndex + ":"
+			);
+		},
+		/**
+		 * 以生成器形式去编译条件代码
+		 * @param {Expression} condition - 条件表达式
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 */
+		generateConditionTo: function(condition, contentBuilder){
+			var currentIndexString = this.contextGeneratorIfNeedCompile.currentIndexString, conditionIndex = this.conditionIndex;
+
+			// 追加设置条件索引字符串与 case 表达式
+			contentBuilder.appendString(
+				currentIndexString + "=" + conditionIndex + ";break;case " + conditionIndex + ":" + currentIndexString + "="
+			);
+
+			// 提取条件表达式
+			condition.extractTo(contentBuilder);
+
+			// 追加条件的三元判断字符串
+			contentBuilder.appendString(
+				"?" + this.positiveIndex + ":" + this.negativeIndex + ";break;case " + this.adapterIndex + ":"
+			);
+		},
+		/**
+		 * 以生成器形式去编译前置主体代码（do while 就是前置主体形式的表达式）
+		 * @param {Expression} body - 主体表达式
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 */
+		generatePrefixBodyTo: function(body, contentBuilder){
+			var positiveIndex = this.positiveIndex;
+
+			// 追加索引设置以及 case 表达式字符串
+			contentBuilder.appendString(
+				this.contextGeneratorIfNeedCompile.currentIndexString + "=" + positiveIndex + ";break;case " + positiveIndex + ":"
+			);
+
+			// 以生成器形式去编译主体代码
+			generateBody(this, body, contentBuilder);
+		},
 		negativeIndex: DEFAULT_INDEX,
 		mainFlowIndex: DEFAULT_INDEX,
-		/**
-		 * 以常规形式的提取表达式文本内容
-		 * @param {ContentBuilder} contentBuilder - 内容生成器
-		 */
-		normalizeTo: function(){},
 		positiveIndex: DEFAULT_INDEX
 	});
 
 	return ConditionalExpression;
 }(
+	this.GenerableExpression,
 	// DEFAULT_INDEX
-	-1
+	-1,
+	// generateBody
+	function(expression, body, contentBuilder){
+		// 提取主体内容
+		body.extractTo(contentBuilder);
+
+		// 判断主体表达式是否需要加分号
+		if((body.state & STATE_STATEMENT_ENDED) !== STATE_STATEMENT_ENDED){
+			// 追加分号
+			contentBuilder.appendString(";");
+		}
+
+		// 设置表达式状态为已结束
+		expression.state = STATE_STATEMENT_ENDED;
+	}
 );
 
 }.call(
@@ -6696,9 +6753,12 @@ this.BlockExpression = function(extractTo){
 	/**
 	 * 语句块表达式
 	 * @param {Context} open - 起始标签上下文
+	 * @param {Statements} statements - 当前语句块
 	 */
-	function BlockExpression(open){
+	function BlockExpression(open, statements){
 		PartnerExpression.call(this, open);
+
+		this.contextGeneratorIfNeedCompile = statements.contextGeneratorIfNeedCompile;
 	};
 	BlockExpression = new Rexjs(BlockExpression, PartnerExpression);
 	
@@ -6836,7 +6896,7 @@ this.OpenBlockTag = function(OpenBraceTag, BlockExpression, BlockBodyStatements,
 		 */
 		visitor: function(parser, context, statement, statements){
 			// 设置表达式
-			statement.expression = new BlockExpression(context);
+			statement.expression = new BlockExpression(context, statements);
 			
 			// 进入语句块内部
 			this.in(parser, statements);
@@ -6900,135 +6960,6 @@ closeBlockTag = new this.CloseBlockTag();
 										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
 									)[1] +
 									"\n//# sourceURL=http://rexjs.org/block.js"
-								);
-
-
-eval(
-									function(){
-										// 语句块组件相关
-!function(OpenBlockTag, CloseBlockTag, closeBlockComponentTag){
-
-this.BlockComponentStatement = function(){
-	/**
-	 * 语句块组件语句，目的是为其他表达式提供模拟环境
-	 * @param {Statements} statements - 该语句将要所处的语句块
-	 */
-	function BlockComponentStatement(statements){
-		ECMAScriptStatement.call(this, statements);
-	};
-	BlockComponentStatement = new Rexjs(BlockComponentStatement, ECMAScriptStatement);
-
-	BlockComponentStatement.props({
-		/**
-		 * 捕获处理异常
-		 * @param {SyntaxParser} parser - 语法解析器
-		 * @param {Context} context - 语法标签上下文
-		 */
-		catch: function(parser, context){
-			return this.try(parser, context);
-		},
-		/**
-		 * 尝试处理异常
-		 * @param {SyntaxParser} parser - 语法解析器
-		 * @param {Context} context - 语法标签上下文
-		 */
-		try: function(parser, context){
-			// 报错，在这之前，应该主动跳出该语句
-			parser.error(context);
-		}
-	});
-
-	return BlockComponentStatement;
-}();
-
-this.OpenBlockComponentTag = function(BlockComponentStatement, visitor){
-	/**
-	 * switch 主体起始标签
-	 */
-	function OpenBlockComponentTag(_type){
-		OpenBlockTag.call(this, _type);
-	};
-	OpenBlockComponentTag = new Rexjs(OpenBlockComponentTag, OpenBlockTag);
-	
-	OpenBlockComponentTag.props({
-		/**
-		 * 获取绑定的标签，该标签一般是用于语句的 try、catch 的返回值
-		 */
-		get binding(){
-			return closeBlockComponentTag;
-		},
-		/**
-		 * 标签访问器
-		 * @param {SyntaxParser} parser - 语法解析器
-		 * @param {Context} context - 标签上下文
-		 * @param {Statement} statement - 当前语句
-		 * @param {Statements} statements - 当前语句块
-		 */
-		visitor: function(parser, context, statement, statements){
-			// 调用父类方法
-			visitor.call(
-				this,
-				parser,
-				context,
-				// 设置当前语句
-				statements.statement = new BlockComponentStatement(statements),
-				statements
-			);
-		}
-	});
-	
-	return OpenBlockComponentTag;
-}(
-	this.BlockComponentStatement,
-	OpenBlockTag.prototype.visitor
-);
-
-this.CloseBlockComponentTag = function(visitor){
-	/**
-	 * switch 主体起始标签
-	 */
-	function CloseBlockComponentTag(_type){
-		CloseBlockTag.call(this, _type);
-	};
-	CloseBlockComponentTag = new Rexjs(CloseBlockComponentTag, CloseBlockTag);
-	
-	CloseBlockComponentTag.props({
-		/**
-		 * 标签访问器
-		 * @param {SyntaxParser} parser - 语法解析器
-		 * @param {Context} context - 标签上下文
-		 * @param {Statement} statement - 当前语句
-		 * @param {Statements} statements - 当前语句块
-		 */
-		visitor: function(parser, context, statement, statements){
-			// 调用父类方法
-			visitor.call(this, parser, context, statement, statements);
-
-			// 跳出语句并设置表达式的 block 属性
-			statement.out().block = statement.expression;
-		}
-	});
-	
-	return CloseBlockComponentTag;
-}(
-	CloseBlockTag.prototype.visitor
-);
-
-closeBlockComponentTag = new this.CloseBlockComponentTag();
-
-}.call(
-	this,
-	this.OpenBlockTag,
-	this.CloseBlockTag,
-	// closeBlockComponentTag
-	null
-);
-									}
-									.toString()
-									.match(
-										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-									)[1] +
-									"\n//# sourceURL=http://rexjs.org/block-component.js"
 								);
 
 
@@ -8114,7 +8045,7 @@ this.RestArgumentSeparatorTag = function(ArgumentSeparatorTag){
 eval(
 									function(){
 										// 函数主体表达式相关
-!function(BlockExpression, closeFunctionBodyTag){
+!function(closeFunctionBodyTag){
 
 this.FunctionBodyExpression = function(extractTo, insertDefaults){
 	/**
@@ -8122,9 +8053,9 @@ this.FunctionBodyExpression = function(extractTo, insertDefaults){
 	 * @param {Context} open - 起始标签上下文
 	 */
 	function FunctionBodyExpression(open){
-		BlockExpression.call(this, open);
+		PartnerExpression.call(this, open);
 	};
-	FunctionBodyExpression = new Rexjs(FunctionBodyExpression, BlockExpression);
+	FunctionBodyExpression = new Rexjs(FunctionBodyExpression, PartnerExpression);
 
 	FunctionBodyExpression.props({
 		/**
@@ -8145,12 +8076,12 @@ this.FunctionBodyExpression = function(extractTo, insertDefaults){
 			// 插入默认参数
 			insertDefaults(contentBuilder, this, defaults);
 		},
-		state: BlockExpression.STATE_NONE
+		state: PartnerExpression.STATE_NONE
 	});
 	
 	return FunctionBodyExpression;
 }(
-	BlockExpression.prototype.extractTo,
+	PartnerExpression.prototype.extractTo,
 	// insertDefaults
 	function(contentBuilder, expression, defaults){
 		var inner = expression.inner, builder = new ContentBuilder();
@@ -8250,7 +8181,7 @@ this.FunctionBodyStatements = function(ECMAScriptStatements, ECMAScriptVariableC
 	ECMAScriptConfig.generator
 );
 
-this.OpenFunctionBodyTag = function(OpenBraceTag, FunctionBodyExpression, FunctionBodyStatements, BlockComponentStatement, forEach){
+this.OpenFunctionBodyTag = function(OpenBraceTag, FunctionBodyExpression, FunctionBodyStatements, forEach){
 	/**
 	 * 起始函数主体标签
 	 * @param {Number} _type - 标签类型
@@ -8295,7 +8226,7 @@ this.OpenFunctionBodyTag = function(OpenBraceTag, FunctionBodyExpression, Functi
 			
 			(
 				// 设置当前语句
-				statements.statement = new BlockComponentStatement(statements)
+				statements.statement = new BoxStatement(statements)
 			)
 			// 设置表达式
 			.expression = new FunctionBodyExpression(context);
@@ -8320,7 +8251,6 @@ this.OpenFunctionBodyTag = function(OpenBraceTag, FunctionBodyExpression, Functi
 	this.OpenBraceTag,
 	this.FunctionBodyExpression,
 	this.FunctionBodyStatements,
-	this.BlockComponentStatement,
 	Rexjs.forEach
 );
 
@@ -8372,7 +8302,6 @@ closeFunctionBodyTag = new this.CloseFunctionBodyTag();
 
 }.call(
 	this,
-	this.BlockExpression,
 	// closeFunctionBodyTag
 	null
 );
@@ -12993,31 +12922,35 @@ eval(
 										// 标记标签相关
 !function(){
 
-this.LabelledExpression = function(){
+this.LabelledExpression = function(GenerableExpression){
 	/**
 	 * 标记表达式
 	 * @param {Context} context - 语法标签上下文
 	 */
-	function LabelledExpression(context){
-		Expression.call(this, context);
+	function LabelledExpression(context, statements){
+		GenerableExpression.call(this, context, statements);
 	};
-	LabelledExpression = new Rexjs(LabelledExpression, Expression);
+	LabelledExpression = new Rexjs(LabelledExpression, GenerableExpression);
 
 	LabelledExpression.props({
-		contextGeneratorIfNeedCompile: null,
 		/**
-		 * 提取表达式文本内容
+		 * 以生成器形式的提取表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
 		 */
-		extractTo: function(contentBuilder){
-			// 如果不存在需要编译的生成器
-			if(this.contextGeneratorIfNeedCompile === null){
-				// 追加标签名
-				contentBuilder.appendContext(this.context);
-				// 追加冒号
-				contentBuilder.appendString(":");
-			}
-			
+		generateTo: function(contentBuilder){
+			// 提取语句表达式内容
+			this.statementExpression.extractTo(contentBuilder);
+		},
+		/**
+		 * 以常规形式的提取表达式文本内容
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 */
+		normalizeTo: function(contentBuilder){
+			// 追加标签名
+			contentBuilder.appendContext(this.context);
+			// 追加冒号
+			contentBuilder.appendString(":");
+
 			// 提取语句表达式内容
 			this.statementExpression.extractTo(contentBuilder);
 		},
@@ -13025,7 +12958,9 @@ this.LabelledExpression = function(){
 	});
 	
 	return LabelledExpression;
-}();
+}(
+	this.GenerableExpression
+);
 
 this.LabelledStatement = function(){
 	/**
@@ -13105,7 +13040,7 @@ this.LabelColonTag = function(ColonTag, LabelledExpression, LabelledStatement){
 		 */
 		visitor: function(parser, context, statement, statements){
 			// 设置表达式
-			statement.expression = new LabelledExpression(statement.expression.context);
+			statement.expression = new LabelledExpression(statement.expression.context, statements);
 			// 设置当前语句
 			statements.statement = new LabelledStatement(statements);
 		}
@@ -13135,37 +13070,19 @@ eval(
 										// 中断流相关
 !function(){
 
-this.TerminatedFlowExpression = function(){
+this.TerminatedFlowExpression = function(GenerableExpression){
 	/**
 	 * 中断流表达式
 	 * @param {Context} context - 语法标签上下文
-	 * @param {GeneratorExpression} contextGeneratorIfNeedCompile - 需要编译的生成器表达式
+	 * @param {Statements} statements - 当前语句块
 	 */
-	function TerminatedFlowExpression(context, contextGeneratorIfNeedCompile){
-		Expression.call(this, context);
-
-		this.contextGeneratorIfNeedCompile = contextGeneratorIfNeedCompile;
+	function TerminatedFlowExpression(context, statements){
+		GenerableExpression.call(this, context, statements);
 	};
-	TerminatedFlowExpression = new Rexjs(TerminatedFlowExpression, Expression);
+	TerminatedFlowExpression = new Rexjs(TerminatedFlowExpression, GenerableExpression);
 	
 	TerminatedFlowExpression.props({
 		branch: null,
-		contextGeneratorIfNeedCompile: null,
-		/**
-		 * 提取表达式文本内容
-		 * @param {ContentBuilder} contentBuilder - 内容生成器
-		 */
-		extractTo: function(contentBuilder){
-			// 如果需要编译的生成器表达式存在
-			if(this.contextGeneratorIfNeedCompile){
-				// 以生成器形式的提取表达式文本内容
-				this.generateTo(contentBuilder);
-				return;
-			}
-			
-			// 以常规形式的提取表达式文本内容
-			this.normalizeTo(contentBuilder);
-		},
 		/**
 		 * 以生成器形式的提取表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
@@ -13213,7 +13130,9 @@ this.TerminatedFlowExpression = function(){
 	});
 	
 	return TerminatedFlowExpression;
-}();
+}(
+	this.GenerableExpression
+);
 
 this.TerminatedFlowStatement = function(){
 	/**
@@ -13278,7 +13197,7 @@ this.TerminatedFlowTag = function(TerminatedFlowExpression, TerminatedFlowStatem
 		 */
 		visitor: function(parser, context, statement, statements){
 			// 设置表达式
-			statement.expression = new TerminatedFlowExpression(context, statements.contextGeneratorIfNeedCompile);
+			statement.expression = new TerminatedFlowExpression(context, statements);
 			// 设置当前语句
 			statements.statement = new TerminatedFlowStatement(statements);
 		}
@@ -13454,14 +13373,12 @@ eval(
 
 this.TerminatedBranchFlowExpression = function(emptyExpression, generateTo){
 	/**
-	 * 中断流表达式
+	 * 中断分支流表达式
 	 * @param {Context} context - 语法标签上下文
-	 * @param {GeneratorExpression} contextGeneratorIfNeedCompile - 需要编译的生成器表达式
+	 * @param {Statements} statements - 当前语句块
 	 */
-	function TerminatedBranchFlowExpression(context, contextGeneratorIfNeedCompile){
-		TerminatedFlowExpression.call(this, context, contextGeneratorIfNeedCompile);
-
-		this.contextGeneratorIfNeedCompile = contextGeneratorIfNeedCompile;
+	function TerminatedBranchFlowExpression(context, statements){
+		TerminatedFlowExpression.call(this, context, statements);
 	};
 	TerminatedBranchFlowExpression = new Rexjs(TerminatedBranchFlowExpression, TerminatedFlowExpression);
 
@@ -13549,7 +13466,7 @@ this.TerminatedBranchFlowStatement = function(catchMethod, withoutAnyFlow){
 			while(statement){
 				// 如果流一致
 				if((statement.flow & flow) === flow){
-					// 设置中断流表达式所相关的分支流表达式
+					// 设置中断流表达式所属表达式
 					terminatedBranchFlowExpression.owner = statement.target.expression;
 					return false;
 				}
@@ -13579,13 +13496,18 @@ this.TerminatedBranchFlowTag = function(TerminatedFlowTag, TerminatedBranchFlowE
 		/**
 		 * 核对标记定义语句，是否满足当前中断流所对应的标记
 		 * @param {Statement} statement - 需要判断的语句
+		 * @param {TerminatedBranchFlowExpression} terminatedBranchFlowExpression - 中断分支流表达式
 		 * @param {String} label - 需要核对的标记文本值
 		 */
-		checkLabelledStatement: function(statement, label){
+		checkLabelledStatement: function(statement, terminatedBranchFlowExpression, label){
 			// 如果当前语句是标记语句
 			if(statement instanceof LabelledStatement){
 				// 返回标签对比结果
-				return statement.target.expression.context.content === label;
+				if(statement.target.expression.context.content === label){
+					// 设置中断流表达式所属表达式
+					terminatedBranchFlowExpression.owner = statement.expression;
+					return true;
+				}
 			}
 
 			return false;
@@ -13607,7 +13529,7 @@ this.TerminatedBranchFlowTag = function(TerminatedFlowTag, TerminatedBranchFlowE
 		 */
 		visitor: function(parser, context, statement, statements){
 			// 设置表达式
-			statement.expression = new TerminatedBranchFlowExpression(context, statements.contextGeneratorIfNeedCompile);
+			statement.expression = new TerminatedBranchFlowExpression(context, statements);
 			// 设置当前语句
 			statements.statement = new TerminatedBranchFlowStatement(statements);
 		}
@@ -13680,18 +13602,12 @@ this.LabelledIdentifierTag = function(LabelTag, withoutAnyFlow){
 
 			// 如果语句存在
 			while(statement){
-				var target = statement.target;
-
 				// 如果流语句核对有效
-				if(tag.checkLabelledStatement(statement, content)){debugger
-					// 设置中断流表达式所相关的分支流表达式
-					terminatedBranchFlowExpression.owner = target.expression;
-					// 设置标记表达式的生成器
-					target.target.expression.contextGeneratorIfNeedCompile = statements.contextGeneratorIfNeedCompile;
+				if(tag.checkLabelledStatement(statement, terminatedBranchFlowExpression, content)){
 					return false;
 				}
 
-				statement = target;
+				statement = statement.target;
 			}
 
 			// 如果是闭包，则获取 target，否则等于 null，中断循环
@@ -13761,13 +13677,14 @@ this.ContinueTag = function(FLOW_CIRCULAR, checkLabelledStatement){
 		/**
 		 * 核对标记定义语句，是否满足当前中断流所对应的标记
 		 * @param {Statement} statement - 需要判断的语句
+		 * @param {TerminatedBranchFlowExpression} terminatedBranchFlowExpression - 中断分支流表达式
 		 * @param {String} label - 需要核对的标记文本值
 		 */
-		checkLabelledStatement: function(statement, label){
+		checkLabelledStatement: function(statement, terminatedBranchFlowExpression, label){
 			// 如果语句流一致
 			if((statement.flow & FLOW_CIRCULAR) === FLOW_CIRCULAR){
 				// 返回父类判断结果
-				return checkLabelledStatement.call(this, statement.target, label);
+				return checkLabelledStatement.call(this, statement.target, terminatedBranchFlowExpression, label);
 			}
 
 			return false;
@@ -14391,15 +14308,14 @@ eval(
 										// if 语句相关
 !function(closeIfConditionTag, elseTag){
 
-this.IfExpression = function(ConditionalExpression, compileWithGenerator){
+this.IfExpression = function(ConditionalExpression){
 	/**
 	 * if 表达式
 	 * @param {Context} context - 表达式上下文
+	 * @param {Statements} statements - 当前语句块
 	 */
-	function IfExpression(context){
-		ConditionalExpression.call(this, context);
-		
-		this.ifContext = context;
+	function IfExpression(context, statements){
+		ConditionalExpression.call(this, context, statements);
 	};
 	IfExpression = new Rexjs(IfExpression, ConditionalExpression);
 	
@@ -14420,9 +14336,9 @@ this.IfExpression = function(ConditionalExpression, compileWithGenerator){
 			}
 
 			// 以生成器形式去编译条件代码
-			this.compileConditionWithGenerator(this.condition.inner, contentBuilder);
+			this.generateConditionTo(this.condition.inner, contentBuilder);
 			// 编译 if 主体
-			this.compileBodyWithGenerator(this.ifBody, contentBuilder);
+			this.generateBodyTo(this.ifBody, contentBuilder);
 
 			// 如果存在 else
 			if(elseContext){
@@ -14430,11 +14346,16 @@ this.IfExpression = function(ConditionalExpression, compileWithGenerator){
 				this.mainFlowIndex = mainFlowIndex;
 
 				// 编译 if 主体
-				this.compileBodyWithGenerator(this.elseBody, contentBuilder);
+				this.generateBodyTo(this.elseBody, contentBuilder);
 			}
 		},
 		ifBody: null,
-		ifContext: null,
+		/**
+		 * 获取 if 关键字上下文
+		 */
+		get ifContext(){
+			return this.context;
+		},
 		/**
 		 * 以常规形式的提取表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
@@ -14471,13 +14392,7 @@ this.IfExpression = function(ConditionalExpression, compileWithGenerator){
 	
 	return IfExpression;
 }(
-	this.ConditionalExpression,
-	// compileWithGenerator
-	function(expression, generator, elseContext, contentBuilder){
-		var index = generator.nextIndex(), positiveIndex = generator.nextIndex(), negativeIndex = elseContext ? generator.nextIndex() : index;
-
-		
-	}
+	this.ConditionalExpression
 );
 
 this.IfBodyStatement = function(SingleStatement){
@@ -14585,9 +14500,9 @@ this.IfTag = function(IfExpression){
 		 * @param {Statement} statement - 当前语句
 		 * @param {Statements} statements - 当前语句块
 		 */
-		visitor: function(parser, context, statement){
+		visitor: function(parser, context, statement, statements){
 			// 设置表达式
-			statement.expression = new IfExpression(context);
+			statement.expression = new IfExpression(context, statements);
 		}
 	});
 	
@@ -14749,19 +14664,30 @@ this.WhileExpression = function(ConditionalExpression){
 	/**
 	 * while 表达式
 	 * @param {Context} context - 语法标签上下文
+	 * @param {Statements} statements - 当前语句块
 	 */
-	function WhileExpression(context){
-		ConditionalExpression.call(this, context);
+	function WhileExpression(context, statements){
+		ConditionalExpression.call(this, context, statements);
 	};
 	WhileExpression = new Rexjs(WhileExpression, ConditionalExpression);
 	
 	WhileExpression.props({
 		body: null,
 		/**
+		 * 以生成器形式的提取表达式文本内容
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 */
+		generateTo: function(contentBuilder){
+			// 以生成器形式编译逻辑条件
+			this.generateConditionTo(this.condition.inner, contentBuilder);
+			// 以生成器形式编译主体
+			this.generateBodyTo(this.body, contentBuilder);
+		},
+		/**
 		 * 提取表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容存储列表
 		 */
-		extractTo: function(contentBuilder){
+		normalizeTo: function(contentBuilder){
 			// 提取 while 关键字
 			contentBuilder.appendContext(this.context);
 			
@@ -14834,7 +14760,7 @@ this.WhileTag = function(WhileExpression){
 		 */
 		visitor: function(parser, context, statement, statements){
 			// 设置当前表达式
-			statement.expression = new WhileExpression(context);
+			statement.expression = new WhileExpression(context, statements);
 		}
 	});
 	
@@ -14952,19 +14878,32 @@ this.DoExpression = function(ConditionalExpression){
 	/**
 	 * do 表达式
 	 * @param {Context} context - 语法标签上下文
+	 * @param {Statements} statements - 当前语句块
 	 */
-	function DoExpression(context){
-		ConditionalExpression.call(this, context);
+	function DoExpression(context, statements){
+		ConditionalExpression.call(this, context, statements);
 	};
 	DoExpression = new Rexjs(DoExpression, ConditionalExpression);
 	
 	DoExpression.props({
 		body: null,
 		/**
+		 * 以生成器形式的提取表达式文本内容
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 */
+		generateTo: function(contentBuilder){
+			this.adapterIndex = this.mainFlowIndex;
+
+			// 以生成器形式编译主体
+			this.generatePrefixBodyTo(this.body, contentBuilder);
+			// 以生成器形式编译逻辑条件
+			this.generateConditionTo(this.condition.inner, contentBuilder);
+		},
+		/**
 		 * 提取表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容存储列表
 		 */
-		extractTo: function(contentBuilder){
+		normalizeTo: function(contentBuilder){
 			var body = this.body;
 			
 			// 追加 do 关键字
@@ -15086,7 +15025,7 @@ this.DoTag = function(DoExpression, DoStatement){
 		 */
 		visitor: function(parser, context, statement, statements){
 			// 设置当前表达式
-			statement.expression = new DoExpression(context);
+			statement.expression = new DoExpression(context, statements);
 			// 设置当前语句
 			statements.statement = new DoStatement(statements);
 		}
@@ -15229,13 +15168,14 @@ eval(
 										// for 语句相关
 !function(CompiledExpression){
 
-this.ForExpression = function(ConditionalExpression, config, compileOf, compileOfWithGenerator, compileWithGenerator){
+this.ForExpression = function(ConditionalExpression, config, compileOf, compileOfWithGenerator, compileInWithGenerator, compileWithGenerator){
 	/**
 	 * for 表达式
 	 * @param {Context} context - 语法标签上下文
+	 * @param {Statements} statements - 当前语句块
 	 */
-	function ForExpression(context){
-		ConditionalExpression.call(this, context);
+	function ForExpression(context, statements){
+		ConditionalExpression.call(this, context, statements);
 	};
 	ForExpression = new Rexjs(ForExpression, ConditionalExpression);
 
@@ -15252,15 +15192,13 @@ this.ForExpression = function(ConditionalExpression, config, compileOf, compileO
 			if(iterator){
 				// 如果是 of 标签而且需要编译 of
 				if(iterator === "of" && config.value){
-					// 以生成器形式编译 of
+					// 以生成器形式编译 for of
 					compileOfWithGenerator(this, generator, contentBuilder);
 					return;
 				}
 				
-				// 以生成器形式编译逻辑条件
-				this.compileConditionWithGenerator(this.condition, contentBuilder);
-				// 以生成器形式编译主体
-				this.compileBodyWithGenerator(this.body, contentBuilder);
+				// 以生成器形式编译 for in
+				compileInWithGenerator(this, generator, contentBuilder);
 				return;
 			}
 
@@ -15347,7 +15285,7 @@ this.ForExpression = function(ConditionalExpression, config, compileOf, compileO
 		contentBuilder.appendString(");");
 
 		// 以生成器形式编译条件
-		expression.compileConditionWithGenerator(
+		expression.generateConditionTo(
 			new CompiledExpression("!" + variable + ".iterator.closed"),
 			contentBuilder
 		);
@@ -15361,7 +15299,28 @@ this.ForExpression = function(ConditionalExpression, config, compileOf, compileO
 		);
 
 		// 以生成器形式编译主体
-		expression.compileBodyWithGenerator(expression.body, contentBuilder);
+		expression.generateBodyTo(expression.body, contentBuilder);
+	},
+	// compileInWithGenerator
+	function(expression, generator, contentBuilder){
+		var variable = expression.variable, inner = expression.condition.inner, builder = new ContentBuilder();
+
+		// 追加临时变量名赋值操作，以免每次进入生成器都会生成新的对象
+		contentBuilder.appendString(variable + "=");
+		// 提取右侧表达式，用于赋值给临时变量名
+		inner.right.extractTo(contentBuilder);
+		// 追加赋值操作的语句分号
+		contentBuilder.appendString(";");
+
+		// 重新设置右侧表达式
+		inner.right = new CompiledExpression(variable);
+
+		// 以生成器形式编译逻辑条件
+		expression.generateConditionTo(inner, builder);
+		// 追加编译后的逻辑条件代码
+		contentBuilder.appendString(builder.result);
+		// 以生成器形式编译主体
+		expression.generateBodyTo(expression.body, contentBuilder);
 	},
 	// compileWithGenerator
 	function(expression, generator, contentBuilder){
@@ -15376,7 +15335,7 @@ this.ForExpression = function(ConditionalExpression, config, compileOf, compileO
 		contentBuilder.appendString(";");
 
 		// 以生成器形式编译逻辑条件
-		expression.compileConditionWithGenerator(
+		expression.generateConditionTo(
 			logicConditionExpression.default ? new CompiledExpression("true") : logicConditionExpression,
 			contentBuilder
 		);
@@ -15390,7 +15349,7 @@ this.ForExpression = function(ConditionalExpression, config, compileOf, compileO
 		);
 
 		// 以生成器形式编译主体
-		expression.compileBodyWithGenerator(expression.body, contentBuilder);
+		expression.generateBodyTo(expression.body, contentBuilder);
 	}
 );
 
@@ -15448,9 +15407,9 @@ this.ForTag = function(ForExpression){
 		 * @param {Statement} statement - 当前语句
 		 * @param {Statements} statements - 当前语句块
 		 */
-		visitor: function(parser, context, statement){
+		visitor: function(parser, context, statement, statements){
 			// 设置当前表达式为 for 表达式
-			statement.expression = new ForExpression(context);
+			statement.expression = new ForExpression(context, statements);
 		}
 	});
 	
@@ -15524,6 +15483,13 @@ this.IteratorTag = function(BinaryKeywordTag, BinaryExpression, IterationStateme
 
 	IteratorTag.props({
 		/**
+		 * 判断编译时是否需要临时变量名
+		 * @param {Statements} statements - 当前语句块
+		 */
+		hasVariable: function(statements){
+			return statements.contextGeneratorIfNeedCompile !== null;
+		},
+		/**
 		 * 标签访问器
 		 * @param {SyntaxParser} parser - 语法解析器
 		 * @param {Context} context - 标签上下文
@@ -15531,8 +15497,17 @@ this.IteratorTag = function(BinaryKeywordTag, BinaryExpression, IterationStateme
 		 * @param {Statements} statements - 当前语句块
 		 */
 		visitor: function(parser, context, statement, statements){
+			var forExpression = statement.target.expression;
+
 			// 设置 for 表达式的 iterator 属性
-			statement.target.expression.iterator = context.content;
+			forExpression.iterator = context.content;
+
+			// 如果需要编译
+			if(this.hasVariable(statements)){
+				// 生成并记录临时变量名
+				forExpression.variable = statements.collections.generate();
+			}
+
 			// 设置当前表达式
 			statement.expression = new BinaryExpression(context, statement.expression);
 			// 设置当前语句
@@ -15566,7 +15541,7 @@ this.ForInTag = function(IteratorTag){
 	this.IteratorTag
 );
 
-this.ForOfTag = function(IteratorTag, config, visitor){
+this.ForOfTag = function(IteratorTag, config, hasVariable){
 	/**
 	 * for of 标签
 	 * @param {Number} _type - 标签类型
@@ -15577,24 +15552,14 @@ this.ForOfTag = function(IteratorTag, config, visitor){
 	ForOfTag = new Rexjs(ForOfTag, IteratorTag);
 
 	ForOfTag.props({
-		regexp: /of/,
 		/**
-		 * 标签访问器
-		 * @param {SyntaxParser} parser - 语法解析器
-		 * @param {Context} context - 标签上下文
-		 * @param {Statement} statement - 当前语句
+		 * 判断编译时是否需要临时变量名
 		 * @param {Statements} statements - 当前语句块
 		 */
-		visitor: function(parser, context, statement, statements){
-			// 如果需要编译 of
-			if(config.value){
-				// 生成并记录临时变量名
-				statement.target.expression.variable = statements.collections.generate();
-			}
-
-			// 调用父类方法
-			visitor.call(this, parser, context, statement, statements);
-		}
+		hasVariable(statements){
+			return config.value || hasVariable.call(this, statements);
+		},
+		regexp: /of/
 	});
 
 	return ForOfTag;
@@ -15602,7 +15567,7 @@ this.ForOfTag = function(IteratorTag, config, visitor){
 	this.IteratorTag,
 	// config
 	ECMAScriptConfig.of,
-	this.IteratorTag.prototype.visitor
+	this.IteratorTag.prototype.hasVariable
 );
 
 }.call(
@@ -16830,15 +16795,22 @@ finallyTag = new this.FinallyTag();
 eval(
 									function(){
 										// switch 语句相关
-!function(closeSwitchConditionTag){
+!function(OpenBlockTag, CloseBlockTag, closeSwitchConditionTag, closeSwitchBodyTag){
 
-this.SwitchExpression = function(ConditionalExpression){
+this.SwitchExpression = function(ConditionalExpression, forEach){
 	/**
 	 * switch 表达式
 	 * @param {Context} context - 语法标签上下文
+	 * @param {Statements} statements - 当前语句块
 	 */
-	function SwitchExpression(context){
-		ConditionalExpression.call(this, context);
+	function SwitchExpression(context, statements){
+		ConditionalExpression.call(this, context, statements);
+
+		// 如果存在需要编译的生成器
+		if(this.contextGeneratorIfNeedCompile){
+			// 记录临时变量名
+			this.variable = statements.collections.generate();
+		}
 	};
 	SwitchExpression = new Rexjs(SwitchExpression, ConditionalExpression);
 
@@ -16858,10 +16830,55 @@ this.SwitchExpression = function(ConditionalExpression){
 		},
 		body: null,
 		/**
-		 * 提取表达式文本内容
-		 * @param {ContentBuilder} contentBuilder - 内容存储列表
+		 * 以生成器形式的提取表达式文本内容
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
 		 */
-		extractTo: function(contentBuilder){
+		generateTo: function(contentBuilder){
+			var variable = this.variable, generator = this.contextGeneratorIfNeedCompile;
+
+			contentBuilder.appendString(variable + "=");
+
+			this.condition.inner.extractTo(contentBuilder);
+
+			contentBuilder.appendString(";");
+
+			this.mainFlowIndex = generator.nextIndex();
+
+			forEach(this.body.inner, function(statement){debugger
+				var caseExpression = statement.expression;
+
+				if(!caseExpression){
+					return;
+				}
+
+				// 追加条件的三元判断字符串
+				contentBuilder.appendString(variable + "===");
+
+				caseExpression.value.extractTo(contentBuilder);
+
+				contentBuilder.appendString(
+					"?" + this.positiveIndex + ":" + this.negativeIndex + ";break;case " + this.positiveIndex + ":"
+				);
+
+				caseExpression.statements.extractTo(contentBuilder);
+
+				// 追加索引设置以及 case 表达式字符串
+				contentBuilder.appendString(
+					this.contextGeneratorIfNeedCompile.currentIndexString + "=" + this.negativeIndex + ";break;case " + this.negativeIndex + ":"
+				);
+				
+				this.positiveIndex = generator.nextIndex();
+				this.negativeIndex = generator.nextIndex();
+			}, this, true);
+
+			contentBuilder.appendString("case " + this.mainFlowIndex + ":");
+		},
+		hasDefault: false,
+		/**
+		 * 以常规形式的提取表达式文本内容
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 */
+		normalizeTo: function(contentBuilder){
 			// 添加 switch 关键字
 			contentBuilder.appendContext(this.context);
 
@@ -16870,7 +16887,6 @@ this.SwitchExpression = function(ConditionalExpression){
 			// 提取主体
 			this.body.extractTo(contentBuilder);
 		},
-		hasDefault: false,
 		/**
 		 * 获取状态
 		 */
@@ -16881,13 +16897,32 @@ this.SwitchExpression = function(ConditionalExpression){
 		 * 设置状态
 		 * @param {Number} value - 状态
 		 */
-		set state(value){}
+		set state(value){},
+		variable: ""
 	});
 
 	return SwitchExpression;
 }(
-	this.ConditionalExpression
+	this.ConditionalExpression,
+	Rexjs.forEach
 );
+
+this.SwitchStatement = function(){
+	/**
+	 * switch 语句
+	 * @param {Statements} statements - 该语句将要所处的语句块
+	 */
+	function SwitchStatement(statements){
+		BoxStatement.call(this, statements);
+	};
+	SwitchStatement = new Rexjs(SwitchStatement, BoxStatement);
+
+	SwitchStatement.props({
+		flow: BoxStatement.FLOW_LINEAR
+	});
+
+	return SwitchStatement;
+}();
 
 this.SwitchBodyStatement = function(BraceBodyStatement){
 	/**
@@ -16983,9 +17018,9 @@ this.SwitchTag = function(SwitchExpression){
 		 * @param {Statement} statement - 当前语句
 		 * @param {Statements} statements - 当前语句块
 		 */
-		visitor: function(parser, context, statement){
+		visitor: function(parser, context, statement, statements){
 			// 设置当前表达式
-			statement.expression = new SwitchExpression(context);
+			statement.expression = new SwitchExpression(context, statements);
 		}
 	});
 	
@@ -17075,16 +17110,22 @@ this.CloseSwitchConditionTag = function(CloseParenTag){
 	this.CloseParenTag
 );
 
-this.OpenSwitchBodyTag = function(OpenBlockComponentTag, SwitchBodyStatements){
+this.OpenSwitchBodyTag = function(SwitchStatement, SwitchBodyStatements, visitor){
 	/**
 	 * switch 主体起始标签
 	 */
 	function OpenSwitchBodyTag(_type){
-		OpenBlockComponentTag.call(this, _type);
+		OpenBlockTag.call(this, _type);
 	};
-	OpenSwitchBodyTag = new Rexjs(OpenSwitchBodyTag, OpenBlockComponentTag);
+	OpenSwitchBodyTag = new Rexjs(OpenSwitchBodyTag, OpenBlockTag);
 	
 	OpenSwitchBodyTag.props({
+		/**
+		 * 获取绑定的标签，该标签一般是用于语句的 try、catch 的返回值
+		 */
+		get binding(){
+			return closeSwitchBodyTag;
+		},
 		/**
 		 * 进入语句块内部
 		 * @param {SyntaxParser} parser - 语法解析器
@@ -17100,20 +17141,77 @@ this.OpenSwitchBodyTag = function(OpenBlockComponentTag, SwitchBodyStatements){
 		 */
 		require: function(tagsMap){
 			return tagsMap.openSwitchBodyContextTags;
+		},
+		/**
+		 * 标签访问器
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 标签上下文
+		 * @param {Statement} statement - 当前语句
+		 * @param {Statements} statements - 当前语句块
+		 */
+		visitor: function(parser, context, statement, statements){
+			// 调用父类方法
+			visitor.call(
+				this,
+				parser,
+				context,
+				// 设置当前语句
+				statements.statement = new SwitchStatement(statements),
+				statements
+			);
 		}
 	});
 	
 	return OpenSwitchBodyTag;
 }(
-	this.OpenBlockComponentTag,
-	this.SwitchBodyStatements
+	this.SwitchStatement,
+	this.SwitchBodyStatements,
+	OpenBlockTag.prototype.visitor
+);
+
+this.CloseSwitchBodyTag = function(visitor){
+	/**
+	 * switch 主体结束标签
+	 */
+	function CloseSwitchBodyTag(_type){
+		CloseBlockTag.call(this, _type);
+	};
+	CloseSwitchBodyTag = new Rexjs(CloseSwitchBodyTag, CloseBlockTag);
+	
+	CloseSwitchBodyTag.props({
+		$type: TYPE_UNEXPECTED,
+		/**
+		 * 标签访问器
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 标签上下文
+		 * @param {Statement} statement - 当前语句
+		 * @param {Statements} statements - 当前语句块
+		 */
+		visitor: function(parser, context, statement, statements){
+			// 调用父类方法
+			visitor.call(this, parser, context, statement, statements);
+
+			// 跳出语句并设置表达式的 block 属性
+			statement.out().block = statement.expression;
+		}
+	});
+	
+	return CloseSwitchBodyTag;
+}(
+	CloseBlockTag.prototype.visitor
 );
 
 closeSwitchConditionTag = new this.CloseSwitchConditionTag();
 
+closeSwitchBodyTag = new this.CloseSwitchBodyTag();
+
 }.call(
 	this,
+	this.OpenBlockTag,
+	this.CloseBlockTag,
 	// closeSwitchConditionTag
+	null,
+	// closeSwitchBodyTag
 	null
 );
 									}
@@ -17294,8 +17392,7 @@ this.CaseBodyStatement = function(BraceBodyStatement, isCase, isCloseBrace){
 				default:
 					return null;
 			}
-		},
-		flow: ECMAScriptStatement.FLOW_LINEAR
+		}
 	});
 	
 	return CaseBodyStatement;
@@ -17536,7 +17633,7 @@ eval(
 										// yield 表达式相关
 !function(TerminatedFlowExpression, SingleStatement, ReturnTag, config){
 
-this.YieldTag = function(visitor, notice){
+this.YieldTag = function(visitor){
 	/**
 	 * yield 关键字标签
 	 * @param {Number} _type - 标签类型
@@ -17581,15 +17678,8 @@ this.YieldTag = function(visitor, notice){
 		 * @param {Statements} statements - 当前语句块
 		 */
 		visitor: function(parser, context, statement, statements){
-			var generator = statements.contextGenerator;
-
 			// 如果在生成器内
-			if(generator){
-				// 如果需要编译
-				if(config.value){
-					notice(statements, generator);
-				}
-
+			if(statements.contextGenerator){
 				// 调用父类方法
 				visitor.call(this, parser, context, statement, statements);
 				return;
@@ -17605,31 +17695,7 @@ this.YieldTag = function(visitor, notice){
 
 	return YieldTag;
 }(
-	ReturnTag.prototype.visitor,
-	// notice
-	function(statements, generator){
-		var closure = statements.closure, target = closure.target;
-
-		while(statements !== target){
-			var expression, t = statements.target;
-
-			switch(true){
-				case statements.statement instanceof SingleStatement:
-					expression = statements.statement.target.expression;
-					break;
-
-				case statements !== closure:
-					expression = t.statement.expression;
-					break;
-
-				default:
-					return;
-			}
-
-			expression.contextGeneratorIfNeedCompile = generator;
-			statements = t;
-		}
-	}
+	ReturnTag.prototype.visitor
 );
 
 }.call(
@@ -23554,7 +23620,7 @@ this.OpenRestrictedCommentContextTags = function(OpenMultiLineCommentContextTags
 	this.CommentBreakTag
 );
 
-this.OpenSwitchBodyContextTags = function(CaseTag, DefaultTag, CloseBlockComponentTag){
+this.OpenSwitchBodyContextTags = function(CaseTag, DefaultTag, CloseSwitchBodyTag){
 	/**
 	 * switch 语句块起始上下文标签列表
 	 */
@@ -23564,7 +23630,7 @@ this.OpenSwitchBodyContextTags = function(CaseTag, DefaultTag, CloseBlockCompone
 		this.register(
 			new CaseTag(),
 			new DefaultTag(),
-			new CloseBlockComponentTag(TYPE_UNEXPECTED)
+			new CloseSwitchBodyTag()
 		);
 	};
 	OpenSwitchBodyContextTags = new Rexjs(OpenSwitchBodyContextTags, IllegalTags);
@@ -23573,7 +23639,7 @@ this.OpenSwitchBodyContextTags = function(CaseTag, DefaultTag, CloseBlockCompone
 }(
 	this.CaseTag,
 	this.DefaultTag,
-	this.CloseBlockComponentTag
+	this.CloseSwitchBodyTag
 );
 
 this.OpenDeclarationArrayContextTags = function(DeclarationArrayItemSeparatorTags, list){

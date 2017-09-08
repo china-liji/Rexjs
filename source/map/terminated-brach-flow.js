@@ -3,14 +3,12 @@
 
 this.TerminatedBranchFlowExpression = function(emptyExpression, generateTo){
 	/**
-	 * 中断流表达式
+	 * 中断分支流表达式
 	 * @param {Context} context - 语法标签上下文
-	 * @param {GeneratorExpression} contextGeneratorIfNeedCompile - 需要编译的生成器表达式
+	 * @param {Statements} statements - 当前语句块
 	 */
-	function TerminatedBranchFlowExpression(context, contextGeneratorIfNeedCompile){
-		TerminatedFlowExpression.call(this, context, contextGeneratorIfNeedCompile);
-
-		this.contextGeneratorIfNeedCompile = contextGeneratorIfNeedCompile;
+	function TerminatedBranchFlowExpression(context, statements){
+		TerminatedFlowExpression.call(this, context, statements);
 	};
 	TerminatedBranchFlowExpression = new Rexjs(TerminatedBranchFlowExpression, TerminatedFlowExpression);
 
@@ -98,7 +96,7 @@ this.TerminatedBranchFlowStatement = function(catchMethod, withoutAnyFlow){
 			while(statement){
 				// 如果流一致
 				if((statement.flow & flow) === flow){
-					// 设置中断流表达式所相关的分支流表达式
+					// 设置中断流表达式所属表达式
 					terminatedBranchFlowExpression.owner = statement.target.expression;
 					return false;
 				}
@@ -128,13 +126,18 @@ this.TerminatedBranchFlowTag = function(TerminatedFlowTag, TerminatedBranchFlowE
 		/**
 		 * 核对标记定义语句，是否满足当前中断流所对应的标记
 		 * @param {Statement} statement - 需要判断的语句
+		 * @param {TerminatedBranchFlowExpression} terminatedBranchFlowExpression - 中断分支流表达式
 		 * @param {String} label - 需要核对的标记文本值
 		 */
-		checkLabelledStatement: function(statement, label){
+		checkLabelledStatement: function(statement, terminatedBranchFlowExpression, label){
 			// 如果当前语句是标记语句
 			if(statement instanceof LabelledStatement){
 				// 返回标签对比结果
-				return statement.target.expression.context.content === label;
+				if(statement.target.expression.context.content === label){
+					// 设置中断流表达式所属表达式
+					terminatedBranchFlowExpression.owner = statement.expression;
+					return true;
+				}
 			}
 
 			return false;
@@ -156,7 +159,7 @@ this.TerminatedBranchFlowTag = function(TerminatedFlowTag, TerminatedBranchFlowE
 		 */
 		visitor: function(parser, context, statement, statements){
 			// 设置表达式
-			statement.expression = new TerminatedBranchFlowExpression(context, statements.contextGeneratorIfNeedCompile);
+			statement.expression = new TerminatedBranchFlowExpression(context, statements);
 			// 设置当前语句
 			statements.statement = new TerminatedBranchFlowStatement(statements);
 		}
@@ -229,18 +232,12 @@ this.LabelledIdentifierTag = function(LabelTag, withoutAnyFlow){
 
 			// 如果语句存在
 			while(statement){
-				var target = statement.target;
-
 				// 如果流语句核对有效
-				if(tag.checkLabelledStatement(statement, content)){debugger
-					// 设置中断流表达式所相关的分支流表达式
-					terminatedBranchFlowExpression.owner = target.expression;
-					// 设置标记表达式的生成器
-					target.target.expression.contextGeneratorIfNeedCompile = statements.contextGeneratorIfNeedCompile;
+				if(tag.checkLabelledStatement(statement, terminatedBranchFlowExpression, content)){
 					return false;
 				}
 
-				statement = target;
+				statement = statement.target;
 			}
 
 			// 如果是闭包，则获取 target，否则等于 null，中断循环

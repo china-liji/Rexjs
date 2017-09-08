@@ -165,8 +165,7 @@ this.CaseBodyStatement = function(BraceBodyStatement, isCase, isCloseBrace){
 				default:
 					return null;
 			}
-		},
-		flow: ECMAScriptStatement.FLOW_LINEAR
+		}
 	});
 	
 	return CaseBodyStatement;

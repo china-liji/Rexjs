@@ -5,19 +5,32 @@ this.DoExpression = function(ConditionalExpression){
 	/**
 	 * do 表达式
 	 * @param {Context} context - 语法标签上下文
+	 * @param {Statements} statements - 当前语句块
 	 */
-	function DoExpression(context){
-		ConditionalExpression.call(this, context);
+	function DoExpression(context, statements){
+		ConditionalExpression.call(this, context, statements);
 	};
 	DoExpression = new Rexjs(DoExpression, ConditionalExpression);
 	
 	DoExpression.props({
 		body: null,
 		/**
+		 * 以生成器形式的提取表达式文本内容
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 */
+		generateTo: function(contentBuilder){
+			this.adapterIndex = this.mainFlowIndex;
+
+			// 以生成器形式编译主体
+			this.generatePrefixBodyTo(this.body, contentBuilder);
+			// 以生成器形式编译逻辑条件
+			this.generateConditionTo(this.condition.inner, contentBuilder);
+		},
+		/**
 		 * 提取表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容存储列表
 		 */
-		extractTo: function(contentBuilder){
+		normalizeTo: function(contentBuilder){
 			var body = this.body;
 			
 			// 追加 do 关键字
@@ -139,7 +152,7 @@ this.DoTag = function(DoExpression, DoStatement){
 		 */
 		visitor: function(parser, context, statement, statements){
 			// 设置当前表达式
-			statement.expression = new DoExpression(context);
+			statement.expression = new DoExpression(context, statements);
 			// 设置当前语句
 			statements.statement = new DoStatement(statements);
 		}
