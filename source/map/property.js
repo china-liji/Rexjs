@@ -256,6 +256,7 @@ this.PropertyExpression = function(BinaryExpression, ShorthandPropertyValueExpre
 		 * @parma {Expression} value - 左侧表达式
 		 */
 		set right(value){},
+		star: null,
 		superDepth: 1,
 		value: null
 	});

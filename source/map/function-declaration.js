@@ -69,6 +69,31 @@ this.FunctionDeclarationTag = function(FunctionTag, FunctionDeclarationExpressio
 	this.FunctionDeclarationExpression
 );
 
+this.FunctionDeclarationStarTag = function(StarTag){
+	/**
+	 * 函数声明星号标签
+	 * @param {Number} _type - 标签类型
+	 */
+	function FunctionDeclarationStarTag(_type){
+		StarTag.call(this, _type);
+	};
+	FunctionDeclarationStarTag = new Rexjs(FunctionDeclarationStarTag, StarTag);
+
+	FunctionDeclarationStarTag.props({
+		/**
+		 * 获取此标签接下来所需匹配的标签列表
+		 * @param {TagsMap} tagsMap - 标签集合映射
+		 */
+		require: function(tagsMap){
+			return tagsMap.functionDeclarationStarContextTags;
+		}
+	});
+
+	return FunctionDeclarationStarTag;
+}(
+	this.StarTag
+);
+
 this.FunctionVariableTag = function(visitor){
 	/**
 	 * 函数变量名标签

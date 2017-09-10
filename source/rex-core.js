@@ -312,14 +312,14 @@ this.forEach = function(every){
 		if(_arrayLike){
 			for(var i = 0, n = obj.length;i < n;i++){
 				// 调用测试函数
-				fn.call(_this, obj[i], i, obj)
+				fn.call(_this, obj[i], i, obj);
 			}
 		}
 		else {
 			// 遍历
 			for(var name in obj){
 				// 调用测试函数
-				fn.call(_this, obj[name], name, obj)
+				fn.call(_this, obj[name], name, obj);
 			}
 		}
 		
@@ -407,5 +407,5 @@ this.forEach(
 	Rexjs,
 	Array,
 	// VERSION
-	"1.0.4"
+	"1.1.0"
 );

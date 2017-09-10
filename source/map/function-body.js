@@ -70,7 +70,7 @@ this.FunctionBodyExpression = function(extractTo, insertDefaults){
 	}
 );
 
-this.FunctionBodyStatements = function(ECMAScriptStatements, ECMAScriptVariableCollections, BraceBodyStatement, GeneratorExpression, VariableIndex, generatorConfig){
+this.FunctionBodyStatements = function(ECMAScriptStatements, ECMAScriptVariableCollections, BraceBodyStatement, VariableIndex, generatorConfig){
 	/**
 	 * 函数主体语句块
 	 * @param {Statements} target - 目标语句块，即上一层语句块
@@ -105,8 +105,8 @@ this.FunctionBodyStatements = function(ECMAScriptStatements, ECMAScriptVariableC
 			// 获取函数表达式
 			var expression = this.target.statement.target.expression;
 
-			// 如果是生成器表达式，则返回表达式
-			return expression instanceof GeneratorExpression ? expression : null;
+			// 如果存在生成器的星号，则返回表达式
+			return expression.star ? expression : null;
 		},
 		/**
 		 * 获取当前上下文中需要编译的生成器
@@ -129,7 +129,6 @@ this.FunctionBodyStatements = function(ECMAScriptStatements, ECMAScriptVariableC
 	this.ECMAScriptStatements,
 	this.ECMAScriptVariableCollections,
 	this.BraceBodyStatement,
-	this.GeneratorExpression,
 	Rexjs.VariableIndex,
 	// generatorConfig
 	ECMAScriptConfig.generator

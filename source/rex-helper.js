@@ -50,7 +50,7 @@ this.IteratorResult = function(){
 	return IteratorResult;
 }();
 
-this.Iterator = function(IteratorIndex, IteratorResult, Infinity){
+this.Iterator = function(IteratorIndex, IteratorResult){
 	/**
 	 * 迭代器
 	 * @param {*} iterable - 可迭代的对象
@@ -134,8 +134,7 @@ this.Iterator = function(IteratorIndex, IteratorResult, Infinity){
 	return Iterator;
 }(
 	this.IteratorIndex,
-	this.IteratorResult,
-	Infinity
+	this.IteratorResult
 );
 
 this.FunctionIterator = function(Iterator, IteratorResult, isNaN, toArray){
@@ -148,6 +147,8 @@ this.FunctionIterator = function(Iterator, IteratorResult, isNaN, toArray){
 
 		this.boundThis = boundThis;
 		this.boundArguments = toArray(boundArguments);
+
+		this.index.max = Infinity;
 	};
 	FunctionIterator = new Rexjs(FunctionIterator, Iterator);
 
@@ -155,12 +156,21 @@ this.FunctionIterator = function(Iterator, IteratorResult, isNaN, toArray){
 		boundThis: null,
 		boundArguments: null,
 		/**
+		 * 迭代器关闭，并返回带有指定值的结果
+		 * @param {*} value - 指定的结果值
+		 */
+		close: function(value){
+			// 索引增加无限大
+			this.index.increase(NaN);
+			// 返回结果
+			return new IteratorResult(value, this.closed);
+		},
+		/**
 		 * 判断该迭代器是否已经关闭
 		 */
 		get closed(){
 			return isNaN(this.index.current);
 		},
-		max: NaN,
 		/**
 		 * 获取下一个迭代结果
 		 */
@@ -1075,6 +1085,34 @@ this.Module = function(
 
 // 其他
 !function(){
+
+this.Object = function(){
+	/**
+	 * 对象
+	 */
+	function Object(){};
+	Object = new Rexjs(Object);
+
+	Object.static({
+		/**
+		 * 获取对象可枚举的属性的属性名集合
+		 * @param {*} object - 需要获取属性名的对象
+		 */
+		getEnumerablePropertyNames: function(object){
+			var names = [];
+
+			// 遍历对象
+			for(var name in object){
+				// 添加属性名
+				names.push(name);
+			}
+
+			return names;
+		}
+	});
+
+	return Object;
+}();
 
 this.Function = function(bind, empty){
 	/**

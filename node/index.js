@@ -147,7 +147,6 @@ console.timeEnd("time");
 		"block.js",
 		"function.js",
 		"function-declaration.js",
-		"generator.js",
 		"argument.js",
 		"argument-default.js",
 		"argument-rest.js",

@@ -159,6 +159,42 @@ this.ShorthandMethodBodyStatements = function(FunctionBodyStatements){
 	this.FunctionBodyStatements
 );
 
+this.PropertyStarTag = function(StarTag){
+	/**
+	 * 函数声明星号标签
+	 * @param {Number} _type - 标签类型
+	 */
+	function PropertyStarTag(_type){
+		StarTag.call(this, _type);
+	};
+	PropertyStarTag = new Rexjs(PropertyStarTag, StarTag);
+
+	PropertyStarTag.props({
+		/**
+		 * 获取此标签接下来所需匹配的标签列表
+		 * @param {TagsMap} tagsMap - 标签集合映射
+		 */
+		require: function(tagsMap){
+			return tagsMap.shorthandMethodNameTags;
+		},
+		/**
+		 * 标签访问器
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 标签上下文
+		 * @param {Statement} statement - 当前语句
+		 * @param {Statements} statements - 当前语句块
+		 */
+		visitor: function(parser, context, statement, statements){
+			// 设置属性表达式的星号
+			statement.expression.star = context;
+		}
+	});
+
+	return PropertyStarTag;
+}(
+	this.StarTag
+);
+
 this.OpenShorthandMethodArgumentsTag = function(ShorthandMethodValueExpression, ShorthandMethodValueStatement, visitor){
 	/**
 	 * 对象起始简写方法参数标签
@@ -184,17 +220,24 @@ this.OpenShorthandMethodArgumentsTag = function(ShorthandMethodValueExpression, 
 		 * @param {Statements} statements - 当前语句块
 		 */
 		visitor: function(parser, context, statement, statements){
+			var propertyExpression = statement.expression, star = propertyExpression.star;
+
 			// 设置对象属性表达式的属性值
-			statement.expression.value = new ShorthandMethodValueExpression();
+			propertyExpression.value = new ShorthandMethodValueExpression();
+			// 初始化简写方法值语句
+			statement = new ShorthandMethodValueStatement(statements);
+			
+			// 如果星号存在
+			if(star){
+				// 将简写函数表达式转化为生成器
+				statement.expression.toGenerator(star);
+			}
+
+			// 设置当前语句
+			statements.statement = statement;
 
 			// 调用父类方法
-			visitor.call(
-				this,
-				parser,
-				context,
-				statements.statement = new ShorthandMethodValueStatement(statements),
-				statements
-			);
+			visitor.call(this, parser, context, statement, statements);
 		}
 	});
 

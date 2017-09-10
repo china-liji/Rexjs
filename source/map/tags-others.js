@@ -795,44 +795,80 @@ this.FunctionBodyTags = function(OpenFunctionBodyTag){
 	this.OpenFunctionBodyTag
 );
 
-this.FunctionContextTags = function(GeneratorTag, FunctionNameTag, OpenArgumentsTag){
+this.StarContextTags = function(FunctionNameTag, OpenArgumentsTag){
 	/**
-	 * 函数关键字上下文标签列表
+	 * 生成器星号上下文标签列表
 	 */
-	function FunctionContextTags(){
+	function StarContextTags(){
 		IllegalTags.call(this);
 		
 		this.register(
-			new GeneratorTag(),
 			new FunctionNameTag(),
 			new OpenArgumentsTag()
 		);
 	};
-	FunctionContextTags = new Rexjs(FunctionContextTags, IllegalTags);
+	StarContextTags = new Rexjs(StarContextTags, IllegalTags);
 
-	return FunctionContextTags;
+	return StarContextTags;
 }(
-	this.GeneratorTag,
 	this.FunctionNameTag,
 	this.OpenArgumentsTag
 );
 
-this.FunctionDeclarationContextTags = function(FunctionVariableTag){
+this.FunctionDeclarationStarContextTags = function(FunctionVariableTag){
 	/**
-	 * 函数声明上下文标签列表
+	 * 生成器声明上下文标签列表
 	 */
-	function FunctionDeclarationContextTags(){
+	function FunctionDeclarationStarContextTags(){
 		IllegalTags.call(this);
 
 		this.register(
 			new FunctionVariableTag()
 		);
 	};
-	FunctionDeclarationContextTags = new Rexjs(FunctionDeclarationContextTags, IllegalTags);
+	FunctionDeclarationStarContextTags = new Rexjs(FunctionDeclarationStarContextTags, IllegalTags);
+
+	return FunctionDeclarationStarContextTags;
+}(
+	this.FunctionVariableTag
+);
+
+this.FunctionContextTags = function(StarContextTags, StarTag){
+	/**
+	 * 函数关键字上下文标签列表
+	 */
+	function FunctionContextTags(){
+		StarContextTags.call(this);
+		
+		this.register(
+			new StarTag()
+		);
+	};
+	FunctionContextTags = new Rexjs(FunctionContextTags, StarContextTags);
+
+	return FunctionContextTags;
+}(
+	this.StarContextTags,
+	this.StarTag
+);
+
+this.FunctionDeclarationContextTags = function(FunctionDeclarationStarContextTags, FunctionDeclarationStarTag){
+	/**
+	 * 函数声明上下文标签列表
+	 */
+	function FunctionDeclarationContextTags(){
+		FunctionDeclarationStarContextTags.call(this);
+
+		this.register(
+			new FunctionDeclarationStarTag()
+		);
+	};
+	FunctionDeclarationContextTags = new Rexjs(FunctionDeclarationContextTags, FunctionDeclarationStarContextTags);
 
 	return FunctionDeclarationContextTags;
 }(
-	this.FunctionVariableTag
+	this.FunctionDeclarationStarContextTags,
+	this.FunctionDeclarationStarTag
 );
 
 this.IfConditionTags = function(OpenIfConditionTag){
@@ -1400,6 +1436,7 @@ this.PropertyNameTags = function(list){
 		this.OpenComputedPropertyNameTag,
 		this.GetTag,
 		this.SetTag,
+		this.PropertyStarTag,
 		this.PropertySpreadTag
 	]
 );
@@ -1598,32 +1635,31 @@ this.PropertyAccessorContextTags = function(ShorthandMethodNameTags, OpenShortha
 	this.PropertySeparatorTag
 );
 
-this.ClassPropertyNameTags = function(ShorthandMethodNameTags, ConstructorTag, GetDescriptorTag, SetDescriptorTag, ClassPropertyPlaceholderTag){
+this.ClassPropertyNameTags = function(ShorthandMethodNameTags, list){
 	/**
 	 * 类属性名标签列表
 	 */
 	function ClassPropertyNameTags(){
 		ShorthandMethodNameTags.call(this);
 		
-		this.register(
-			new ConstructorTag(),
-			new GetDescriptorTag(),
-			new SetDescriptorTag(),
-			new ClassPropertyPlaceholderTag()
-		);
+		this.delegate(list);
 	};
 	ClassPropertyNameTags = new Rexjs(ClassPropertyNameTags, ShorthandMethodNameTags);
 
 	return ClassPropertyNameTags;
 }(
 	this.ShorthandMethodNameTags,
-	this.ConstructorTag,
-	this.GetDescriptorTag,
-	this.SetDescriptorTag,
-	this.ClassPropertyPlaceholderTag
+	// list
+	[
+		this.ConstructorTag,
+		this.GetDescriptorTag,
+		this.SetDescriptorTag,
+		this.ClassPropertyPlaceholderTag,
+		this.PropertyStarTag
+	]
 );
 
-this.AccessorDescriptorContextTags = function(ClassPropertyNameTags, ClassPropertyPlaceholderTag, OpenShorthandMethodArgumentsTag, PropertyAccessorTag){
+this.AccessorDescriptorContextTags = function(ClassPropertyNameTags, ClassPropertyPlaceholderTag, OpenShorthandMethodArgumentsTag, PropertyAccessorTag, PropertyStarTag){
 	/**
 	 * 访问器描述符上下文签列表
 	 */
@@ -1644,7 +1680,8 @@ this.AccessorDescriptorContextTags = function(ClassPropertyNameTags, ClassProper
 		filter: function(tag){
 			return (
 				tag instanceof ClassPropertyPlaceholderTag ||
-				tag instanceof PropertyAccessorTag
+				tag instanceof PropertyAccessorTag ||
+				tag instanceof PropertyStarTag
 			);
 		}
 	});
@@ -1654,7 +1691,8 @@ this.AccessorDescriptorContextTags = function(ClassPropertyNameTags, ClassProper
 	this.ClassPropertyNameTags,
 	this.ClassPropertyPlaceholderTag,
 	this.OpenShorthandMethodArgumentsTag,
-	this.PropertyAccessorTag
+	this.PropertyAccessorTag,
+	this.PropertyStarTag
 );
 
 this.OpenClassBodyContextTags = function(ClassPropertyNameTags, StaticModifierTag){

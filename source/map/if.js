@@ -63,7 +63,7 @@ this.IfExpression = function(ConditionalExpression){
 			this.ifBody.extractTo(contentBuilder);
 			
 			// 如果没有 else 关键字
-			if(this.elseContext === null){
+			if(!this.elseContext){
 				return;
 			}
 			

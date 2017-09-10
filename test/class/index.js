@@ -8,8 +8,31 @@ test.unit(
 		this.true("带很多分号的空属性类", "class a{;;;;;;;;;;;;;;;;;}");
 		this.true("带构造函数的类", "class a { constructor(){} }");
 		this.true("带方法的类", "class a { a(){} }");
+
+		this.true("带标识符属性的类", "class a { get(){} }");
+		this.true("带数字属性的类", "class a { 1(){} }");
+		this.true("带计算式属性的类", "class a { [1](){} }");
+		this.true("带进制属性的类", "class a { 0b101(){} }");
+		this.true("带访问器属性的类", "class a { get 0b101(){} }");
+
+		this.true("带静态标识符属性的类", "class a { static get(){} }");
+		this.true("带静态数字属性的类", "class a { static 1(){} }");
+		this.true("带静态计算式属性的类", "class a { static [1](){} }");
+		this.true("带静态进制属性的类", "class a { static  0b101(){} }");
+		this.true("带静态访问器属性的类", "class a { static get 0b101(){} }");
+		
+		this.true("带标识符生成器的类", "class a { *get(){} }");
+		this.true("带数字生成器的类", "class a { *1(){} }");
+		this.true("带计算式生成器的类", "class a { *[1](){} }");
+		this.true("带进制生成器的类", "class a { *0b101(){} }");
+
+		this.true("带静态标识符生成器的类", "class a { static *get(){} }");
+		this.true("带静态数字生成器的类", "class a { static *1(){} }");
+		this.true("带静态计算式生成器的类", "class a { static *[1](){} }");
+		this.true("带静态进制生成器的类", "class a { static *0b101(){} }");
+		
 		this.true("带静态方法的类", "class a { static constructor(){} }");
-		this.true("带多种方法的类", "class a { a(){} b(){};;static c(){};; static d(){} e(){};;;.12(){};[1+2](){} static get 0b101(){} }");
+		this.true("带多种方法的类", "class a { a(){} b(){};;static c(){};; static *0o12345(){}; *0b10101(){}; static d(){} e(){};;;.12(){};[1+2](){} static get 0b101(){} }");
 		this.true("类表达式", "var a = class {}");
 		this.true("带名称的类表达式", "var a = class a {}");
 		this.true("直接继承另外一个类", "class A extends class B {} {}");
@@ -69,6 +92,22 @@ test.unit(
 			"class A {}()",
 			function(parser, err){
 				return err.context.tag instanceof Rexjs.CloseParenTag ? "" : "没有识别出异常的结束分组小括号";
+			}
+		);
+
+		this.false(
+			"带访问器的生成器",
+			"class A { get *a(){} }",
+			function(parser, err){
+				return err.context.content !== "*";
+			}
+		);
+
+		this.false(
+			"带访问器的静态生成器",
+			"class A { static get *a(){} }",
+			function(parser, err){
+				return err.context.content !== "*";
 			}
 		);
 

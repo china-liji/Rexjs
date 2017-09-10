@@ -35,10 +35,14 @@ test.unit(
 		this.true("访问器作为属性名", "!{ get : 1 }");
 		this.true("访问器作为简写属性名", "!{ set : 1 }");
 		this.true("访问器作为简写函数名", "!{ set(){} }");
+		this.true("标识符生成器属性", "!{ *get(){} }");
+		this.true("数字生成器属性", "!{ *1(){} }");
+		this.true("计算式生成器属性", "!{ *[1](){} }");
+		this.true("进制生成器属性", "!{ *0b1010(){} }");
 		this.true("带访问器属性名的访问器", "!{ set set(a){} }");
 		this.true("单项属性默认值", "!{ a = 1 }");
 		this.true("多项属性默认值", "!{ a = 1, b = c = d + 5 + 6 }");
-		this.true("所有情况属性名并存", "!{ a, b: 2, g = 1, h = i = u + 5 + 6, var: 3, c, for: 4, d: 5, 'e': 6, if: 7, 8: 8, 9.333: 9, get ''(){}, set [1 + 2 + 3](v){}, set var(v){}, get 1(){}, }");
+		this.true("所有情况属性名并存", "!{ a, b: 2, g = 1, * xx(){}, h = i = u + 5 + 6, var: 3, c, for: 4, d: 5, 'e': 6, if: 7, 8: 8, 9.333: 9, get ''(){}, set [1 + 2 + 3](v){}, set var(v){}, get 1(){}, }");
 
 		this.true("复杂的测试", source, true);
 
@@ -79,6 +83,14 @@ test.unit(
 			"!{ var }",
 			function(parser, err){
 				return err.context.tag instanceof Rexjs.CloseBraceTag ? "" : "没有识别出结束大括号";
+			}
+		);
+
+		this.false(
+			"带访问器的生成器",
+			"!{ get *generator(){} }",
+			function(parser, err){
+				return err.context.content !== "*";
 			}
 		);
 

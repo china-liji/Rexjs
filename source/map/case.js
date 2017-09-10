@@ -47,17 +47,17 @@ this.CaseExpression = function(){
 	return CaseExpression;
 }();
 
-this.DefaultExpression = function(CaseExpression){
+this.DefaultCaseExpression = function(CaseExpression){
 	/**
-	 * switch default 表达式
+	 * 默认 case 表达式
 	 * @param {Context} context - 语法标签上下文
 	 */
-	function DefaultExpression(context){
+	function DefaultCaseExpression(context){
 		CaseExpression.call(this, context);
 	};
-	DefaultExpression = new Rexjs(DefaultExpression, CaseExpression);
+	DefaultCaseExpression = new Rexjs(DefaultCaseExpression, CaseExpression);
 
-	DefaultExpression.props({
+	DefaultCaseExpression.props({
 		/**
 		 * 提取表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容存储列表
@@ -74,7 +74,7 @@ this.DefaultExpression = function(CaseExpression){
 		value: null
 	});
 
-	return DefaultExpression;
+	return DefaultCaseExpression;
 }(
 	this.CaseExpression
 );
@@ -288,7 +288,7 @@ this.CaseTag = function(CaseExpression, CaseValueStatement){
 	this.CaseValueStatement
 );
 
-this.DefaultTag = function(CaseTag, DefaultExpression, DefaultValueStatement){
+this.DefaultTag = function(CaseTag, DefaultCaseExpression, DefaultValueStatement){
 	/**
 	 * switch 语句中的 default 标签
 	 * @param {Number} _type - 标签类型
@@ -325,7 +325,7 @@ this.DefaultTag = function(CaseTag, DefaultExpression, DefaultValueStatement){
 			}
 
 			// 设置当前表达式
-			statement.expression = new DefaultExpression(context);
+			statement.expression = new DefaultCaseExpression(context);
 			// 设置当前语句
 			statements.statement = new DefaultValueStatement(statements);
 			// 设置 hasDefault
@@ -336,7 +336,7 @@ this.DefaultTag = function(CaseTag, DefaultExpression, DefaultValueStatement){
 	return DefaultTag;
 }(
 	this.CaseTag,
-	this.DefaultExpression,
+	this.DefaultCaseExpression,
 	this.DefaultValueStatement
 );
 

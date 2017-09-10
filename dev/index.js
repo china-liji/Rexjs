@@ -1,155 +1,52 @@
-/**
- * 1. for in [1,2,3]
- * 2. label
- */
+// checkGenerator
+	function checkGenerator(generator, values, error){
+		for(var i = 0, result = generator.next();!result.done;i++){
+			if(values[i] !== result.value){
+				throw error + ": 第" + i + "项";
+			}
 
-// label
-
-// switch
-var a = function*(num){
-	
-
-	switch(num){
-		case 1:
-			1 + 1;
-			yield "x"
-			5 + 5;
-			break;
-
-		case 2:
-			1 + 2;
-			return;
-
-		default:
-			1 + 3;
-			break;
+			result = generator.next();
+		}
 	}
 
-	x++
-};
+class A {
+	static *generator(obj){
+		var value = 100
 
+		switch(obj.num){
+			case 1:
+				value += 1;
+				yield value
+				value += 5;
 
-// do while
-// var a = function*(){
-// 	var xx = 0
+			case 1:
+				yield value
+				debugger
 
-// 	do {
-// 		1 + 2
-// 		yield i
+			case 2:
+				yield 1;
+				break;
 
-// 		3 + 4
-// 	}
-// 	while(i in obj);
+			default:
+				value += 10
+				yield value++
+				break;
+				value += 200
+		}
 
-// 	var gg = 6
-// 	6
-// }
+		yield value
+	};
+}
 
+var x = 0;
 
-// while
-// var a = function*(){
-// 	while(i in obj){
-// 		1 + 2
-// 		yield i
-
-// 		3 + 4
-// 	}
-
-// 	return 5
-// 	6
-// }
-
-
-// for
-// var a = function*(){
-// 	var b;
-
-// 	// for(var i in obj){
-// 	// 	yield 6
-// 	// }
-
-// 	x:
-// 	for(var i of [1,2,3,4,5]){
-// 		var k = 8
-
-// 		for(;;){
-// 			continue x;
-// 			yield i + "5"
-
-// 			for(var i in obj){
-// 				continue
-// 			}
-
-// 			i +=2
-// 		}
-
-		
-
-// 		break;
-// 		yield i
-// 	}
-
-// 	return 8989
-// 		123;
-// }
-
-// if
-
-// var a = function*(){
-// 	var b;
-
-// 	if(1){
-// 		b = 1
-
-// 		{yield "x" }
-
-// 		yield "x2"
-// 		b += 2
-
-// 		return 9
-// 	}
-// 	else {
-// 		b = 3
-// 		yield "y"
-// 		b = 4
-// 		throw 123
-// 	}
-
-// 	5
-// 	yield "z"
-// }
-
-debugger
-
-
-// var a = function*(x = 1, ...y){
-// 	var a 
-
-// 	{
-// 		var b
-
-// 		const d = 1, e =2
-
-// 		{
-// 			let c
-// 			for(var oo  of []){}
-// 		}
-
-// 		var ii = ()=>{
-// 			for(var jj of []);
-// 		}
-
-// 		function a(){
-// 			let d= 5;
-// 			for(var ooo of []){}
-// 		}
-
-// 		for(var o of []){}
-// 	}
-
-// 	for(var xo of []){}
-// }
-
-// debugger
-
-// a()
+checkGenerator(
+	A.generator({
+		get num(){
+			x++;
+			return 1;
+		}
+	}),
+	[101, 106, 106],
+	"生成器中的 switch case 1 解析不正确"
+);

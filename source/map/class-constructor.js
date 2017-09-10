@@ -21,13 +21,11 @@ this.ConstructorNameExpression = function(config){
 			if(config.value){
 				var context = this.context;
 				
-				// 如果没有类名
-				if(context === null){
-					return;
+				// 如果有类名
+				if(context){
+					// 追加 空格 和 类名
+					contentBuilder.appendString(" " + context.content);
 				}
-
-				// 追加 空格 和 类名
-				contentBuilder.appendString(" " + context.content);
 			}
 		}
 	});
@@ -63,7 +61,7 @@ this.DefaultConstructorExpression = function(ClassPropertyExpression){
 			// 追加构造函数
 			contentBuilder.appendString(
 				'new Rexjs.ClassProperty("constructor",function' +
-				(name === null ? "" : " " + name.content) +
+				(name ? " " + name.content : "") +
 				"(){" + 
 					(
 						// 如果该类存在继承
