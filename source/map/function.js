@@ -1,7 +1,7 @@
 // 函数表达式相关
 !function(extractTo, appendVariable){
 
-this.FunctionExpression = function(config, appendRange, compileBody){
+this.FunctionExpression = function(config, appendRange, appendHoisting, compileBody){
 	/**
 	 * 函数表达式
 	 * @param {Context} context - 语法标签上下文
@@ -50,6 +50,11 @@ this.FunctionExpression = function(config, appendRange, compileBody){
 					
 					// 追加生成器内部的变量名声明
 					this.ranges.forEach(appendRange, contentBuilder);
+					// 追加声明语句的分号
+					contentBuilder.appendString(";");
+					// 追加变量提升表达式
+					this.hoistings.forEach(appendHoisting, contentBuilder);
+
 					// 编译主体代码
 					compileBody(this, defaultArgumentBuilder, inner, contentBuilder);
 					return;
@@ -67,6 +72,7 @@ this.FunctionExpression = function(config, appendRange, compileBody){
 			this.body.extractTo(contentBuilder, defaultArgumentBuilder);
 		},
 		head: null,
+		hoistings: null,
 		index: 0,
 		name: new DefaultExpression(),
 		/**
@@ -85,6 +91,7 @@ this.FunctionExpression = function(config, appendRange, compileBody){
 		toGenerator: function(star){
 			this.star = star;
 			this.ranges = [];
+			this.hoistings = [];
 		},
 		variable: ""
 	});
@@ -97,13 +104,16 @@ this.FunctionExpression = function(config, appendRange, compileBody){
 	function(range){
 		range.forEach(appendVariable, this);
 	},
+	// appendHoisting
+	function(hoisting){
+		hoisting.extractTo(this);
+	},
 	// compileBody
 	function(expression, defaultArgumentBuilder, inner, contentBuilder){
 		var variable = expression.variable, currentIndexString = expression.currentIndexString;
 
 		// 追加迭代器代码
 		contentBuilder.appendString(
-			";" +
 			defaultArgumentBuilder.result +
 			variable +
 			"= new Rexjs.FunctionIterator(function(){for(;;){switch(" +

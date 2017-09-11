@@ -39,6 +39,82 @@ if(!result2.done){
 }();
 
 
+// 函数变量提升
+new function(){
+
+function* generator(){
+	if(typeof a !== "function"){
+		throw "函数变量提升失败"
+	}
+
+	yield a()
+
+	a = 5
+
+	yield a
+
+	function a(){
+		return 100;
+	}
+};
+
+checkGenerator(
+	generator(),
+	[100, 5],
+	"变量提升解析失败"
+);
+
+function* generator1(){
+	if(typeof a !== "undefined"){
+		throw "非最外层函数声明，不得提升";
+	}
+
+	{
+		function a(){
+			return 100;
+		}
+	}
+
+	if(typeof b !== "undefined"){
+		throw "非声明形式的函数，不得提升"
+	}
+
+	var b = function(){}
+};
+
+generator1();
+
+}();
+
+
+// 类变量提升
+new function(){
+
+function* generator(){
+	var err = "类变量不存在变量提升";
+
+	try {
+		a
+		throw err
+	}
+	catch(e){
+		if(e === err){
+			throw e;
+		}
+	}
+
+	class a {
+		constructor(){
+			this.value = 100
+		}
+	}
+};
+
+generator()
+
+}();
+
+
 // if
 new function(){
 
@@ -69,7 +145,7 @@ function* generator(value){
 
 checkGenerator(
 	generator(10),
-	["x", "x2", "3"],
+	["x", "x2", 3],
 	"生成器中的 if 解析不正确"
 );
 
@@ -204,18 +280,20 @@ class A {
 				yield value
 				value += 5;
 
+			// 故意放中间，测试会不会出现 bug
+			default:
+				value += 10
+				yield value++
+
 			case 1:
 				yield value
 
 			case 2:
-				yield 1;
+				yield 2;
 				break;
 
-			default:
-				value += 10
-				yield value++
-				break;
-				value += 200
+			case 3:
+				yield 3
 		}
 
 		yield value
@@ -231,19 +309,82 @@ checkGenerator(
 			return 1;
 		}
 	}),
-	[101, 106, 106],
-	"生成器中的 switch case 1 解析不正确"
+	[101, 116, 117, 2, 117],
+	"生成器中的 switch case 解析不正确"
 );
 
 checkGenerator(
-	A.generator({ num: 2}),
-	[1, 100],
-	"生成器中的 switch case 2 解析不正确"
+	A.generator({ num: 5 }),
+	[110, 111, 2, 111],
+	"生成器中的 switch default 解析不正确"
 );
 
 if(x > 1){
 	throw "switch 中的条件没有提出来，多次被计算"
 }
+
+function* generator(){
+	switch(1){
+		case 2:
+			yield "x"
+			break
+		
+		case 3:
+			yield "y"
+	}
+		
+	yield "z"
+};
+
+checkGenerator(
+	generator(),
+	["z"],
+	"没有 default 表达式，且条件不匹配时，生成器函数没有运行到底"
+);
+
+function* generator1(){
+	switch(1){
+		case 2:
+			yield "x"
+			break
+		
+		case 3:
+			yield "y"
+		
+		default:
+			yield "y1"
+	}
+		
+	yield "z"
+};
+
+checkGenerator(
+	generator1(),
+	["y1", "z"],
+	"default 表达式为最后分支情况下，解析不正确"
+);
+
+function* generator2(){
+	switch(1){
+		default:
+			yield "y1"
+
+		case 2:
+			yield "x"
+			break
+		
+		case 3:
+			yield "y"
+	}
+		
+	yield "z"
+};
+
+checkGenerator(
+	generator2(),
+	["y1", "x", "z"],
+	"default 表达式在非最后分支情况下，解析不正确"
+);
 
 }();
 
@@ -279,15 +420,16 @@ function* generator(obj){
 			}
 			while(value < 76)
 
+		default:
+			value += 10
+			yield value++
+
 		case 2:
 			yield 1;
 			break;
 
-		default:
-			value += 10
-			yield value++
-			break;
-			value += 200
+		case 3:
+			yield 100
 	}
 
 	yield value
@@ -295,19 +437,24 @@ function* generator(obj){
 
 checkGenerator(
 	generator({ num: 1 }),
-	[101, 72, 74, 74, 75, 86, 87],
+	[101, 72, 74, 74, 75, 86, 1, 87],
 	"生成器中的混合条件解析不正确"
 );
 
 }();
 
-
 }(
 	// checkGenerator
 	function(generator, values, error){
-		for(var i = 0, result = generator.next();!result.done;i++){
+		var result = generator.next();
+
+		for(var i = 0;;i++){
 			if(values[i] !== result.value){
 				throw error + ": 第" + i + "项";
+			}
+
+			if(result.done){
+				return;
 			}
 
 			result = generator.next();

@@ -58,8 +58,32 @@ this.FunctionDeclarationTag = function(FunctionTag, FunctionDeclarationExpressio
 		 * @param {Statements} statements - 当前语句块
 		 */
 		visitor: function(parser, context, statement, statements){
+			var functionDeclarationExpression = new FunctionDeclarationExpression(context);
+
+			// 如果处于当前闭包语句块层级，说明要变量提升
+			if(statements === statements.closure){
+				var generator = statements.contextGeneratorIfNeedCompile;
+
+				// 如果存在需要编译的生成器
+				if(generator){
+					// 设置当前表达式为空表达式
+					statement.expression = new EmptyExpression(null);
+
+					(
+						// 设置当前语句
+						statements.statement = new BoxStatement(statements)
+					)
+					// 设置盒语句的表达式
+					.expression = functionDeclarationExpression;
+
+					// 记录变量提升表达式
+					generator.hoistings.push(functionDeclarationExpression);
+					return;
+				}
+			}
+
 			// 设置当前表达式
-			statement.expression = new FunctionDeclarationExpression(context);
+			statement.expression = functionDeclarationExpression;
 		}
 	});
 

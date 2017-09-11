@@ -6624,7 +6624,7 @@ closeBlockTag = new this.CloseBlockTag();
 // 函数表达式相关
 !function(extractTo, appendVariable){
 
-this.FunctionExpression = function(config, appendRange, compileBody){
+this.FunctionExpression = function(config, appendRange, appendHoisting, compileBody){
 	/**
 	 * 函数表达式
 	 * @param {Context} context - 语法标签上下文
@@ -6673,6 +6673,11 @@ this.FunctionExpression = function(config, appendRange, compileBody){
 					
 					// 追加生成器内部的变量名声明
 					this.ranges.forEach(appendRange, contentBuilder);
+					// 追加声明语句的分号
+					contentBuilder.appendString(";");
+					// 追加变量提升表达式
+					this.hoistings.forEach(appendHoisting, contentBuilder);
+
 					// 编译主体代码
 					compileBody(this, defaultArgumentBuilder, inner, contentBuilder);
 					return;
@@ -6690,6 +6695,7 @@ this.FunctionExpression = function(config, appendRange, compileBody){
 			this.body.extractTo(contentBuilder, defaultArgumentBuilder);
 		},
 		head: null,
+		hoistings: null,
 		index: 0,
 		name: new DefaultExpression(),
 		/**
@@ -6708,6 +6714,7 @@ this.FunctionExpression = function(config, appendRange, compileBody){
 		toGenerator: function(star){
 			this.star = star;
 			this.ranges = [];
+			this.hoistings = [];
 		},
 		variable: ""
 	});
@@ -6720,13 +6727,16 @@ this.FunctionExpression = function(config, appendRange, compileBody){
 	function(range){
 		range.forEach(appendVariable, this);
 	},
+	// appendHoisting
+	function(hoisting){
+		hoisting.extractTo(this);
+	},
 	// compileBody
 	function(expression, defaultArgumentBuilder, inner, contentBuilder){
 		var variable = expression.variable, currentIndexString = expression.currentIndexString;
 
 		// 追加迭代器代码
 		contentBuilder.appendString(
-			";" +
 			defaultArgumentBuilder.result +
 			variable +
 			"= new Rexjs.FunctionIterator(function(){for(;;){switch(" +
@@ -6945,8 +6955,32 @@ this.FunctionDeclarationTag = function(FunctionTag, FunctionDeclarationExpressio
 		 * @param {Statements} statements - 当前语句块
 		 */
 		visitor: function(parser, context, statement, statements){
+			var functionDeclarationExpression = new FunctionDeclarationExpression(context);
+
+			// 如果处于当前闭包语句块层级，说明要变量提升
+			if(statements === statements.closure){
+				var generator = statements.contextGeneratorIfNeedCompile;
+
+				// 如果存在需要编译的生成器
+				if(generator){
+					// 设置当前表达式为空表达式
+					statement.expression = new EmptyExpression(null);
+
+					(
+						// 设置当前语句
+						statements.statement = new BoxStatement(statements)
+					)
+					// 设置盒语句的表达式
+					.expression = functionDeclarationExpression;
+
+					// 记录变量提升表达式
+					generator.hoistings.push(functionDeclarationExpression);
+					return;
+				}
+			}
+
 			// 设置当前表达式
-			statement.expression = new FunctionDeclarationExpression(context);
+			statement.expression = functionDeclarationExpression;
 		}
 	});
 
@@ -9105,8 +9139,16 @@ this.PropertyExpression = function(BinaryExpression, ShorthandPropertyValueExpre
 				return;
 			}
 
-			// 提取属性名称
-			this.name.extractTo(contentBuilder);
+			// 如果存在星号，说明是生成器属性
+			if(this.star){
+				// 将名称放到简写函数表达式中去提取，以保持星号的顺序
+				this.value.operand.name = this.name;
+			}
+			else {
+				// 提取属性名称
+				this.name.extractTo(contentBuilder);
+			}
+			
 			// 提取属性值
 			this.value.extractTo(contentBuilder);
 		},
@@ -16139,9 +16181,9 @@ finallyTag = new this.FinallyTag();
 
 
 // switch 语句相关
-!function(OpenBlockTag, CloseBlockTag, closeSwitchConditionTag, closeSwitchBodyTag){
+!function(OpenBlockTag, CloseBlockTag, closeSwitchConditionTag, closeSwitchBodyTag, generateCase){
 
-this.SwitchExpression = function(ConditionalExpression, generateCase){
+this.SwitchExpression = function(ConditionalExpression, generateBody){
 	/**
 	 * switch 表达式
 	 * @param {Context} context - 语法标签上下文
@@ -16178,28 +16220,17 @@ this.SwitchExpression = function(ConditionalExpression, generateCase){
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
 		 */
 		generateTo: function(contentBuilder){
-			var inner = this.body.inner, variable = this.variable, generator = this.contextGeneratorIfNeedCompile,
-			
-				currentIndexString = generator.currentIndexString, mainFlowIndex = generator.nextIndex();
+			var inner = this.body.inner, variable = this.variable;
 
 			// 追加临时变量赋值操作
-			contentBuilder.appendString(variable + "=");
+			contentBuilder.appendString(variable + "=new Rexjs.SwitchCondition(");
 			// 追加条件，将其作为临时变量名的值
 			this.condition.inner.extractTo(contentBuilder);
 			// 追加赋值操作语句的分号
-			contentBuilder.appendString(";");
+			contentBuilder.appendString(");");
 
-			// 修改主流索引值为刚刚产生的新索引值
-			this.mainFlowIndex = mainFlowIndex;
-
-			// 遍历主体
-			for(var i = 0, j = inner.length;i < j;i++){
-				// 以生成器形式编译 case 表达式
-				generateCase(this, inner[i], generator, variable, currentIndexString, contentBuilder);
-			}
-
-			// 追加主流索引值
-			contentBuilder.appendString("case " + mainFlowIndex + ":");
+			// 以生成器形式编译主体
+			generateBody(this, inner, variable, this.contextGeneratorIfNeedCompile, contentBuilder);
 		},
 		hasDefault: false,
 		/**
@@ -16232,47 +16263,30 @@ this.SwitchExpression = function(ConditionalExpression, generateCase){
 	return SwitchExpression;
 }(
 	this.ConditionalExpression,
-	// generateCase
-	function(switchExpression, statement, generator, variable, currentIndexString, contentBuilder){
-		var expression = statement.expression;
+	// generateBody
+	function(switchExpression, inner, variable, generator, contentBuilder){
+		var currentIndexString = generator.currentIndexString, mainFlowIndex = generator.nextIndex(), branchFlowIndex = generator.nextIndex();
 
-		// 如果空表达式，说明没有 case 表达式
-		if(expression.empty){
-			return;
+		// 修改主流索引值为刚刚产生的新索引值
+		switchExpression.mainFlowIndex = mainFlowIndex;
+		// 设置分支流的索引值，用于 default 表达式使用
+		switchExpression.branchFlowIndex = branchFlowIndex;
+
+		// 遍历主体
+		for(var i = 0, j = inner.length;i < j;i++){
+			// 以生成器形式编译 case 表达式
+			generateCase(switchExpression, inner[i], generator, variable, currentIndexString, contentBuilder);
 		}
 
-		var value = expression.value, negativeIndex = switchExpression.negativeIndex;
-
-		// 如果不是默认 case 表达式
-		if(!value.default){
-			var positiveIndex = switchExpression.positiveIndex;
-
-			// 追加三元判断的“条件”字符串
-			contentBuilder.appendString(currentIndexString + "=" + variable + "===");
-			// 追加判断值表达式
-			expression.value.extractTo(contentBuilder);
-
-			// 追加 三元判断的执行表达式 与 条件“成立”时相关的 case 表达式字符串
+		if(switchExpression.hasDefault){
+			// 追加判断，是否进入 default 表达式相关语句块代码
 			contentBuilder.appendString(
-				"?" + positiveIndex + ":" + negativeIndex + ";break;case " + positiveIndex + ":"
+				currentIndexString  + "=" + variable + ".default()?" + branchFlowIndex + ":" + mainFlowIndex + ";break;"
 			);
 		}
-		else {
-			debugger
-		}
 
-		// 提取 case 表达式的主体语句块
-		expression.statements.extractTo(contentBuilder);
-
-		// 追加三元判断的“不成立”时的相关索引处理
-		contentBuilder.appendString(
-			currentIndexString + "=" + negativeIndex + ";break;case " + negativeIndex + ":"
-		);
-
-		// 设置三元判断“成立”时的索引值
-		switchExpression.positiveIndex = generator.nextIndex();
-		// 设置三元判断“不成立”时的索引值
-		switchExpression.negativeIndex = generator.nextIndex();
+		// 追加主流索引的 case 表达式
+		contentBuilder.appendString("case " + mainFlowIndex + ":");
 	}
 );
 
@@ -16581,7 +16595,62 @@ closeSwitchBodyTag = new this.CloseSwitchBodyTag();
 	// closeSwitchConditionTag
 	null,
 	// closeSwitchBodyTag
-	null
+	null,
+	// generateCase
+	function(switchExpression, statement, generator, variable, currentIndexString, contentBuilder){
+		var expression = statement.expression;
+
+		// 如果空表达式，说明没有 case 表达式
+		if(expression.empty){
+			return;
+		}
+
+		var value = expression.value, positiveIndex = switchExpression.positiveIndex, negativeIndex = switchExpression.negativeIndex;
+
+		// 如果是 default 表达式
+		if(value.default){
+			var branchFlowIndex = switchExpression.branchFlowIndex;
+
+			// 追加三元判断的“条件”字符串
+			contentBuilder.appendString(
+				// 如果已经匹配到值，那么就应该进入 default 表达式对应语句块，否则跳过进入下一项匹配
+				currentIndexString + "=" + variable + ".matched?" + branchFlowIndex + ":" + positiveIndex +
+				";break;case " + branchFlowIndex + ":"
+			);
+
+			// 提取 case 表达式的主体语句块
+			expression.statements.extractTo(contentBuilder);
+
+			// 追加三元判断的“不成立”时的相关索引处理
+			contentBuilder.appendString(
+				currentIndexString + "=" + positiveIndex + ";break;case " + positiveIndex + ":"
+			);
+		}
+		else {
+			// 追加三元判断的“条件”字符串
+			contentBuilder.appendString(currentIndexString + "=" + variable + ".case(");
+			// 追加判断值表达式
+			expression.value.extractTo(contentBuilder);
+
+			// 追加 三元判断的执行表达式 与 条件“成立”时相关的 case 表达式字符串
+			contentBuilder.appendString(
+				")?" + positiveIndex + ":" + negativeIndex + ";break;case " + positiveIndex + ":"
+			);
+
+			// 提取 case 表达式的主体语句块
+			expression.statements.extractTo(contentBuilder);
+
+			// 追加三元判断的“不成立”时的相关索引处理
+			contentBuilder.appendString(
+				currentIndexString + "=" + negativeIndex + ";break;case " + negativeIndex + ":"
+			);
+		}
+
+		// 设置三元判断“成立”时的索引值
+		switchExpression.positiveIndex = generator.nextIndex();
+		// 设置三元判断“不成立”时的索引值
+		switchExpression.negativeIndex = generator.nextIndex();
+	}
 );
 
 
@@ -16902,7 +16971,7 @@ this.DefaultTag = function(CaseTag, DefaultCaseExpression, DefaultValueStatement
 		 * @param {Statements} statements - 当前语句块
 		 */
 		visitor: function(parser, context, statement, statements){
-			var switchExpression = statements.target.statement.expression;
+			var switchExpression = statements.target.statement.target.expression;
 
 			// 如果已经存在 default 表达式
 			if(switchExpression.hasDefault){
@@ -23534,7 +23603,7 @@ this.ECMAScriptTagsMap = function(SyntaxTagsMap, dataArray){
 		)
 );
 
-this.ECMAScriptParser = function(MappingBuilder, ECMAScriptTagsMap, GlobalStatements, tagsMap, sourceMaps, parse){
+this.ECMAScriptParser = function(SourceBuilder, MappingBuilder, ECMAScriptTagsMap, GlobalStatements, tagsMap, sourceMaps, parse){
 	/**
 	 * ECMAScript 语法解析器
 	 */
@@ -23569,7 +23638,7 @@ this.ECMAScriptParser = function(MappingBuilder, ECMAScriptTagsMap, GlobalStatem
 		build: function(_contentBuilder){
 			// 如果没有提供内容生成器
 			if(!_contentBuilder){
-				_contentBuilder = sourceMaps ? new MappingBuilder(this.file) : new ContentBuilder(this.file);
+				_contentBuilder = sourceMaps ? new MappingBuilder(this.file) : new SourceBuilder(this.file);
 			}
 			
 			// 追加闭包函数起始部分
@@ -23615,6 +23684,7 @@ this.ECMAScriptParser = function(MappingBuilder, ECMAScriptTagsMap, GlobalStatem
 
 	return ECMAScriptParser;
 }(
+	Rexjs.SourceBuilder,
 	Rexjs.MappingBuilder,
 	this.ECMAScriptTagsMap,
 	this.GlobalStatements,

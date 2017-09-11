@@ -351,11 +351,8 @@ this.Context = function(){
 this.ContentBuilder = function(){
 	/**
 	 * 内容生成器
-	 * @param {File} file - 生成器相关文件
 	 */
-	function ContentBuilder(file){
-		this.file = file;
-	};
+	function ContentBuilder(){};
 	ContentBuilder = new Rexjs(ContentBuilder);
 	
 	ContentBuilder.props({
@@ -384,14 +381,8 @@ this.ContentBuilder = function(){
 		 * 完成生成，返回结果
 		 */
 		complete: function(){
-			// 追加新行
-			this.newline();
-			// 追加 sourceURL
-			this.appendString("//# sourceURL=http://rexjs.org/" + this.file.filename);
-
 			return this.result;
 		},
-		file: null,
 		/**
 		 * 追加新行
 		 */
@@ -404,13 +395,45 @@ this.ContentBuilder = function(){
 	return ContentBuilder;
 }();
 
+this.SourceBuilder = function(ContentBuilder){
+	/**
+	 * 源码生成器
+	 * @param {File} file - 生成器相关文件
+	 */
+	function SourceBuilder(file){
+		ContentBuilder.call(this);
+
+		this.file = file;
+	};
+	SourceBuilder = new Rexjs(SourceBuilder, ContentBuilder);
+	
+	SourceBuilder.props({
+		/**
+		 * 完成生成，返回结果
+		 */
+		complete: function(){
+			// 追加新行
+			this.newline();
+			// 追加 sourceURL
+			this.appendString("//# sourceURL=http://rexjs.org/" + this.file.filename);
+
+			return this.result;
+		},
+		file: null
+	});
+	
+	return SourceBuilder;
+}(
+	this.ContentBuilder
+);
+
 }.call(
 	this
 );
 
 
 // 映射生成器相关
-!function(ContentBuilder){
+!function(SourceBuilder){
 
 this.Base64VLQ = function(base64, parseInt){
 	/**
@@ -510,11 +533,11 @@ this.MappingBuilder = function(MappingPosition, Base64VLQ, JSON, appendContext, 
 	 * @param {File} file - 生成器相关文件
 	 */
 	function MappingBuilder(file){
-		ContentBuilder.call(this, file);
+		SourceBuilder.call(this, file);
 		
 		this.position = new MappingPosition();
 	};
-	MappingBuilder = new Rexjs(MappingBuilder, ContentBuilder);
+	MappingBuilder = new Rexjs(MappingBuilder, SourceBuilder);
 	
 	MappingBuilder.static({
 		supported: !!btoa
@@ -645,17 +668,17 @@ this.MappingBuilder = function(MappingPosition, Base64VLQ, JSON, appendContext, 
 	this.MappingPosition,
 	this.Base64VLQ,
 	JSON,
-	ContentBuilder.prototype.appendContext,
-	ContentBuilder.prototype.appendString,
-	ContentBuilder.prototype.complete,
-	ContentBuilder.prototype.merge,
-	ContentBuilder.prototype.newline,
+	SourceBuilder.prototype.appendContext,
+	SourceBuilder.prototype.appendString,
+	SourceBuilder.prototype.complete,
+	SourceBuilder.prototype.merge,
+	SourceBuilder.prototype.newline,
 	typeof btoa === "undefined" ? null : btoa
 );
 
 }.call(
 	this,
-	this.ContentBuilder
+	this.SourceBuilder
 );
 
 

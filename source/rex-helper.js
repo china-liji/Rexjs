@@ -1086,6 +1086,57 @@ this.Module = function(
 // 其他
 !function(){
 
+this.SwitchCondition = function(){
+	/**
+	 * switch 条件
+	 * @param {*} value - 条件值
+	 */
+	function SwitchCondition(value){
+		this.value = value;
+	};
+	SwitchCondition = new Rexjs(SwitchCondition);
+
+	SwitchCondition.props({
+		/**
+		 * 检测所提供的值是否与条件值一致
+		 * @param {*} value - 所需检测的值
+		 */
+		case: function(value){
+			switch(true){
+				// 如果已经匹配到值
+				case this.matched:
+					break;
+
+				// 如果值一致
+				case this.value === value:
+					this.matched = true;
+					break;
+
+				default:
+					return false;
+			}
+
+			return true;
+		},
+		/**
+		 * 判断是否还能进入 default 表达式
+		 */
+		default: function(){
+			// 如果已经有匹配到值，则不允许再进入 default
+			if(this.matched){
+				return false;
+			}
+
+			this.matched = true;
+			return true;
+		},
+		matched: false,
+		value: null
+	});
+
+	return SwitchCondition;
+}();
+
 this.Object = function(){
 	/**
 	 * 对象

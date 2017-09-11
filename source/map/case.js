@@ -315,7 +315,7 @@ this.DefaultTag = function(CaseTag, DefaultCaseExpression, DefaultValueStatement
 		 * @param {Statements} statements - 当前语句块
 		 */
 		visitor: function(parser, context, statement, statements){
-			var switchExpression = statements.target.statement.expression;
+			var switchExpression = statements.target.statement.target.expression;
 
 			// 如果已经存在 default 表达式
 			if(switchExpression.hasDefault){

@@ -43,7 +43,7 @@ this.ECMAScriptTagsMap = function(SyntaxTagsMap, dataArray){
 		)
 );
 
-this.ECMAScriptParser = function(MappingBuilder, ECMAScriptTagsMap, GlobalStatements, tagsMap, sourceMaps, parse){
+this.ECMAScriptParser = function(SourceBuilder, MappingBuilder, ECMAScriptTagsMap, GlobalStatements, tagsMap, sourceMaps, parse){
 	/**
 	 * ECMAScript 语法解析器
 	 */
@@ -78,7 +78,7 @@ this.ECMAScriptParser = function(MappingBuilder, ECMAScriptTagsMap, GlobalStatem
 		build: function(_contentBuilder){
 			// 如果没有提供内容生成器
 			if(!_contentBuilder){
-				_contentBuilder = sourceMaps ? new MappingBuilder(this.file) : new ContentBuilder(this.file);
+				_contentBuilder = sourceMaps ? new MappingBuilder(this.file) : new SourceBuilder(this.file);
 			}
 			
 			// 追加闭包函数起始部分
@@ -124,6 +124,7 @@ this.ECMAScriptParser = function(MappingBuilder, ECMAScriptTagsMap, GlobalStatem
 
 	return ECMAScriptParser;
 }(
+	Rexjs.SourceBuilder,
 	Rexjs.MappingBuilder,
 	this.ECMAScriptTagsMap,
 	this.GlobalStatements,

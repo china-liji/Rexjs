@@ -197,8 +197,16 @@ this.PropertyExpression = function(BinaryExpression, ShorthandPropertyValueExpre
 				return;
 			}
 
-			// 提取属性名称
-			this.name.extractTo(contentBuilder);
+			// 如果存在星号，说明是生成器属性
+			if(this.star){
+				// 将名称放到简写函数表达式中去提取，以保持星号的顺序
+				this.value.operand.name = this.name;
+			}
+			else {
+				// 提取属性名称
+				this.name.extractTo(contentBuilder);
+			}
+			
 			// 提取属性值
 			this.value.extractTo(contentBuilder);
 		},

@@ -1,7 +1,7 @@
 // switch 语句相关
-!function(OpenBlockTag, CloseBlockTag, closeSwitchConditionTag, closeSwitchBodyTag){
+!function(OpenBlockTag, CloseBlockTag, closeSwitchConditionTag, closeSwitchBodyTag, generateCase){
 
-this.SwitchExpression = function(ConditionalExpression, generateCase){
+this.SwitchExpression = function(ConditionalExpression, generateBody){
 	/**
 	 * switch 表达式
 	 * @param {Context} context - 语法标签上下文
@@ -38,28 +38,17 @@ this.SwitchExpression = function(ConditionalExpression, generateCase){
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
 		 */
 		generateTo: function(contentBuilder){
-			var inner = this.body.inner, variable = this.variable, generator = this.contextGeneratorIfNeedCompile,
-			
-				currentIndexString = generator.currentIndexString, mainFlowIndex = generator.nextIndex();
+			var inner = this.body.inner, variable = this.variable;
 
 			// 追加临时变量赋值操作
-			contentBuilder.appendString(variable + "=");
+			contentBuilder.appendString(variable + "=new Rexjs.SwitchCondition(");
 			// 追加条件，将其作为临时变量名的值
 			this.condition.inner.extractTo(contentBuilder);
 			// 追加赋值操作语句的分号
-			contentBuilder.appendString(";");
+			contentBuilder.appendString(");");
 
-			// 修改主流索引值为刚刚产生的新索引值
-			this.mainFlowIndex = mainFlowIndex;
-
-			// 遍历主体
-			for(var i = 0, j = inner.length;i < j;i++){
-				// 以生成器形式编译 case 表达式
-				generateCase(this, inner[i], generator, variable, currentIndexString, contentBuilder);
-			}
-
-			// 追加主流索引值
-			contentBuilder.appendString("case " + mainFlowIndex + ":");
+			// 以生成器形式编译主体
+			generateBody(this, inner, variable, this.contextGeneratorIfNeedCompile, contentBuilder);
 		},
 		hasDefault: false,
 		/**
@@ -92,47 +81,30 @@ this.SwitchExpression = function(ConditionalExpression, generateCase){
 	return SwitchExpression;
 }(
 	this.ConditionalExpression,
-	// generateCase
-	function(switchExpression, statement, generator, variable, currentIndexString, contentBuilder){
-		var expression = statement.expression;
+	// generateBody
+	function(switchExpression, inner, variable, generator, contentBuilder){
+		var currentIndexString = generator.currentIndexString, mainFlowIndex = generator.nextIndex(), branchFlowIndex = generator.nextIndex();
 
-		// 如果空表达式，说明没有 case 表达式
-		if(expression.empty){
-			return;
+		// 修改主流索引值为刚刚产生的新索引值
+		switchExpression.mainFlowIndex = mainFlowIndex;
+		// 设置分支流的索引值，用于 default 表达式使用
+		switchExpression.branchFlowIndex = branchFlowIndex;
+
+		// 遍历主体
+		for(var i = 0, j = inner.length;i < j;i++){
+			// 以生成器形式编译 case 表达式
+			generateCase(switchExpression, inner[i], generator, variable, currentIndexString, contentBuilder);
 		}
 
-		var value = expression.value, negativeIndex = switchExpression.negativeIndex;
-
-		// 如果不是默认 case 表达式
-		if(!value.default){
-			var positiveIndex = switchExpression.positiveIndex;
-
-			// 追加三元判断的“条件”字符串
-			contentBuilder.appendString(currentIndexString + "=" + variable + "===");
-			// 追加判断值表达式
-			expression.value.extractTo(contentBuilder);
-
-			// 追加 三元判断的执行表达式 与 条件“成立”时相关的 case 表达式字符串
+		if(switchExpression.hasDefault){
+			// 追加判断，是否进入 default 表达式相关语句块代码
 			contentBuilder.appendString(
-				"?" + positiveIndex + ":" + negativeIndex + ";break;case " + positiveIndex + ":"
+				currentIndexString  + "=" + variable + ".default()?" + branchFlowIndex + ":" + mainFlowIndex + ";break;"
 			);
 		}
-		else {
-			debugger
-		}
 
-		// 提取 case 表达式的主体语句块
-		expression.statements.extractTo(contentBuilder);
-
-		// 追加三元判断的“不成立”时的相关索引处理
-		contentBuilder.appendString(
-			currentIndexString + "=" + negativeIndex + ";break;case " + negativeIndex + ":"
-		);
-
-		// 设置三元判断“成立”时的索引值
-		switchExpression.positiveIndex = generator.nextIndex();
-		// 设置三元判断“不成立”时的索引值
-		switchExpression.negativeIndex = generator.nextIndex();
+		// 追加主流索引的 case 表达式
+		contentBuilder.appendString("case " + mainFlowIndex + ":");
 	}
 );
 
@@ -441,5 +413,60 @@ closeSwitchBodyTag = new this.CloseSwitchBodyTag();
 	// closeSwitchConditionTag
 	null,
 	// closeSwitchBodyTag
-	null
+	null,
+	// generateCase
+	function(switchExpression, statement, generator, variable, currentIndexString, contentBuilder){
+		var expression = statement.expression;
+
+		// 如果空表达式，说明没有 case 表达式
+		if(expression.empty){
+			return;
+		}
+
+		var value = expression.value, positiveIndex = switchExpression.positiveIndex, negativeIndex = switchExpression.negativeIndex;
+
+		// 如果是 default 表达式
+		if(value.default){
+			var branchFlowIndex = switchExpression.branchFlowIndex;
+
+			// 追加三元判断的“条件”字符串
+			contentBuilder.appendString(
+				// 如果已经匹配到值，那么就应该进入 default 表达式对应语句块，否则跳过进入下一项匹配
+				currentIndexString + "=" + variable + ".matched?" + branchFlowIndex + ":" + positiveIndex +
+				";break;case " + branchFlowIndex + ":"
+			);
+
+			// 提取 case 表达式的主体语句块
+			expression.statements.extractTo(contentBuilder);
+
+			// 追加三元判断的“不成立”时的相关索引处理
+			contentBuilder.appendString(
+				currentIndexString + "=" + positiveIndex + ";break;case " + positiveIndex + ":"
+			);
+		}
+		else {
+			// 追加三元判断的“条件”字符串
+			contentBuilder.appendString(currentIndexString + "=" + variable + ".case(");
+			// 追加判断值表达式
+			expression.value.extractTo(contentBuilder);
+
+			// 追加 三元判断的执行表达式 与 条件“成立”时相关的 case 表达式字符串
+			contentBuilder.appendString(
+				")?" + positiveIndex + ":" + negativeIndex + ";break;case " + positiveIndex + ":"
+			);
+
+			// 提取 case 表达式的主体语句块
+			expression.statements.extractTo(contentBuilder);
+
+			// 追加三元判断的“不成立”时的相关索引处理
+			contentBuilder.appendString(
+				currentIndexString + "=" + negativeIndex + ";break;case " + negativeIndex + ":"
+			);
+		}
+
+		// 设置三元判断“成立”时的索引值
+		switchExpression.positiveIndex = generator.nextIndex();
+		// 设置三元判断“不成立”时的索引值
+		switchExpression.negativeIndex = generator.nextIndex();
+	}
 );
