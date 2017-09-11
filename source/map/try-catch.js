@@ -1,25 +1,86 @@
 // try catch 语句相关
 !function(TryFunctionExpression, TryFunctionStatement, tryFunctionTag, catchTag, finallyTag){
 	
-this.TryExpression = function(){
+this.TryExpression = function(GenerableExpression){
 	/**
 	 * try 表达式
 	 * @param {Context} context - 标签上下文
+	 * @param {Statements} statements - 当前语句块
 	 */
-	function TryExpression(context){
-		Expression.call(this, context);
+	function TryExpression(context, statements){
+		GenerableExpression.call(this, context, statements);
 	};
-	TryExpression = new Rexjs(TryExpression, Expression);
+	TryExpression = new Rexjs(TryExpression, GenerableExpression);
 	
 	TryExpression.props({
 		catchBlock: null,
 		catchContext: null,
 		exception: null,
+		finallyBlock: null,
+		finallyContext: null,
 		/**
-		 * 提取表达式文本内容
+		 * 以生成器形式的提取表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
 		 */
-		extractTo: function(contentBuilder){
+		generateTo: function(contentBuilder){
+			var exception = this.exception, generator = this.contextGeneratorIfNeedCompile,
+			
+				exceptionIndex = generator.nextIndex(), mainFlowIndex = generator.nextIndex(), unobserveIndex = generator.nextIndex(),
+				
+				variable = generator.variable, currentIndexString = generator.currentIndexString;
+
+			// 追加监听异常代码
+			contentBuilder.appendString(
+				variable + ".observe(" + exceptionIndex + ");"
+			);
+
+			// 提取 try 语句块
+			this.tryBlock.inner.extractTo(contentBuilder);
+
+			// 追加设置结束监听的代码
+			contentBuilder.appendString(
+				currentIndexString + "=" + unobserveIndex + ";break;"
+			);
+
+			// 如果异常存在，说明存在 catch 语句
+			if(exception){
+				// 追加异常索引代码
+				contentBuilder.appendString(
+					"case " + exceptionIndex + ":"
+				);
+
+				// 提取异常信息
+				exception.inner.extractTo(contentBuilder);
+				// 给异常信息赋值
+				contentBuilder.appendString("=" + variable + ".exception;");
+
+				// 提取 catch 语句块
+				this.catchBlock.extractTo(contentBuilder);
+
+				// 追加设置主流索引代码
+				contentBuilder.appendString(
+					currentIndexString + "=" + mainFlowIndex + ";break;"
+				);
+			}
+
+			contentBuilder.appendString(
+				// 追加去掉监视异常的代码
+				"case " + unobserveIndex + ":" + variable + ".unobserve();" +
+				// 追加设置主流索引代码
+				currentIndexString + "=" + mainFlowIndex + ";break;case " + mainFlowIndex + ":"
+			);
+
+			// 如果 finally 关键字存在
+			if(this.finallyContext){
+				// 提取 finally 语句块
+				this.finallyBlock.extractTo(contentBuilder);
+			}
+		},
+		/**
+		 * 以常规形式的提取表达式文本内容
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 */
+		normalizeTo: function(contentBuilder){
 			var exception = this.exception, finallyContext = this.finallyContext;
 			
 			// 追加 try 关键字
@@ -33,7 +94,7 @@ this.TryExpression = function(){
 				contentBuilder.appendContext(this.catchContext);
 				// 提取异常内容
 				exception.extractTo(contentBuilder);
-				// 提取 try 语句块
+				// 提取 catch 语句块
 				this.catchBlock.extractTo(contentBuilder);
 			}
 			
@@ -45,8 +106,6 @@ this.TryExpression = function(){
 				this.finallyBlock.extractTo(contentBuilder);
 			}
 		},
-		finallyBlock: null,
-		finallyContext: null,
 		tryBlock: null,
 		/**
 		 * 获取 try 关键字上下文
@@ -57,7 +116,9 @@ this.TryExpression = function(){
 	});
 	
 	return TryExpression;
-}();
+}(
+	this.GenerableExpression
+);
 
 this.TryStatement = function(toUnary){
 	/**
@@ -226,7 +287,7 @@ this.TryTag = function(TryExpression, TryStatement){
 		 */
 		visitor: function(parser, context, statement, statements){
 			// 设置当前表达式
-			statement.expression = new TryExpression(context);
+			statement.expression = new TryExpression(context, statements);
 			// 设置当前语句
 			statements.statement = new TryStatement(statements);
 		}
@@ -313,15 +374,15 @@ this.OpenCatchedExceptionTag = function(OpenParenTag){
 	this.OpenParenTag
 );
 
-this.ExceptionVariableTag = function(VariableTag){
+this.ExceptionVariableTag = function(VariableDeclarationTag){
 	/**
 	 * 异常变量标签
 	 * @param {Number} _type - 标签类型
 	 */
 	function ExceptionVariableTag(_type){
-		VariableTag.call(this, _type);
+		VariableDeclarationTag.call(this, _type);
 	};
-	ExceptionVariableTag = new Rexjs(ExceptionVariableTag, VariableTag);
+	ExceptionVariableTag = new Rexjs(ExceptionVariableTag, VariableDeclarationTag);
 	
 	ExceptionVariableTag.props({
 		/**
@@ -338,14 +399,33 @@ this.ExceptionVariableTag = function(VariableTag){
 		 * @param {Statement} statement - 当前语句
 		 * @param {Statements} statements - 当前语句块
 		 */
-		visitor: function(parser, context, statement){
-			statement.target.expression.exception.inner = new Expression(context);
+		visitor: function(parser, context, statement, statements){
+			var tryExpression = statement.target.expression, generator = tryExpression.contextGeneratorIfNeedCompile;
+
+			// 如果存在需要编译的生成器
+			if(generator){
+				var range = statements.collections.declaration.range();
+
+				// 添加变量名收集器范围
+				generator.ranges.push(range);
+				// 收集变量名
+				this.collectTo(parser, context, statements);
+				// 范围结束
+				range.end();
+			}
+			else {
+				// 仅仅只收集变量名
+				this.collectTo(parser, context, statements);
+			}
+
+			// 设置 inner
+			tryExpression.exception.inner = new Expression(context);
 		}
 	});
 	
 	return ExceptionVariableTag;
 }(
-	this.VariableTag
+	this.VariableDeclarationTag
 );
 
 this.CloseCatchedExceptionTag = function(CloseParenTag){

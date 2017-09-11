@@ -19,7 +19,7 @@ this.ShorthandMethodExpression = function(FunctionExpression){
 	this.FunctionExpression
 );
 	
-this.ShorthandMethodValueExpression = function(PropertyValueExpression, config){
+this.ShorthandMethodValueExpression = function(PropertyValueExpression, CompiledExpression, config){
 	/**
 	 * 简写方法值表达式
 	 */
@@ -77,6 +77,7 @@ this.ShorthandMethodValueExpression = function(PropertyValueExpression, config){
 	return ShorthandMethodValueExpression;
 }(
 	this.PropertyValueExpression,
+	Rexjs.CompiledExpression,
 	// config
 	ECMAScriptConfig.addBaseConfig("shorthandMethod")
 );

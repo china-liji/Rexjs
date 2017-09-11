@@ -1,45 +1,49 @@
 // var 语句相关
 !function(VariableDeclarationTag, closureVariableTag, varDeclarationSeparatorTag){
 
-this.VarExpression = function(BinaryExpression){
+this.VarExpression = function(GenerableExpression){
 	/**
 	 * var 表达式
 	 * @param {Context} context - 标签上下文
 	 * @param {Statements} statements - 当前所处环境的变量收集器集合
 	 */
 	function VarExpression(context, statements){
-		var range = statements.collections.declaration.range(), compiledGenerator = statements.contextGeneratorIfNeedCompile;
+		var generator, range = statements.collections.declaration.range();
 
-		Expression.call(this, context);
+		GenerableExpression.call(this, context, statements);
 
 		this.list = new ListExpression(null, ",");
 		this.range = range;
+
+		generator = this.contextGeneratorIfNeedCompile;
 		
 		// 如果需要编译的生成器存在
-		if(compiledGenerator){
+		if(generator){
 			// 添加变量收集器范围
-			compiledGenerator.ranges.push(range);
-
-			// 那么，该表达式将转化为普通的赋值表达式，不再是声明。
-			this.declaration = false;
+			generator.ranges.push(range);
 		}
 	};
-	VarExpression = new Rexjs(VarExpression, Expression);
+	VarExpression = new Rexjs(VarExpression, GenerableExpression);
 
 	VarExpression.props({
 		declaration: true,
 		/**
-		 * 提取表达式文本内容
+		 * 以生成器形式的提取表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
 		 */
-		extractTo: function(contentBuilder){
-			// 如果是声明
-			if(this.declaration){
-				// 提取关键字
-				contentBuilder.appendContext(this.context);
-				// 添加空格
-				contentBuilder.appendSpace();
-			}
+		generateTo: function(contentBuilder){
+			// 提取变量列表
+			this.list.extractTo(contentBuilder);
+		},
+		/**
+		 * 以常规形式的提取表达式文本内容
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 */
+		normalizeTo: function(contentBuilder){
+			// 提取关键字
+			contentBuilder.appendContext(this.context);
+			// 添加空格
+			contentBuilder.appendSpace();
 
 			// 提取变量列表
 			this.list.extractTo(contentBuilder);
@@ -50,7 +54,7 @@ this.VarExpression = function(BinaryExpression){
 
 	return VarExpression;
 }(
-	this.BinaryExpression
+	this.GenerableExpression
 );
 
 this.VarStatement = function(){

@@ -43,46 +43,32 @@ if(!result2.done){
 new function(){
 
 function* generator(){
-	if(typeof a !== "function"){
+	if(typeof fn !== "function"){
 		throw "函数变量提升失败"
 	}
 
-	yield a()
+	yield fn()
 
-	a = 5
+	var b = 5
 
-	yield a
+	yield b
 
-	function a(){
+	if(typeof fn !== "function"){
+		throw "函数的变量名声明没有提出到生成器头部";
+	}
+
+	function fn(){
 		return 100;
 	}
+
+	yield 6
 };
 
 checkGenerator(
 	generator(),
-	[100, 5],
+	[100, 5, 6],
 	"变量提升解析失败"
 );
-
-function* generator1(){
-	if(typeof a !== "undefined"){
-		throw "非最外层函数声明，不得提升";
-	}
-
-	{
-		function a(){
-			return 100;
-		}
-	}
-
-	if(typeof b !== "undefined"){
-		throw "非声明形式的函数，不得提升"
-	}
-
-	var b = function(){}
-};
-
-generator1();
 
 }();
 
@@ -91,26 +77,112 @@ generator1();
 new function(){
 
 function* generator(){
-	var err = "类变量不存在变量提升";
+	var err = "类变量不存在变量提升"
 
 	try {
-		a
-		throw err
+		new A()
+		throw  err
 	}
 	catch(e){
 		if(e === err){
-			throw e;
+			throw err;
 		}
 	}
 
-	class a {
+	class A {
 		constructor(){
-			this.value = 100
+			this.value = A
 		}
+	}
+
+	var b = new A()
+
+	yield b
+
+	if(typeof A !== "function"){
+		throw "类的变量名声明没有提出到生成器头部"
 	}
 };
 
-generator()
+var g = generator()
+g.next();
+g.next();
+
+}();
+
+
+// try catch
+new function(){
+
+function* generator(){
+	try {
+		yield 1
+
+		try {
+			throw 123
+		}
+		catch(e){
+			yield 2
+			throw 999
+		}
+	}
+	catch(e){
+		yield 3
+
+		try {
+			var b = 2;
+			throw 456
+			yield 4
+		}
+		catch(d){
+			var x = 55
+			yield 5
+		}
+	}
+	finally {
+		var d = 4
+		yield 6
+	}
+
+	try {
+		throw 7
+	}
+	catch(e){
+		yield 8
+	}
+
+	yield 9
+}
+
+checkGenerator(
+	generator(),
+	[1, 2, 3, 5, 6, 8, 9],
+	"生成器中的 try catch 解析有误"
+);
+
+}();
+
+
+// 解构
+new function(){
+
+var generator = function*(){
+	var { a,b:[b] } = { a: 100, b: [200] }
+
+	var [c] = [300]
+
+	yield a
+
+	yield b
+
+	yield c
+}
+
+checkGenerator(
+	generator(),
+	[100, 200, 300],
+	"生成器中的解构解析有误"
+);
 
 }();
 
@@ -406,7 +478,12 @@ function* generator(obj){
 						value -= 30
 					}
 					else {
-						yield value += i
+						try {
+							throw "123"
+						}
+						catch(e){
+							yield value += i
+						}
 					}
 				}
 			}

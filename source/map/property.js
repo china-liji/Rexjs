@@ -119,7 +119,7 @@ this.PropertyDestructuringDefaultItemExpression = function(DestructuringDefaultI
 	this.DestructuringDefaultItemExpression
 );
 
-this.PropertyExpression = function(BinaryExpression, ShorthandPropertyValueExpression){
+this.PropertyExpression = function(BinaryExpression, generatorConfig){
 	/**
 	 * 对象属性表达式
 	 */
@@ -184,6 +184,8 @@ this.PropertyExpression = function(BinaryExpression, ShorthandPropertyValueExpre
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
 		 */
 		extractTo: function(contentBuilder){
+			var name = this.name, value = this.value;
+
 			// 如果是访问器
 			if(this.accessible){
 				// 追加访问器
@@ -191,24 +193,35 @@ this.PropertyExpression = function(BinaryExpression, ShorthandPropertyValueExpre
 				// 追加空格
 				contentBuilder.appendSpace();
 				// 提取属性名称
-				this.name.extractTo(contentBuilder);
+				name.extractTo(contentBuilder);
 				// 直接以简写形式提取表达式文本内容
-				this.value.shortTo(contentBuilder);
+				value.shortTo(contentBuilder);
 				return;
 			}
 
 			// 如果存在星号，说明是生成器属性
 			if(this.star){
-				// 将名称放到简写函数表达式中去提取，以保持星号的顺序
-				this.value.operand.name = this.name;
+				// 如果需要解析生成器函数
+				if(generatorConfig.value){
+					// 提取属性名称
+					name.extractTo(contentBuilder);
+					// 以定义属性的模式提取表达式文本内容
+					value.defineTo(contentBuilder);
+					return;
+				}
+
+				// 设置生成器属性的属性名称
+				value.operand.name = this.name;
+				
+				// 提取属性值
+				value.extractTo(contentBuilder);
+				return;
 			}
-			else {
-				// 提取属性名称
-				this.name.extractTo(contentBuilder);
-			}
-			
+
+			// 提取属性名称
+			name.extractTo(contentBuilder);
 			// 提取属性值
-			this.value.extractTo(contentBuilder);
+			value.extractTo(contentBuilder);
 		},
 		/**
 		 * 获取该二元表达式所关联的最后一个二元表达式
@@ -272,7 +285,7 @@ this.PropertyExpression = function(BinaryExpression, ShorthandPropertyValueExpre
 	return PropertyExpression;
 }(
 	this.BinaryExpression,
-	this.ShorthandPropertyValueExpression3
+	ECMAScriptConfig.generator
 );
 
 this.PropertyValueExpression = function(){

@@ -19,8 +19,12 @@ this.ClassDeclarationExpression = function(config, extractTo){
 		extractTo: function(contentBuilder){
 			// 如果需要解析类
 			if(config.value){
-				// 追加 var 关键字
-				contentBuilder.appendString("var");
+				// 如果还没声明
+				if(this.undeclaredIfCompile){
+					// 追加 var 关键字
+					contentBuilder.appendString("var");
+				}
+				
 				// 提取名称
 				this.name.extractTo(contentBuilder);
 				// 追加变量赋值等于号
@@ -44,7 +48,8 @@ this.ClassDeclarationExpression = function(config, extractTo){
 		/**
 		 * 设置表达式状态
 		 */
-		set state(value){}
+		set state(value){},
+		undeclaredIfCompile: true
 	});
 
 	return ClassDeclarationExpression;
@@ -111,8 +116,27 @@ this.ClassVariableTag = function(visitor){
 		 * @param {Statements} statements - 当前语句块
 		 */
 		visitor: function(parser, context, statement, statements){
-			// 收集变量名
-			this.collectTo(parser, context, statements);
+			var generator = statements.contextGeneratorIfNeedCompile;
+
+			// 如果存在需要编译的生成器
+			if(generator){
+				var range = statements.collections.declaration.range();
+
+				// 添加变量名收集范围
+				generator.ranges.push(range);
+				// 收集变量名
+				this.collectTo(parser, context, statements);
+				// 范围结束
+				range.end();
+
+				// 设置 undeclaredIfCompile 属性，表示已经被提出到生成器之前声明过
+				statement.expression.undeclaredIfCompile = false;
+			}
+			else {
+				// 收集变量名
+				this.collectTo(parser, context, statements);
+			}
+			
 			// 调用父类方法
 			visitor.call(this, parser, context, statement, statements);
 		}

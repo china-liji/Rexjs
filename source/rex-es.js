@@ -6955,14 +6955,12 @@ this.FunctionDeclarationTag = function(FunctionTag, FunctionDeclarationExpressio
 		 * @param {Statements} statements - 当前语句块
 		 */
 		visitor: function(parser, context, statement, statements){
-			var functionDeclarationExpression = new FunctionDeclarationExpression(context);
+			var functionDeclarationExpression = new FunctionDeclarationExpression(context), generator = statements.contextGeneratorIfNeedCompile;
 
-			// 如果处于当前闭包语句块层级，说明要变量提升
-			if(statements === statements.closure){
-				var generator = statements.contextGeneratorIfNeedCompile;
-
-				// 如果存在需要编译的生成器
-				if(generator){
+			// 如果存在需要编译的生成器
+			if(generator){
+				// 如果处于当前闭包语句块层级，说明要变量提升
+				if(statements === statements.closure){
 					// 设置当前表达式为空表达式
 					statement.expression = new EmptyExpression(null);
 
@@ -9061,7 +9059,7 @@ this.PropertyDestructuringDefaultItemExpression = function(DestructuringDefaultI
 	this.DestructuringDefaultItemExpression
 );
 
-this.PropertyExpression = function(BinaryExpression, ShorthandPropertyValueExpression){
+this.PropertyExpression = function(BinaryExpression, generatorConfig){
 	/**
 	 * 对象属性表达式
 	 */
@@ -9126,6 +9124,8 @@ this.PropertyExpression = function(BinaryExpression, ShorthandPropertyValueExpre
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
 		 */
 		extractTo: function(contentBuilder){
+			var name = this.name, value = this.value;
+
 			// 如果是访问器
 			if(this.accessible){
 				// 追加访问器
@@ -9133,24 +9133,35 @@ this.PropertyExpression = function(BinaryExpression, ShorthandPropertyValueExpre
 				// 追加空格
 				contentBuilder.appendSpace();
 				// 提取属性名称
-				this.name.extractTo(contentBuilder);
+				name.extractTo(contentBuilder);
 				// 直接以简写形式提取表达式文本内容
-				this.value.shortTo(contentBuilder);
+				value.shortTo(contentBuilder);
 				return;
 			}
 
 			// 如果存在星号，说明是生成器属性
 			if(this.star){
-				// 将名称放到简写函数表达式中去提取，以保持星号的顺序
-				this.value.operand.name = this.name;
+				// 如果需要解析生成器函数
+				if(generatorConfig.value){
+					// 提取属性名称
+					name.extractTo(contentBuilder);
+					// 以定义属性的模式提取表达式文本内容
+					value.defineTo(contentBuilder);
+					return;
+				}
+
+				// 设置生成器属性的属性名称
+				value.operand.name = this.name;
+				
+				// 提取属性值
+				value.extractTo(contentBuilder);
+				return;
 			}
-			else {
-				// 提取属性名称
-				this.name.extractTo(contentBuilder);
-			}
-			
+
+			// 提取属性名称
+			name.extractTo(contentBuilder);
 			// 提取属性值
-			this.value.extractTo(contentBuilder);
+			value.extractTo(contentBuilder);
 		},
 		/**
 		 * 获取该二元表达式所关联的最后一个二元表达式
@@ -9214,7 +9225,7 @@ this.PropertyExpression = function(BinaryExpression, ShorthandPropertyValueExpre
 	return PropertyExpression;
 }(
 	this.BinaryExpression,
-	this.ShorthandPropertyValueExpression3
+	ECMAScriptConfig.generator
 );
 
 this.PropertyValueExpression = function(){
@@ -10383,7 +10394,7 @@ this.ShorthandMethodExpression = function(FunctionExpression){
 	this.FunctionExpression
 );
 	
-this.ShorthandMethodValueExpression = function(PropertyValueExpression, config){
+this.ShorthandMethodValueExpression = function(PropertyValueExpression, CompiledExpression, config){
 	/**
 	 * 简写方法值表达式
 	 */
@@ -10441,6 +10452,7 @@ this.ShorthandMethodValueExpression = function(PropertyValueExpression, config){
 	return ShorthandMethodValueExpression;
 }(
 	this.PropertyValueExpression,
+	Rexjs.CompiledExpression,
 	// config
 	ECMAScriptConfig.addBaseConfig("shorthandMethod")
 );
@@ -13168,45 +13180,49 @@ this.ContinueTag = function(FLOW_CIRCULAR, checkLabelledStatement){
 // var 语句相关
 !function(VariableDeclarationTag, closureVariableTag, varDeclarationSeparatorTag){
 
-this.VarExpression = function(BinaryExpression){
+this.VarExpression = function(GenerableExpression){
 	/**
 	 * var 表达式
 	 * @param {Context} context - 标签上下文
 	 * @param {Statements} statements - 当前所处环境的变量收集器集合
 	 */
 	function VarExpression(context, statements){
-		var range = statements.collections.declaration.range(), compiledGenerator = statements.contextGeneratorIfNeedCompile;
+		var generator, range = statements.collections.declaration.range();
 
-		Expression.call(this, context);
+		GenerableExpression.call(this, context, statements);
 
 		this.list = new ListExpression(null, ",");
 		this.range = range;
+
+		generator = this.contextGeneratorIfNeedCompile;
 		
 		// 如果需要编译的生成器存在
-		if(compiledGenerator){
+		if(generator){
 			// 添加变量收集器范围
-			compiledGenerator.ranges.push(range);
-
-			// 那么，该表达式将转化为普通的赋值表达式，不再是声明。
-			this.declaration = false;
+			generator.ranges.push(range);
 		}
 	};
-	VarExpression = new Rexjs(VarExpression, Expression);
+	VarExpression = new Rexjs(VarExpression, GenerableExpression);
 
 	VarExpression.props({
 		declaration: true,
 		/**
-		 * 提取表达式文本内容
+		 * 以生成器形式的提取表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
 		 */
-		extractTo: function(contentBuilder){
-			// 如果是声明
-			if(this.declaration){
-				// 提取关键字
-				contentBuilder.appendContext(this.context);
-				// 添加空格
-				contentBuilder.appendSpace();
-			}
+		generateTo: function(contentBuilder){
+			// 提取变量列表
+			this.list.extractTo(contentBuilder);
+		},
+		/**
+		 * 以常规形式的提取表达式文本内容
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 */
+		normalizeTo: function(contentBuilder){
+			// 提取关键字
+			contentBuilder.appendContext(this.context);
+			// 添加空格
+			contentBuilder.appendSpace();
 
 			// 提取变量列表
 			this.list.extractTo(contentBuilder);
@@ -13217,7 +13233,7 @@ this.VarExpression = function(BinaryExpression){
 
 	return VarExpression;
 }(
-	this.BinaryExpression
+	this.GenerableExpression
 );
 
 this.VarStatement = function(){
@@ -14556,7 +14572,7 @@ closeDoWhileConditionTag = new this.CloseDoWhileConditionTag();
 // for 语句相关
 !function(CompiledExpression){
 
-this.ForExpression = function(ConditionalExpression, config, compileOf, compileIteratorWithGenerator, compileOfWithGenerator, compileInWithGenerator, compileWithGenerator){
+this.ForExpression = function(ConditionalExpression, config, compileOf, compileIteratorWithGenerator, compileWithGenerator){
 	/**
 	 * for 表达式
 	 * @param {Context} context - 语法标签上下文
@@ -14699,57 +14715,6 @@ this.ForExpression = function(ConditionalExpression, config, compileOf, compileI
 			builder.result + "=" + variable + ".next().value;"
 		);
 
-		// 以生成器形式编译主体
-		expression.generateBodyTo(expression.body, contentBuilder);
-	},
-	// compileOfWithGenerator
-	function(expression, generator, contentBuilder){
-		var variable = expression.variable, inner = expression.condition.inner, builder = new ContentBuilder();
-
-		// 追加 for 循环初始化语句
-		contentBuilder.appendString(variable + "=new Rexjs.Generator(");
-		// 追加生成器的对象
-		inner.right.extractTo(contentBuilder);
-		// 追加 Generator 的结束小括号与语句分隔符
-		contentBuilder.appendString(");");
-
-		// 以生成器形式编译条件
-		expression.generateConditionTo(
-			new CompiledExpression("!" + variable + ".iterator.closed"),
-			contentBuilder
-		);
-
-		// 将对象值的初始化表达式提取到新的内容生成器里，目的是防止文档位置（position）的错乱，导致 mappings 不可用 
-		inner.left.extractTo(builder);
-
-		// 追加对象值的初始化
-		contentBuilder.appendString(
-			builder.result + "=" + variable + ".next().value;"
-		);
-
-		// 以生成器形式编译主体
-		expression.generateBodyTo(expression.body, contentBuilder);
-	},
-	// compileInWithGenerator
-	function(expression, generator, contentBuilder){
-		var variable = expression.variable, inner = expression.condition.inner, builder = new ContentBuilder();
-
-		// 追加临时变量名赋值操作，以免每次进入生成器都会生成新的对象
-		contentBuilder.appendString(variable + "=Rexjs.Object.getEnumerablePropertyNames(");
-		// 提取右侧表达式，用于赋值给临时变量名
-		inner.right.extractTo(contentBuilder);
-		// 追加赋值操作的语句分号
-		contentBuilder.appendString(");");
-
-		inner.left.extractTo(contentBuilder);
-
-		// 重新设置右侧表达式
-		inner.right = new CompiledExpression(variable);
-
-		// 以生成器形式编译逻辑条件
-		expression.generateConditionTo(inner, builder);
-		// 追加编译后的逻辑条件代码
-		contentBuilder.appendString(builder.result);
 		// 以生成器形式编译主体
 		expression.generateBodyTo(expression.body, contentBuilder);
 	},
@@ -15743,25 +15708,86 @@ this.TryFunctionTag = function(ExecTag, TryFunctionExpression, TryFunctionStatem
 // try catch 语句相关
 !function(TryFunctionExpression, TryFunctionStatement, tryFunctionTag, catchTag, finallyTag){
 	
-this.TryExpression = function(){
+this.TryExpression = function(GenerableExpression){
 	/**
 	 * try 表达式
 	 * @param {Context} context - 标签上下文
+	 * @param {Statements} statements - 当前语句块
 	 */
-	function TryExpression(context){
-		Expression.call(this, context);
+	function TryExpression(context, statements){
+		GenerableExpression.call(this, context, statements);
 	};
-	TryExpression = new Rexjs(TryExpression, Expression);
+	TryExpression = new Rexjs(TryExpression, GenerableExpression);
 	
 	TryExpression.props({
 		catchBlock: null,
 		catchContext: null,
 		exception: null,
+		finallyBlock: null,
+		finallyContext: null,
 		/**
-		 * 提取表达式文本内容
+		 * 以生成器形式的提取表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
 		 */
-		extractTo: function(contentBuilder){
+		generateTo: function(contentBuilder){
+			var exception = this.exception, generator = this.contextGeneratorIfNeedCompile,
+			
+				exceptionIndex = generator.nextIndex(), mainFlowIndex = generator.nextIndex(), unobserveIndex = generator.nextIndex(),
+				
+				variable = generator.variable, currentIndexString = generator.currentIndexString;
+
+			// 追加监听异常代码
+			contentBuilder.appendString(
+				variable + ".observe(" + exceptionIndex + ");"
+			);
+
+			// 提取 try 语句块
+			this.tryBlock.inner.extractTo(contentBuilder);
+
+			// 追加设置结束监听的代码
+			contentBuilder.appendString(
+				currentIndexString + "=" + unobserveIndex + ";break;"
+			);
+
+			// 如果异常存在，说明存在 catch 语句
+			if(exception){
+				// 追加异常索引代码
+				contentBuilder.appendString(
+					"case " + exceptionIndex + ":"
+				);
+
+				// 提取异常信息
+				exception.inner.extractTo(contentBuilder);
+				// 给异常信息赋值
+				contentBuilder.appendString("=" + variable + ".exception;");
+
+				// 提取 catch 语句块
+				this.catchBlock.extractTo(contentBuilder);
+
+				// 追加设置主流索引代码
+				contentBuilder.appendString(
+					currentIndexString + "=" + mainFlowIndex + ";break;"
+				);
+			}
+
+			contentBuilder.appendString(
+				// 追加去掉监视异常的代码
+				"case " + unobserveIndex + ":" + variable + ".unobserve();" +
+				// 追加设置主流索引代码
+				currentIndexString + "=" + mainFlowIndex + ";break;case " + mainFlowIndex + ":"
+			);
+
+			// 如果 finally 关键字存在
+			if(this.finallyContext){
+				// 提取 finally 语句块
+				this.finallyBlock.extractTo(contentBuilder);
+			}
+		},
+		/**
+		 * 以常规形式的提取表达式文本内容
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 */
+		normalizeTo: function(contentBuilder){
 			var exception = this.exception, finallyContext = this.finallyContext;
 			
 			// 追加 try 关键字
@@ -15775,7 +15801,7 @@ this.TryExpression = function(){
 				contentBuilder.appendContext(this.catchContext);
 				// 提取异常内容
 				exception.extractTo(contentBuilder);
-				// 提取 try 语句块
+				// 提取 catch 语句块
 				this.catchBlock.extractTo(contentBuilder);
 			}
 			
@@ -15787,8 +15813,6 @@ this.TryExpression = function(){
 				this.finallyBlock.extractTo(contentBuilder);
 			}
 		},
-		finallyBlock: null,
-		finallyContext: null,
 		tryBlock: null,
 		/**
 		 * 获取 try 关键字上下文
@@ -15799,7 +15823,9 @@ this.TryExpression = function(){
 	});
 	
 	return TryExpression;
-}();
+}(
+	this.GenerableExpression
+);
 
 this.TryStatement = function(toUnary){
 	/**
@@ -15968,7 +15994,7 @@ this.TryTag = function(TryExpression, TryStatement){
 		 */
 		visitor: function(parser, context, statement, statements){
 			// 设置当前表达式
-			statement.expression = new TryExpression(context);
+			statement.expression = new TryExpression(context, statements);
 			// 设置当前语句
 			statements.statement = new TryStatement(statements);
 		}
@@ -16055,15 +16081,15 @@ this.OpenCatchedExceptionTag = function(OpenParenTag){
 	this.OpenParenTag
 );
 
-this.ExceptionVariableTag = function(VariableTag){
+this.ExceptionVariableTag = function(VariableDeclarationTag){
 	/**
 	 * 异常变量标签
 	 * @param {Number} _type - 标签类型
 	 */
 	function ExceptionVariableTag(_type){
-		VariableTag.call(this, _type);
+		VariableDeclarationTag.call(this, _type);
 	};
-	ExceptionVariableTag = new Rexjs(ExceptionVariableTag, VariableTag);
+	ExceptionVariableTag = new Rexjs(ExceptionVariableTag, VariableDeclarationTag);
 	
 	ExceptionVariableTag.props({
 		/**
@@ -16080,14 +16106,33 @@ this.ExceptionVariableTag = function(VariableTag){
 		 * @param {Statement} statement - 当前语句
 		 * @param {Statements} statements - 当前语句块
 		 */
-		visitor: function(parser, context, statement){
-			statement.target.expression.exception.inner = new Expression(context);
+		visitor: function(parser, context, statement, statements){
+			var tryExpression = statement.target.expression, generator = tryExpression.contextGeneratorIfNeedCompile;
+
+			// 如果存在需要编译的生成器
+			if(generator){
+				var range = statements.collections.declaration.range();
+
+				// 添加变量名收集器范围
+				generator.ranges.push(range);
+				// 收集变量名
+				this.collectTo(parser, context, statements);
+				// 范围结束
+				range.end();
+			}
+			else {
+				// 仅仅只收集变量名
+				this.collectTo(parser, context, statements);
+			}
+
+			// 设置 inner
+			tryExpression.exception.inner = new Expression(context);
 		}
 	});
 	
 	return ExceptionVariableTag;
 }(
-	this.VariableTag
+	this.VariableDeclarationTag
 );
 
 this.CloseCatchedExceptionTag = function(CloseParenTag){
@@ -18197,8 +18242,12 @@ this.ClassDeclarationExpression = function(config, extractTo){
 		extractTo: function(contentBuilder){
 			// 如果需要解析类
 			if(config.value){
-				// 追加 var 关键字
-				contentBuilder.appendString("var");
+				// 如果还没声明
+				if(this.undeclaredIfCompile){
+					// 追加 var 关键字
+					contentBuilder.appendString("var");
+				}
+				
 				// 提取名称
 				this.name.extractTo(contentBuilder);
 				// 追加变量赋值等于号
@@ -18222,7 +18271,8 @@ this.ClassDeclarationExpression = function(config, extractTo){
 		/**
 		 * 设置表达式状态
 		 */
-		set state(value){}
+		set state(value){},
+		undeclaredIfCompile: true
 	});
 
 	return ClassDeclarationExpression;
@@ -18289,8 +18339,27 @@ this.ClassVariableTag = function(visitor){
 		 * @param {Statements} statements - 当前语句块
 		 */
 		visitor: function(parser, context, statement, statements){
-			// 收集变量名
-			this.collectTo(parser, context, statements);
+			var generator = statements.contextGeneratorIfNeedCompile;
+
+			// 如果存在需要编译的生成器
+			if(generator){
+				var range = statements.collections.declaration.range();
+
+				// 添加变量名收集范围
+				generator.ranges.push(range);
+				// 收集变量名
+				this.collectTo(parser, context, statements);
+				// 范围结束
+				range.end();
+
+				// 设置 undeclaredIfCompile 属性，表示已经被提出到生成器之前声明过
+				statement.expression.undeclaredIfCompile = false;
+			}
+			else {
+				// 收集变量名
+				this.collectTo(parser, context, statements);
+			}
+			
 			// 调用父类方法
 			visitor.call(this, parser, context, statement, statements);
 		}
@@ -21196,7 +21265,7 @@ this.DestructuringAssignmentTag = function(DestructuringAssignmentExpression, vi
 			// 如果需要解析解构赋值
 			if(config.value){
 				// 给刚生成的解构赋值表达式设置变量名
-				setVariable(statement.expression.last, statements.collections);
+				setVariable(statement.expression.last, statements);
 			}
 		}
 	});
@@ -21210,11 +21279,13 @@ this.DestructuringAssignmentTag = function(DestructuringAssignmentExpression, vi
 		return expression instanceof ArrayExpression || expression instanceof ObjectExpression;
 	},
 	// setVariable
-	function(destructuringAssignmentExpression, collections){
+	function(destructuringAssignmentExpression, statements){
+		var collections = statements.collections;
+
 		// 给刚生成的解构赋值表达式设置变量名
 		destructuringAssignmentExpression.variable = (
-			// 如果是声明形式的解构赋值
-			destructuringAssignmentExpression.left.origin.declaration ?
+			// 如果是声明形式的解构赋值而且不存在需要编译的生成器
+			destructuringAssignmentExpression.left.origin.declaration && !statements.contextGeneratorIfNeedCompile ?
 				// 只需提供，不用在语句块进行定义
 				collections.provide() :
 				// 需要提供并定义

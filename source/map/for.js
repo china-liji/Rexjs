@@ -1,7 +1,7 @@
 // for 语句相关
 !function(CompiledExpression){
 
-this.ForExpression = function(ConditionalExpression, config, compileOf, compileIteratorWithGenerator, compileOfWithGenerator, compileInWithGenerator, compileWithGenerator){
+this.ForExpression = function(ConditionalExpression, config, compileOf, compileIteratorWithGenerator, compileWithGenerator){
 	/**
 	 * for 表达式
 	 * @param {Context} context - 语法标签上下文
@@ -144,57 +144,6 @@ this.ForExpression = function(ConditionalExpression, config, compileOf, compileI
 			builder.result + "=" + variable + ".next().value;"
 		);
 
-		// 以生成器形式编译主体
-		expression.generateBodyTo(expression.body, contentBuilder);
-	},
-	// compileOfWithGenerator
-	function(expression, generator, contentBuilder){
-		var variable = expression.variable, inner = expression.condition.inner, builder = new ContentBuilder();
-
-		// 追加 for 循环初始化语句
-		contentBuilder.appendString(variable + "=new Rexjs.Generator(");
-		// 追加生成器的对象
-		inner.right.extractTo(contentBuilder);
-		// 追加 Generator 的结束小括号与语句分隔符
-		contentBuilder.appendString(");");
-
-		// 以生成器形式编译条件
-		expression.generateConditionTo(
-			new CompiledExpression("!" + variable + ".iterator.closed"),
-			contentBuilder
-		);
-
-		// 将对象值的初始化表达式提取到新的内容生成器里，目的是防止文档位置（position）的错乱，导致 mappings 不可用 
-		inner.left.extractTo(builder);
-
-		// 追加对象值的初始化
-		contentBuilder.appendString(
-			builder.result + "=" + variable + ".next().value;"
-		);
-
-		// 以生成器形式编译主体
-		expression.generateBodyTo(expression.body, contentBuilder);
-	},
-	// compileInWithGenerator
-	function(expression, generator, contentBuilder){
-		var variable = expression.variable, inner = expression.condition.inner, builder = new ContentBuilder();
-
-		// 追加临时变量名赋值操作，以免每次进入生成器都会生成新的对象
-		contentBuilder.appendString(variable + "=Rexjs.Object.getEnumerablePropertyNames(");
-		// 提取右侧表达式，用于赋值给临时变量名
-		inner.right.extractTo(contentBuilder);
-		// 追加赋值操作的语句分号
-		contentBuilder.appendString(");");
-
-		inner.left.extractTo(contentBuilder);
-
-		// 重新设置右侧表达式
-		inner.right = new CompiledExpression(variable);
-
-		// 以生成器形式编译逻辑条件
-		expression.generateConditionTo(inner, builder);
-		// 追加编译后的逻辑条件代码
-		contentBuilder.appendString(builder.result);
 		// 以生成器形式编译主体
 		expression.generateBodyTo(expression.body, contentBuilder);
 	},

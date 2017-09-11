@@ -147,7 +147,7 @@ this.FunctionIterator = function(Iterator, IteratorResult, isNaN, toArray){
 
 		this.boundThis = boundThis;
 		this.boundArguments = toArray(boundArguments);
-
+		this.observers = [];
 		this.index.max = Infinity;
 	};
 	FunctionIterator = new Rexjs(FunctionIterator, Iterator);
@@ -160,7 +160,7 @@ this.FunctionIterator = function(Iterator, IteratorResult, isNaN, toArray){
 		 * @param {*} value - 指定的结果值
 		 */
 		close: function(value){
-			// 索引增加无限大
+			// 索引增加 NaN
 			this.index.increase(NaN);
 			// 返回结果
 			return new IteratorResult(value, this.closed);
@@ -171,6 +171,7 @@ this.FunctionIterator = function(Iterator, IteratorResult, isNaN, toArray){
 		get closed(){
 			return isNaN(this.index.current);
 		},
+		exception: "",
 		/**
 		 * 获取下一个迭代结果
 		 */
@@ -178,17 +179,46 @@ this.FunctionIterator = function(Iterator, IteratorResult, isNaN, toArray){
 			// 索引交给函数逻辑去处理，这里只需返回结果
 			return this.result;
 		},
+		observe: function(exceptionIndex){
+			this.observers.push(exceptionIndex);
+		},
+		observers: null,
 		/**
 		 * 获取当前迭代结果
 		 */
 		get result(){
-			// 返回结果，这里的 this.closed 必须获取两次，因为 this.iterable 是个函数，执行的时候，回改变 this.closed 的值
-			return new IteratorResult(
-				this.closed ?
-					void 0 :
-					this.iterable.apply(this.boundThis, this.boundArguments),
-				this.closed
-			);
+			try {
+				// 返回结果，这里的 this.closed 必须获取两次，因为 this.iterable 是个函数，执行的时候，回改变 this.closed 的值
+				return new IteratorResult(
+					this.closed ?
+						void 0 :
+						this.iterable.apply(this.boundThis, this.boundArguments),
+					this.closed
+				);
+			}
+			catch(e){
+				var observers = this.observers;
+
+				// 如果没有监视
+				if(observers.length === 0){
+					// 抛出异常
+					throw e;
+				}
+
+				// 记录异常
+				this.exception = e;
+				// 设置异常代码块相关索引值
+				this.index.current = this.unobserve();
+
+				// 进入异常处理并返回结果
+				return this.result;
+			}
+		},
+		/**
+		 * 去除最后一个监视
+		 */
+		unobserve: function(){
+			return this.observers.pop();
 		}
 	});
 
