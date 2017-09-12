@@ -5080,6 +5080,23 @@ this.DestructibleExpression = function(){
 		convert: function(){},
 		declaration: false,
 		/**
+		 * 根据语句块上下文给指定表达式设置变量名
+		 * @param {Expression} expression - 需要设置变量名的表达式
+		 * @param {Statements} statements - 当前语句块
+		 */
+		setVariableOf: function(expression, statements){
+			var collections = statements.collections;
+
+			expression.variable = (
+				// 如果是 声明形式的解构赋值 而且 不存在需要编译的生成器
+				this.declaration && !statements.contextGeneratorIfNeedCompile ?
+					// 只需提供，不用在语句块进行定义
+					collections.provide() :
+					// 需要提供并定义
+					collections.generate()
+			);
+		},
+		/**
 		 * 转换为解构表达式
 		 * @param {SyntaxParser} parser - 语法解析器
 		 */
@@ -5550,17 +5567,8 @@ this.ArrayExpression = function(ArrayDestructuringExpression, ArrayDestructuring
 
 			// 如果需要解析解构表达式 而且 长度大于 1（长度为 0 不解析，长度为 1，只需取一次对象，所以都不需要生成变量名）
 			if(config.value && inner.length > 1){
-				var collections = parser.statements.collections;
-
-				// 给刚生成的解构赋值表达式设置变量名
-				expression.variable = (
-					// 如果是声明形式的解构赋值
-					this.declaration ?
-						// 只需提供，不用在语句块进行定义
-						collections.provide() :
-						// 需要提供并定义
-						collections.generate()
-				);
+				// 设置变量名
+				this.setVariableOf(expression, parser.statements);
 			}
 
 			// 转换内部表达式
@@ -11227,17 +11235,8 @@ this.ObjectExpression = function(
 
 			// 如果需要解析解构表达式 而且 长度大于 1（长度为 0 不解析，长度为 1，只需取一次对象，所以都不需要生成变量名）
 			if(config.value && inner.length > 1){
-				var collections = parser.statements.collections;
-
-				// 给刚生成的解构赋值表达式设置变量名
-				expression.variable = (
-					// 如果是声明形式的解构赋值
-					this.declaration ?
-						// 只需提供，不用在语句块进行定义
-						collections.provide() :
-						// 需要提供并定义
-						collections.generate()
-				);
+				// 设置变量名
+				this.setVariableOf(expression, parser.statements);
 			}
 
 			// 转换内部表达式
@@ -14943,7 +14942,7 @@ this.ForOfTag = function(IteratorTag, config, hasVariable){
 		 * 判断编译时是否需要临时变量名
 		 * @param {Statements} statements - 当前语句块
 		 */
-		hasVariable(statements){
+		hasVariable: function(statements){
 			return config.value || hasVariable.call(this, statements);
 		},
 		regexp: /of/
@@ -21212,7 +21211,7 @@ this.DestructuringAssignmentExpression = function(extractTo, extractRight){
 	}
 );
 
-this.DestructuringAssignmentTag = function(DestructuringAssignmentExpression, visitor, destructible, setVariable){
+this.DestructuringAssignmentTag = function(DestructuringAssignmentExpression, visitor, destructible, setVariableOf){
 	/**
 	 * 解构赋值标签
 	 * @param {Number} _type - 标签类型
@@ -21265,7 +21264,7 @@ this.DestructuringAssignmentTag = function(DestructuringAssignmentExpression, vi
 			// 如果需要解析解构赋值
 			if(config.value){
 				// 给刚生成的解构赋值表达式设置变量名
-				setVariable(statement.expression.last, statements);
+				setVariableOf(statement.expression.last, statements);
 			}
 		}
 	});
@@ -21278,18 +21277,12 @@ this.DestructuringAssignmentTag = function(DestructuringAssignmentExpression, vi
 	function(expression){
 		return expression instanceof ArrayExpression || expression instanceof ObjectExpression;
 	},
-	// setVariable
+	// setVariableOf
 	function(destructuringAssignmentExpression, statements){
-		var collections = statements.collections;
-
-		// 给刚生成的解构赋值表达式设置变量名
-		destructuringAssignmentExpression.variable = (
-			// 如果是声明形式的解构赋值而且不存在需要编译的生成器
-			destructuringAssignmentExpression.left.origin.declaration && !statements.contextGeneratorIfNeedCompile ?
-				// 只需提供，不用在语句块进行定义
-				collections.provide() :
-				// 需要提供并定义
-				collections.generate()
+		// 设置变量名
+		destructuringAssignmentExpression.left.origin.setVariableOf(
+			destructuringAssignmentExpression,
+			statements
 		);
 	}
 );

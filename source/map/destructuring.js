@@ -21,6 +21,23 @@ this.DestructibleExpression = function(){
 		convert: function(){},
 		declaration: false,
 		/**
+		 * 根据语句块上下文给指定表达式设置变量名
+		 * @param {Expression} expression - 需要设置变量名的表达式
+		 * @param {Statements} statements - 当前语句块
+		 */
+		setVariableOf: function(expression, statements){
+			var collections = statements.collections;
+
+			expression.variable = (
+				// 如果是 声明形式的解构赋值 而且 不存在需要编译的生成器
+				this.declaration && !statements.contextGeneratorIfNeedCompile ?
+					// 只需提供，不用在语句块进行定义
+					collections.provide() :
+					// 需要提供并定义
+					collections.generate()
+			);
+		},
+		/**
 		 * 转换为解构表达式
 		 * @param {SyntaxParser} parser - 语法解析器
 		 */

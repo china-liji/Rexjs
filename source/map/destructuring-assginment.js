@@ -77,7 +77,7 @@ this.DestructuringAssignmentExpression = function(extractTo, extractRight){
 	}
 );
 
-this.DestructuringAssignmentTag = function(DestructuringAssignmentExpression, visitor, destructible, setVariable){
+this.DestructuringAssignmentTag = function(DestructuringAssignmentExpression, visitor, destructible, setVariableOf){
 	/**
 	 * 解构赋值标签
 	 * @param {Number} _type - 标签类型
@@ -130,7 +130,7 @@ this.DestructuringAssignmentTag = function(DestructuringAssignmentExpression, vi
 			// 如果需要解析解构赋值
 			if(config.value){
 				// 给刚生成的解构赋值表达式设置变量名
-				setVariable(statement.expression.last, statements);
+				setVariableOf(statement.expression.last, statements);
 			}
 		}
 	});
@@ -143,18 +143,12 @@ this.DestructuringAssignmentTag = function(DestructuringAssignmentExpression, vi
 	function(expression){
 		return expression instanceof ArrayExpression || expression instanceof ObjectExpression;
 	},
-	// setVariable
+	// setVariableOf
 	function(destructuringAssignmentExpression, statements){
-		var collections = statements.collections;
-
-		// 给刚生成的解构赋值表达式设置变量名
-		destructuringAssignmentExpression.variable = (
-			// 如果是声明形式的解构赋值而且不存在需要编译的生成器
-			destructuringAssignmentExpression.left.origin.declaration && !statements.contextGeneratorIfNeedCompile ?
-				// 只需提供，不用在语句块进行定义
-				collections.provide() :
-				// 需要提供并定义
-				collections.generate()
+		// 设置变量名
+		destructuringAssignmentExpression.left.origin.setVariableOf(
+			destructuringAssignmentExpression,
+			statements
 		);
 	}
 );

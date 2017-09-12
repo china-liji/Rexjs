@@ -121,7 +121,7 @@ this.ForOfTag = function(IteratorTag, config, hasVariable){
 		 * 判断编译时是否需要临时变量名
 		 * @param {Statements} statements - 当前语句块
 		 */
-		hasVariable(statements){
+		hasVariable: function(statements){
 			return config.value || hasVariable.call(this, statements);
 		},
 		regexp: /of/

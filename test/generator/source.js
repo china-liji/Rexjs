@@ -167,20 +167,24 @@ checkGenerator(
 new function(){
 
 var generator = function*(){
-	var { a,b:[b] } = { a: 100, b: [200] }
+	var { a: { y, z }, b:[ b, x ] } = { a: { y: 100 }, b: [ , 200 ] }
 
-	var [c] = [300]
+	yield x
 
-	yield a
+	yield y
 
-	yield b
+	yield z
 
-	yield c
+	var i, m, n
+
+	([i, { m, n: [n] }] = [,{ m: 3, n:[5] }])
+
+	yield m + n
 }
 
 checkGenerator(
 	generator(),
-	[100, 200, 300],
+	[200, 100, undefined, 8],
 	"生成器中的解构解析有误"
 );
 

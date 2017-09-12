@@ -263,17 +263,8 @@ this.ObjectExpression = function(
 
 			// 如果需要解析解构表达式 而且 长度大于 1（长度为 0 不解析，长度为 1，只需取一次对象，所以都不需要生成变量名）
 			if(config.value && inner.length > 1){
-				var collections = parser.statements.collections;
-
-				// 给刚生成的解构赋值表达式设置变量名
-				expression.variable = (
-					// 如果是声明形式的解构赋值
-					this.declaration ?
-						// 只需提供，不用在语句块进行定义
-						collections.provide() :
-						// 需要提供并定义
-						collections.generate()
-				);
+				// 设置变量名
+				this.setVariableOf(expression, parser.statements);
 			}
 
 			// 转换内部表达式

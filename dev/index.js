@@ -1,15 +1,15 @@
-function* generator(){debugger
-	({ a: {b} } = { a: {b:200} })
+var generator = function*(){
+	var { a: { y, z }, b:[ b, x ] } = { a: { y: 100 }, b: [ , 200 ] }
 
-	if(typeof A === "function"){
-		throw "类变量不存在变量提升";
-	}
+	yield x
 
-	class A {
-		constructor(){
-			this.value = 100
-		}
-	}
-};
+	yield y
 
-generator().next();
+	yield z
+
+	var i, m, n
+
+	([i, { m, n: [n] }] = [,{ m: 3, n:[5] }])
+
+	yield m + n
+}

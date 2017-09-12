@@ -1,9 +1,13 @@
 new function(PROJECT_PATH){
 
-this.Uglify = function(SOURCE_PATH, childProcess, fs, console){
+this.Uglify = function(Date, SOURCE_PATH, childProcess, fs, console){
 	return class Uglify {
 		constructor(){
 			var files, cmds, execCmd;
+
+			console.log(
+				new Date().toLocaleString()
+			);
 
 			files = [
 				`${SOURCE_PATH}/rex-core.js`,
@@ -59,6 +63,7 @@ this.Uglify = function(SOURCE_PATH, childProcess, fs, console){
 		};
 	};
 }(
+	Date,
 	// SOURCE_PATH
 	`${PROJECT_PATH}/source`,
 	// childProcess
