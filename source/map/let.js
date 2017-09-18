@@ -1,7 +1,7 @@
 // let 语句相关
 !function(ClosureVariableTag, localVariableTag, letDeclarationSeparatorTag){
 
-this.LetTag = function(VarTag, config){
+this.LetTag = function(VarTag){
 	/**
 	 * let 关键字标签
 	 * @param {Number} _type - 标签类型
@@ -25,7 +25,7 @@ this.LetTag = function(VarTag, config){
 		 */
 		extractTo: function(contentBuilder, content){
 			// 追加标签内容
-			contentBuilder.appendString(config.value ? "var" : content);
+			contentBuilder.appendString(config.es6Base ? "var" : content);
 		},
 		regexp: /let/,
 		/**
@@ -45,9 +45,7 @@ this.LetTag = function(VarTag, config){
 
 	return LetTag;
 }(
-	this.VarTag,
-	// config
-	ECMAScriptConfig.addBaseConfig("let")
+	this.VarTag
 );
 
 this.LocalVariableTag = function(collectTo){

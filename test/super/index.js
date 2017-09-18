@@ -1,6 +1,6 @@
 test.unit(
-	[],
-	function(){
+	[ "super/source.js" ],
+	function(source){
 		test.group("super 测试");
 
 		test.true("子类：构造函数内的 super", "class A extends B { constructor(){ super(); } }");
@@ -9,6 +9,8 @@ test.unit(
 		test.true("子类：super 之后调用 super 的属性", "class A extends B { constructor(){ super(); super.a; } }");
 		test.true("子类：在方法中调用 super 属性", "class A extends B { a(){ super.a; } }");
 		test.true("对象：简写方法中使用 super", "!{ a(){ super.a;super.b; } }");
+
+		this.true("运算验证", source, true);
 
 		test.false(
 			"无关联的 super",
@@ -51,7 +53,7 @@ test.unit(
 		);
 
 		test.false(
-			"子类：super 之前调用 super 的属性",
+			"子类：super 调用之前使用 super 的属性",
 			"class A extends B { constructor(){ super.a; } }",
 			function(parser, err){
 				return err.context.content !== "super";

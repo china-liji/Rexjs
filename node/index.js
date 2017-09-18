@@ -1,11 +1,23 @@
-new function(MAP_PATH, dev, list){
+new function(MAP_PATH, dev, defaultList){
 
 this.File = function(fs, DIR_NAME){
+	/**
+	 * 文件
+	 */
 	return class File {
+		/**
+		 * 读取文件内容
+		 * @param {String} filepath - 文件路径
+		 */
 		static read(filepath){
 			return fs.readFileSync(`${DIR_NAME}/${filepath}`, "utf8");
 		};
 
+		/**
+		 * 写入文件内容到指定路径
+		 * @param {String} filepath - 需要写入的文件路径
+		 * @param {String} content - 需要写入的文件内容
+		 */
 		static write(filepath, content){
 			fs.writeFileSync(`${DIR_NAME}/${filepath}`, content, "utf8");
 		};
@@ -17,20 +29,31 @@ this.File = function(fs, DIR_NAME){
 );
 
 this.Source = function(File, EventEmitter){
+	/**
+	 * 源码
+	 */
 	return class Source extends EventEmitter {
-		generate(){
-			File.write(
-				"../source/rex-es.js",
-				list.map((filename) => {
-						var content = File.read(`${MAP_PATH}/${filename}`);
+		/**
+		 * 根据文件列表生成源码
+		 * @param {Array} list - 文件列表
+		 */
+		generate(list = defaultList){
+			var content = list.map((filename) => {
+					// 读取内容
+					var content = File.read(`${MAP_PATH}/${filename}`);
 
-						this.emit("read", content, filename);
-						return content;
-					})
-					.join(
-						"\n".repeat(3)
-					)
-			);
+					// 触发事件
+					this.emit("read", content, filename);
+					return content;
+				})
+				// 每个文件内容之间插入 3 个换行符，便于阅读代码
+				.join(
+					"\n".repeat(3)
+				);
+
+			// 写入文件
+			File.write("../source/rex-es.js", content);
+			return content;
 		};
 	};
 }(
@@ -39,23 +62,30 @@ this.Source = function(File, EventEmitter){
 );
 
 this.DevSource = function(Source, File, FUNCTION_BODY_REGEXP_SOURCE){
+	/**
+	 * 开发源码，将会根据文件生成 sourceURL
+	 */
 	return class DevSource extends Source {
 		constructor(){
 			var contents = [];
 
 			super();
 
+			// 监听事件
 			this.on(
 				"read",
 				(content, filename) => {
 					switch(filename){
+						// 如果文件头部
 						case "file-header.js":
 							break;
 
+						// 如果是文件末部
 						case "file-footer.js":
 							break;
 
 						default:
+							// 添加 eval 用于生成 sourceURL
 							contents.push(
 								`eval(
 									function(){
@@ -78,15 +108,24 @@ this.DevSource = function(Source, File, FUNCTION_BODY_REGEXP_SOURCE){
 			this.contents = contents;
 		};
 
-		generate(){
-			super.generate();
+		/**
+		 * 根据文件列表生成源码
+		 * @param {Array} list - 文件列表
+		 */
+		generate(list = defaultList){
+			var content; 
 
-			File.write(
-				"../dev/rex-es.js",
-				this.contents.join(
-					"\n".repeat(3)
-				)
+			// 生成文件
+			super.generate(list);
+
+			// 获取文件内容
+			content = this.contents.join(
+				"\n".repeat(3)
 			);
+
+			// 写入文件
+			File.write("../dev/rex-es.js", content);
+			return content;
 		};
 	};
 }(
@@ -96,15 +135,13 @@ this.DevSource = function(Source, File, FUNCTION_BODY_REGEXP_SOURCE){
 	/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/.source
 );
 
-console.time("time");
-new this[dev ? "DevSource" : "Source"]().generate();
-console.timeEnd("time");
+module.exports = { DevSource: this.DevSource, Source: this.Source };
 }(
 	// MAP_PATH
 	"../source/map",
 	// dev
 	process.argv.indexOf("-dev") > -1,
-	// list
+	// defaultList
 	[
 		"file-header.js",
 		"ecmaScript-helper.js",
@@ -201,7 +238,7 @@ console.timeEnd("time");
 		"class-accessor.js",
 		"class-body.js",
 		"class-extends.js",
-		"class-super.js",
+		"super.js",
 		"import.js",
 		"import-multiple.js",
 		"import-default.js",

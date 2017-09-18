@@ -8,7 +8,7 @@ for(var i of [1]){
 	}
 }
 
-if(Rexjs.ECMAScriptConfig.of.value){
+if(Rexjs.ECMAScriptParser.config.es6Base){
 	if(
 		$Rexjs_0 instanceof Rexjs.Generator === false
 	){

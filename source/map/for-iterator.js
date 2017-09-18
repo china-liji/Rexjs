@@ -106,7 +106,7 @@ this.ForInTag = function(IteratorTag){
 	this.IteratorTag
 );
 
-this.ForOfTag = function(IteratorTag, config, hasVariable){
+this.ForOfTag = function(IteratorTag, hasVariable){
 	/**
 	 * for of 标签
 	 * @param {Number} _type - 标签类型
@@ -122,7 +122,7 @@ this.ForOfTag = function(IteratorTag, config, hasVariable){
 		 * @param {Statements} statements - 当前语句块
 		 */
 		hasVariable: function(statements){
-			return config.value || hasVariable.call(this, statements);
+			return config.es6Base || hasVariable.call(this, statements);
 		},
 		regexp: /of/
 	});
@@ -130,8 +130,6 @@ this.ForOfTag = function(IteratorTag, config, hasVariable){
 	return ForOfTag;
 }(
 	this.IteratorTag,
-	// config
-	ECMAScriptConfig.of,
 	this.IteratorTag.prototype.hasVariable
 );
 

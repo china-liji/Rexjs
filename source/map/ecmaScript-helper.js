@@ -81,6 +81,7 @@ this.ECMAScriptOrders = ECMAScriptOrders = function(){
 		DOT_ACCESSOR: 101,
 		EXPRESSION_BREAK: 101,
 		MATHEMATICAL_NUMBER: 101,
+		OPEN_SUPER_METHOD_CALL: 101,
 		SPREAD: 101,
 		BINARY: 200,
 		NEGATION_SIBLING: 200,
@@ -123,46 +124,6 @@ this.ECMAScriptOrders = ECMAScriptOrders = function(){
 
 	return ECMAScriptOrders;
 }();
-
-this.ECMAScriptConfig = ECMAScriptConfig = function(SyntaxConfig){
-	/**
-	 * ECMAScript 语法配置
-	 * @param {String} name - 配置名称
-	 * @param {String} version - 配置相关版本
-	 */
-	function ECMAScriptConfig(name, version){
-		SyntaxConfig.call(this, name, version);
-	};
-	ECMAScriptConfig = new Rexjs(ECMAScriptConfig, SyntaxConfig);
-
-	ECMAScriptConfig.static({
-		/**
-		 * 添加 es6 基础配置信息
-		 * @param {String} name - 配置名称
-		 */
-		addBaseConfig: function(name){
-			return this.add(name, "es6-base");
-		},
-		/**
-		 * 添加 es6 模块配置信息
-		 * @param {String} name - 配置名称
-		 */
-		addModuleConfig: function(name){
-			return this.add(name, "es6-module");
-		},
-		/**
-		 * 添加 Rexjs 配置信息
-		 * @param {String} name - 配置名称
-		 */
-		addRexjsConfig: function(name){
-			return this.add(name, "rexjs");
-		}
-	});
-	
-	return ECMAScriptConfig;
-}(
-	Rexjs.SyntaxConfig
-);
 
 }.call(
 	this

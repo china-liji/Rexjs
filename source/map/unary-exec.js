@@ -36,13 +36,6 @@ this.ExecTag = function(ExecutableExpression, isSeparator){
 				而只有 CLASS_EXPRESSION_CONTEXT 标签才能进入 try
 			*/
 			return operand instanceof ExecutableExpression || isSeparator.call(this, context);
-		},
-		/**
-		 * 获取此标签接下来所需匹配的标签列表
-		 * @param {TagsMap} tagsMap - 标签集合映射
-		 */
-		require: function(tagsMap){
-			return tagsMap.execContextTags;
 		}
 	});
 	

@@ -301,6 +301,7 @@ this.ClassProperty = function(){
 
 	ClassProperty.props({
 		name: "",
+		static: false,
 		type: "value",
 		value: null
 	});
@@ -320,12 +321,59 @@ this.StaticProperty = function(ClassProperty){
 	};
 	StaticProperty = new Rexjs(StaticProperty, ClassProperty);
 
+	StaticProperty.props({
+		static: true
+	});
+
 	return StaticProperty;
 }(
 	this.ClassProperty
 );
 
-this.Class = function(ClassProperty, StaticProperty, defineProperty, getPrototypeOf){
+this.Super = function(){
+	/**
+	 * 父类
+	 */
+	function Super(){};
+	Super = new Rexjs(Super);
+
+	Super.static({
+		/**
+		 * 调用父类的构造函数
+		 * @param {Rexjs} prototype - 类的原型链
+		 * @param {Rexjs} instance - 某个类的实例
+		 * @param {Array} args - 构造函数参数列表
+		 */
+		callConstructor: function(prototype, instance, args){
+			return this.returnedThis(
+				instance,
+				prototype.constructor.apply(instance, args)
+			);
+		},
+		/**
+		 * 调用父类的方法
+		 * @param {Function} method - 父类的方法
+		 * @param {Rexjs, Object} instance - 某个类的实例
+		 * @param {Array} args - 参数列表
+		 */
+		execMethod: function(method, instance, args){
+			return method.apply(instance, args);
+		},
+		/**
+		 * 获取父类构造函数执行结果所返回的、有效的 this
+		 * @param {Rexjs} instance - 某个类的实例
+		 * @param {*} returnValue - 构造函数所返回的值
+		 */
+		returnedThis: function(instance, returnValue){
+			// 如果构造函数返回值是对象，而且存在，则返回该对象，否则返回实例
+			return (typeof returnValue === "object" && returnValue) || instance;
+		}
+	});
+
+	return Super;
+}();
+
+this.Class = function(ClassProperty, defineProperty){
 	/**
 	 * 类
 	 */
@@ -337,10 +385,10 @@ this.Class = function(ClassProperty, StaticProperty, defineProperty, getPrototyp
 		 * 创建类
 		 * @param {Rexjs} SuperClass - 所需继承的父类
 		 * @param {Array} allProps - 类属性列表
-		 * @param {Number} indexOfConstructor - 构造函数在类属性列表中的索引值
+		 * @param {Number} constructorIndex - 构造函数在类属性列表中的索引值
 		 */
-		create: function(SuperClass, allProps, indexOfConstructor){
-			var constructor = allProps[indexOfConstructor].value;
+		create: function(SuperClass, allProps, constructorIndex){
+			var constructor = allProps[constructorIndex].value;
 
 			// 如果构造函数不是函数
 			if(typeof constructor !== "function"){
@@ -348,77 +396,48 @@ this.Class = function(ClassProperty, StaticProperty, defineProperty, getPrototyp
 				throw "Class extends value " + constructor.toString() + " is not a constructor or null";
 			}
 
-			var CreatedClass = new Rexjs(constructor, SuperClass);
+			var CreatedClass = new Rexjs(constructor, SuperClass), prototype = CreatedClass.prototype;
 
-			// 遍历属性
-			allProps.forEach(
-				function(property, index){
-					// 如果是构造函数
-					if(index === indexOfConstructor){
-						return;
-					}
+			// 避免使用 forEach 每次产生的新函数，所以使用 for 循环
+			for(var i = 0, j = allProps.length;i < j;i++){
+				var property = allProps[i];
 
-					var type = property.type, descriptor = { enumerable: false, configurable: true };
+				// 如果是构造函数
+				if(i === constructorIndex){
+					continue;
+				}
 
-					// 如果是值类型的属性
-					if(type === "value"){
-						// 设置描述符可写
-						descriptor.writable = true;
-						// 设置描述符的值
-						descriptor.value = property.value;
-					}
-					else {
-						// 设置访问器
-						descriptor[type] = property.value;
-					}
+				var type = property.type, descriptor = { enumerable: false, configurable: true };
 
-					// 定义属性
-					defineProperty(
-						// 如果是静态属性
-						property instanceof StaticProperty ? CreatedClass : this,
-						property.name,
-						descriptor
-					);
-				},
-				CreatedClass.prototype
-			);
+				// 如果是值类型的属性
+				if(type === "value"){
+					// 设置描述符可写
+					descriptor.writable = true;
+					// 设置描述符的值
+					descriptor.value = property.value;
+				}
+				else {
+					// 设置访问器
+					descriptor[type] = property.value;
+				}
 
-			return CreatedClass;
-		},
-		/**
-		 * 获取实例的父类
-		 * @param {Rexjs} instance - 某个类的实例
-		 * @param {Number} depth - 要获取哪一层的父类
-		 * @param {Boolean} _willCall - 是否将要被调用
-		 */
-		superOf: function(instance, depth, _willCall){
-			var sp = instance;
-
-			// 根据层次获取父类
-			for(var i = 0;i < depth;i++){
-				sp = getPrototypeOf(sp);
+				// 定义属性
+				defineProperty(
+					// 如果是静态属性
+					property.static ? CreatedClass : prototype,
+					property.name,
+					descriptor
+				);
 			}
 
-			return (
-				// 如果将要调用
-				_willCall ?
-					function(){
-						var retValue = sp.constructor.apply(instance, arguments);
-
-						// 如果构造函数返回值是对象，而且存在，则返回该对象，否则返回实例
-						return (typeof retValue === "object" && retValue) || instance;
-					} :
-					sp
-			);
+			return CreatedClass;
 		}
 	});
 
 	return Class;
 }(
 	this.ClassProperty,
-	this.StaticProperty,
-	Object.defineProperty,
-	Object.getPrototypeOf
+	Object.defineProperty
 );
 
 }.call(

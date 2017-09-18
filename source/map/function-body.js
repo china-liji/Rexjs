@@ -70,7 +70,7 @@ this.FunctionBodyExpression = function(extractTo, insertDefaults){
 	}
 );
 
-this.FunctionBodyStatements = function(ECMAScriptStatements, ECMAScriptVariableCollections, BraceBodyStatement, VariableIndex, generatorConfig){
+this.FunctionBodyStatements = function(ECMAScriptStatements, ECMAScriptVariableCollections, BraceBodyStatement, VariableIndex){
 	/**
 	 * 函数主体语句块
 	 * @param {Statements} target - 目标语句块，即上一层语句块
@@ -79,14 +79,41 @@ this.FunctionBodyStatements = function(ECMAScriptStatements, ECMAScriptVariableC
 		ECMAScriptStatements.call(
 			this,
 			target,
-			new ECMAScriptVariableCollections(
-				new VariableIndex()
-			)
+			new ECMAScriptVariableCollections(target.collections.index)
 		);
 	};
 	FunctionBodyStatements = new Rexjs(FunctionBodyStatements, ECMAScriptStatements);
 	
 	FunctionBodyStatements.props({
+		/**
+		 * 申请应用 super 关键字
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - super 关键字上下文
+		 */
+		applySuper: function(parser, context){
+			// 报错
+			parser.error(
+				context,
+				ECMAScriptErrors.template("KEYWORD", context.content)
+			);
+		},
+		/**
+		 * 申请父类调用
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - super 关键字上下文
+		 * @param {Context} open - 起始父类调用小括号标签上下文
+		 */
+		applySuperCall: function(parser, context){
+			this.applySuper(parser, context);
+		},
+		/**
+		 * 申请应用 this 关键字
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - this 关键字上下文
+		 */
+		applyThis: function(){
+			// 什么也不做，即默认允许应用
+		},
 		/**
 		 * 获取当前所处闭包
 		 */
@@ -112,8 +139,8 @@ this.FunctionBodyStatements = function(ECMAScriptStatements, ECMAScriptVariableC
 		 * 获取当前上下文中需要编译的生成器
 		 */
 		get contextGeneratorIfNeedCompile(){
-			// 如果 需要编译 且 闭包存在，则返回 contextGenerator
-			return generatorConfig.value ? this.contextGenerator : null;
+			// 如果需要编译，则返回 contextGenerator
+			return config.es6Base ? this.contextGenerator : null;
 		},
 		/**
 		 * 初始化语句
@@ -129,9 +156,7 @@ this.FunctionBodyStatements = function(ECMAScriptStatements, ECMAScriptVariableC
 	this.ECMAScriptStatements,
 	this.ECMAScriptVariableCollections,
 	this.BraceBodyStatement,
-	Rexjs.VariableIndex,
-	// generatorConfig
-	ECMAScriptConfig.generator
+	Rexjs.VariableIndex
 );
 
 this.OpenFunctionBodyTag = function(OpenBraceTag, FunctionBodyExpression, FunctionBodyStatements, forEach){

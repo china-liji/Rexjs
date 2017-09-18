@@ -1,7 +1,7 @@
 // export 标签相关
 !function(ModuleTag, VarExpression, FunctionDeclarationExpression, ClassDeclarationExpression, exportVariable){
 
-this.ExportExpression = function(config, compile){
+this.ExportExpression = function(compile){
 	/**
 	 * export 表达式
 	 * @param {Context} context - 语法标签上下文
@@ -22,8 +22,8 @@ this.ExportExpression = function(config, compile){
 		extractTo: function(contentBuilder){
 			var from = this.from;
 
-			// 如果需要解析 export
-			if(config.value){
+			// 如果需要编译
+			if(config.es6Module){
 				// 编译成员
 				compile(this.member, this.from, this.name, this.file, contentBuilder);
 				return;
@@ -55,8 +55,6 @@ this.ExportExpression = function(config, compile){
 
 	return ExportExpression;
 }(
-	// config
-	ECMAScriptConfig.addModuleConfig("export"),
 	// compile
 	function(member, from, name, file, contentBuilder){
 		// 初始化内容生成器

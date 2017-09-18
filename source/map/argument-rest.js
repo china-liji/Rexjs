@@ -1,7 +1,7 @@
 // 函数省略参数相关
 !function(){
 
-this.RestArgumentExpression = function(ArgumentExpression, config){
+this.RestArgumentExpression = function(ArgumentExpression){
 	/**
 	 * 省略参数表达式
 	 * @param {Context} context - 拓展符语法标签上下文
@@ -22,8 +22,8 @@ this.RestArgumentExpression = function(ArgumentExpression, config){
 		 * @param {ContentBuilder} anotherBuilder - 另一个内容生成器，一般用于副内容的生成或记录
 		 */
 		extractTo: function(contentBuilder, anotherBuilder){
-			// 如果需要编译省略参数
-			if(config.value){
+			// 如果需要编译
+			if(config.es6Base){
 				// 将默认参数名追加至临时生成器
 				anotherBuilder.appendContext(this.name);
 				// 将赋值运算追加至临时生成器
@@ -42,9 +42,7 @@ this.RestArgumentExpression = function(ArgumentExpression, config){
 
 	return RestArgumentExpression;
 }(
-	this.ArgumentExpression,
-	// config
-	ECMAScriptConfig.addBaseConfig("restArgument")
+	this.ArgumentExpression
 );
 
 this.RestTag = function(SpreadTag, RestArgumentExpression){

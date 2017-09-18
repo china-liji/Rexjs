@@ -82,37 +82,6 @@ this.ECMAScriptStatements = function(ECMAScriptStatement, extractTo){
 	ECMAScriptStatements = new Rexjs(ECMAScriptStatements, Statements);
 
 	ECMAScriptStatements.props({
-		/**
-		 * 申请应用 super 关键字
-		 * @param {SyntaxParser} parser - 语法解析器
-		 * @param {Context} context - super 关键字上下文
-		 */
-		applySuper: function(parser, context){
-			// 报错
-			parser.error(
-				context,
-				ECMAScriptErrors.template("KEYWORD", context.content)
-			);
-
-			return 0;
-		},
-		/**
-		 * 申请父类调用
-		 * @param {SyntaxParser} parser - 语法解析器
-		 * @param {Context} context - super 关键字上下文
-		 * @param {Context} open - 起始父类调用小括号标签上下文
-		 */
-		applySuperCall: function(parser, context, open){
-			return this.applySuper(parser, context);
-		},
-		/**
-		 * 申请应用 this 关键字
-		 * @param {SyntaxParser} parser - 语法解析器
-		 * @param {Context} context - this 关键字上下文
-		 */
-		applyThis: function(){
-			// 什么也不做，即默认允许应用
-		},
 		closure: null,
 		collections: null,
 		/**

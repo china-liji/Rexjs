@@ -119,7 +119,7 @@ this.PropertyDestructuringDefaultItemExpression = function(DestructuringDefaultI
 	this.DestructuringDefaultItemExpression
 );
 
-this.PropertyExpression = function(BinaryExpression, generatorConfig){
+this.PropertyExpression = function(BinaryExpression){
 	/**
 	 * 对象属性表达式
 	 */
@@ -201,8 +201,8 @@ this.PropertyExpression = function(BinaryExpression, generatorConfig){
 
 			// 如果存在星号，说明是生成器属性
 			if(this.star){
-				// 如果需要解析生成器函数
-				if(generatorConfig.value){
+				// 如果需要编译
+				if(config.es6Base){
 					// 提取属性名称
 					name.extractTo(contentBuilder);
 					// 以定义属性的模式提取表达式文本内容
@@ -267,6 +267,22 @@ this.PropertyExpression = function(BinaryExpression, generatorConfig){
 			return false;
 		},
 		/**
+		 * 请求获取相关对象表达式的临时变量名，如果没有，则先生成变量名
+		 * @param {Statements} statements - 对象表达式所处的语句块
+		 * @param {ObjectExpression} objectExpression - 对象表达式
+		 */
+		requestVariableOf: function(statements, objectExpression){
+			var variable = objectExpression.variable;
+
+			// 如果已经记录了变量
+			if(variable === ""){
+				// 生成并记录变量名
+				objectExpression.variable = variable = statements.collections.generate();
+			}
+
+			return variable;
+		},
+		/**
 		 * 获取该二元表达式的右侧表达式
 		 */
 		get right(){
@@ -278,14 +294,24 @@ this.PropertyExpression = function(BinaryExpression, generatorConfig){
 		 */
 		set right(value){},
 		star: null,
-		superDepth: 1,
+		/**
+		 * 给相关对象表达式设置编译时所需使用的临时变量名
+		 * @param {Statements} statements - 对象表达式所处的语句块
+		 * @param {ObjectExpression} objectExpression - 对象表达式
+		 */
+		setCompiledVariableTo: function(statements, objectExpression){
+			// 请求获取相关对象表达式的临时变量名
+			this.requestVariableOf(statements, objectExpression);
+
+			// 将对象表达式设置为需要编译
+			objectExpression.needCompile = true;
+		},
 		value: null
 	});
 
 	return PropertyExpression;
 }(
-	this.BinaryExpression,
-	ECMAScriptConfig.generator
+	this.BinaryExpression
 );
 
 this.PropertyValueExpression = function(){

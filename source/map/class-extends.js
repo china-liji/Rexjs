@@ -100,8 +100,16 @@ this.ExtendsTag = function(ExtendsExpression, ExtendsStatement, openClassBodyTag
 		 * @param {Statements} statements - 当前语句块
 		 */
 		visitor: function(parser, context, statement, statements){
+			var classExpression = statement.expression;
+
+			// 如果需要编译
+			if(config.es6Base){
+				// 生成临时变量名
+				classExpression.variable = statements.collections.generate();
+			}
+
 			// 设置类表达式的 extends 属性
-			statement.expression.extends = new ExtendsExpression(context);
+			classExpression.extends = new ExtendsExpression(context);
 			// 设置当前语句
 			statements.statement = new ExtendsStatement(statements);
 		}

@@ -91,25 +91,6 @@ this.BlockBodyStatements = function(ECMAScriptStatements, BraceBodyStatement, Bl
 	
 	BlockBodyStatements.props({
 		/**
-		 * 申请应用 super 关键字
-		 * @param {SyntaxParser} parser - 语法解析器
-		 * @param {Context} context - super 关键字上下文
-		 */
-		applySuper: function(parser, context){
-			// 返回外层语句块的处理结果
-			return this.target.applySuper(parser, context);
-		},
-		/**
-		 * 申请父类调用
-		 * @param {SyntaxParser} parser - 语法解析器
-		 * @param {Context} context - super 关键字上下文
-		 * @param {Context} open - 起始父类调用小括号标签上下文
-		 */
-		applySuperCall: function(parser, context, open){
-			// 返回外层语句块的处理结果
-			return this.target.applySuperCall(parser, context, open);
-		},
-		/**
 		 * 声明变量名
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
 		 */

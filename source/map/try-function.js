@@ -1,4 +1,4 @@
-!function(UnaryExpression, CallExpression, FunctionConvertorExpression, config){
+!function(UnaryExpression, CallExpression, FunctionConvertorExpression){
 
 this.TryFunctionExpression = function(extractTo){
 	/**
@@ -17,7 +17,7 @@ this.TryFunctionExpression = function(extractTo){
 		 */
 		extractTo: function(contentBuilder){
 			// 如果需要编译
-			if(config.value){
+			if(config.rexjs){
 				// 直接提取操作对象
 				this.operand.extractTo(contentBuilder);
 				return;
@@ -56,7 +56,7 @@ this.FunctionConvertorExpression = FunctionConvertorExpression = function(Access
 			var func = this.function;
 
 			// 如果需要编译
-			if(config.value){
+			if(config.rexjs){
 				// 追加转换方法
 				contentBuilder.appendString("(Rexjs.Function.convert(");
 
@@ -212,7 +212,5 @@ this.TryFunctionTag = function(ExecTag, TryFunctionExpression, TryFunctionStatem
 	this.UnaryExpression,
 	this.CallExpression,
 	// FunctionConvertorExpression
-	null,
-	// config
-	ECMAScriptConfig.addRexjsConfig("tryFunction")
+	null
 );

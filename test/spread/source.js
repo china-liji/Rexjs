@@ -33,7 +33,7 @@ switch(
 		throw "运算结果5错误";
 }
 
-if(Rexjs.ECMAScriptConfig.spread.value){
+if(Rexjs.ECMAScriptParser.config.es6Base){
 	if(
 		$Rexjs_0 !== obj
 	){

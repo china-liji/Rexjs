@@ -1,5 +1,5 @@
 // import 关键字相关
-!function(ModuleTag, config){
+!function(ModuleTag){
 
 this.ImportExpression = function(compileMember){
 	/**
@@ -22,8 +22,8 @@ this.ImportExpression = function(compileMember){
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
 		 */
 		extractTo: function(contentBuilder){
-			// 如果需要编译 import 语句
-			if(config.value){
+			// 如果需要编译
+			if(config.es6Module){
 				// 如果当前 import 没有导入任何成员
 				if(this.clean){
 					// 返回，因为模块在依赖分析时候就已经加载
@@ -224,8 +224,8 @@ this.ModuleNameTag = function(StringTag){
 			// 设置 import 表达式的 name 属性
 			statement.expression.name = context;
 
-			// 如果需要解析 import 语句，否则不需要添加依赖，因为统统交给浏览器自己或第三方去处理 import 语句
-			if(config.value){
+			// 如果需要编译，否则不需要添加依赖，因为统统交给浏览器自己或第三方去处理 import 语句
+			if(config.es6Module){
 				// 添加模块依赖
 				parser.deps.push(
 					content.substring(1, content.length - 1)
@@ -241,7 +241,5 @@ this.ModuleNameTag = function(StringTag){
 
 }.call(
 	this,
-	this.ModuleTag,
-	// config
-	ECMAScriptConfig.addModuleConfig("import")
+	this.ModuleTag
 );

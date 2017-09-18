@@ -1,7 +1,7 @@
 // 函数表达式相关
 !function(extractTo, appendVariable){
 
-this.FunctionExpression = function(config, appendRange, appendHoisting, compileBody){
+this.FunctionExpression = function(appendRange, appendHoisting, compileBody){
 	/**
 	 * 函数表达式
 	 * @param {Context} context - 语法标签上下文
@@ -33,7 +33,7 @@ this.FunctionExpression = function(config, appendRange, appendHoisting, compileB
 			// 如果存在星号，说明是生成器
 			if(this.star){
 				// 如果需要编译
-				if(config.value){
+				if(config.es6Base){
 					var inner = this.body.inner, collections = inner.collections;
 
 					this.variable = collections.generate();
@@ -98,8 +98,6 @@ this.FunctionExpression = function(config, appendRange, appendHoisting, compileB
 
 	return FunctionExpression;
 }(
-	// config
-	ECMAScriptConfig.addBaseConfig("generator"),
 	// appendRange
 	function(range){
 		range.forEach(appendVariable, this);

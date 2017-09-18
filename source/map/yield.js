@@ -1,5 +1,5 @@
 // yield 表达式相关
-!function(TerminatedFlowExpression, SingleStatement, ReturnTag, config){
+!function(TerminatedFlowExpression, SingleStatement, ReturnTag){
 
 this.YieldTag = function(visitor){
 	/**
@@ -19,7 +19,7 @@ this.YieldTag = function(visitor){
 		 */
 		extractTo: function(contentBuilder, content){
 			// 追加标签内容
-			contentBuilder.appendString(config.value ? "return" : content);
+			contentBuilder.appendString(config.es6Base ? "return" : content);
 		},
 		/**
 		 * 从相关生成器中获取当前所需使用的生成器索引值
@@ -70,7 +70,5 @@ this.YieldTag = function(visitor){
 	this,
 	this.TerminatedFlowExpression,
 	this.SingleStatement,
-	this.ReturnTag,
-	// config
-	ECMAScriptConfig.generator
+	this.ReturnTag
 );

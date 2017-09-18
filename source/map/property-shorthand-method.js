@@ -19,7 +19,7 @@ this.ShorthandMethodExpression = function(FunctionExpression){
 	this.FunctionExpression
 );
 	
-this.ShorthandMethodValueExpression = function(PropertyValueExpression, CompiledExpression, config){
+this.ShorthandMethodValueExpression = function(PropertyValueExpression, CompiledExpression){
 	/**
 	 * 简写方法值表达式
 	 */
@@ -54,8 +54,8 @@ this.ShorthandMethodValueExpression = function(PropertyValueExpression, Compiled
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
 		 */
 		extractTo: function(contentBuilder){
-			// 如果需要解析
-			if(config.value){
+			// 如果需要编译
+			if(config.es6Base){
 				// 以定义属性的模式提取表达式文本内容
 				this.defineTo(contentBuilder);
 				return;
@@ -77,9 +77,7 @@ this.ShorthandMethodValueExpression = function(PropertyValueExpression, Compiled
 	return ShorthandMethodValueExpression;
 }(
 	this.PropertyValueExpression,
-	Rexjs.CompiledExpression,
-	// config
-	ECMAScriptConfig.addBaseConfig("shorthandMethod")
+	Rexjs.CompiledExpression
 );
 
 this.ShorthandMethodValueStatement = function(PropertyValueStatement, ShorthandMethodExpression){
@@ -136,12 +134,7 @@ this.ShorthandMethodBodyStatements = function(FunctionBodyStatements){
 		 * @param {SyntaxParser} parser - 语法解析器
 		 * @param {Context} context - super 关键字上下文
 		 */
-		applySuper: function(parser, context){
-			// 相当于申请应用 this 关键字
-			this.applyThis(parser, context);
-			// 返回属性表达式的 superDepth 属性
-			return parser.statements.target.statement.target.target.expression.superDepth;
-		},
+		applySuper: function(){},
 		/**
 		 * 申请父类调用
 		 * @param {SyntaxParser} parser - 语法解析器
@@ -151,7 +144,6 @@ this.ShorthandMethodBodyStatements = function(FunctionBodyStatements){
 		applySuperCall: function(parser, context, open){
 			// 报错
 			parser.error(open, ECMAScriptErrors.SUPER_CALL);
-			return 0;
 		}
 	});
 

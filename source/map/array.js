@@ -85,7 +85,7 @@ this.ArrayDestructuringRestItemExpression = function(){
 	return ArrayDestructuringRestItemExpression;
 }();
 
-this.ArrayExpression = function(ArrayDestructuringExpression, ArrayDestructuringItemExpression, ArrayDestructuringRestItemExpression, SpreadExpression, config, extractTo, collected, error){
+this.ArrayExpression = function(ArrayDestructuringExpression, ArrayDestructuringItemExpression, ArrayDestructuringRestItemExpression, SpreadExpression, extractTo, collected, error){
 	/**
 	 * 数组表达式
 	 * @param {Context} open - 起始标签上下文
@@ -186,8 +186,8 @@ this.ArrayExpression = function(ArrayDestructuringExpression, ArrayDestructuring
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
 		 */
 		extractTo: function(contentBuilder){
-			// 如果需要编译拓展符
-			if(this.needCompileSpread){
+			// 如果有拓展符且需要编译
+			if(this.spread && config.es6Base){
 				// 追加拓展项合并方法字符串
 				contentBuilder.appendString(
 					"(Rexjs.SpreadItem.combineBy("
@@ -206,7 +206,7 @@ this.ArrayExpression = function(ArrayDestructuringExpression, ArrayDestructuring
 			// 调用父类方法
 			extractTo.call(this, contentBuilder);
 		},
-		needCompileSpread: false,
+		spread: false,
 		/**
 		 * 转换为解构表达式
 		 * @param {SyntaxParser} parser - 语法解析器
@@ -223,8 +223,8 @@ this.ArrayExpression = function(ArrayDestructuringExpression, ArrayDestructuring
 		toDestructuringItem: function(parser){
 			var inner = this.inner, expression = new ArrayDestructuringItemExpression(this);
 
-			// 如果需要解析解构表达式 而且 长度大于 1（长度为 0 不解析，长度为 1，只需取一次对象，所以都不需要生成变量名）
-			if(config.value && inner.length > 1){
+			// 如果需要编译 而且 长度大于 1（长度为 0 不解析，长度为 1，只需取一次对象，所以都不需要生成变量名）
+			if(config.es6Base && inner.length > 1){
 				// 设置变量名
 				this.setVariableOf(expression, parser.statements);
 			}
@@ -241,8 +241,6 @@ this.ArrayExpression = function(ArrayDestructuringExpression, ArrayDestructuring
 	this.ArrayDestructuringItemExpression,
 	this.ArrayDestructuringRestItemExpression,
 	this.SpreadExpression,
-	// config
-	ECMAScriptConfig.destructuring,
 	DestructibleExpression.prototype.extractTo,
 	// collected
 	function(parser, expression){

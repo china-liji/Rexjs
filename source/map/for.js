@@ -1,7 +1,7 @@
 // for 语句相关
 !function(CompiledExpression){
 
-this.ForExpression = function(ConditionalExpression, config, compileOf, compileIteratorWithGenerator, compileWithGenerator){
+this.ForExpression = function(ConditionalExpression, compileOf, compileIteratorWithGenerator, compileWithGenerator){
 	/**
 	 * for 表达式
 	 * @param {Context} context - 语法标签上下文
@@ -23,8 +23,8 @@ this.ForExpression = function(ConditionalExpression, config, compileOf, compileI
 
 			// 如果迭代符存在
 			if(iterator){
-				// 如果是 of 标签而且需要编译 of
-				if(iterator === "of" && config.value){
+				// 如果是 of 标签而且需要编译
+				if(iterator === "of" && config.es6Base){
 					// 以生成器形式编译 for of
 					compileIteratorWithGenerator(this, generator, contentBuilder, false);
 					return;
@@ -47,8 +47,8 @@ this.ForExpression = function(ConditionalExpression, config, compileOf, compileI
 			// 添加 for 关键字
 			contentBuilder.appendContext(this.context);
 
-			// 如果是 of 标签而且需要编译 of
-			if(this.iterator === "of" && config.value){
+			// 如果是 of 标签而且需要编译
+			if(this.iterator === "of" && config.es6Base){
 				// 编译 for of
 				compileOf(
 					this.condition,
@@ -72,8 +72,6 @@ this.ForExpression = function(ConditionalExpression, config, compileOf, compileI
 	return ForExpression;
 }(
 	this.ConditionalExpression,
-	// config
-	ECMAScriptConfig.addBaseConfig("of"),
 	// compileOf
 	function(condition, body, contentBuilder, builder, variable){
 		var inner = condition.inner;

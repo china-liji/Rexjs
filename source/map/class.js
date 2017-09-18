@@ -1,7 +1,7 @@
 // 类标签相关
 !function(){
 
-this.ClassExpression = function(DefaultExtendsExpression, config){
+this.ClassExpression = function(DefaultExtendsExpression){
 	/**
 	 * 类表达式
 	 * @param {Context} context - 语法标签上下文
@@ -17,21 +17,28 @@ this.ClassExpression = function(DefaultExtendsExpression, config){
 		 * @param {ECMAScriptStatements} statements - 当前语句块
 		 */
 		autoVariable: function(statements){},
-		name: new DefaultExpression(),
-		extends: new DefaultExtendsExpression(),
+		extends: null,
 		/**
 		 * 提取表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
 		 */
 		extractTo: function(contentBuilder){
-			// 如果需要编译类
-			if(config.value){
-				var body = this.body;
-				
-				// 追加闭包头部
-				contentBuilder.appendString("(Rexjs.Class.create(");
-				// 编译继承表达式
-				this.extends.compileTo(contentBuilder);
+			var body = this.body, extendsExpression = this.extends;
+
+			// 如果需要编译
+			if(config.es6Base){
+				// 如果存在继承，说明有父类
+				if(extendsExpression){
+					// 追加赋值操作及 create 方法头部代码
+					contentBuilder.appendString("(" + this.variable + "=Rexjs.Class.create(");
+					// 编译继承表达式
+					extendsExpression.compileTo(contentBuilder);
+				}
+				else {
+					// 追加 create 方法头部代码
+					contentBuilder.appendString("(Rexjs.Class.create(void 0");
+				}
+
 				// 追加 父类 与 属性数组的起始中括号
 				contentBuilder.appendString(",[");
 				// 编译类主体
@@ -45,18 +52,23 @@ this.ClassExpression = function(DefaultExtendsExpression, config){
 			contentBuilder.appendContext(this.context);
 			// 提取类名称
 			this.name.extractTo(contentBuilder);
-			// 提取 extends 表达式
-			this.extends.extractTo(contentBuilder);
+
+			// 如果存在继承，说明有父类
+			if(extendsExpression){
+				// 提取 extends 表达式
+				extendsExpression.extractTo(contentBuilder);
+			}
+			
 			// 提取主体
-			this.body.extractTo(contentBuilder);
-		}
+			body.extractTo(contentBuilder);
+		},
+		name: new DefaultExpression(),
+		variable: ""
 	});
 
 	return ClassExpression;
 }(
-	this.DefaultExtendsExpression,
-	// config
-	ECMAScriptConfig.addBaseConfig("class")
+	this.DefaultExtendsExpression
 );
 
 this.ClassTag = function(ClassExpression){

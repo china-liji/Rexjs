@@ -29,7 +29,14 @@ this.NewTag = function(ExecTag){
 	NewTag = new Rexjs(NewTag, ExecTag);
 	
 	NewTag.props({
-		regexp: /new/
+		regexp: /new/,
+		/**
+		 * 获取此标签接下来所需匹配的标签列表
+		 * @param {TagsMap} tagsMap - 标签集合映射
+		 */
+		require: function(tagsMap){
+			return tagsMap.newContextTags;
+		}
 	});
 	
 	return NewTag;

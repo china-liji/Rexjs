@@ -1,7 +1,7 @@
 // 函数调用相关
-!function(BracketAccessorExpression, UnaryKeywordTag, parameterSeparatorTag, closeCallTag, extractTo){
+!function(ExecutableExpression, parameterSeparatorTag, closeCallTag){
 
-this.CallExpression = function(ExecutableExpression, AccessorExpression, UnaryStatement, compileWithAccessor, compileWithNew, compileDefault){
+this.CallExpression = function(AccessorExpression, BracketAccessorExpression, UnaryStatement, extractTo){
 	/**
 	 * 函数调用表达式
 	 * @param {Context} open - 起始标签上下文
@@ -22,110 +22,138 @@ this.CallExpression = function(ExecutableExpression, AccessorExpression, UnarySt
 
 	CallExpression.props({
 		/**
+		 * 当拓展符存在时，以访问形式提取表达式内容
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 */
+		accessTo: function(contentBuilder){
+			var operand = this.operand, boundThis = this.boundThis;
+
+			// 追加临时变量名
+			contentBuilder.appendString("(" + boundThis + "=");
+			// 提取拥有此方法的对象
+			operand.object.extractTo(contentBuilder);
+			// 追加临时变量名的结束小括号
+			contentBuilder.appendString(")");
+
+			// 如果是中括号属性访问表达式
+			if(operand instanceof BracketAccessorExpression){
+				// 提取中括号
+				operand.property.extractTo(contentBuilder);
+			}
+			else {
+				// 提取点操作符
+				contentBuilder.appendContext(operand.context);
+				// 提取属性
+				contentBuilder.appendContext(operand.property);
+			}
+			
+			// 追加 apply 方法
+			contentBuilder.appendString(".apply(" + boundThis + ",Rexjs.SpreadItem.combine");
+			// 调用父类方法
+			extractTo.call(this, contentBuilder);
+			// 追加 apply 方法的结束小括号
+			contentBuilder.appendString(")");
+		},
+		boundThis: "void 0",
+		/**
 		 * 提取表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
 		 */
 		extractTo: function(contentBuilder){
-			var operand = this.operand;
-
-			// 如果需要编译拓展符
-			if(this.needCompileSpread){
+			// 如果有拓展符且需要编译
+			if(this.spread && config.es6Base){
 				switch(true){
 					// 如果是 new 实例化
 					case this.new:
-						compileWithNew(contentBuilder, this, operand);
+						// 以实例化形式提取表达式内容
+						this.newTo(contentBuilder);
 						return;
 
 					// 如果是对象方法的调用
-					case operand instanceof AccessorExpression:
-						// 根据访问器编译
-						compileWithAccessor(contentBuilder, this, operand, this.variable);
+					case this.operand instanceof AccessorExpression:
+						// 以访问形式提取表达式内容
+						this.accessTo(contentBuilder);
 						return;
 
 					default:
-						// 编译默认情况
-						compileDefault(contentBuilder, this, operand);
+						// 以普通拓展符情况提取表达式内容
+						this.spreadTo(contentBuilder);
 						return;
 				}
 			}
 			
 			// 提取操作对象
-			operand.extractTo(contentBuilder);
+			this.operand.extractTo(contentBuilder);
 			// 调用父类方法
 			extractTo.call(this, contentBuilder);
 		},
-		needCompileSpread: false,
 		new: false,
+		/**
+		 * 当拓展符存在时，以实例化形式提取表达式内容
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 */
+		newTo: function(contentBuilder){
+			// 追加 bind 方法
+			contentBuilder.appendString("(Function.bind.apply(");
+			// 提取该调用的方法
+			this.operand.extractTo(contentBuilder);
+			// 追加拓展符编译的方法
+			contentBuilder.appendString(",Rexjs.SpreadItem.combine");
+			// 追加函数调用的起始小括号
+			contentBuilder.appendContext(this.open);
+			// 追加 bind 所指定的 this
+			contentBuilder.appendString(this.boundThis + ",");
+			// 提取函数调用参数
+			this.inner.extractTo(contentBuilder);
+			// 追加函数调用的结束小括号
+			contentBuilder.appendContext(this.close);
+			// 追加 bind 方法的结束小括号和函数立即执行的小括号（注：bind 方法与 apply 不同，不具有立即执行效果）
+			contentBuilder.appendString("))()");
+		},
 		operand: null,
 		spread: false,
-		variable: ""
+		/**
+		 * 当拓展符存在时，以普通拓展符情况提取表达式内容
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 */
+		spreadTo: function(contentBuilder){
+			// 追加 apply
+			contentBuilder.appendString("Function.apply.call(");
+			// 提取操作对象
+			this.operand.extractTo(contentBuilder);
+			// 追加 apply 方法的参数
+			contentBuilder.appendString("," + this.boundThis + ",Rexjs.SpreadItem.combine");
+			// 调用父类方法
+			extractTo.call(this, contentBuilder);
+			// 追加 apply 方法的结束小括号
+			contentBuilder.appendString(")");
+		},
+		/**
+		 * 告知该表达式有拓展符
+		 * @param {Statements} statements - 当前语句块
+		 */
+		withSpread: function(statements){
+			// 如果已经告知过
+			if(this.spread){
+				return;
+			}
+
+			// 如果操作对象是属性表达式
+			if(this.operand instanceof AccessorExpression){
+				// 生成变量名
+				this.boundThis = statements.collections.generate();
+			}
+
+			this.spread = true;
+		}
 	});
 
 	return CallExpression;
 }(
-	this.ExecutableExpression,
 	this.AccessorExpression,
+	this.BracketAccessorExpression,
 	this.UnaryStatement,
-	// compileWithAccessor
-	function(contentBuilder, expression, operand, variable){
-		// 追加临时变量名
-		contentBuilder.appendString("(" + variable + "=");
-		// 提取拥有此方法的对象
-		operand.object.extractTo(contentBuilder);
-		// 追加临时变量名的结束小括号
-		contentBuilder.appendString(")");
-
-		// 如果是中括号属性访问表达式
-		if(operand instanceof BracketAccessorExpression){
-			// 提取中括号
-			operand.property.extractTo(contentBuilder);
-		}
-		else {
-			// 提取点操作符
-			contentBuilder.appendContext(operand.context);
-			// 提取属性
-			contentBuilder.appendContext(operand.property);
-		}
-		
-		// 追加 apply 方法
-		contentBuilder.appendString(".apply(" + variable + ",Rexjs.SpreadItem.combine");
-		// 调用父类方法
-		extractTo.call(expression, contentBuilder);
-		// 追加 apply 方法的结束小括号
-		contentBuilder.appendString(")");
-	},
-	// compileWithNew
-	function(contentBuilder, expression, operand){
-		// 追加 bind 方法
-		contentBuilder.appendString("(Function.bind.apply(");
-		// 提取该调用的方法
-		operand.extractTo(contentBuilder);
-		// 追加拓展符编译的方法
-		contentBuilder.appendString(",Rexjs.SpreadItem.combine");
-		// 追加函数调用的起始小括号
-		contentBuilder.appendContext(expression.open);
-		// 追加 bind 所指定的 this
-		contentBuilder.appendString("void 0,");
-		// 提取函数调用参数
-		expression.inner.extractTo(contentBuilder);
-		// 追加函数调用的结束小括号
-		contentBuilder.appendContext(expression.close);
-		// 追加 bind 方法的结束小括号和函数立即执行的小括号（注：bind 方法与 apply 不同，不具有立即执行效果）
-		contentBuilder.appendString("))()");
-	},
-	// compileDefault
-	function(contentBuilder, expression, operand){
-		// 追加 apply
-		contentBuilder.appendString("Function.apply.call(");
-		// 提取操作对象
-		operand.extractTo(contentBuilder);
-		// 追加 apply 方法的参数
-		contentBuilder.appendString(",void 0,Rexjs.SpreadItem.combine");
-		// 调用父类方法
-		extractTo.call(expression, contentBuilder);
-		// 追加 apply 方法的结束小括号
-		contentBuilder.appendString(")");
-	}
+	ExecutableExpression.prototype.extractTo
 );
 
 this.CallStatement = function(){
@@ -135,6 +163,8 @@ this.CallStatement = function(){
 	 */
 	function CallStatement(statements){
 		ECMAScriptStatement.call(this, statements);
+
+		this.expression = new EmptyExpression(null);
 	};
 	CallStatement = new Rexjs(CallStatement, ECMAScriptStatement);
 	
@@ -221,13 +251,8 @@ this.OpenCallTag = function(OpenParenTag, CallExpression, CallStatement){
 		visitor: function(parser, context, statement, statements){
 			// 设置当前表达式
 			statement.expression = new CallExpression(context, statement);
-			
 			// 设置当前语句
-			(
-				statements.statement = new CallStatement(statements)
-			)
-			// 设置表达式
-			.expression = new DefaultExpression();
+			statements.statement = new CallStatement(statements);
 		}
 	});
 	
@@ -316,12 +341,9 @@ closeCallTag = new this.CloseCallTag();
 
 }.call(
 	this,
-	this.BracketAccessorExpression,
-	this.UnaryKeywordTag,
+	this.ExecutableExpression,
 	// parameterSeparatorTag
 	null,
 	// closeCallTag
-	null,
-	// extractTo
-	PartnerExpression.prototype.extractTo
+	null
 );

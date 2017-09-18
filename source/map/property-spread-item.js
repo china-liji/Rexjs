@@ -1,5 +1,5 @@
 // 对象属性拓展项相关
-!function(config){
+!function(){
 
 this.SpreadPropertyExpression = function(PropertyExpression, SpreadExpression){
 	/**
@@ -66,10 +66,13 @@ this.PropertySpreadTag = function(SpreadTag, SpreadPropertyExpression, SpreadSta
 		visitor: function(parser, context, statement, statements){
 			var expression = new SpreadPropertyExpression(context), boxStatement = new BoxStatement(statements);
 
-			// 如果需要编译对象属性拓展项
-			if(config.value){
-				// 让对象表达式自动生成临时变量
-				statement.target.expression.autoVariable(statements);
+			// 如果需要编译
+			if(config.es6Base){
+				// 给对象表达式设置临时变量名
+				statement.expression.setCompiledVariableTo(
+					statements,
+					statement.target.expression
+				);
 			}
 
 			// 设置当前语句的表达式
@@ -91,7 +94,5 @@ this.PropertySpreadTag = function(SpreadTag, SpreadPropertyExpression, SpreadSta
 );
 
 }.call(
-	this,
-	// config
-	ECMAScriptConfig.addBaseConfig("propertySpreadItem")
+	this
 );

@@ -1,5 +1,5 @@
 // 解构赋值表达式相关
-!function(BinaryExpression, ArrayExpression, ObjectExpression, ObjectDestructuringExpression, BasicAssignmentTag, config){
+!function(BinaryExpression, ArrayExpression, ObjectExpression, ObjectDestructuringExpression, BasicAssignmentTag){
 
 this.DestructuringAssignmentExpression = function(extractTo, extractRight){
 	/**
@@ -18,8 +18,8 @@ this.DestructuringAssignmentExpression = function(extractTo, extractRight){
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
 		 */
 		extractTo: function(contentBuilder){
-			// 如果需要编译解构赋值
-			if(config.value){
+			// 如果需要编译
+			if(config.es6Base){
 				var variable = this.variable, left = this.left, builder = new ContentBuilder();
 
 				// 用新的生成器记录临时变量名
@@ -128,7 +128,7 @@ this.DestructuringAssignmentTag = function(DestructuringAssignmentExpression, vi
 			visitor.call(this, parser, context, statement, statements);
 
 			// 如果需要解析解构赋值
-			if(config.value){
+			if(config.es6Base){
 				// 给刚生成的解构赋值表达式设置变量名
 				setVariableOf(statement.expression.last, statements);
 			}
@@ -159,7 +159,5 @@ this.DestructuringAssignmentTag = function(DestructuringAssignmentExpression, vi
 	this.ArrayExpression,
 	this.ObjectExpression,
 	this.ObjectDestructuringExpression,
-	this.BasicAssignmentTag,
-	// config
-	ECMAScriptConfig.destructuring
+	this.BasicAssignmentTag
 );

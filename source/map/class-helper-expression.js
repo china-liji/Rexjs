@@ -38,7 +38,9 @@ this.ExtendsExpression = function(){
 	});
 
 	return ExtendsExpression;
-}();
+}(
+
+);
 
 this.DefaultExtendsExpression = function(ExtendsExpression){
 	/**
@@ -69,7 +71,7 @@ this.DefaultExtendsExpression = function(ExtendsExpression){
 	this.ExtendsExpression
 );
 	
-this.ClassPropertyExpression = function(extractTo){
+this.ClassPropertyExpression = function(extractTo, requestVariableOf){
 	/**
 	 * 类属性表达式
 	 */
@@ -110,12 +112,6 @@ this.ClassPropertyExpression = function(extractTo){
 			contentBuilder.appendString(")");
 		},
 		/**
-		 * 获取原型链的深度或层次
-		 */
-		get superDepth(){
-			return this.static ? 1 : 2;
-		},
-		/**
 		 * 提取表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
 		 */
@@ -133,6 +129,20 @@ this.ClassPropertyExpression = function(extractTo){
 		},
 		modifier: null,
 		/**
+		 * 请求获取相关类表达式的临时变量名，如果没有，则先生成变量名
+		 * @param {Statements} statements - 对象表达式所处的语句块
+		 * @param {ClassExpression} classExpression - 类表达式
+		 */
+		requestVariableOf: function(statements, classExpression){
+			return requestVariableOf.call(this, statements, classExpression) + (this.static ? "" : ".prototype");
+		},
+		/**
+		 * 给相关类表达式设置编译时所需使用的临时变量名
+		 * @param {Statements} statements - 类表达式所处的语句块
+		 * @param {ClassExpression} classExpression - 类表达式
+		 */
+		setCompiledVariableTo: function(){},
+		/**
 		 * 获取该属性是否为静态属性
 		 */
 		get static(){
@@ -142,7 +152,8 @@ this.ClassPropertyExpression = function(extractTo){
 
 	return ClassPropertyExpression;
 }(
-	PropertyExpression.prototype.extractTo
+	PropertyExpression.prototype.extractTo,
+	PropertyExpression.prototype.requestVariableOf
 );
 
 }.call(

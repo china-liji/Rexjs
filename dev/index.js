@@ -1,15 +1,25 @@
-var generator = function*(){
-	var { a: { y, z }, b:[ b, x ] } = { a: { y: 100 }, b: [ , 200 ] }
+// 测试类的访问器属性中的 super
+!function(){
 
-	yield x
-
-	yield y
-
-	yield z
-
-	var i, m, n
-
-	([i, { m, n: [n] }] = [,{ m: 3, n:[5] }])
-
-	yield m + n
+class C1 {
+	get(){
+		return this.b;
+	}
 }
+
+class C2 extends C1 {
+	get a(){ return super.get() + 3 }
+}
+
+class C3 extends C2 {
+	get a(){ return super.a };
+	get b(){ return 1 }
+}
+
+if(new C3().a !== 4){
+	throw "测试类的访问器属性中的 super 解析不正确"
+}
+
+debugger
+
+}();

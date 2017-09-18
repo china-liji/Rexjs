@@ -1,5 +1,5 @@
 // 解构表达式相关
-!function(config){
+!function(){
 
 this.DestructibleExpression = function(){
 	/**
@@ -161,8 +161,8 @@ this.DestructuringDefaultItemExpression = function(DestructuringItemExpression){
 	function DestructuringDefaultItemExpression(origin, statements){
 		DestructuringItemExpression.call(this, origin);
 
-		// 如果需要解析解构表达式
-		if(config.value){
+		// 如果需要编译
+		if(config.es6Base){
 			// 给刚生成的解构赋值表达式设置变量名
 			this.variable = statements.collections.generate();
 		}
@@ -212,7 +212,5 @@ this.DestructuringDefaultItemExpression = function(DestructuringItemExpression){
 );
 
 }.call(
-	this,
-	// config
-	ECMAScriptConfig.addBaseConfig("destructuring")
+	this
 );

@@ -9,6 +9,8 @@ this.BracketAccessorExpression = function(AccessorExpression){
 	 */
 	function BracketAccessorExpression(context, object){
 		AccessorExpression.call(this, context, object);
+
+		this.property = new PartnerExpression(context);
 	};
 	BracketAccessorExpression = new Rexjs(BracketAccessorExpression, AccessorExpression);
 	
@@ -98,13 +100,8 @@ this.OpenBracketAccessorTag = function(OpenBracketTag, BracketAccessorExpression
 		 * @param {Statements} statements - 当前语句块
 		 */
 		visitor: function(parser, context, statement, statements){
-			// 设置临时表达式
-			(
-				statement.expression = new BracketAccessorExpression(context, statement.expression)
-			)
-			// 设置 property
-			.property = new PartnerExpression(context);
-
+			// 设置当前表达式
+			statement.expression = new BracketAccessorExpression(context, statement.expression);
 			// 设置当前语句
 			statements.statement = new BracketAccessorStatement(statements);
 		}

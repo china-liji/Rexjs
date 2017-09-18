@@ -1,7 +1,7 @@
 // 属性初始值标签相关
 !function(PropertyValueExpression){
 
-this.PropertyInitializerExpression = function(config, extractTo, toTernary){
+this.PropertyInitializerExpression = function(extractTo, toTernary){
 	/**
 	 * 属性初始值表达式
 	 * @param {Context} context - 语法标签上下文
@@ -28,8 +28,8 @@ this.PropertyInitializerExpression = function(config, extractTo, toTernary){
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
 		 */
 		extractTo: function(contentBuilder){
-			// 如果需要解析该表达式
-			if(config.value){
+			// 如果需要编译
+			if(config.rexjs){
 				// 以三元表达式的形式追加
 				toTernary(contentBuilder, this, ":");
 				return;
@@ -43,8 +43,6 @@ this.PropertyInitializerExpression = function(config, extractTo, toTernary){
 
 	return PropertyInitializerExpression;
 }(
-	// config
-	ECMAScriptConfig.addRexjsConfig("propertyInitializer"),
 	PropertyValueExpression.prototype.extractTo,
 	// toTernary
 	function(contentBuilder, expression, assignment){

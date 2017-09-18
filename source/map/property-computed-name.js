@@ -83,7 +83,7 @@ this.ObjectComputedNameStatement = function(){
 	return ObjectComputedNameStatement;
 }();
 
-this.OpenComputedPropertyNameTag = function(OpenBracketTag, ComputedPropertyNameExpression, ObjectComputedNameStatement, config){
+this.OpenComputedPropertyNameTag = function(OpenBracketTag, ComputedPropertyNameExpression, ObjectComputedNameStatement){
 	/**
 	 * 起始对象计算式属性名标签
 	 * @param {Number} _type - 标签类型
@@ -118,10 +118,13 @@ this.OpenComputedPropertyNameTag = function(OpenBracketTag, ComputedPropertyName
 			// 设置表达式的 name 属性
 			statement.expression.name = new ComputedPropertyNameExpression(context);
 
-			// 如果需要编译计算式名称
-			if(config.value){
-				// 自动化生成变量
-				statement.target.expression.autoVariable(statements);
+			// 如果需要编译
+			if(config.es6Base){
+				// 给对象表达式设置临时变量名
+				statement.expression.setCompiledVariableTo(
+					statements,
+					statement.target.expression
+				);
 			}
 			
 			// 设置当前属性
@@ -133,9 +136,7 @@ this.OpenComputedPropertyNameTag = function(OpenBracketTag, ComputedPropertyName
 }(
 	this.OpenBracketTag,
 	this.ComputedPropertyNameExpression,
-	this.ObjectComputedNameStatement,
-	// config
-	ECMAScriptConfig.addBaseConfig("computedName")
+	this.ObjectComputedNameStatement
 );
 
 this.CloseComputedPropertyNameTag = function(CloseBracketTag){

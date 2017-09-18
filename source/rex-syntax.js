@@ -415,7 +415,7 @@ this.SourceBuilder = function(ContentBuilder){
 			// 追加新行
 			this.newline();
 			// 追加 sourceURL
-			this.appendString("//# sourceURL=http://rexjs.org/" + this.file.filename);
+			this.appendString("//# sourceURL=" + this.file.filename);
 
 			return this.result;
 		},
@@ -624,7 +624,10 @@ this.MappingBuilder = function(MappingPosition, Base64VLQ, JSON, appendContext, 
 			if(btoa){
 				// 追加新行
 				this.newline();
-
+				// 追加 sourceURL
+				this.appendString("//# sourceURL=http://rexjs.org/" + this.file.filename);
+				// 追加新行
+				this.newline();
 				// 追加 mappingURL 头部
 				this.appendString("//# sourceMappingURL=data:application/json;base64,");
 				
@@ -638,8 +641,10 @@ this.MappingBuilder = function(MappingPosition, Base64VLQ, JSON, appendContext, 
 						})
 					)
 				);
+
+				return this.result;
 			}
-			
+
 			// 返回结果
 			return complete.call(this);
 		},
@@ -703,74 +708,26 @@ this.SyntaxElement = function(){
 	return SyntaxElement;
 }();
 
-this.SyntaxConfig = function(forEach, defineProperty){
+this.SyntaxConfig = function(forEach){
 	/**
 	 * 语法配置，用于管理是否编译指定表达式
 	 * @param {String} name - 配置名称
-	 * @param {String} version - 配置相关版本
 	 */
-	function SyntaxConfig(name, version){
-		this.name = name;
-		this.version = version;
+	function SyntaxConfig(){
+		forEach(
+			arguments,
+			function(name){
+				this[name] = true;
+			},
+			this,
+			true
+		);
 	};
 	SyntaxConfig = new Rexjs(SyntaxConfig);
 
-	SyntaxConfig.static({
-		/**
-		 * 添加配置信息
-		 * @param {String} name - 配置名称
-		 * @param {String} version - 配置相关版本
-		 */
-		add: function(name, version){
-			var config = new this(name, version);
-
-			// 定义属性
-			defineProperty(
-				this,
-				name,
-				{
-					get: function(){
-						return config;
-					},
-					enumerable: true
-				}
-			);
-
-			return config;
-		},
-		/**
-		 * 给所有指定配置设置值
-		 * @param {Boolean} value - 需要设置的值
-		 * @param {String} _version - 可指定的版本，当提供时，只会给指定版本的配置项设置该值
-		 */
-		all: function(value, _version){
-			forEach(
-				this,
-				// 如果提供了版本
-				_version ?
-					function(config){
-						// 如果版本相匹配
-						if(config.version === _version){
-							config.value = value;
-						}
-					} :
-					function(config){
-						config.value = value;
-					}
-			);
-		}
-	});
-
-	SyntaxConfig.props({
-		name: "",
-		value: true,
-		version: ""
-	});
-
 	return SyntaxConfig;
 }(
-	Rexjs.forEach,
-	Object.defineProperty
+	Rexjs.forEach
 );
 
 this.SyntaxRegExp = function(RegExp, Infinity){

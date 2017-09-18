@@ -68,7 +68,6 @@ this.ObjectExpression = function(
 	LiteralPropertyNameExpression, ComputedPropertyNameExpression, ShorthandMethodExpression, PropertyInitializerExpression,
 	IdentifierExpression, AssignableExpression, BinaryExpression, SpreadExpression,
 	BasicAssignmentTag,
-	config,
 	extractTo, compileItem, collected, error
 ){
 	/**
@@ -81,19 +80,6 @@ this.ObjectExpression = function(
 	ObjectExpression = new Rexjs(ObjectExpression, DestructibleExpression);
 
 	ObjectExpression.props({
-		/**
-		 * 自动化生成变量
-		 * @param {ECMAScriptStatements} statements - 当前语句块
-		 */
-		autoVariable: function(statements){
-			// 如果已经记录了变量
-			if(this.variable){
-				return;
-			}
-
-			// 记录变量
-			this.variable = statements.collections.generate();
-		},
 		/**
 		 * 将对象每一项转换为解构项表达式
 		 * @param {SyntaxParser} parser - 语法解析器
@@ -227,24 +213,35 @@ this.ObjectExpression = function(
 			var variable = this.variable;
 
 			// 如果存在变量名，说明需要分步设置属性
-			if(variable){
+			if(this.needCompile){
 				var anotherBuilder = new ContentBuilder();
 
 				// 追加临时变量名
 				anotherBuilder.appendString(variable);
-
-				// 追加函数闭包头部
+				// 追加临时变量名赋值代码
 				contentBuilder.appendString("(" + variable + "={},");
 				// 编译内容
 				this.inner.forEach(compileItem, contentBuilder, anotherBuilder);
-				// 追加函数闭包尾部
+				// 追加结束小括号
 				contentBuilder.appendString(variable + ")");
+				return;
+			}
+
+			// 如果要将该对象用临时变量名记录
+			if(variable){
+				// 追加变量名赋值代码
+				contentBuilder.appendString("(" + variable + "=");
+				// 调用父类方法
+				extractTo.call(this, contentBuilder);
+				// 追加结束小括号
+				contentBuilder.appendString(")");
 				return;
 			}
 
 			// 调用父类方法
 			extractTo.call(this, contentBuilder);
 		},
+		needCompile: false,
 		/**
 		 * 转换为解构表达式
 		 * @param {SyntaxParser} parser - 语法解析器
@@ -261,8 +258,8 @@ this.ObjectExpression = function(
 		toDestructuringItem: function(parser){
 			var inner = this.inner, expression = new ObjectDestructuringItemExpression(this);
 
-			// 如果需要解析解构表达式 而且 长度大于 1（长度为 0 不解析，长度为 1，只需取一次对象，所以都不需要生成变量名）
-			if(config.value && inner.length > 1){
+			// 如果需要解析 而且 长度大于 1（长度为 0 不解析，长度为 1，只需取一次对象，所以都不需要生成变量名）
+			if(config.es6Base && inner.length > 1){
 				// 设置变量名
 				this.setVariableOf(expression, parser.statements);
 			}
@@ -291,7 +288,6 @@ this.ObjectExpression = function(
 	this.BinaryExpression,
 	this.SpreadExpression,
 	this.BasicAssignmentTag,
-	DestructuringExpression.config,
 	PartnerExpression.prototype.extractTo,
 	// compileItem
 	function(item, contentBuilder, anotherBuilder){

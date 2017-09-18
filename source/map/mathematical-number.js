@@ -20,21 +20,15 @@ this.MathematicalNumberTag = function(NumberTag){
 		extractTo: function(contentBuilder, content){
 			// 追加字符串内容
 			contentBuilder.appendString(
-				// 如果要使用 parseInt 方法
-				this.useParse() ?
+				// 如果需要编译
+				config.es6Base ?
 					// 转换为指定基数的数字
 					'(parseInt("' + content.substring(2) + '",' + this.radix + "))" :
 					content
 			);
 		},
 		order: ECMAScriptOrders.MATHEMATICAL_NUMBER,
-		radix: "10",
-		/**
-		 * 是否使用 parseInt 方法进行转义
-		 */
-		useParse: function(){
-			return true;
-		}
+		radix: "10"
 	});
 	
 	return MathematicalNumberTag;
@@ -42,7 +36,7 @@ this.MathematicalNumberTag = function(NumberTag){
 	this.NumberTag
 );
 
-this.BinaryNumberTag = function(MathematicalNumberTag, config){
+this.BinaryNumberTag = function(MathematicalNumberTag){
 	/**
 	 * 二进制数字标签
 	 * @param {Number} _type - 标签类型
@@ -54,23 +48,15 @@ this.BinaryNumberTag = function(MathematicalNumberTag, config){
 	
 	BinaryNumberTag.props({
 		radix: "2",
-		regexp: /0[bB][01]+/,
-		/**
-		 * 是否使用 parseInt 方法进行转义
-		 */
-		useParse: function(){
-			return config.value;
-		}
+		regexp: /0[bB][01]+/
 	});
 	
 	return BinaryNumberTag;
 }(
-	this.MathematicalNumberTag,
-	// config
-	ECMAScriptConfig.addBaseConfig("binaryNumber")
+	this.MathematicalNumberTag
 );
 
-this.OctalNumberTag = function(MathematicalNumberTag, config){
+this.OctalNumberTag = function(MathematicalNumberTag){
 	/**
 	 * 八进制数字标签
 	 * @param {Number} _type - 标签类型
@@ -82,20 +68,12 @@ this.OctalNumberTag = function(MathematicalNumberTag, config){
 	
 	OctalNumberTag.props({
 		radix: "8",
-		regexp: /0[oO][0-7]+/,
-		/**
-		 * 是否使用 parseInt 方法进行转义
-		 */
-		useParse: function(){
-			return config.value;
-		}
+		regexp: /0[oO][0-7]+/
 	});
 	
 	return OctalNumberTag;
 }(
-	this.MathematicalNumberTag,
-	// config
-	ECMAScriptConfig.addBaseConfig("octalNumber")
+	this.MathematicalNumberTag
 );
 
 }.call(

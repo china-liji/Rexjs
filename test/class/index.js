@@ -143,6 +143,14 @@ test.unit(
 			}
 		);
 
+		this.false(
+			"super 之前调用 this",
+			"class A extends B { constructor(){ if(true){ this } } }",
+			function(parser, err){
+				return err.context.content !== "this";
+			}
+		);
+
 		this.groupEnd();
 	}
 );

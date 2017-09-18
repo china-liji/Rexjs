@@ -19,6 +19,33 @@ this.ECMAScriptTagsMap = function(SyntaxTagsMap, dataArray){
 		);
 	};
 	ECMAScriptTagsMap = new Rexjs(ECMAScriptTagsMap, SyntaxTagsMap);
+
+	ECMAScriptTagsMap.static({
+		/**
+		 * 绑定标签列表
+		 * @param {String} name - 标签列表的唯一名称
+		 * @param {SyntaxTags} SyntaxTags - 需要绑定的标签列表
+		 */
+		bind: function(name, SyntaxTags){
+			// 如果不存在数据数组中
+			if(dataArray.every(function(data){
+				// 如果名称一致
+				if(data.name === name){
+					// 设置标签列表
+					data.tags = SyntaxTags;
+					return false;
+				}
+
+				return true;
+			})){
+				// 追加新项
+				dataArray.push({
+					name: name,
+					tags: SyntaxTags
+				});
+			}
+		}
+	});
 	
 	return ECMAScriptTagsMap;
 }(
@@ -49,12 +76,23 @@ this.ECMAScriptParser = function(SourceBuilder, MappingBuilder, ECMAScriptTagsMa
 	 */
 	function ECMAScriptParser(){
 		SyntaxParser.call(this);
-
-		this.deps = [];
 	};
 	ECMAScriptParser = new Rexjs(ECMAScriptParser, SyntaxParser);
 
 	ECMAScriptParser.static({
+		/**
+		 * 获取编译配置
+		 */
+		get config(){
+			return config;
+		},
+		/**
+		 * 设置编译配置
+		 * @param {SyntaxConfig} value - 需要设置的配置
+		 */
+		set config(value){
+			config = value;
+		},
 		/**
 		 * 获取是否应该生成 sourceMaps
 		 */
@@ -107,6 +145,8 @@ this.ECMAScriptParser = function(SourceBuilder, MappingBuilder, ECMAScriptTagsMa
 		 * @param {File} file - 文件信息
 		 */
 		parse: function(file){
+			this.deps = [];
+
 			parse.call(
 				this,
 				file,

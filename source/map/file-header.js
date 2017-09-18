@@ -5,7 +5,7 @@ new function(
 	// 表达式相关
 	Expression, ListExpression, EmptyExpression, DefaultExpression, PartnerExpression, LeftHandSideExpression,
 	// ECMAScript 相关
-	ECMAScriptStatement, BoxStatement, ECMAScriptErrors, ECMAScriptOrders, ECMAScriptConfig,
+	ECMAScriptStatement, BoxStatement, ECMAScriptErrors, ECMAScriptOrders,
 	// 标签相关类
 	SyntaxTag, TagType,
 	// 标签分类相关
@@ -15,6 +15,8 @@ new function(
 	// 表达式状态相关
 	STATE_STATEMENT_ENDABLE, STATE_STATEMENT_END, STATE_STATEMENT_ENDED,
 	// 其他常量
-	IDENTIFIER_REGEXP_SOURCE
+	IDENTIFIER_REGEXP_SOURCE,
+	// 其他变量
+	config
 ){
 "use strict";

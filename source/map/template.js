@@ -1,7 +1,7 @@
 // 模板相关
 !function(closeTemplateTag){
 
-this.TemplateExpression = function(config, extractTo, compileItem){
+this.TemplateExpression = function(extractTo, compileItem){
 	/**
 	 * 模板表达式
 	 * @param {Context} open - 起始标签上下文
@@ -18,7 +18,7 @@ this.TemplateExpression = function(config, extractTo, compileItem){
 		 */
 		extractTo: function(contentBuilder){
 			// 如果需要编译
-			if(config.value){
+			if(config.es6Base){
 				// 追加起始双引号
 				contentBuilder.appendString('"');
 				// 直接编译 inner
@@ -35,8 +35,6 @@ this.TemplateExpression = function(config, extractTo, compileItem){
 
 	return TemplateExpression;
 }(
-	// config
-	ECMAScriptConfig.addBaseConfig("template"),
 	PartnerExpression.prototype.extractTo,
 	// compileItem
 	function(item, contentBuilder){

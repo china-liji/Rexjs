@@ -1,7 +1,7 @@
 // 类声明标签相关
 !function(ClassExpression, ClassNameTag){
 
-this.ClassDeclarationExpression = function(config, extractTo){
+this.ClassDeclarationExpression = function(extractTo){
 	/**
 	 * 类声明表达式
 	 * @param {Context} context - 语法标签上下文
@@ -17,8 +17,8 @@ this.ClassDeclarationExpression = function(config, extractTo){
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
 		 */
 		extractTo: function(contentBuilder){
-			// 如果需要解析类
-			if(config.value){
+			// 如果需要编译
+			if(config.es6Base){
 				// 如果还没声明
 				if(this.undeclaredIfCompile){
 					// 追加 var 关键字
@@ -54,8 +54,6 @@ this.ClassDeclarationExpression = function(config, extractTo){
 
 	return ClassDeclarationExpression;
 }(
-	// config
-	ECMAScriptConfig.class,
 	ClassExpression.prototype.extractTo
 );
 

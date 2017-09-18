@@ -1,7 +1,7 @@
 // 箭头函数相关
 !function(FunctionExpression, ArgumentsExpression, OpenFunctionBodyTag, CloseFunctionBodyTag, closeArrowFunctionBodyTag){
 
-this.ArrowFunctionExpression = function(config){
+this.ArrowFunctionExpression = function(){
 	/**
 	 * 箭头函数表达式
 	 * @param {Context} context - 语法标签上下文
@@ -22,8 +22,8 @@ this.ArrowFunctionExpression = function(config){
 		extractTo: function(contentBuilder){
 			var defaultArgumentBuilder = new ContentBuilder();
 
-			// 如果需要编译箭头函数
-			if(config.value){
+			// 如果需要编译
+			if(config.es6Base){
 				/*
 					这里有包括了两层函数，
 					因为箭头函数里的 this 与 arguments 都是指向外层的，箭头函数自己没有 arguments
@@ -56,10 +56,7 @@ this.ArrowFunctionExpression = function(config){
 	});
 
 	return ArrowFunctionExpression;
-}(
-	// config
-	ECMAScriptConfig.addBaseConfig("arrowFunction")
-);
+}();
 
 this.SingleArgumentExpression = function(ArgumentsExpression, ArgumentExpression){
 	/**

@@ -55,8 +55,14 @@ this.ThisTag = function(visitor){
 		 * @param {Statements} statements - 当前语句块
 		 */
 		visitor: function(parser, context, statement, statements){
-			// 向当前语句块申请应用 this 关键字
-			statements.applyThis(parser, context);
+			var closure = statements.closure;
+
+			// 如果存在闭包
+			if(closure){
+				// 向当前闭包申请应用 this 关键字
+				closure.applyThis(parser, context);
+			}
+
 			// 调用父类方法
 			visitor.call(this, parser, context, statement, statements);
 		}

@@ -1,7 +1,7 @@
 // 默认函数参数相关
 !function(BasicAssignmentTag){
 
-this.DefaultArgumentExpression = function(ArgumentExpression, config){
+this.DefaultArgumentExpression = function(ArgumentExpression){
 	/**
 	 * 省略参数表达式
 	 * @param {Context} context - 语法标签上下文
@@ -19,8 +19,8 @@ this.DefaultArgumentExpression = function(ArgumentExpression, config){
 		 * @param {ContentBuilder} anotherBuilder - 另一个内容生成器，一般用于副内容的生成或记录
 		 */
 		extractTo: function(contentBuilder, anotherBuilder){
-			// 如果需要编译默认参数
-			if(config.value){
+			// 如果需要编译
+			if(config.es6Base){
 				var context = this.context;
 
 				// 追加参数名至 contentBuilder
@@ -45,9 +45,7 @@ this.DefaultArgumentExpression = function(ArgumentExpression, config){
 
 	return DefaultArgumentExpression;
 }(
-	this.ArgumentExpression,
-	// config
-	ECMAScriptConfig.addBaseConfig("defaultArgument")
+	this.ArgumentExpression
 );
 
 this.ArgumentAssignmentStatement = function(){

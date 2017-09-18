@@ -1,7 +1,7 @@
 // 模板参数相关
 !function(TemplateExpression, PlaceHolderExpression){
 
-this.TemplateParameterExpression = function(config, extractTo, compileInner){
+this.TemplateParameterExpression = function(extractTo, compileInner){
 	/**
 	 * 模板参数表达式
 	 * @param {Context} open - 起始标签上下文
@@ -24,7 +24,7 @@ this.TemplateParameterExpression = function(config, extractTo, compileInner){
 			this.operand.extractTo(contentBuilder);
 
 			// 如果需要编译
-			if(config.value){
+			if(config.es6Base){
 				// 编译 inner
 				compileInner(this.inner, contentBuilder);
 				return;
@@ -38,8 +38,6 @@ this.TemplateParameterExpression = function(config, extractTo, compileInner){
 
 	return TemplateParameterExpression;
 }(
-	// config
-	ECMAScriptConfig.template,
 	PartnerExpression.prototype.extractTo,
 	// compileInner
 	function(inner, contentBuilder){

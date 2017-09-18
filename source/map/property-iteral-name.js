@@ -82,10 +82,13 @@ visitorOfMathematicalNumeral = function(){
 	 * @param {Statements} statements - 当前语句块
 	 */
 	return function(parser, context, statement, statements){
-		// 如果需要用 parseInt
-		if(this.useParse()){
-			// 自动化生成变量
-			statement.target.expression.autoVariable(statements);
+		// 如果需要编译
+		if(config.es6Base){
+			// 给对象表达式设置临时变量名
+			statement.expression.setCompiledVariableTo(
+				statements,
+				statement.target.expression
+			);
 		}
 		
 		// 调用 visitor 方法

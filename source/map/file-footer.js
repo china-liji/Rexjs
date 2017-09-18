@@ -16,8 +16,6 @@ Rexjs.static(this);
 	null,
 	// ECMAScriptOrders
 	null,
-	// ECMAScriptConfig
-	null,
 	Rexjs.SyntaxTag,
 	Rexjs.TagType,
 	Rexjs.TagClass.CLASS_STATEMENT_BEGIN,
@@ -36,5 +34,6 @@ Rexjs.static(this);
 		.toString()
 		.match(
 			/^\/(.+)\/$/
-		)[1]
+		)[1],
+	new Rexjs.SyntaxConfig("es6Base", "es6Module", "rexjs")
 );

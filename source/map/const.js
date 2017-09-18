@@ -52,7 +52,7 @@ this.ConstStatement = function(catchMethod, tryMethod){
 	VarStatement.prototype.try
 );
 
-this.ConstTag = function(LetTag, ConstStatement, config){
+this.ConstTag = function(LetTag, ConstStatement){
 	/**
 	 * const 关键字标签
 	 * @param {Number} _type - 标签类型
@@ -76,7 +76,7 @@ this.ConstTag = function(LetTag, ConstStatement, config){
 		 */
 		extractTo: function(contentBuilder, content){
 			// 追加标签内容
-			contentBuilder.appendString(config.value ? "var" : content);
+			contentBuilder.appendString(config.es6Base ? "var" : content);
 		},
 		regexp: /const/,
 		/**
@@ -110,9 +110,7 @@ this.ConstTag = function(LetTag, ConstStatement, config){
 	return ConstTag;
 }(
 	this.LetTag,
-	this.ConstStatement,
-	// config
-	ECMAScriptConfig.addBaseConfig("const")
+	this.ConstStatement
 );
 
 this.ConstVariableTag = function(collectTo){

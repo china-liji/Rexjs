@@ -1,5 +1,5 @@
 // 类主体标签相关
-!function(DefaultConstructorExpression, BinaryNumberTag, OctalNumberTag, config, classPropertySeparatorTag, closeClassBodyTag){
+!function(DefaultConstructorPropertyExpression, BinaryNumberTag, OctalNumberTag, classPropertySeparatorTag, closeClassBodyTag){
 
 this.ClassBodyExpression = function(ObjectExpression, extractTo, compileItem){
 	/**
@@ -88,7 +88,7 @@ this.ClassPropertyStatement = function(PropertyStatement, ClassPropertyExpressio
 				// 如果是结束大括号
 				case "}":
 					// 可能性的插入构造函数，即需要解析时候，又没有定义构造函数属性
-					insertConstructorIfNeed(classExpression, classBodyExpression);
+					insertConstructorIfNeed(parser, classExpression, classBodyExpression);
 					// 返回类主体结束大括号
 					return tag.binding;
 
@@ -190,10 +190,10 @@ this.ClassPropertyStatement = function(PropertyStatement, ClassPropertyExpressio
 	this.NumberTag,
 	this.StringTag,
 	// insertConstructorIfNeed
-	function(classExpression, classBodyExpression){
+	function(parser, classExpression, classBodyExpression){
 		switch(false){
-			// 如果不需要编译类表达式
-			case config.value:
+			// 如果不需要编译
+			case config.base6Base:
 				return;
 
 			// 如果已有构造函数
@@ -208,10 +208,7 @@ this.ClassPropertyStatement = function(PropertyStatement, ClassPropertyExpressio
 
 		// 添加构造函数表达式
 		inner.add(
-			new DefaultConstructorExpression(
-				classExpression.name.context,
-				classExpression.extends.super !== null
-			)
+			new DefaultConstructorPropertyExpression(parser.statements, classExpression)
 		);
 	},
 	// getNumberTag
@@ -487,11 +484,9 @@ closeClassBodyTag = new this.CloseClassBodyTag();
 
 }.call(
 	this,
-	this.DefaultConstructorExpression,
+	this.DefaultConstructorPropertyExpression,
 	this.BinaryNumberTag,
 	this.OctalNumberTag,
-	// config
-	ECMAScriptConfig.class,
 	// classPropertySeparatorTag
 	null,
 	// closeClassBodyTag

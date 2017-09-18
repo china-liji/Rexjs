@@ -1,5 +1,5 @@
 // 数组拓展项相关
-!function(config){
+!function(){
 
 this.ArraySpreadItemExpression = function(SpreadExpression){
 	/**
@@ -17,8 +17,8 @@ this.ArraySpreadItemExpression = function(SpreadExpression){
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
 		 */
 		extractTo: function(contentBuilder){
-			// 如果需要编译拓展符
-			if(config.value){
+			// 如果需要编译
+			if(config.es6Base){
 				// 追加初始化拓展项
 				contentBuilder.appendString("new Rexjs.SpreadItem(");
 				// 提取操作对象
@@ -52,12 +52,6 @@ this.ArraySpreadTag = function(SpreadTag, ArraySpreadItemExpression, SpreadState
 	
 	ArraySpreadTag.props({
 		/**
-		 * 获取是否需要编译
-		 */
-		get compile(){
-			return config.value;
-		},
-		/**
 		 * 标签访问器
 		 * @param {SyntaxParser} parser - 语法解析器
 		 * @param {Context} context - 标签上下文
@@ -65,8 +59,8 @@ this.ArraySpreadTag = function(SpreadTag, ArraySpreadItemExpression, SpreadState
 		 * @param {Statements} statements - 当前语句块
 		 */
 		visitor: function(parser, context, statement, statements){
-			// 告知数组表达式，是否需要编译拓展符
-			statement.target.expression.needCompileSpread = config.value;
+			// 告知数组表达式有拓展符
+			statement.target.expression.spread = true;
 
 			// 设置当前表达式
 			statement.expression = new ArraySpreadItemExpression(context);
@@ -83,7 +77,5 @@ this.ArraySpreadTag = function(SpreadTag, ArraySpreadItemExpression, SpreadState
 );
 
 }.call(
-	this,
-	// config
-	ECMAScriptConfig.addBaseConfig("arraySpreadItem")
+	this
 );

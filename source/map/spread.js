@@ -1,5 +1,5 @@
 // 拓展参数相关
-!function(config){
+!function(){
 
 this.SpreadExpression = function(){
 	/**
@@ -17,8 +17,8 @@ this.SpreadExpression = function(){
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
 		 */
 		extractTo: function(contentBuilder){
-			// 如果需要编译拓展符
-			if(config.value){
+			// 如果需要编译
+			if(config.es6Base){
 				// 追加编译拓展符方法
 				contentBuilder.appendString("new Rexjs.SpreadItem(");
 				// 提取参数
@@ -76,7 +76,7 @@ this.SpreadStatement = function(){
 	return SpreadStatement;
 }();
 
-this.SpreadTag = function(SpreadExpression, SpreadStatement, AccessorExpression){
+this.SpreadTag = function(SpreadExpression, SpreadStatement, AccessorExpression, DEFAULT_BOUND_THIS){
 	/**
 	 * 拓展符标签
 	 * @param {Number} _type - 标签类型
@@ -105,37 +105,13 @@ this.SpreadTag = function(SpreadExpression, SpreadStatement, AccessorExpression)
 		 * @param {Statements} statements - 当前语句块
 		 */
 		visitor: function(parser, context, statement, statements){
-			var callExpression = statement.target.expression;
+			// 告知 call 表达式有拓展符
+			statement.target.expression.withSpread(statements);
 
 			// 设置当前表达式
 			statement.expression = new SpreadExpression(context);
 			// 设置当前语句
 			statements.statement = new SpreadStatement(statements);
-
-			// 如果已有拓展符
-			if(callExpression.spread){
-				return;
-			}
-
-			switch(false){
-				// 如果函数调用表达式的操作对象不是属性表达式
-				case callExpression.operand instanceof AccessorExpression:
-					break;
-
-				// 如果已经存在变量名
-				case callExpression.variable === "":
-					break;
-
-				default:
-					// 生成变量名
-					callExpression.variable = statements.collections.generate();
-					break;
-			}
-
-			// 设置 call 表达式 spread 属性，表示有拓展符
-			callExpression.spread = true;
-			// 告知 call 表达式，需要编译 spread
-			callExpression.needCompileSpread = config.value;
 		}
 	});
 	
@@ -143,11 +119,10 @@ this.SpreadTag = function(SpreadExpression, SpreadStatement, AccessorExpression)
 }(
 	this.SpreadExpression,
 	this.SpreadStatement,
-	this.AccessorExpression
+	this.AccessorExpression,
+	this.CallExpression.DEFAULT_BOUND_THIS
 );
 
 }.call(
-	this,
-	// config
-	ECMAScriptConfig.addBaseConfig("spread")
+	this
 );

@@ -1,7 +1,7 @@
 // 幂运算表达式相关
 !function(BinaryExpression){
 
-this.ExponentiationExpression = function(config, extractTo){
+this.ExponentiationExpression = function(extractTo){
 	/**
 	 * 幂运算表达式
 	 * @param {Context} context - 语法标签上下文
@@ -18,8 +18,8 @@ this.ExponentiationExpression = function(config, extractTo){
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
 		 */
 		extractTo: function(contentBuilder){
-			// 如果需要解析幂运算
-			if(config.value){
+			// 如果需要编译
+			if(config.es6Base){
 				// 追加算数方法
 				contentBuilder.appendString("Math.pow(");
 				// 提取左侧的算数底值
@@ -40,8 +40,6 @@ this.ExponentiationExpression = function(config, extractTo){
 
 	return ExponentiationExpression;
 }(
-	// config
-	ECMAScriptConfig.addBaseConfig("exponentiation"),
 	BinaryExpression.prototype.extractTo
 );
 

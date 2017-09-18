@@ -1,15 +1,15 @@
 // 构造函数标签相关
-!function(OpenShorthandMethodArgumentsTag, CloseShorthandMethodBodyTag, PHASE_NONE, PHASE_WAITING_CALL, PHASE_CALLED, closeConstructorArgumentsTag, closeConstructorBodyTag, getClassPropertyStatement){
+!function(IdentifierPropertyNameExpression, ShorthandMethodBodyStatements, OpenShorthandMethodArgumentsTag, CloseShorthandMethodBodyTag, PHASE_NONE, PHASE_WAITING_CALL, PHASE_CALLED, closeConstructorArgumentsTag, closeConstructorBodyTag){
 
-this.ConstructorNameExpression = function(config){
+this.ConstructorNameExpression = function(){
 	/**
 	 * 构造函数名称表达式
 	 * @param {Context} context - 语法标签上下文
 	 */
 	function ConstructorNameExpression(context){
-		Expression.call(this, context);
+		IdentifierPropertyNameExpression.call(this, context);
 	};
-	ConstructorNameExpression = new Rexjs(ConstructorNameExpression, Expression);
+	ConstructorNameExpression = new Rexjs(ConstructorNameExpression, IdentifierPropertyNameExpression);
 
 	ConstructorNameExpression.props({
 		/**
@@ -17,8 +17,8 @@ this.ConstructorNameExpression = function(config){
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
 		 */
 		extractTo: function(contentBuilder){
-			// 如果需要编译类
-			if(config.value){
+			// 如果需要编译
+			if(config.es6Base){
 				var context = this.context;
 				
 				// 如果有类名
@@ -31,66 +31,101 @@ this.ConstructorNameExpression = function(config){
 	});
 
 	return ConstructorNameExpression;
-}(
-	// config
-	ECMAScriptConfig.class
-);
+}();
 
-this.DefaultConstructorExpression = function(ClassPropertyExpression){
+this.DefaultConstructorPropertyExpression = function(ClassPropertyExpression, ConstructorNameExpression){
 	/**
 	 * 默认构造函数表达式
+	 * @param {Statements} statements - 当前语句块
 	 * @param {Context} name - 类名称标签上下文
-	 * @param {Boolean} extended - 该类存在继承
 	 */
-	function DefaultConstructorExpression(name, extended){
+	function DefaultConstructorPropertyExpression(statements, classExpression){
 		ClassPropertyExpression.call(this);
 
-		this.name = name;
-		this.extended = extended;
-	};
-	DefaultConstructorExpression = new Rexjs(DefaultConstructorExpression, ClassPropertyExpression);
+		// 初始化构造函数名称表达式
+		this.name = new ConstructorNameExpression(classExpression.name.context);
 
-	DefaultConstructorExpression.props({
+		// 如果 extends 存在，说明有父类
+		if(classExpression.extends){
+			this.hasSuper = true;
+			// 获取属性拥有者变量名
+			this.propertyOwner = this.requestVariableOf(statements, classExpression);
+		}
+	};
+	DefaultConstructorPropertyExpression = new Rexjs(DefaultConstructorPropertyExpression, ClassPropertyExpression);
+
+	DefaultConstructorPropertyExpression.props({
 		/**
 		 * 提取并编译表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
 		 */
 		compileTo: function(contentBuilder){
-			var name = this.name;
+			// 追加属性初始化代码
+			contentBuilder.appendString('new Rexjs.ClassProperty("constructor",function');
+			// 提取名称
+			this.name.extractTo(contentBuilder);
 
-			// 追加构造函数
-			contentBuilder.appendString(
-				'new Rexjs.ClassProperty("constructor",function' +
-				(name ? " " + name.content : "") +
-				"(){" + 
-					(
-						// 如果该类存在继承
-						this.extended ?
-							"Rexjs.Class.superOf(this," + this.superDepth + ",true)();" :
-							""
-					) +
-				"})"
-			);
+			// 追加函数参数及主体的起始大括号
+			contentBuilder.appendString("(){");
+
+			// 如果有父类
+			if(this.hasSuper){
+				// 追加父类构造函数的调用
+				contentBuilder.appendString(
+					"return Rexjs.Super.callConstructor(Object.getPrototypeOf(" + this.propertyOwner + "), this);"
+				);
+			}
+
+			// 追加函数的结束大括号及 ClassProperty 方法的结束小括号
+			contentBuilder.appendString("})");
 		},
-		extended: false,
-		name: null
+		/**
+		 * 提取表达式文本内容
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 */
+		extractTo: function(){},
+		hasSuper: false,
+		name: null,
+		/**
+		 * 获取属性的拥有者
+		 * @param {ClassExpression} classExpression - 类表达式
+		 */
+		owner: function(){
+			return this.propertyOwner;
+		},
+		propertyOwner: ""
 	});
 
-	return DefaultConstructorExpression;
+	return DefaultConstructorPropertyExpression;
 }(
-	this.ClassPropertyExpression
+	this.ClassPropertyExpression,
+	this.ConstructorNameExpression
 );
 
-this.ConstructorBodyStatements = function(ShorthandMethodBodyStatements){
+this.ConstructorBodyStatements = function(extractTo, applyAfterSuperCall){
 	/**
 	 * 简写方法主体语句块
 	 * @param {Statements} target - 目标语句块，即上一层语句块
 	 * @param {Number} phase - 该语句块的父类调用阶段
 	 */
 	function ConstructorBodyStatements(target, phase){
+		var extendsExpression = target.statement.target.target.target.expression.extends;
+
 		ShorthandMethodBodyStatements.call(this, target);
 
-		this.phase = phase;
+		// 如果存在继承关系，说明有父类
+		if(extendsExpression){
+			this.phase = PHASE_WAITING_CALL;
+
+			// 如果需要编译
+			if(config.es6Base){
+				this.thisLiteral = this.collections.generate();
+			}
+
+			return;
+		}
+
+		this.phase = PHASE_NONE;
 	};
 	ConstructorBodyStatements = new Rexjs(ConstructorBodyStatements, ShorthandMethodBodyStatements);
 
@@ -101,6 +136,15 @@ this.ConstructorBodyStatements = function(ShorthandMethodBodyStatements){
 	});
 
 	ConstructorBodyStatements.props({
+		/**
+		 * 申请应用 super 关键字
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - super 关键字上下文
+		 */
+		applySuper: function(parser, context){
+			// 如果是在 super 调用之后
+			applyAfterSuperCall(parser, this, context);
+		},
 		/**
 		 * 申请父类调用
 		 * @param {SyntaxParser} parser - 语法解析器
@@ -114,7 +158,7 @@ this.ConstructorBodyStatements = function(ShorthandMethodBodyStatements){
 				case PHASE_CALLED:
 					// 报错
 					parser.error(open, ECMAScriptErrors.SUPER_RECALL);
-					return 0;
+					return;
 
 				// 如果正在等待调用 super
 				case PHASE_WAITING_CALL:
@@ -123,13 +167,11 @@ this.ConstructorBodyStatements = function(ShorthandMethodBodyStatements){
 				default:
 					// 报错
 					parser.error(open, ECMAScriptErrors.SUPER_CALL_UNEXTEND);
-					return 0;
+					return;
 			}
 
 			// 表示已经调用过 super
 			this.phase = PHASE_CALLED;
-			// 返回属性表达式的 superDepth 属性
-			return getClassPropertyStatement(this.target).expression.superDepth;
 		},
 		/**
 		 * 申请应用 this 关键字
@@ -137,26 +179,57 @@ this.ConstructorBodyStatements = function(ShorthandMethodBodyStatements){
 		 * @param {Context} context - this 关键字上下文
 		 */
 		applyThis: function(parser, context){
-			// 如果阶段不等于等待调用 super，则说明，没有 super 或 已经调用
-			if(this.phase !== PHASE_WAITING_CALL){
-				return;
+			// 如果是在 super 调用之后
+			if(applyAfterSuperCall(parser, this, context)){
+				// 修改 this 上下文的文本内容为临时变量名，因为 this 是要根据 super 的返回值来决定的
+				context.content = this.thisLiteral;
 			}
-
-			// 报错
-			parser.error(
-				context,
-				ECMAScriptErrors.template("KEYWORD", context.content)
-			);
 		},
-		phase: PHASE_NONE
+		/**
+		 * 提取文本内容
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 */
+		extractTo: function(contentBuilder){
+			extractTo.call(this, contentBuilder);
+
+			// 如果需要编译
+			if(config.es6Base){
+				// 如果父类被调用过，说明存在父类
+				if(this.phase === PHASE_CALLED){
+					// 追加构造函数返回值
+					contentBuilder.appendString("return " + this.thisLiteral + ";");
+				}
+			}
+		},
+		phase: PHASE_NONE,
+		thisLiteral: "this"
 	});
 
 	return ConstructorBodyStatements;
 }(
-	this.ShorthandMethodBodyStatements
+	ShorthandMethodBodyStatements.prototype.extractTo,
+	// applyAfterSuperCall
+	function(parser, statements, context){
+		// 判断阶段
+		switch(statements.phase){
+			// 无阶段，说明没有父类
+			case PHASE_NONE:
+				return false;
+
+			// 如果 super 已经被调用
+			case PHASE_CALLED:
+				return true;
+		}
+
+		// 报错，因为进入这里，说明是在没有调用 super 之前
+		parser.error(
+			context,
+			ECMAScriptErrors.template("KEYWORD", context.content)
+		);
+	}
 );
 
-this.ConstructorTag = function(WordPropertyNameTag, IdentifierPropertyNameExpression){
+this.ConstructorTag = function(WordPropertyNameTag, ConstructorPropertyExpression){
 	/**
 	 * 构造函数标签
 	 * @param {Number} _type - 标签类型
@@ -214,7 +287,7 @@ this.ConstructorTag = function(WordPropertyNameTag, IdentifierPropertyNameExpres
 	return ConstructorTag;
 }(
 	this.WordPropertyNameTag,
-	this.IdentifierPropertyNameExpression
+	this.ConstructorPropertyExpression
 );
 
 this.OpenConstructorArgumentsTag = function(ConstructorNameExpression, visitor){
@@ -305,13 +378,7 @@ this.OpenConstructorBodyTag = function(OpenShorthandMethodBodyTag, ConstructorBo
 		 */
 		in: function(parser, statements){
 			// 设置当前语句块
-			parser.statements = new ConstructorBodyStatements(
-				statements,
-				// 如果有父类
-				getClassPropertyStatement(parser.statements).target.expression.extends.context ?
-					PHASE_WAITING_CALL :
-					PHASE_NONE
-			);
+			parser.statements = new ConstructorBodyStatements(statements);
 		}
 	});
 
@@ -362,6 +429,8 @@ closeConstructorBodyTag = new this.CloseConstructorBodyTag();
 
 }.call(
 	this,
+	this.IdentifierPropertyNameExpression,
+	this.ShorthandMethodBodyStatements,
 	this.OpenShorthandMethodArgumentsTag,
 	this.CloseShorthandMethodBodyTag,
 	// PHASE_NONE
@@ -373,9 +442,5 @@ closeConstructorBodyTag = new this.CloseConstructorBodyTag();
 	// closeConstructorArgumentsTag
 	null,
 	// closeConstructorBodyTag
-	null,
-	// getClassPropertyStatement
-	function(statements){
-		return statements.statement.target.target;
-	}
+	null
 );

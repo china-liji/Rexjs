@@ -12,7 +12,7 @@ var obj = { fn: fn }
 
 obj.fn(...[1,2,3])
 
-if(Rexjs.ECMAScriptConfig.spread.value){
+if(Rexjs.ECMAScriptParser.config.es6Base){
 	if(
 		$Rexjs_0 !== obj
 	){
@@ -32,7 +32,7 @@ function forOf(){
 	}
 }
 
-if(Rexjs.ECMAScriptConfig.spread.value){
+if(Rexjs.ECMAScriptParser.config.es6Base){
 	if(
 		$Rexjs_0 === 2
 	){
