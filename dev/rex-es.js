@@ -119,6 +119,7 @@ this.ECMAScriptOrders = ECMAScriptOrders = function(){
 		LOGICAL_AND: 201,
 		LOGICAL_OR: 201,
 		RIGHT_SHIFT: 201,
+		SUPER_PROPERTY_ASSIGNMENT: 201,
 		EQUALITY: 202,
 		EXPONENTIATION: 202,
 		UNARY_ASSIGNMENT: 202,
@@ -13171,9 +13172,6 @@ this.TerminatedFlowTag = function(TerminatedFlowExpression, TerminatedFlowStatem
 		 * @param {Statements} statements - 当前语句块
 		 */
 		visitor: function(parser, context, statement, statements){
-			// 向当前语句块记录被中断的流类型
-			statements.terminatedFlow |= this.flow;
-
 			// 设置表达式
 			statement.expression = new TerminatedFlowExpression(context, statements);
 			// 设置当前语句
@@ -19208,7 +19206,7 @@ this.DefaultConstructorPropertyExpression = function(ClassPropertyExpression, Co
 	this.ConstructorNameExpression
 );
 
-this.ConstructorBodyStatements = function(FLOW_LINEAR, extractTo, applyAfterSuperCall){
+this.ConstructorBodyStatements = function(extractTo, applyAfterSuperCall){
 	/**
 	 * 简写方法主体语句块
 	 * @param {Statements} target - 目标语句块，即上一层语句块
@@ -19225,7 +19223,7 @@ this.ConstructorBodyStatements = function(FLOW_LINEAR, extractTo, applyAfterSupe
 
 			// 如果需要编译
 			if(config.es6Base){
-				this.thisLiteral = this.collections.generate();
+				this.reference = this.collections.generate();
 			}
 
 			return;
@@ -19288,7 +19286,7 @@ this.ConstructorBodyStatements = function(FLOW_LINEAR, extractTo, applyAfterSupe
 			// 如果是在 super 调用之后
 			if(applyAfterSuperCall(parser, this, context)){
 				// 修改 this 上下文的文本内容为临时变量名，因为 this 是要根据 super 的返回值来决定的
-				context.content = this.thisLiteral;
+				context.content = this.reference;
 			}
 		},
 		/**
@@ -19301,19 +19299,17 @@ this.ConstructorBodyStatements = function(FLOW_LINEAR, extractTo, applyAfterSupe
 			// 如果需要编译
 			if(config.es6Base){
 				// 如果父类被调用过，说明存在父类
-				if(this.phase === PHASE_CALLED){debugger
+				if(this.phase === PHASE_CALLED){
 					// 追加构造函数返回值
-					contentBuilder.appendString("return " + this.thisLiteral + ";");
+					contentBuilder.appendString("return " + this.reference + ";");
 				}
 			}
 		},
-		phase: PHASE_NONE,
-		thisLiteral: "this"
+		phase: PHASE_NONE
 	});
 
 	return ConstructorBodyStatements;
 }(
-	ECMAScriptStatement.FLOW_LINEAR,
 	ShorthandMethodBodyStatements.prototype.extractTo,
 	// applyAfterSuperCall
 	function(parser, statements, context){
@@ -20266,7 +20262,7 @@ this.ExtendsTag = function(ExtendsExpression, ExtendsStatement, openClassBodyTag
 eval(
 									function(){
 										// 父类相关
-!function(BracketAccessorExpression, CallExpression, CallStatement, OpenBracketAccessorTag, DotAccessorTag, closeSuperBracketAccessorTag){
+!function(){
 
 this.SuperExpression = function(LiteralExpression){
 	/**
@@ -20286,8 +20282,8 @@ this.SuperExpression = function(LiteralExpression){
 		extractTo: function(contentBuilder){
 			// 如果需要编译
 			if(config.es6Base){
-				// 追加 getPrototypeOf 方法去获取父类
-				contentBuilder.appendString("(Object.getPrototypeOf(" + this.propertyOwner + "))");
+				// 直接追加属性拥有者临时变量
+				contentBuilder.appendString(this.propertyOwner);
 				return;
 			}
 			
@@ -20300,135 +20296,6 @@ this.SuperExpression = function(LiteralExpression){
 	return SuperExpression;
 }(
 	this.LiteralExpression
-);
-
-this.SuperCallExpression = function(extractTo){
-	/**
-	 * 父类调用表达式
-	 * @param {Context} open - 起始标签上下文
-	 * @param {ECMAScriptStatement} statement - 当前语句
-	 * @param {String} thisLiteral - 构造函数中指向 this 的字面量，可能是 this，也可能是 Rexjs_0 等等
-	 */
-	function SuperCallExpression(open, statement, thisLiteral){
-		CallExpression.call(this, open, statement);
-
-		this.thisLiteral = thisLiteral;
-	};
-	SuperCallExpression = new Rexjs(SuperCallExpression, CallExpression);
-
-	SuperCallExpression.props({
-		/**
-		 * 提取表达式文本内容
-		 * @param {ContentBuilder} contentBuilder - 内容生成器
-		 */
-		extractTo: function(contentBuilder){
-			// 如果需要编译
-			if(config.es6Base){
-				contentBuilder.appendString("(" + this.thisLiteral + "=Rexjs.Super.");
-				
-				// 如果有拓展符
-				if(this.spread){
-					// 设置 boundThis
-					this.boundThis = "this";
-
-					// 追加获取返回值函数的起始代码
-					contentBuilder.appendString("returnedThis(this,");
-					// 因为 super 不可能是对象属性，也不可能使用 new（语法上做了保护），所以直接使用 spreadTo 就可以了
-					this.spreadTo(contentBuilder);
-				}
-				else {
-					// 追加获取返回值函数的起始代码
-					contentBuilder.appendString("callConstructor(");
-					// 提取操作对象
-					this.operand.extractTo(contentBuilder);
-					// 追加 this 及 参数起始中括号
-					contentBuilder.appendString(",this,[");
-					// 提取参数
-					this.inner.extractTo(contentBuilder);
-					// 追加参数结束中括号
-					contentBuilder.appendString("]");
-				}
-
-				// 追加以上关联的两个结束小括号
-				contentBuilder.appendString("))");
-				return;
-			}
-
-			// 调用父类方法
-			extractTo.call(this, contentBuilder);
-		},
-		thisLiteral: "",
-		/**
-		 * 告知该表达式有拓展符
-		 * @param {Statements} statements - 当前语句块
-		 */
-		withSpread: function(){
-			this.spread = true;
-		}
-	});
-
-	return SuperCallExpression;
-}(
-	CallExpression.prototype.extractTo
-);
-
-this.SuperMethodCallExpression = function(extractTo){
-	/**
-	 * 父类方法调用表达式
-	 * @param {Context} open - 起始标签上下文
-	 * @param {ECMAScriptStatement} statement - 当前语句
-	 * @param {String} boundThis - 解析时，使用 Function.apply、call 或 bind 时，所需传递的 this
-	 */
-	function SuperMethodCallExpression(open, statement, boundThis){
-		CallExpression.call(this, open, statement);
-
-		this.boundThis = boundThis;
-	};
-	SuperMethodCallExpression = new Rexjs(SuperMethodCallExpression, CallExpression);
-
-	SuperMethodCallExpression.props({
-		/**
-		 * 提取表达式文本内容
-		 * @param {ContentBuilder} contentBuilder - 内容生成器
-		 */
-		extractTo: function(contentBuilder){
-			// 如果需要编译
-			if(config.es6Base){
-				// 如果有拓展符
-				if(this.spread){
-					// 因为 super 不可能是对象属性，也不可能使用 new（语法上做了保护），所以直接使用 spreadTo 就可以了
-					this.spreadTo(contentBuilder);
-					return;
-				}
-
-				// 追加 execMethod 方法头部代码
-				contentBuilder.appendString("Rexjs.Super.execMethod(");
-				// 提取操作对象
-				this.operand.extractTo(contentBuilder);
-				// 追加 execMethod 方法的参数
-				contentBuilder.appendString("," + this.boundThis + ",[");
-				// 提取 inner
-				this.inner.extractTo(contentBuilder);
-				// 追加尾部代码
-				contentBuilder.appendString("])");
-				return;
-			}
-
-			// 调用父类方法
-			extractTo.call(this, contentBuilder);
-		},
-		/**
-		 * 告知该表达式有拓展符
-		 * @param {Statements} statements - 当前语句块
-		 */
-		withSpread: function(){
-			this.spread = true;
-		}
-	});
-
-	return SuperMethodCallExpression;
-}(
-	CallExpression.prototype.extractTo
 );
 
 this.SuperStatement = function(){
@@ -20543,6 +20410,152 @@ this.SuperTag = function(LiteralTag, SuperExpression, SuperStatement){
 	this.SuperStatement
 );
 
+}.call(
+	this
+);
+									}
+									.toString()
+									.match(
+										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+									)[1] +
+									"\n//# sourceURL=http://rexjs.org/super.js"
+								);
+
+
+eval(
+									function(){
+										// 父类调用相关
+!function(CallExpression, CallStatement){
+
+this.SuperCallExpression = function(extractTo){
+	/**
+	 * 父类调用表达式
+	 * @param {Context} open - 起始标签上下文
+	 * @param {ECMAScriptStatement} statement - 当前语句
+	 * @param {String} reference - 构造函数中 this 的指向
+	 */
+	function SuperCallExpression(open, statement, constructorReference){
+		CallExpression.call(this, open, statement);
+
+		this.constructorReference = constructorReference;
+	};
+	SuperCallExpression = new Rexjs(SuperCallExpression, CallExpression);
+
+	SuperCallExpression.props({
+		constructorReference: "",
+		/**
+		 * 提取表达式文本内容
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 */
+		extractTo: function(contentBuilder){
+			// 如果需要编译
+			if(config.es6Base){
+				contentBuilder.appendString("(" + this.constructorReference + "=Rexjs.Super.");
+				
+				// 如果有拓展符
+				if(this.spread){
+					// 设置 boundThis
+					this.boundThis = "this";
+
+					// 追加获取返回值函数的起始代码
+					contentBuilder.appendString("returnedThis(this,");
+					// 因为 super 不可能是对象属性，也不可能使用 new（语法上做了保护），所以直接使用 spreadTo 就可以了
+					this.spreadTo(contentBuilder);
+				}
+				else {
+					// 追加获取返回值函数的起始代码
+					contentBuilder.appendString("callConstructor(");
+					// 提取操作对象
+					this.operand.extractTo(contentBuilder);
+					// 追加 this 及 参数起始中括号
+					contentBuilder.appendString(",this,[");
+					// 提取参数
+					this.inner.extractTo(contentBuilder);
+					// 追加参数结束中括号
+					contentBuilder.appendString("]");
+				}
+
+				// 追加以上关联的两个结束小括号
+				contentBuilder.appendString("))");
+				return;
+			}
+
+			// 调用父类方法
+			extractTo.call(this, contentBuilder);
+		},
+		/**
+		 * 告知该表达式有拓展符
+		 * @param {Statements} statements - 当前语句块
+		 */
+		withSpread: function(){
+			this.spread = true;
+		}
+	});
+
+	return SuperCallExpression;
+}(
+	CallExpression.prototype.extractTo
+);
+
+this.SuperMethodCallExpression = function(extractTo){
+	/**
+	 * 父类方法调用表达式
+	 * @param {Context} open - 起始标签上下文
+	 * @param {ECMAScriptStatement} statement - 当前语句
+	 * @param {String} boundThis - 解析时，使用 Function.apply、call 或 bind 时，所需传递的 this
+	 */
+	function SuperMethodCallExpression(open, statement, boundThis){
+		CallExpression.call(this, open, statement);
+
+		this.boundThis = boundThis;
+	};
+	SuperMethodCallExpression = new Rexjs(SuperMethodCallExpression, CallExpression);
+
+	SuperMethodCallExpression.props({
+		/**
+		 * 提取表达式文本内容
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 */
+		extractTo: function(contentBuilder){
+			// 如果需要编译
+			if(config.es6Base){
+				// 如果有拓展符
+				if(this.spread){
+					// 因为 super 不可能是对象属性，也不可能使用 new（语法上做了保护），所以直接使用 spreadTo 就可以了
+					this.spreadTo(contentBuilder);
+					return;
+				}
+
+				// 追加 execMethod 方法头部代码
+				contentBuilder.appendString("Rexjs.Super.execMethod(" + this.boundThis + ",");
+				// 提取操作对象
+				this.operand.extractTo(contentBuilder);
+				// 追加 execMethod 方法的参数
+				contentBuilder.appendString(",[");
+				// 提取 inner
+				this.inner.extractTo(contentBuilder);
+				// 追加尾部代码
+				contentBuilder.appendString("])");
+				return;
+			}
+
+			// 调用父类方法
+			extractTo.call(this, contentBuilder);
+		},
+		/**
+		 * 告知该表达式有拓展符
+		 * @param {Statements} statements - 当前语句块
+		 */
+		withSpread: function(){
+			this.spread = true;
+		}
+	});
+
+	return SuperMethodCallExpression;
+}(
+	CallExpression.prototype.extractTo
+);
+
 this.OpenSuperCallTag = function(OpenCallTag, SuperCallExpression){
 	/**
 	 * 起始父类调用小括号标签
@@ -20569,7 +20582,7 @@ this.OpenSuperCallTag = function(OpenCallTag, SuperCallExpression){
 			closure.applySuperCall(parser, statement.expression.context, context);
 
 			// 设置当前表达式
-			statement.expression = new SuperCallExpression(context, statement, closure.thisLiteral);
+			statement.expression = new SuperCallExpression(context, statement, closure.reference);
 			// 设置当前语句
 			statements.statement = new CallStatement(statements);
 		}
@@ -20581,7 +20594,165 @@ this.OpenSuperCallTag = function(OpenCallTag, SuperCallExpression){
 	this.SuperCallExpression
 );
 
-this.OpenSuperBracketAccessorTag = function(visitor){
+this.OpenSuperMethodCallTag = function(OpenSuperCallTag, SuperMethodCallExpression, ConstructorBodyStatements){
+	/**
+	 * 起始父类方法调用小括号标签
+	 * @param {Number} _type - 标签类型
+	 */
+	function OpenSuperMethodCallTag(_type){
+		OpenSuperCallTag.call(this, _type);
+	};
+	OpenSuperMethodCallTag = new Rexjs(OpenSuperMethodCallTag, OpenSuperCallTag);
+	
+	OpenSuperMethodCallTag.props({
+		order: ECMAScriptOrders.OPEN_SUPER_METHOD_CALL,
+		/**
+		 * 标签访问器
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 标签上下文
+		 * @param {Statement} statement - 当前语句
+		 * @param {Statements} statements - 当前语句块
+		 */
+		visitor: function(parser, context, statement, statements){
+			// 设置当前表达式
+			statement.expression = new SuperMethodCallExpression(
+				context,
+				statement,
+				statements.closure.reference
+			);
+
+			// 设置当前语句
+			statements.statement = new CallStatement(statements);
+		}
+	});
+	
+	return OpenSuperMethodCallTag;
+}(
+	this.OpenSuperCallTag,
+	this.SuperMethodCallExpression,
+	this.ConstructorBodyStatements
+);
+
+}.call(
+	this,
+	this.CallExpression,
+	this.CallStatement
+);
+									}
+									.toString()
+									.match(
+										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+									)[1] +
+									"\n//# sourceURL=http://rexjs.org/super-call.js"
+								);
+
+
+eval(
+									function(){
+										// 父类属性相关
+!function(AccessorExpression, BracketAccessorExpression, closeSuperBracketAccessorTag, compileSuperAccessor){
+
+this.SuperBracketAccessorExpression = function(extractTo){
+	/**
+	 * 父类中括号属性访问器表达式
+	 * @param {Context} context - 语法标签上下文
+	 * @param {Expression} object - 拥有该属性的对象
+	 * @param {String} closureReference - 闭包中的 this 指向
+	 */
+	function SuperBracketAccessorExpression(context, object, closureReference){
+		BracketAccessorExpression.call(this, context, object);
+
+		this.closureReference = closureReference;
+	};
+	SuperBracketAccessorExpression = new Rexjs(SuperBracketAccessorExpression, BracketAccessorExpression);
+	
+	SuperBracketAccessorExpression.props({
+		closureReference: "",
+		/**
+		 * 提取属性文本内容
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 */
+		compilePropertyTo: function(contentBuilder){
+			// 追加起始小括号，以防止 a[x,y,z] 这样的属性所造成 getProperty 方法的参数混乱
+			contentBuilder.appendString("(");
+			// 提取中括号内部代码
+			this.property.inner.extractTo(contentBuilder);
+			// 追加结束小括号
+			contentBuilder.appendString(")");
+		},
+		/**
+		 * 提取表达式文本内容
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 */
+		extractTo: function(contentBuilder){
+			// 如果需要编译
+			if(config.es6Base){
+				// 编译父类属性访问器
+				compileSuperAccessor(this, contentBuilder);
+				return;
+			}
+
+			// 调用父类方法
+			extractTo.call(this, contentBuilder);
+		}
+	});
+	
+	return SuperBracketAccessorExpression;
+}(
+	BracketAccessorExpression.prototype.extractTo
+);
+
+this.SuperDotAccessorExpression = function(extractTo){
+	/**
+	 * 父类点属性访问器表达式
+	 * @param {Context} context - 语法标签上下文
+	 * @param {Expression} object - 拥有该属性的对象
+	 * @param {String} closureReference - 闭包中的 this 指向
+	 */
+	function SuperDotAccessorExpression(context, object, closureReference){
+		AccessorExpression.call(this, context, object);
+
+		this.closureReference = closureReference;
+	};
+	SuperDotAccessorExpression = new Rexjs(SuperDotAccessorExpression, AccessorExpression);
+	
+	SuperDotAccessorExpression.props({
+		closureReference: "",
+		/**
+		 * 提取属性文本内容
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 */
+		compilePropertyTo: function(contentBuilder){
+			// 追加起始双引号
+			contentBuilder.appendString('"');
+			// 追加属性
+			contentBuilder.appendContext(this.property);
+			// 追加结束双引号
+			contentBuilder.appendString('"');
+		},
+		/**
+		 * 提取表达式文本内容
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 */
+		extractTo: function(contentBuilder){
+			// 如果需要编译
+			if(config.es6Base){
+				// 编译父类属性访问器
+				compileSuperAccessor(this, contentBuilder);
+				return;
+			}
+
+			// 调用父类方法
+			extractTo.call(this, contentBuilder);
+		}
+	});
+	
+	return SuperDotAccessorExpression;
+}(
+	AccessorExpression.prototype.extractTo
+);
+
+this.OpenSuperBracketAccessorTag = function(OpenBracketAccessorTag, SuperBracketAccessorExpression, BracketAccessorStatement){
 	/**
 	 * 起始父类中括号属性访问器标签
 	 * @param {Number} _type - 标签类型
@@ -20607,16 +20778,23 @@ this.OpenSuperBracketAccessorTag = function(visitor){
 		 * @param {Statements} statements - 当前语句块
 		 */
 		visitor: function(parser, context, statement, statements){
+			var expression = statement.expression, closure = statements.closure;
+
 			// 向当前闭包申请调用 super
-			statements.closure.applySuper(parser, statement.expression.context, context);
-			// 调用父类方法
-			visitor.call(this, parser, context, statement, statements);
+			closure.applySuper(parser, expression.context, context);
+			
+			// 设置当前表达式
+			statement.expression = new SuperBracketAccessorExpression(context, expression, closure.reference);
+			// 设置当前语句
+			statements.statement = new BracketAccessorStatement(statements);
 		}
 	});
 	
 	return OpenSuperBracketAccessorTag;
 }(
-	OpenBracketAccessorTag.prototype.visitor
+	this.OpenBracketAccessorTag,
+	this.SuperBracketAccessorExpression,
+	this.BracketAccessorStatement
 );
 
 this.CloseSuperBracketAccessorTag = function(CloseBracketAccessorTag){
@@ -20644,7 +20822,7 @@ this.CloseSuperBracketAccessorTag = function(CloseBracketAccessorTag){
 	this.CloseBracketAccessorTag
 );
 
-this.SuperDotAccessorTag = function(visitor){
+this.SuperDotAccessorTag = function(DotAccessorTag, SuperDotAccessorExpression){
 	/**
 	 * 父类点属性访问器标签
 	 * @param {Number} _type - 标签类型
@@ -20671,16 +20849,20 @@ this.SuperDotAccessorTag = function(visitor){
 		 * @param {Statements} statements - 当前语句块
 		 */
 		visitor: function(parser, context, statement, statements){
+			var closure = statements.closure, expression = statement.expression;
+
 			// 向当前闭包申请调用 super
-			statements.closure.applySuper(parser, statement.expression.context, context);
-			// 调用父类方法
-			visitor.call(this, parser, context, statement, statements);
+			closure.applySuper(parser, expression.context, context);
+			
+			// 设置当前表达式
+			statement.expression = new SuperDotAccessorExpression(context, expression, closure.reference);
 		}
 	});
 	
 	return SuperDotAccessorTag;
 }(
-	DotAccessorTag.prototype.visitor
+	this.DotAccessorTag,
+	this.SuperDotAccessorExpression
 );
 
 this.SuperPropertyNameTag = function(PropertyNameTag){
@@ -20708,68 +20890,128 @@ this.SuperPropertyNameTag = function(PropertyNameTag){
 	this.PropertyNameTag
 );
 
-this.OpenSuperMethodCallTag = function(OpenSuperCallTag, SuperMethodCallExpression, ConstructorBodyStatements){
-	/**
-	 * 起始父类方法调用小括号标签
-	 * @param {Number} _type - 标签类型
-	 */
-	function OpenSuperMethodCallTag(_type){
-		OpenSuperCallTag.call(this, _type);
-	};
-	OpenSuperMethodCallTag = new Rexjs(OpenSuperMethodCallTag, OpenSuperCallTag);
-	
-	OpenSuperMethodCallTag.props({
-		order: ECMAScriptOrders.OPEN_SUPER_METHOD_CALL,
-		/**
-		 * 标签访问器
-		 * @param {SyntaxParser} parser - 语法解析器
-		 * @param {Context} context - 标签上下文
-		 * @param {Statement} statement - 当前语句
-		 * @param {Statements} statements - 当前语句块
-		 */
-		visitor: function(parser, context, statement, statements){
-			var closure = statements.closure;
-
-			// 设置当前表达式
-			statement.expression = new SuperMethodCallExpression(
-				context,
-				statement,
-				// 如果是在构造函数语句块中
-				closure instanceof ConstructorBodyStatements ?
-					statements.closure.thisLiteral :
-					"this"
-			);
-
-			// 设置当前语句
-			statements.statement = new CallStatement(statements);
-		}
-	});
-	
-	return OpenSuperMethodCallTag;
-}(
-	this.OpenSuperCallTag,
-	this.SuperMethodCallExpression,
-	this.ConstructorBodyStatements
-);
-
 closeSuperBracketAccessorTag = new this.CloseSuperBracketAccessorTag();
 
 }.call(
 	this,
+	this.AccessorExpression,
 	this.BracketAccessorExpression,
-	this.CallExpression,
-	this.CallStatement,
-	this.OpenBracketAccessorTag,
-	this.DotAccessorTag,
 	// closeSuperBracketAccessorTag
-	null
+	null,
+	// compileSuperAccessor
+	function(expression, contentBuilder, extractProperty){
+		// 追加获取父类属性方法的起始代码
+		contentBuilder.appendString("(Rexjs.Super.getProperty(");
+		// 提取 super 表达式
+		expression.object.extractTo(contentBuilder);
+		// 追加当前环境的 this 指向
+		contentBuilder.appendString("," + expression.closureReference + ",");
+		// 提取属性
+		expression.compilePropertyTo(contentBuilder);
+		// 追加一系列结束小括号
+		contentBuilder.appendString("))");
+	}
 );
 									}
 									.toString()
 									.match(
 										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
 									)[1] +
-									"\n//# sourceURL=http://rexjs.org/super.js"
+									"\n//# sourceURL=http://rexjs.org/super-property.js"
+								);
+
+
+eval(
+									function(){
+										// 父类属性赋值相关
+!function(BinaryExpression){
+
+this.SuperPropertyBasicAssignmentExpression = function(extractTo){
+	/**
+	 * 二元表达式
+	 * @param {Context} context - 语法标签上下文
+	 * @param {Expression} left - 该二元表达式左侧运算的表达式
+	 */
+	function SuperPropertyBasicAssignmentExpression(context, left){
+		BinaryExpression.call(this, context, left);
+	};
+	SuperPropertyBasicAssignmentExpression = new Rexjs(SuperPropertyBasicAssignmentExpression);
+
+	SuperPropertyBasicAssignmentExpression.props({
+		/**
+		 * 提取表达式文本内容
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 */
+		extractTo: function(contentBuilder){
+			// 如果需要编译
+			if(config.es6Base){
+				var left = this.left;
+
+				// 追加设置父类属性方法的起始代码
+				contentBuilder.appendString("(Rexjs.Super.setProperty(");
+				// 提取 super 表达式
+				left.object.extractTo(contentBuilder);
+				// 追加当前环境的 this 指向
+				contentBuilder.appendString("," + left.closureReference + ",");
+				// 编译属性名
+				left.compilePropertyTo(contentBuilder);
+				// 追加参数分隔符
+				contentBuilder.appendString(",");
+				// 追加属性值
+				this.right.extractTo(contentBuilder);
+				// 追加一系列结束小括号
+				contentBuilder.appendString("))");
+				return;
+			}
+
+			// 调用父类方法
+			extractTo.call(this, contentBuilder);
+		}
+	});
+	
+	return SuperPropertyBasicAssignmentExpression;
+}(
+	BinaryExpression.prototype.extractTo
+);
+
+this.SuperPropertyBasicAssignmentTag = function(BasicAssignmentTag, SuperPropertyBasicAssignmentExpression){
+	/**
+	 * 父类属性基础赋值标签
+	 * @param {Number} _type - 标签类型
+	 */
+	function SuperPropertyBasicAssignmentTag(_type){
+		BasicAssignmentTag.call(this, _type);
+	};
+	SuperPropertyBasicAssignmentTag = new Rexjs(SuperPropertyBasicAssignmentTag, BasicAssignmentTag);
+	
+	SuperPropertyBasicAssignmentTag.props({
+		order: ECMAScriptOrders.SUPER_PROPERTY_ASSIGNMENT,
+		/**
+		 * 将该二元标签转换为二元表达式
+		 * @param {Context} context - 相关的语法标签上下文
+		 * @param {Expression} left - 该二元表达式左侧运算的表达式
+		 */
+		toExpression: function(context, left){
+			return new SuperPropertyBasicAssignmentExpression(context, left);
+		}
+	});
+	
+	return SuperPropertyBasicAssignmentTag;
+}(
+	this.BasicAssignmentTag,
+	this.SuperPropertyBasicAssignmentExpression
+);
+
+}.call(
+	this,
+	this.BinaryExpression
+);
+									}
+									.toString()
+									.match(
+										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+									)[1] +
+									"\n//# sourceURL=http://rexjs.org/super-property-assignment.js"
 								);
 
 
@@ -24691,7 +24933,7 @@ this.StaticModifierContextTags = function(ClassPropertyNameTags, ConstructorTag,
 	this.OpenShorthandMethodArgumentsTag
 );
 
-this.SuperAccessorContextTags = function(OpenSuperMethodCallTag){
+this.SuperAccessorContextTags = function(OpenSuperMethodCallTag, SuperPropertyBasicAssignmentTag){
 	/**
 	 * 父类属性名上下文标签列表
 	 */
@@ -24699,14 +24941,16 @@ this.SuperAccessorContextTags = function(OpenSuperMethodCallTag){
 		ExpressionContextTags.call(this);
 		
 		this.register(
-			new OpenSuperMethodCallTag()
+			new OpenSuperMethodCallTag(),
+			new SuperPropertyBasicAssignmentTag()
 		);
 	};
 	SuperAccessorContextTags = new Rexjs(SuperAccessorContextTags, ExpressionContextTags);
 
 	return SuperAccessorContextTags;
 }(
-	this.OpenSuperMethodCallTag
+	this.OpenSuperMethodCallTag,
+	this.SuperPropertyBasicAssignmentTag
 );
 
 this.SuperContextTags = function(OpenSuperCallTag, SuperDotAccessorTag, OpenSuperBracketAccessorTag){

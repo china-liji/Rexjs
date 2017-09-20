@@ -278,7 +278,7 @@ this.Generator = function(Iterator){
 
 
 // 类相关
-!function(){
+!function(getPrototypeOf, getOwnPropertyDescriptor, hasOwnProperty){
 
 this.ClassProperty = function(){
 	/**
@@ -330,7 +330,7 @@ this.StaticProperty = function(ClassProperty){
 	this.ClassProperty
 );
 
-this.Super = function(){
+this.Super = function(getPropertyDescriptor){
 	/**
 	 * 父类
 	 */
@@ -340,38 +340,101 @@ this.Super = function(){
 	Super.static({
 		/**
 		 * 调用父类的构造函数
-		 * @param {Rexjs} prototype - 类的原型链
-		 * @param {Rexjs} instance - 某个类的实例
+		 * @param {Rexjs} classPrototype - 类的原型链
+		 * @param {Rexjs} classInstance - 类的实例
 		 * @param {Array} args - 构造函数参数列表
 		 */
-		callConstructor: function(prototype, instance, args){
+		callConstructor: function(classPrototype, classInstance, args){
 			return this.returnedThis(
-				instance,
-				prototype.constructor.apply(instance, args)
+				classInstance,
+				// 获取父类原型链上的构造函数并调用
+				getPrototypeOf(classPrototype).constructor.apply(classInstance, args)
 			);
 		},
 		/**
 		 * 调用父类的方法
-		 * @param {Function} method - 父类的方法
-		 * @param {Rexjs, Object} instance - 某个类的实例
+		 * @param {Rexjs, Object} classInstance - 类的实例
+		 *  @param {Function} method - 父类的方法
 		 * @param {Array} args - 参数列表
 		 */
-		execMethod: function(method, instance, args){
-			return method.apply(instance, args);
+		execMethod: function(classInstance, method, args){
+			return method.apply(classInstance, args);
+		},
+		/**
+		 * 获取父类属性值
+		 * @param {Rexjs, Object} classPrototype - 某级父类的原型链
+		 * @param {Rexjs, Object} classInstance - 类的实例
+		 * @param {String} name - 需要获取属性的名称
+		 */
+		getProperty: function(classPrototype, classInstance, name){
+			var descriptor = getPropertyDescriptor(classPrototype, name);
+
+			// 如果描述符存在
+			if(descriptor){
+				var get = descriptor.get;
+
+				// 如果是 get 访问器，则调用 get 方法，否则返回属性值
+				return get ? get.call(classInstance) : descriptor.value;
+			}
+
+			return void 0;
 		},
 		/**
 		 * 获取父类构造函数执行结果所返回的、有效的 this
-		 * @param {Rexjs} instance - 某个类的实例
+		 * @param {Rexjs} classInstance - 类的实例
 		 * @param {*} returnValue - 构造函数所返回的值
 		 */
-		returnedThis: function(instance, returnValue){
+		returnedThis: function(classInstance, returnValue){
 			// 如果构造函数返回值是对象，而且存在，则返回该对象，否则返回实例
-			return (typeof returnValue === "object" && returnValue) || instance;
+			return (typeof returnValue === "object" && returnValue) || classInstance;
+		},
+		/**
+		 * 设置父类属性值
+		 * @param {Rexjs, Object} classPrototype - 某级父类的原型链
+		 * @param {Rexjs, Object} classInstance - 类的实例
+		 * @param {String} name - 需要设置属性的名称
+		 * @param {*} value - 需要设置属性的值
+		 */
+		setProperty: function(classPrototype, classInstance, name, value){
+			var descriptor = getPropertyDescriptor(classPrototype, name);
+
+			// 如果描述符存在
+			if(descriptor){
+				var set = descriptor.set;
+
+				// 如果是 set 访问器
+				if(set){
+					// 调用 set 方法
+					set.call(classInstance, value);
+					return;
+				}
+			}
+
+			// 直接给实例设置值
+			classInstance[name] = value;
 		}
 	});
 
 	return Super;
-}();
+}(
+	// getPropertyDescriptor
+	function(classPrototype, name){
+		var superPrototype = getPrototypeOf(classPrototype);
+
+		// 如果父类原型链存在
+		while(superPrototype){
+			// 如果是自身属性
+			if(hasOwnProperty.call(superPrototype, name)){
+				return getOwnPropertyDescriptor(superPrototype, name);
+			}
+
+			// 继续获取父类原型链
+			superPrototype = getPrototypeOf(classPrototype);
+		}
+
+		return null;
+	}
+);
 
 this.Class = function(ClassProperty, defineProperty){
 	/**
@@ -441,7 +504,10 @@ this.Class = function(ClassProperty, defineProperty){
 );
 
 }.call(
-	this
+	this,
+	Object.getPrototypeOf,
+	Object.getOwnPropertyDescriptor,
+	Object.hasOwnProperty
 );
 
 

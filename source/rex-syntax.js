@@ -1601,6 +1601,7 @@ this.Statements = function(Statement, STATE_STATEMENT_ENDED, parseInt){
 			this.statement = null;
 			return this.statement = this[this.length++] = this.initStatement();
 		},
+		reference: "this",
 		scope: Statements.SCOPE_GLOBAL,
 		splice: Array.prototype.splice,
 		statement: null,

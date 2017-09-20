@@ -129,12 +129,13 @@ defineProperty(global, "Rexjs", this);
 );
 
 // 静态属性
-new function(Function, __proto__){
+new function(Object, Function, __proto__){
 "use strict";
 
 this.apply = Function.apply;
 this.bind = Function.bind;
 this.call = Function.call;
+this.hasOwnProperty = Object.prototype.hasOwnProperty;
 
 this.static = function(getOwnPropertyDescriptor, defineProperty){
 	/**
@@ -183,6 +184,7 @@ this.toString = function(){
 this.static.call(__proto__, this);
 
 }(
+	Object,
 	Function,
 	// __proto__
 	Object.getPrototypeOf(Rexjs)

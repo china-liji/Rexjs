@@ -119,7 +119,7 @@ this.ConstructorBodyStatements = function(extractTo, applyAfterSuperCall){
 
 			// 如果需要编译
 			if(config.es6Base){
-				this.thisLiteral = this.collections.generate();
+				this.reference = this.collections.generate();
 			}
 
 			return;
@@ -182,7 +182,7 @@ this.ConstructorBodyStatements = function(extractTo, applyAfterSuperCall){
 			// 如果是在 super 调用之后
 			if(applyAfterSuperCall(parser, this, context)){
 				// 修改 this 上下文的文本内容为临时变量名，因为 this 是要根据 super 的返回值来决定的
-				context.content = this.thisLiteral;
+				context.content = this.reference;
 			}
 		},
 		/**
@@ -197,12 +197,11 @@ this.ConstructorBodyStatements = function(extractTo, applyAfterSuperCall){
 				// 如果父类被调用过，说明存在父类
 				if(this.phase === PHASE_CALLED){
 					// 追加构造函数返回值
-					contentBuilder.appendString("return " + this.thisLiteral + ";");
+					contentBuilder.appendString("return " + this.reference + ";");
 				}
 			}
 		},
-		phase: PHASE_NONE,
-		thisLiteral: "this"
+		phase: PHASE_NONE
 	});
 
 	return ConstructorBodyStatements;
