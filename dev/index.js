@@ -1,28 +1,39 @@
+new function(){
+	
 var a = {
-	get x(){
-		return this.y
-	},
-	set x(value){
-		this.y = value;
+	get x(){ return this.y + 2 }
+}
+
+var b = { y: 2 }
+
+Object.setPrototypeOf(b,a);
+
+var c = {
+	get x(){ return this.y + 45 }
+}
+
+var d = {
+	y: 100,
+	get(){
+		return super.x
 	}
 }
 
-var b = {
-	get x(){
-		return super.x = 5
-	},
-	y: 100
-}
+Object.setPrototypeOf(d, c)
 
-Object.setPrototypeOf(b,a)
+console.log(
+	d.get.call(b),
+	b.x,
+	d.x
+);
 
-b.x
+debugger
 
 /**
  * setPrototype 改变 super 的指向？？？？？？？？？？？？？？？？？
  */
 
-debugger
+
 
 // // 测试类的访问器属性中的 super
 // !function(){
@@ -49,3 +60,5 @@ debugger
 // debugger
 
 // }();
+
+}()

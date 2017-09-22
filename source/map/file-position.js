@@ -64,7 +64,7 @@ this.FileEndTag = function(FileEndExpression, GlobalStatements){
 					break;
 
 				// 如果存在表达式，说明解析有问题，因为该标签是语句起始标签，而又有上面两点保证，所以当前表达式必定为 null，为了 100% 确保，还是判断一下
-				case statement.expression === null:
+				case !statement.expression:
 					break;
 
 				default:

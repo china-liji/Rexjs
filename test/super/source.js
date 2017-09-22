@@ -114,46 +114,43 @@ if(!Object.setPrototypeOf){
 	return;
 }
 
-var obj = {
-	get: function(){
-		return this.b
+var a = {
+	get x(){ return this.y + 2 }
+}
+
+var b = { y: 2 }
+
+Object.setPrototypeOf(b,a);
+
+var c = {
+	get x(){ return this.y + 45 }
+}
+
+var d = {
+	y: 100,
+	get(){
+		return super.x
 	}
-};
-
-var obj2 = { get a(){ return super.get() + 3 } };
-
-Object.setPrototypeOf(obj2, obj);
-
-var obj3 = { get a(){ return super.a }, b: 1 }
-
-Object.setPrototypeOf(obj3, obj2);
-
-if(obj3.a !== 4){
-	throw "对象的 super 验证失败 - 连续继承同属性"
 }
 
-}();
+Object.setPrototypeOf(d, c)
 
-!function(){
+console.log(
+	d.get.call(b),
+	b.x,
+	d.x
+);
 
-if(!Object.setPrototypeOf){
-	return;
+if(b.x !== 4){
+	throw "父级属性访问器没有绑定调用 super 时所处的 this";
 }
 
-var obj = {
-	a: 1
-};
+if(d.get.call(b) !== 47){
+	throw "super 只跟声明时所在对象的父级进行绑定，而不会随着 setPrototypeOf 而改变";
+}
 
-var obj2 = { get a(){ return super.a + 3 } };
-
-Object.setPrototypeOf(obj2, obj);
-
-var obj3 = {  }
-
-Object.setPrototypeOf(obj3, obj2);
-
-if(obj3.a !== 4){
-	throw "对象的 super 验证失败 - 非连续继承同属性"
+if(d.x !== 145){
+	throw "当前对象方法 或 父级属性访问器没有绑定调用 super 时所处的 this";
 }
 
 }();

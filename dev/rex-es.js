@@ -987,7 +987,7 @@ this.ModuleTag = function(FLOW_MAIN){
 		 */
 		visitor: function(parser, context, statement, statements){
 			// 如果当前语句有 target，说明不是最外层语句 或者 不是默认语句流
-			if(statements.target !== null || statement.flow !== FLOW_MAIN){
+			if(statements.target || statement.flow !== FLOW_MAIN){
 				// 报错
 				parser.error(
 					context,
@@ -1198,7 +1198,7 @@ this.FileEndTag = function(FileEndExpression, GlobalStatements){
 					break;
 
 				// 如果存在表达式，说明解析有问题，因为该标签是语句起始标签，而又有上面两点保证，所以当前表达式必定为 null，为了 100% 确保，还是判断一下
-				case statement.expression === null:
+				case !statement.expression:
 					break;
 
 				default:
@@ -9541,9 +9541,9 @@ this.PropertyExpression = function(BinaryExpression){
 		requestVariableOf: function(statements, objectExpression){
 			var variable = objectExpression.variable;
 
-			// 如果已经记录了变量
-			if(variable === ""){
-				// 生成并记录变量名
+			// 如果对象变量不存在
+			if(!variable){
+				// 给对象表达式生成并记录变量名
 				objectExpression.variable = variable = statements.collections.generate();
 			}
 
@@ -9714,8 +9714,8 @@ this.PropertyStatement = function(PropertyExpression, ifComma){
 			var expression = this.expression, objectExpression = this.out();
 
 			switch(true){
-				// 如果表达式是空项
-				case expression.name === null:
+				// 如果名称不存在，说明表达式是空项
+				case !expression.name:
 					break;
 
 				// 如果可能是访问器
@@ -18737,7 +18737,9 @@ this.ClassPropertyExpression = function(extractTo, requestVariableOf){
 		 * @param {Statements} statements - 类表达式所处的语句块
 		 * @param {ClassExpression} classExpression - 类表达式
 		 */
-		setCompiledVariableTo: function(){},
+		setCompiledVariableTo: function(statements, classExpression){
+			this.requestVariableOf(statements, classExpression);
+		},
 		/**
 		 * 获取该属性是否为静态属性
 		 */
@@ -19681,8 +19683,8 @@ this.ClassPropertyStatement = function(PropertyStatement, ClassPropertyExpressio
 		catch: function(parser, context){
 			var classExpression = this.out(), classBodyExpression = classExpression.body, propertyExpression = this.expression;
 
-			// 如果不是空表达式
-			if(propertyExpression.name !== null){
+			// 如果名称存在，说明不是空表达式
+			if(propertyExpression.name){
 				// 如果存在访问器
 				if(propertyExpression.accessible){
 					// 根据访问器核对函数正确性

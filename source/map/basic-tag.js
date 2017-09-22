@@ -187,7 +187,7 @@ this.ModuleTag = function(FLOW_MAIN){
 		 */
 		visitor: function(parser, context, statement, statements){
 			// 如果当前语句有 target，说明不是最外层语句 或者 不是默认语句流
-			if(statements.target !== null || statement.flow !== FLOW_MAIN){
+			if(statements.target || statement.flow !== FLOW_MAIN){
 				// 报错
 				parser.error(
 					context,

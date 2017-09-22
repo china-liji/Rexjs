@@ -141,7 +141,9 @@ this.ClassPropertyExpression = function(extractTo, requestVariableOf){
 		 * @param {Statements} statements - 类表达式所处的语句块
 		 * @param {ClassExpression} classExpression - 类表达式
 		 */
-		setCompiledVariableTo: function(){},
+		setCompiledVariableTo: function(statements, classExpression){
+			this.requestVariableOf(statements, classExpression);
+		},
 		/**
 		 * 获取该属性是否为静态属性
 		 */

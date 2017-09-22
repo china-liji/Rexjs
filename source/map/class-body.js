@@ -62,8 +62,8 @@ this.ClassPropertyStatement = function(PropertyStatement, ClassPropertyExpressio
 		catch: function(parser, context){
 			var classExpression = this.out(), classBodyExpression = classExpression.body, propertyExpression = this.expression;
 
-			// 如果不是空表达式
-			if(propertyExpression.name !== null){
+			// 如果名称存在，说明不是空表达式
+			if(propertyExpression.name){
 				// 如果存在访问器
 				if(propertyExpression.accessible){
 					// 根据访问器核对函数正确性

@@ -274,9 +274,9 @@ this.PropertyExpression = function(BinaryExpression){
 		requestVariableOf: function(statements, objectExpression){
 			var variable = objectExpression.variable;
 
-			// 如果已经记录了变量
-			if(variable === ""){
-				// 生成并记录变量名
+			// 如果对象变量不存在
+			if(!variable){
+				// 给对象表达式生成并记录变量名
 				objectExpression.variable = variable = statements.collections.generate();
 			}
 
@@ -447,8 +447,8 @@ this.PropertyStatement = function(PropertyExpression, ifComma){
 			var expression = this.expression, objectExpression = this.out();
 
 			switch(true){
-				// 如果表达式是空项
-				case expression.name === null:
+				// 如果名称不存在，说明表达式是空项
+				case !expression.name:
 					break;
 
 				// 如果可能是访问器
