@@ -27,16 +27,23 @@ this.ClassExpression = function(DefaultExtendsExpression){
 
 			// 如果需要编译
 			if(config.es6Base){
+				var variable = this.variable;
+
+				// 追加 create 方法头部代码
+				contentBuilder.appendString(
+					"(" +
+					(variable ? variable + "=" : "") +
+					"Rexjs.Class.create("
+				);
+
 				// 如果存在继承，说明有父类
 				if(extendsExpression){
-					// 追加赋值操作及 create 方法头部代码
-					contentBuilder.appendString("(" + this.variable + "=Rexjs.Class.create(");
 					// 编译继承表达式
 					extendsExpression.compileTo(contentBuilder);
 				}
 				else {
-					// 追加 create 方法头部代码
-					contentBuilder.appendString("(Rexjs.Class.create(void 0");
+					// 追加 undefined
+					contentBuilder.appendString("void 0");
 				}
 
 				// 追加 父类 与 属性数组的起始中括号

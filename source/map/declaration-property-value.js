@@ -1,7 +1,7 @@
 // 对象解构声明的属性值相关
 !function(PropertyDestructuringItemExpression, CloseDeclarationObjectTag, VariableDeclarationTag, BasicAssignmentTag, closeArrayDeclarationPropertyValueTag, closeObjectDeclarationPropertyValueTag){
 
-this.OpenObjectDeclarationPropertyValueTag = function(OpenDeclarationObjectTag, DeclarationObjectExpression, PropertyStatement){
+this.OpenObjectDeclarationPropertyValueTag = function(OpenDeclarationObjectTag, DeclarationObjectExpression, PropertyDestructuringStatement){
 	/**
 	 * 对象声明属性值（即：对象解构中所嵌套的对象解构）起始标签
 	 * @param {Number} _type - 标签类型
@@ -26,21 +26,21 @@ this.OpenObjectDeclarationPropertyValueTag = function(OpenDeclarationObjectTag, 
 		 * @param {Statements} statements - 当前语句块
 		 */
 		visitor: function(parser, context, statement, statements){
-			var propertyStatement = statement.target.target, propertyExpression = propertyStatement.expression;
+			var propertyDestructuringStatement = statement.target, propertyExpression = propertyDestructuringStatement.expression;
 
 			// 设置当前表达式
 			statement.expression = new DeclarationObjectExpression(
 				context,
-				propertyStatement.target.expression.objectOf
+				propertyDestructuringStatement.target.expression.objectOf
 			);
 
 			// 设置当前语句
-			statements.statement = new PropertyStatement(statements);
+			statements.statement = new PropertyDestructuringStatement(statements);
 
 			// 设置 destructuringItem 属性，以标识为解构子项
 			propertyExpression.value.destructuringItem = true;
-			// 重新设置属性语句的表达式为属性解构子项表达式
-			propertyStatement.expression = new PropertyDestructuringItemExpression(propertyExpression);
+			// 绑定解构项表达式
+			propertyDestructuringStatement.bound = new PropertyDestructuringItemExpression(propertyExpression);
 		}
 	});
 
@@ -48,7 +48,7 @@ this.OpenObjectDeclarationPropertyValueTag = function(OpenDeclarationObjectTag, 
 }(
 	this.OpenDeclarationObjectTag,
 	this.DeclarationObjectExpression,
-	this.PropertyStatement
+	this.PropertyDestructuringStatement
 );
 
 this.CloseObjectDeclarationPropertyValueTag = function(visitor){
@@ -115,12 +115,12 @@ this.OpenArrayDeclarationPropertyValueTag = function(OpenNestedDeclarationArrayI
 		 * @param {Statements} statements - 当前语句块
 		 */
 		visitor: function(parser, context, statement, statements){
-			var propertyStatement = statement.target.target, propertyExpression = propertyStatement.expression;
+			var propertyDestructuringStatement = statement.target, propertyExpression = propertyDestructuringStatement.expression;
 
 			// 设置当前表达式
 			statement.expression = new DeclarationArrayExpression(
 				context,
-				propertyStatement.target.expression.objectOf
+				propertyDestructuringStatement.target.expression.objectOf
 			);
 
 			// 设置当前语句
@@ -128,8 +128,8 @@ this.OpenArrayDeclarationPropertyValueTag = function(OpenNestedDeclarationArrayI
 
 			// 设置 destructuringItem 属性，以标识为解构子项
 			propertyExpression.value.destructuringItem = true;
-			// 重新设置属性语句的表达式为属性解构子项表达式
-			propertyStatement.expression = new PropertyDestructuringItemExpression(propertyExpression);
+			// 绑定解构项表达式
+			propertyDestructuringStatement.bound = new PropertyDestructuringItemExpression(propertyExpression);
 		}
 	});
 
@@ -165,7 +165,7 @@ this.CloseArrayDeclarationPropertyValueTag = function(CloseNestedDeclarationArra
 	this.CloseNestedDeclarationArrayItemTag
 );
 
-this.DeclarationPropertyValueTag = function(PropertyDestructuringItemExpression, visitor){
+this.DeclarationPropertyValueTag = function(visitor){
 	/**
 	 * 对象解构声明的属性值标签
 	 * @param {Number} _type - 标签类型
@@ -191,7 +191,7 @@ this.DeclarationPropertyValueTag = function(PropertyDestructuringItemExpression,
 		 * @param {Statements} statements - 当前语句块
 		 */
 		visitor: function(parser, context, statement, statements){
-			var propertyStatement = statement.target.target, variable = propertyStatement.target.expression.objectOf.context.tag.variable;
+			var propertyDestructuringStatement = statement.target, variable = propertyDestructuringStatement.target.expression.objectOf.context.tag.variable;
 
 			// 修改上下文标签，因为当前标签（即 this）的功能只能替代匹配，而不能替代解析
 			context.tag = variable;
@@ -199,14 +199,13 @@ this.DeclarationPropertyValueTag = function(PropertyDestructuringItemExpression,
 			// 调用父类方法
 			visitor.call(this, parser, context, statement, statements);
 
-			// 重新设置属性语句的表达式
-			propertyStatement.expression = new PropertyDestructuringItemExpression(propertyStatement.expression);
+			// 绑定解构项表达式
+			propertyDestructuringStatement.bound = new PropertyDestructuringItemExpression(propertyDestructuringStatement.expression);
 		}
 	});
 	
 	return DeclarationPropertyValueTag;
 }(
-	this.PropertyDestructuringItemExpression,
 	VariableDeclarationTag.prototype.visitor
 );
 
@@ -229,13 +228,13 @@ this.DeclarationPropertyValueInitializerTag = function(PropertyDestructuringDefa
 		 * @param {Statements} statements - 当前语句块
 		 */
 		visitor: function(parser, context, statement, statements){
-			var target = statement.target;
+			var propertyDestructuringStatement = statement.target;
 
 			// 调用父类访问器
 			visitor.call(this, parser, context, statement, statements);
 
-			// 覆盖表达式
-			target.target.expression = new PropertyDestructuringDefaultItemExpression(target.expression, statement.expression, statements);
+			// 绑定解构项表达式
+			propertyDestructuringStatement.bound = new PropertyDestructuringDefaultItemExpression(propertyDestructuringStatement.expression, statement.expression, statements);
 		}
 	});
 

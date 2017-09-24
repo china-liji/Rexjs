@@ -406,12 +406,14 @@ this.Super = function(getPropertyDescriptor){
 				if(set){
 					// 调用 set 方法
 					set.call(classInstance, value);
-					return;
 				}
+
+				return value;
 			}
 
 			// 直接给实例设置值
 			classInstance[name] = value;
+			return value;
 		}
 	});
 
@@ -429,7 +431,7 @@ this.Super = function(getPropertyDescriptor){
 			}
 
 			// 继续获取父类原型链
-			superPrototype = getPrototypeOf(classPrototype);
+			superPrototype = getPrototypeOf(superPrototype);
 		}
 
 		return null;

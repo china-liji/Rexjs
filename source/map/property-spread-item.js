@@ -1,20 +1,20 @@
 // 对象属性拓展项相关
 !function(){
 
-this.SpreadPropertyExpression = function(PropertyExpression, SpreadExpression){
+this.PropertySpreadExpression = function(PropertyExpression, SpreadExpression){
 	/**
-	 * 拓展属性表达式
+	 * 属性拓展表达式
 	 * @param {Context} context - 语法标签上下文
 	 */
-	function SpreadPropertyExpression(context){
+	function PropertySpreadExpression(context){
 		PropertyExpression.call(this);
 
 		// 设置属性值
 		this.value = new SpreadExpression(context);
 	};
-	SpreadPropertyExpression = new Rexjs(SpreadPropertyExpression, PropertyExpression);
+	PropertySpreadExpression = new Rexjs(PropertySpreadExpression, PropertyExpression);
 
-	SpreadPropertyExpression.props({
+	PropertySpreadExpression.props({
 		/**
 		 * 提取并编译表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
@@ -39,13 +39,13 @@ this.SpreadPropertyExpression = function(PropertyExpression, SpreadExpression){
 		name: new DefaultExpression()
 	});
 
-	return SpreadPropertyExpression;
+	return PropertySpreadExpression;
 }(
 	this.PropertyExpression,
 	this.SpreadExpression
 );
 
-this.PropertySpreadTag = function(SpreadTag, SpreadPropertyExpression, SpreadStatement){
+this.PropertySpreadTag = function(SpreadTag, PropertySpreadExpression, SpreadStatement){
 	/**
 	 * 对象属性拓展项标签
 	 * @param {Number} _type - 标签类型
@@ -64,7 +64,7 @@ this.PropertySpreadTag = function(SpreadTag, SpreadPropertyExpression, SpreadSta
 		 * @param {Statements} statements - 当前语句块
 		 */
 		visitor: function(parser, context, statement, statements){
-			var expression = new SpreadPropertyExpression(context), boxStatement = new BoxStatement(statements);
+			var expression = new PropertySpreadExpression(context), boxStatement = new BoxStatement(statements);
 
 			// 如果需要编译
 			if(config.es6Base){
@@ -89,7 +89,7 @@ this.PropertySpreadTag = function(SpreadTag, SpreadPropertyExpression, SpreadSta
 	return PropertySpreadTag;
 }(
 	this.SpreadTag,
-	this.SpreadPropertyExpression,
+	this.PropertySpreadExpression,
 	this.SpreadStatement
 );
 

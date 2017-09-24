@@ -1763,7 +1763,7 @@ this.StaticModifierContextTags = function(ClassPropertyNameTags, ConstructorTag,
 	this.OpenShorthandMethodArgumentsTag
 );
 
-this.SuperAccessorContextTags = function(OpenSuperMethodCallTag, SuperPropertyBasicAssignmentTag){
+this.SuperAccessorContextTags = function(OpenSuperMethodCallTag, SuperPropertyBasicAssignmentTag, SuperPropertyShorthandAssignmentTag){
 	/**
 	 * 父类属性名上下文标签列表
 	 */
@@ -1772,7 +1772,8 @@ this.SuperAccessorContextTags = function(OpenSuperMethodCallTag, SuperPropertyBa
 		
 		this.register(
 			new OpenSuperMethodCallTag(),
-			new SuperPropertyBasicAssignmentTag()
+			new SuperPropertyBasicAssignmentTag(),
+			new SuperPropertyShorthandAssignmentTag()
 		);
 	};
 	SuperAccessorContextTags = new Rexjs(SuperAccessorContextTags, ExpressionContextTags);
@@ -1780,7 +1781,8 @@ this.SuperAccessorContextTags = function(OpenSuperMethodCallTag, SuperPropertyBa
 	return SuperAccessorContextTags;
 }(
 	this.OpenSuperMethodCallTag,
-	this.SuperPropertyBasicAssignmentTag
+	this.SuperPropertyBasicAssignmentTag,
+	this.SuperPropertyShorthandAssignmentTag
 );
 
 this.SuperContextTags = function(OpenSuperCallTag, SuperDotAccessorTag, OpenSuperBracketAccessorTag){

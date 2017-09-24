@@ -1,5 +1,5 @@
 // 对象声明解构赋值相关
-!function(variableDeclarationPropertySeparatorTag, closeDeclarationObjectTag){
+!function(PropertyDestructuringItemExpression, PropertyStatement, variableDeclarationPropertySeparatorTag, closeDeclarationObjectTag){
 	
 this.DeclarationObjectExpression = function(ObjectExpression){
 	/**
@@ -29,7 +29,61 @@ this.DeclarationObjectExpression = function(ObjectExpression){
 	this.ObjectExpression
 );
 
-this.OpenDeclarationObjectTag = function(OpenObjectTag, DeclarationObjectExpression, PropertyStatement){
+this.PropertyDestructuringStatement = function(catchMethod, tryMethod, both){
+	/**
+	 * 对象属性解构语句
+	 * @param {Statements} statements - 该语句将要所处的语句块
+	 */
+	function PropertyDestructuringStatement(statements){
+		PropertyStatement.call(this, statements);
+	};
+	PropertyDestructuringStatement = new Rexjs(PropertyDestructuringStatement, PropertyStatement);
+
+	PropertyDestructuringStatement.props({
+		bound: null,
+		/**
+		 * 捕获处理异常
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 语法标签上下文
+		 */
+		catch: function(parser, context){
+			var bound = this.bound;
+
+			return both(parser, this, context, bound, bound, catchMethod);
+		},
+		/**
+		 * 尝试处理异常
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 语法标签上下文
+		 */
+		try: function(parser, context){
+			return both(parser, this, context, this.bound, context.content === ",", tryMethod);
+		}
+	});
+
+	return PropertyDestructuringStatement;
+}(
+	PropertyStatement.prototype.catch,
+	PropertyStatement.prototype.try,
+	// both
+	function(parser, statement, context, bound, condition, method){
+		// 如果满足条件
+		if(condition){
+			var tag, inner = statement.target.expression.inner;
+
+			// 调用父类方法
+			tag = method.call(statement, parser, context);
+
+			// 替换为解构项表达式
+			inner[inner.length - 1] = inner.latest = bound;
+			return tag;
+		}
+
+		return method.call(statement, parser, context);
+	}
+);
+
+this.OpenDeclarationObjectTag = function(OpenObjectTag, DeclarationObjectExpression, PropertyDestructuringStatement){
 	/**
 	 * 变量声明对象起始标签
 	 * @param {Number} _type - 标签类型
@@ -70,7 +124,7 @@ this.OpenDeclarationObjectTag = function(OpenObjectTag, DeclarationObjectExpress
 			// 设置当前表达式
 			statement.expression = new DeclarationObjectExpression(context, statement.target.expression);
 			// 设置当前语句
-			statements.statement = new PropertyStatement(statements);
+			statements.statement = new PropertyDestructuringStatement(statements);
 		}
 	});
 
@@ -78,10 +132,10 @@ this.OpenDeclarationObjectTag = function(OpenObjectTag, DeclarationObjectExpress
 }(
 	this.OpenObjectTag,
 	this.DeclarationObjectExpression,
-	this.PropertyStatement
+	this.PropertyDestructuringStatement
 );
 
-this.DeclarationPropertySeparatorTag = function(PropertySeparatorTag){
+this.DeclarationPropertySeparatorTag = function(PropertySeparatorTag, PropertyDestructuringStatement){
 	/**
 	 * 对象属性的分隔符标签
 	 * @param {Number} _type - 标签类型
@@ -98,12 +152,24 @@ this.DeclarationPropertySeparatorTag = function(PropertySeparatorTag){
 		 */
 		require: function(tagsMap){
 			return tagsMap.declarationPropertyNameTags;
+		},
+		/**
+		 * 标签访问器
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 标签上下文
+		 * @param {Statement} statement - 当前语句
+		 * @param {Statements} statements - 当前语句块
+		 */
+		visitor: function(parser, context, statement, statements){
+			// 设置当前语句
+			statements.statement = new PropertyDestructuringStatement(statements);
 		}
 	});
 
 	return DeclarationPropertySeparatorTag;
 }(
-	this.PropertySeparatorTag
+	this.PropertySeparatorTag,
+	this.PropertyDestructuringStatement
 );
 
 this.CloseDeclarationObjectTag = function(CloseObjectTag){
@@ -137,6 +203,8 @@ closeDeclarationObjectTag = new this.CloseDeclarationObjectTag();
 
 }.call(
 	this,
+	this.PropertyDestructuringItemExpression,
+	this.PropertyStatement,
 	// variableDeclarationPropertySeparatorTag
 	null,
 	// closeDeclarationObjectTag

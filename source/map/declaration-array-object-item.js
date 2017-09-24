@@ -1,7 +1,7 @@
 // 数组声明解构内的对象解构相关
 !function(CloseDeclarationObjectTag, closeObjectDeclarationArrayItemTag){
 
-this.OpenObjectDeclarationArrayItemTag = function(OpenDeclarationObjectTag, DeclarationObjectExpression, PropertyStatement){
+this.OpenObjectDeclarationArrayItemTag = function(OpenDeclarationObjectTag, DeclarationObjectExpression, PropertyDestructuringStatement){
 	/**
 	 * 对象声明数组项（即数组声明解构中，所嵌套的对象解构）起始标签
 	 * @param {Number} _type - 标签类型
@@ -29,7 +29,7 @@ this.OpenObjectDeclarationArrayItemTag = function(OpenDeclarationObjectTag, Decl
 			// 设置当前表达式
 			statement.expression = new DeclarationObjectExpression(context, statement.target.expression.arrayOf);
 			// 设置当前语句
-			statements.statement = new PropertyStatement(statements);
+			statements.statement = new PropertyDestructuringStatement(statements);
 		}
 	});
 
@@ -37,7 +37,7 @@ this.OpenObjectDeclarationArrayItemTag = function(OpenDeclarationObjectTag, Decl
 }(
 	this.OpenDeclarationObjectTag,
 	this.DeclarationObjectExpression,
-	this.PropertyStatement
+	this.PropertyDestructuringStatement
 );
 
 this.CloseObjectDeclarationArrayItemTag = function(visitor){

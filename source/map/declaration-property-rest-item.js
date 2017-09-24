@@ -1,5 +1,5 @@
 // 对象解构声明的省略属性相关
-!function(DeclarationRestStatement){
+!function(SpreadStatement){
 
 this.DeclarationPropertyRestStatement = function(out){
 	/**
@@ -7,9 +7,9 @@ this.DeclarationPropertyRestStatement = function(out){
 	 * @param {Statements} statements - 该语句将要所处的语句块
 	 */
 	function DeclarationPropertyRestStatement(statements){
-		DeclarationRestStatement.call(this, statements);
+		SpreadStatement.call(this, statements);
 	};
-	DeclarationPropertyRestStatement = new Rexjs(DeclarationPropertyRestStatement, DeclarationRestStatement);
+	DeclarationPropertyRestStatement = new Rexjs(DeclarationPropertyRestStatement, SpreadStatement);
 
 	DeclarationPropertyRestStatement.props({
 		/**
@@ -22,7 +22,7 @@ this.DeclarationPropertyRestStatement = function(out){
 
 	return DeclarationPropertyRestStatement;
 }(
-	DeclarationRestStatement.prototype.out
+	SpreadStatement.prototype.out
 );
 
 this.DeclarationPropertyRestItemTag = function(IdentifierDeclarationPropertyNameTag, IdentifierExpression){
@@ -69,7 +69,7 @@ this.DeclarationPropertyRestItemTag = function(IdentifierDeclarationPropertyName
 	this.IdentifierExpression
 );
 
-this.DeclarationPropertyRestTag = function(PropertySpreadTag, PropertyDestructuringRestItemExpression, SpreadPropertyExpression, DeclarationPropertyRestStatement){
+this.DeclarationPropertyRestTag = function(PropertySpreadTag, PropertyDestructuringRestItemExpression, PropertySpreadExpression, DeclarationPropertyRestStatement){
 	/**
 	 * 变量声明对象属性省略项拓展符标签
 	 * @param {Number} _type - 标签类型
@@ -95,11 +95,12 @@ this.DeclarationPropertyRestTag = function(PropertySpreadTag, PropertyDestructur
 		 * @param {Statements} statements - 当前语句块
 		 */
 		visitor: function(parser, context, statement, statements){
-			// 设置当前表达式
-			statement.expression = new PropertyDestructuringRestItemExpression(
-				new SpreadPropertyExpression(context)
-			);
+			var expression = new PropertySpreadExpression(context);
 
+			// 绑定解构项表达式
+			statement.bound = new PropertyDestructuringRestItemExpression(expression);
+			// 设置当前表达式
+			statement.expression = expression;
 			// 设置当前语句
 			statements.statement = new DeclarationPropertyRestStatement(statements);
 		}
@@ -109,11 +110,11 @@ this.DeclarationPropertyRestTag = function(PropertySpreadTag, PropertyDestructur
 }(
 	this.PropertySpreadTag,
 	this.PropertyDestructuringRestItemExpression,
-	this.SpreadPropertyExpression,
+	this.PropertySpreadExpression,
 	this.DeclarationPropertyRestStatement
 );
 
 }.call(
 	this,
-	this.DeclarationRestStatement
+	this.SpreadStatement
 );

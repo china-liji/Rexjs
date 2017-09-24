@@ -202,7 +202,7 @@ module.exports = { DevSource: this.DevSource, Source: this.Source };
 		"object.js",
 		"declaration-object.js",
 		"declaration-property-name.js",
-		"declaration-property-separator.js",
+		"declaration-property-name-separator.js",
 		"declaration-property-value.js",
 		"declaration-property-rest-item.js",
 		"declaration-array-object-item.js",

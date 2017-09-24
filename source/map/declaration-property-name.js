@@ -56,8 +56,8 @@ this.IdentifierDeclarationPropertyNameStatement = function(both){
 			// 收集变量名
 			variable.collectTo(parser, context, parser.statements);
 
-			// 重新设置表达式
-			statement.target.expression = new PropertyDestructuringItemExpression(expression);
+			// 绑定解构项表达式
+			statement.target.bound = new PropertyDestructuringItemExpression(expression);
 		}
 
 		return null;

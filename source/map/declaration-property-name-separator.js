@@ -1,5 +1,5 @@
 // 对象解构声明的属性名分隔符相关
-!function(PropertyInitializerTag, PropertyNameSeparatorTag, initBoxStatement){
+!function(PropertyInitializerTag, PropertyNameSeparatorTag){
 
 this.DeclarationPropertyNameInitializerTag = function(PropertyDestructuringDefaultItemExpression, visitor){
 	/**
@@ -29,18 +29,11 @@ this.DeclarationPropertyNameInitializerTag = function(PropertyDestructuringDefau
 
 			// 收集变量名
 			variable.collectTo(parser, ctx, statements);
-
 			// 调用父类访问器
-			visitor.call(
-				this,
-				parser,
-				context,
-				initBoxStatement(statement, statements),
-				statements
-			);
+			visitor.call(this, parser, context, statement, statements);
 
-			// 重写表达式
-			statement.expression = new PropertyDestructuringDefaultItemExpression(expression, expression, statements);
+			// 绑定解构项表达式
+			statement.bound = new PropertyDestructuringDefaultItemExpression(expression, expression, statements);
 		}
 	});
 
@@ -67,23 +60,6 @@ this.DeclarationPropertyNameSeparatorTag = function(visitor){
 		 */
 		require: function(tagsMap){
 			return tagsMap.declarationPropertyValueTags;
-		},
-		/**
-		 * 标签访问器
-		 * @param {SyntaxParser} parser - 语法解析器
-		 * @param {Context} context - 标签上下文
-		 * @param {Statement} statement - 当前语句
-		 * @param {Statements} statements - 当前语句块
-		 */
-		visitor: function(parser, context, statement, statements){
-			// 调用父类访问器
-			visitor.call(
-				this,
-				parser,
-				context,
-				initBoxStatement(statement, statements),
-				statements
-			);
 		}
 	});
 
@@ -95,16 +71,5 @@ this.DeclarationPropertyNameSeparatorTag = function(visitor){
 }.call(
 	this,
 	this.PropertyInitializerTag,
-	this.PropertyNameSeparatorTag,
-	// initBoxStatement
-	function(statement, statements){
-		var boxStatement = new BoxStatement(statements);
-	
-		// 设置盒子语句的表达式，以模拟非解构时的语句环境
-		boxStatement.expression = statement.expression;
-		// 设置当前语句为盒子语句
-		statements.statement = boxStatement;
-
-		return boxStatement;
-	}
+	this.PropertyNameSeparatorTag
 );
