@@ -132,6 +132,7 @@ this.ECMAScriptOrders = ECMAScriptOrders = function(){
 		SHORTHAND_ASSIGNMENT: 203,
 		ILLEGAL_SHORTHAND_ASSIGNMENT: 204,
 		SUPER_PROPERTY_SHORTHAND_ASSIGNMENT: 204,
+		SUPER_PROPERTY_POSTFIX_UNARY_ASSIGNMENT: 204,
 		IDENTIFIER: 300,
 		TARGET: 301,
 		VARIABLE: 301,
@@ -1499,7 +1500,7 @@ this.StringTag = function(){
 									.match(
 										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
 									)[1] +
-									"\n//# sourceURL=http://rexjs.org/literal-inheritor.js"
+									"\n//# sourceURL=http://rexjs.org/literal-extension.js"
 								);
 
 
@@ -2757,34 +2758,6 @@ this.UnaryExpression = function(){
 	return UnaryExpression;
 }();
 
-this.PostfixUnaryExpression = function(UnaryExpression){
-	/**
-	 * 后置一元表达式
-	 * @param {Context} context - 标签上下文
-	 */
-	function PostfixUnaryExpression(context){
-		UnaryExpression.call(this, context);
-	};
-	PostfixUnaryExpression = new Rexjs(PostfixUnaryExpression, UnaryExpression);
-	
-	PostfixUnaryExpression.props({
-		/**
-		 * 提取表达式文本内容
-		 * @param {ContentBuilder} contentBuilder - 内容生成器
-		 */
-		extractTo: function(contentBuilder){
-			// 提取操作对象内容
-			this.operand.extractTo(contentBuilder);
-			// 提取一元操作符的内容
-			contentBuilder.appendContext(this.context);
-		}
-	});
-	
-	return PostfixUnaryExpression;
-}(
-	this.UnaryExpression
-);
-
 this.UnaryStatement = function(){
 	/**
 	 * 一元语句
@@ -3219,6 +3192,37 @@ eval(
 										// 一元赋值标签
 !function(VariableTag){
 
+this.PostfixUnaryExpression = function(UnaryExpression){
+	/**
+	 * 后置一元表达式
+	 * @param {Context} context - 标签上下文
+	 * @param {AssignableExpression} operand - 操作对象表达式
+	 */
+	function PostfixUnaryExpression(context, operand){
+		UnaryExpression.call(this, context);
+
+		this.operand = operand;
+	};
+	PostfixUnaryExpression = new Rexjs(PostfixUnaryExpression, UnaryExpression);
+	
+	PostfixUnaryExpression.props({
+		/**
+		 * 提取表达式文本内容
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 */
+		extractTo: function(contentBuilder){
+			// 提取操作对象内容
+			this.operand.extractTo(contentBuilder);
+			// 提取一元操作符的内容
+			contentBuilder.appendContext(this.context);
+		}
+	});
+	
+	return PostfixUnaryExpression;
+}(
+	this.UnaryExpression
+);
+
 this.UnaryAssignmentStatement = function(UnaryStatement, error){
 	/**
 	 * 一元赋值语句
@@ -3358,6 +3362,14 @@ this.PostfixUnaryAssignmentTag = function(UnaryAssignmentTag, PostfixUnaryExpres
 
 	PostfixUnaryAssignmentTag.props({
 		$class: CLASS_EXPRESSION_CONTEXT,
+		/**
+		 * 获取绑定的表达式，一般在子类使用父类逻辑，而不使用父类表达式的情况下使用
+		 * @param {Context} context - 相关的语法标签上下文
+		 * @param {AssignableExpression} operand - 操作对象表达式
+		 */
+		getBoundExpression: function(context, operand){
+			return new PostfixUnaryExpression(context, operand);
+		},
 		order: ECMAScriptOrders.POSTFIX_UNARY_ASSIGNMENT,
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
@@ -3378,13 +3390,8 @@ this.PostfixUnaryAssignmentTag = function(UnaryAssignmentTag, PostfixUnaryExpres
 
 			// 如果满足一元赋值标签条件
 			if(this.operable(parser, expression)){
-				(
-					// 设置当前表达式
-					statement.expression = new PostfixUnaryExpression(context)
-				)
-				// 设置 operand 属性
-				.operand = expression;
-
+				// 设置当前表达式
+				statement.expression = this.getBoundExpression(context, expression);
 				return;
 			}
 
@@ -3567,7 +3574,7 @@ this.PostfixDecrementTag = function(){
 									.match(
 										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
 									)[1] +
-									"\n//# sourceURL=http://rexjs.org/in(de)crement.js"
+									"\n//# sourceURL=http://rexjs.org/unary-assginment-extension.js"
 								);
 
 
@@ -3663,6 +3670,14 @@ this.BinaryTag = function(ExpressionSeparatorTag, BinaryExpression, BinaryStatem
 	
 	BinaryTag.props({
 		/**
+		 * 获取绑定的表达式，一般在子类使用父类逻辑，而不使用父类表达式的情况下使用
+		 * @param {Context} context - 相关的语法标签上下文
+		 * @param {Expression} left - 该二元表达式左侧运算的表达式
+		 */
+		getBoundExpression: function(context, left){
+			return new BinaryExpression(context, left);
+		},
+		/**
 		 * 验证所提供的标签是否为表达式分隔符标签
 		 * @param {Context} context - 所需验证的标签上下文
 		 */
@@ -3677,14 +3692,6 @@ this.BinaryTag = function(ExpressionSeparatorTag, BinaryExpression, BinaryStatem
 		 */
 		require: function(tagsMap){
 			return tagsMap.expressionTags;
-		},
-		/**
-		 * 将该二元标签转换为二元表达式
-		 * @param {Context} context - 相关的语法标签上下文
-		 * @param {Expression} left - 该二元表达式左侧运算的表达式
-		 */
-		toExpression: function(context, left){
-			return new BinaryExpression(context, left);
 		},
 		/**
 		 * 标签访问器
@@ -3714,10 +3721,10 @@ this.BinaryTag = function(ExpressionSeparatorTag, BinaryExpression, BinaryStatem
 				}
 
 				// 设置新的右侧表达式
-				exp.right = expression.last = this.toExpression(context, right);
+				exp.right = expression.last = this.getBoundExpression(context, right);
 			}
 			else {
-				var binaryExpression = this.toExpression(context, expression);
+				var binaryExpression = this.getBoundExpression(context, expression);
 
 				// 设置当前表达式并将最后的二元表达式为自己
 				statement.expression = binaryExpression.last = binaryExpression;
@@ -3784,7 +3791,7 @@ this.AssignmentTag = function(BinaryExpression, BinaryStatement, isSeparator, as
 			switch(true){
 				// 如果可赋值
 				case assignable(parser, expression):
-					var binaryExpression = this.toExpression(context, expression);
+					var binaryExpression = this.getBoundExpression(context, expression);
 
 					// 设置当前表达式并将最后的二元表达式为自己
 					statement.expression = binaryExpression.last = binaryExpression;
@@ -3797,7 +3804,7 @@ this.AssignmentTag = function(BinaryExpression, BinaryStatement, isSeparator, as
 					// 如果该二元表达式是“赋值表达式”，而且其值也是“可赋值表达式”
 					if(last.context.tag.precedence === 0 && assignable(parser, right)){
 						// 设置右侧表达式及记录为最后一个二元表达式
-						last.right = expression.last = this.toExpression(context, right);
+						last.right = expression.last = this.getBoundExpression(context, right);
 						break;
 					}
 
@@ -4476,18 +4483,18 @@ this.ExponentiationTag = function(BinaryTag, ExponentiationExpression){
 	ExponentiationTag = new Rexjs(ExponentiationTag, BinaryTag);
 	
 	ExponentiationTag.props({
-		// 防止与 "*" 冲突
-		order: ECMAScriptOrders.EXPONENTIATION,
-		precedence: 11,
-		regexp: /\*\*/,
 		/**
-		 * 将该二元标签转换为二元表达式
+		 * 获取绑定的表达式，一般在子类使用父类逻辑，而不使用父类表达式的情况下使用
 		 * @param {Context} context - 相关的语法标签上下文
 		 * @param {Expression} left - 该二元表达式左侧运算的表达式
 		 */
-		toExpression: function(context, left){
+		getBoundExpression: function(context, left){
 			return new ExponentiationExpression(context, left);
-		}
+		},
+		// 防止与 "*" 冲突
+		order: ECMAScriptOrders.EXPONENTIATION,
+		precedence: 11,
+		regexp: /\*\*/
 	});
 	
 	return ExponentiationTag;
@@ -6001,6 +6008,13 @@ this.OpenArrayTag = function(OpenBracketTag, ArrayExpression, ArrayStatement){
 			return closeArrayTag;
 		},
 		/**
+		 * 获取绑定的表达式，一般在子类使用父类逻辑，而不使用父类表达式的情况下使用
+		 * @param {Context} context - 相关的语法标签上下文
+		 */
+		getBoundExpression: function(context){
+			return new ArrayExpression(context);
+		},
+		/**
 		 * 获取绑定的分隔符标签，该标签一般是用于语句的 try、catch 的返回值
 		 */
 		get separator(){
@@ -6022,7 +6036,7 @@ this.OpenArrayTag = function(OpenBracketTag, ArrayExpression, ArrayStatement){
 		 */
 		visitor: function(parser, context, statement, statements){
 			// 设置当前表达式
-			statement.expression = new ArrayExpression(context);
+			statement.expression = this.getBoundExpression(context);
 			// 设置当前语句
 			statements.statement = new ArrayStatement(statements);
 		}
@@ -6256,18 +6270,15 @@ this.ArraySpreadTag = function(SpreadTag, ArraySpreadItemExpression, SpreadState
 eval(
 									function(){
 										// 数组解构赋值相关
-!function(BasicAssignmentTag, variableDeclarationArrayItemSeparatorTag, closeDeclarationArrayTag){
+!function(OpenArrayTag, BasicAssignmentTag, variableDeclarationArrayItemSeparatorTag, closeDeclarationArrayTag){
 
 this.DeclarationArrayExpression = function(ArrayExpression){
 	/**
 	 * 变量声明数组表达式
 	 * @param {Context} open - 起始标签上下文
-	 * @param {Expression} arrayOf - 该数组所属的声明表达式
 	 */
-	function DeclarationArrayExpression(open, arrayOf){
+	function DeclarationArrayExpression(open){
 		ArrayExpression.call(this, open);
-
-		this.arrayOf = arrayOf;
 	};
 	DeclarationArrayExpression = new Rexjs(DeclarationArrayExpression, ArrayExpression);
 
@@ -6326,7 +6337,7 @@ this.DeclarationArrayItemAssignmentReadyStatement = function(){
 	return DeclarationArrayItemAssignmentReadyStatement;
 }();
 
-this.OpenDeclarationArrayTag = function(OpenArrayTag, DeclarationArrayExpression, ArrayStatement){
+this.OpenDeclarationArrayTag = function(DeclarationArrayExpression, visitor){
 	/**
 	 * 变量声明数组起始标签
 	 * @param {Number} _type - 标签类型
@@ -6342,6 +6353,20 @@ this.OpenDeclarationArrayTag = function(OpenArrayTag, DeclarationArrayExpression
 		 */
 		get binding(){
 			return closeDeclarationArrayTag;
+		},
+		/**
+		 * 获取拥有该数组的表达式
+		 * @param {Statement} statement - 当前语句
+		 */
+		getArrayOf: function(statement){
+			return statement.target.expression;
+		},
+		/**
+		 * 获取绑定的表达式，一般在子类使用父类逻辑，而不使用父类表达式的情况下使用
+		 * @param {Context} context - 相关的语法标签上下文
+		 */
+		getBoundExpression: function(context){
+			return new DeclarationArrayExpression(context);
 		},
 		/**
 		 * 获取绑定的分隔符标签，该标签一般是用于语句的 try、catch 的返回值
@@ -6364,18 +6389,20 @@ this.OpenDeclarationArrayTag = function(OpenArrayTag, DeclarationArrayExpression
 		 * @param {Statements} statements - 当前语句块
 		 */
 		visitor: function(parser, context, statement, statements){
-			// 设置当前表达式
-			statement.expression = new DeclarationArrayExpression(context, statement.target.expression);
-			// 设置当前语句
-			statements.statement = new ArrayStatement(statements);
+			// 调用父类方法
+			visitor.call(this, parser, context, statement, statements);
+
+			// 通过当前语句给变量声明数组表达式绑定 arrayOf 属性
+			statement.expression.arrayOf = this.getArrayOf(statement);
+
+			if(!statement.expression.arrayOf)debugger
 		}
 	});
 
 	return OpenDeclarationArrayTag;
 }(
-	this.OpenArrayTag,
 	this.DeclarationArrayExpression,
-	this.ArrayStatement
+	OpenArrayTag.prototype.visitor
 );
 
 this.DeclarationArrayItemTag = function(VariableDeclarationTag, DestructuringItemExpression, IdentifierExpression){
@@ -6523,6 +6550,7 @@ closeDeclarationArrayTag = new this.CloseDeclarationArrayTag();
 
 }.call(
 	this,
+	this.OpenArrayTag,
 	this.BasicAssignmentTag,
 	// variableDeclarationArrayItemSeparatorTag
 	null,
@@ -6648,7 +6676,7 @@ eval(
 										// 变量声明数组项标签相关
 !function(CloseDeclarationArrayTag, closeNestedDeclarationArrayItemTag){
 
-this.OpenNestedDeclarationArrayItemTag = function(OpenDeclarationArrayTag, DeclarationArrayExpression, ArrayStatement){
+this.OpenNestedDeclarationArrayItemTag = function(OpenDeclarationArrayTag){
 	/**
 	 * 嵌套的变量声明数组起始标签
 	 * @param {Number} _type - 标签类型
@@ -6666,29 +6694,17 @@ this.OpenNestedDeclarationArrayItemTag = function(OpenDeclarationArrayTag, Decla
 			return closeNestedDeclarationArrayItemTag;
 		},
 		/**
-		 * 标签访问器
-		 * @param {SyntaxParser} parser - 语法解析器
-		 * @param {Context} context - 标签上下文
+		 * 获取拥有该数组的表达式
 		 * @param {Statement} statement - 当前语句
-		 * @param {Statements} statements - 当前语句块
 		 */
-		visitor: function(parser, context, statement, statements){
-			// 设置当前表达式
-			statement.expression = new DeclarationArrayExpression(
-				context,
-				statement.target.expression.arrayOf
-			);
-
-			// 设置当前语句
-			statements.statement = new ArrayStatement(statements);
+		getArrayOf: function(statement){
+			return statement.target.expression.arrayOf;
 		}
 	});
 
 	return OpenNestedDeclarationArrayItemTag;
 }(
-	this.OpenDeclarationArrayTag,
-	this.DeclarationArrayExpression,
-	this.ArrayStatement
+	this.OpenDeclarationArrayTag
 );
 
 this.CloseNestedDeclarationArrayItemTag = function(visitor){
@@ -9718,10 +9734,6 @@ this.PropertyStatement = function(PropertyExpression, ifComma){
 
 			var expression = this.expression, objectExpression = this.out();
 
-			if(expression instanceof Rexjs.PropertyExpression === false){
-				debugger
-			}
-
 			switch(true){
 				// 如果名称不存在，说明表达式是空项
 				case !expression.name:
@@ -12435,7 +12447,7 @@ this.DeclarationPropertyNameSeparatorTag = function(visitor){
 eval(
 									function(){
 										// 对象解构声明的属性值相关
-!function(PropertyDestructuringItemExpression, CloseDeclarationObjectTag, VariableDeclarationTag, BasicAssignmentTag, closeArrayDeclarationPropertyValueTag, closeObjectDeclarationPropertyValueTag){
+!function(PropertyDestructuringItemExpression, CloseDeclarationObjectTag, OpenNestedDeclarationArrayItemTag, VariableDeclarationTag, BasicAssignmentTag, closeArrayDeclarationPropertyValueTag, closeObjectDeclarationPropertyValueTag){
 
 this.OpenObjectDeclarationPropertyValueTag = function(OpenDeclarationObjectTag, DeclarationObjectExpression, PropertyDestructuringStatement){
 	/**
@@ -12526,7 +12538,7 @@ this.CloseObjectDeclarationPropertyValueTag = function(visitor){
 	CloseDeclarationObjectTag.prototype.visitor
 );
 
-this.OpenArrayDeclarationPropertyValueTag = function(OpenNestedDeclarationArrayItemTag, DeclarationArrayExpression, ArrayStatement){
+this.OpenArrayDeclarationPropertyValueTag = function(DeclarationArrayExpression, visitor){
 	/**
 	 * 数组声明属性值（即：对象解构中所嵌套的对象解构）起始标签
 	 * @param {Number} _type - 标签类型
@@ -12544,6 +12556,13 @@ this.OpenArrayDeclarationPropertyValueTag = function(OpenNestedDeclarationArrayI
 			return closeArrayDeclarationPropertyValueTag;
 		},
 		/**
+		 * 获取拥有该数组的表达式
+		 * @param {Statement} statement - 当前语句
+		 */
+		getArrayOf: function(statement){
+			return statement.target.target.expression.objectOf;
+		},
+		/**
 		 * 标签访问器
 		 * @param {SyntaxParser} parser - 语法解析器
 		 * @param {Context} context - 标签上下文
@@ -12553,14 +12572,8 @@ this.OpenArrayDeclarationPropertyValueTag = function(OpenNestedDeclarationArrayI
 		visitor: function(parser, context, statement, statements){
 			var propertyDestructuringStatement = statement.target, propertyExpression = propertyDestructuringStatement.expression;
 
-			// 设置当前表达式
-			statement.expression = new DeclarationArrayExpression(
-				context,
-				propertyDestructuringStatement.target.expression.objectOf
-			);
-
-			// 设置当前语句
-			statements.statement = new ArrayStatement(statements);
+			// 调用父类方法
+			visitor.call(this, parser, context, statement, statements);
 
 			// 设置 destructuringItem 属性，以标识为解构子项
 			propertyExpression.value.destructuringItem = true;
@@ -12571,9 +12584,8 @@ this.OpenArrayDeclarationPropertyValueTag = function(OpenNestedDeclarationArrayI
 
 	return OpenArrayDeclarationPropertyValueTag;
 }(
-	this.OpenNestedDeclarationArrayItemTag,
 	this.DeclarationArrayExpression,
-	this.ArrayStatement
+	OpenNestedDeclarationArrayItemTag.prototype.visitor
 );
 
 this.CloseArrayDeclarationPropertyValueTag = function(CloseNestedDeclarationArrayItemTag){
@@ -12687,6 +12699,7 @@ closeObjectDeclarationPropertyValueTag = new this.CloseObjectDeclarationProperty
 	this,
 	this.PropertyDestructuringItemExpression,
 	this.CloseDeclarationObjectTag,
+	this.OpenNestedDeclarationArrayItemTag,
 	this.VariableDeclarationTag,
 	this.BasicAssignmentTag,
 	// closeArrayDeclarationPropertyValueTag
@@ -21095,15 +21108,15 @@ this.SuperPropertyBasicAssignmentTag = function(BasicAssignmentTag, SuperPropert
 	SuperPropertyBasicAssignmentTag = new Rexjs(SuperPropertyBasicAssignmentTag, BasicAssignmentTag);
 	
 	SuperPropertyBasicAssignmentTag.props({
-		order: ECMAScriptOrders.SUPER_PROPERTY_ASSIGNMENT,
 		/**
-		 * 将该二元标签转换为二元表达式
+		 * 获取绑定的表达式，一般在子类使用父类逻辑，而不使用父类表达式的情况下使用
 		 * @param {Context} context - 相关的语法标签上下文
 		 * @param {Expression} left - 该二元表达式左侧运算的表达式
 		 */
-		toExpression: function(context, left){
+		getBoundExpression: function(context, left){
 			return new SuperPropertyBasicAssignmentExpression(context, left);
-		}
+		},
+		order: ECMAScriptOrders.SUPER_PROPERTY_ASSIGNMENT
 	});
 	
 	return SuperPropertyBasicAssignmentTag;
@@ -21123,15 +21136,15 @@ this.SuperPropertyShorthandAssignmentTag = function(SuperPropertyShorthandAssign
 	SuperPropertyShorthandAssignmentTag = new Rexjs(SuperPropertyShorthandAssignmentTag, ShorthandAssignmentTag);
 	
 	SuperPropertyShorthandAssignmentTag.props({
-		order: ECMAScriptOrders.SUPER_PROPERTY_SHORTHAND_ASSIGNMENT,
 		/**
-		 * 将该二元标签转换为二元表达式
+		 * 获取绑定的表达式，一般在子类使用父类逻辑，而不使用父类表达式的情况下使用
 		 * @param {Context} context - 相关的语法标签上下文
 		 * @param {Expression} left - 该二元表达式左侧运算的表达式
 		 */
-		toExpression: function(context, left){
+		getBoundExpression: function(context, left){
 			return new SuperPropertyShorthandAssignmentExpression(context, left);
 		},
+		order: ECMAScriptOrders.SUPER_PROPERTY_SHORTHAND_ASSIGNMENT,
 		/**
 		 * 标签访问器
 		 * @param {SyntaxParser} parser - 语法解析器
@@ -21168,6 +21181,126 @@ this.SuperPropertyShorthandAssignmentTag = function(SuperPropertyShorthandAssign
 										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
 									)[1] +
 									"\n//# sourceURL=http://rexjs.org/super-property-assignment.js"
+								);
+
+
+eval(
+									function(){
+										// 父类属性一元赋值标签子类相关
+!function(UnaryExpression, PostfixUnaryExpression, SUPER_PROPERTY_POSTFIX_UNARY_ASSIGNMENT){
+
+this.SuperPropertyPrefixUnaryAssignmentExpression = function(extractTo){
+	/**
+	 * 父类属性前置一元赋值表达式
+	 * @param {Context} context - 标签上下文
+	 */
+	function SuperPropertyPrefixUnaryAssignmentExpression(context){
+		UnaryExpression.call(this, context);
+	};
+	SuperPropertyPrefixUnaryAssignmentExpression = new Rexjs(SuperPropertyPrefixUnaryAssignmentExpression, UnaryExpression);
+	
+	SuperPropertyPrefixUnaryAssignmentExpression.props({
+		/**
+		 * 提取表达式文本内容
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 */
+		extractTo: function(contentBuilder){
+			if(config.es6Base){
+				// 提取操作对象内容
+				this.operand.extractTo(contentBuilder);
+				// 提取一元操作符的内容
+				contentBuilder.appendContext(this.context);
+				return;
+			}
+
+			// 调用父类方法
+			extractTo.call(this, contentBuilder);
+		}
+	});
+	
+	return SuperPropertyPrefixUnaryAssignmentExpression;
+}(
+	UnaryExpression.prototype.extractTo
+);
+
+this.SuperPropertyPostfixUnaryAssignmentExpression = function(extractTo){
+	/**
+	 * 父类属性后置一元赋值表达式
+	 * @param {Context} context - 标签上下文
+	 * @param {AssignableExpression} operand - 操作对象表达式
+	 */
+	function SuperPropertyPostfixUnaryAssignmentExpression(context, operand){
+		PostfixUnaryExpression.call(this, context, operand);
+	};
+	SuperPropertyPostfixUnaryAssignmentExpression = new Rexjs(SuperPropertyPostfixUnaryAssignmentExpression, PostfixUnaryExpression);
+	
+	SuperPropertyPostfixUnaryAssignmentExpression.props({
+		/**
+		 * 提取表达式文本内容
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 */
+		extractTo: function(contentBuilder){
+			if(config.es6Base){debugger
+				// 提取操作对象内容
+				this.operand.extractTo(contentBuilder);
+				// 提取一元操作符的内容
+				contentBuilder.appendContext(this.context);
+				return;
+			}
+
+			// 调用父类方法
+			extractTo.call(this, contentBuilder);
+		}
+	});
+	
+	return SuperPropertyPostfixUnaryAssignmentExpression;
+}(
+	PostfixUnaryExpression.prototype.extractTo
+);
+
+this.SuperPropertyPostfixIncrementTag = function(PostfixIncrementTag, SuperPropertyPostfixUnaryAssignmentExpression){
+	/**
+	 * 父类属性后置递增标签
+	 * @param {Number} _type - 标签类型
+	 */
+	function SuperPropertyPostfixIncrementTag(_type){
+		PostfixIncrementTag.call(this, _type);
+	};
+	SuperPropertyPostfixIncrementTag = new Rexjs(SuperPropertyPostfixIncrementTag, PostfixIncrementTag);
+	
+	SuperPropertyPostfixIncrementTag.props({
+		order: SUPER_PROPERTY_POSTFIX_UNARY_ASSIGNMENT,
+		/**
+		 * 标签访问器
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 标签上下文
+		 * @param {Statement} statement - 当前语句
+		 * @param {Statements} statements - 当前语句块
+		 */
+		visitor: function(parser, context, statement, statements){
+			// 设置当前表达式
+			statement.expression = new SuperPropertyPostfixUnaryAssignmentExpression(context, statement.expression);
+		}
+	});
+	
+	return SuperPropertyPostfixIncrementTag;
+}(
+	this.PostfixIncrementTag,
+	this.SuperPropertyPostfixUnaryAssignmentExpression
+);
+
+}.call(
+	this,
+	this.UnaryExpression,
+	this.PostfixUnaryExpression,
+	ECMAScriptOrders.SUPER_PROPERTY_POSTFIX_UNARY_ASSIGNMENT
+);
+									}
+									.toString()
+									.match(
+										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+									)[1] +
+									"\n//# sourceURL=http://rexjs.org/super-property-unary-assginment-extension.js"
 								);
 
 
@@ -22876,16 +23009,16 @@ this.DestructuringAssignmentTag = function(DestructuringAssignmentExpression, vi
 	DestructuringAssignmentTag = new Rexjs(DestructuringAssignmentTag, BasicAssignmentTag);
 
 	DestructuringAssignmentTag.props({
-		// 防止与 BasicAssignmentTag 冲突
-		order: ECMAScriptOrders.DESTRUCTURING_ASSIGNMENT,
 		/**
-		 * 将该二元标签转换为二元表达式
+		 * 获取绑定的表达式，一般在子类使用父类逻辑，而不使用父类表达式的情况下使用
 		 * @param {Context} context - 相关的语法标签上下文
 		 * @param {Expression} left - 该二元表达式左侧运算的表达式
 		 */
-		toExpression: function(context, left){
+		getBoundExpression: function(context, left){
 			return new DestructuringAssignmentExpression(context, left);
 		},
+		// 防止与 BasicAssignmentTag 冲突
+		order: ECMAScriptOrders.DESTRUCTURING_ASSIGNMENT,
 		/**
 		 * 标签访问器
 		 * @param {SyntaxParser} parser - 语法解析器
@@ -25089,26 +25222,27 @@ this.StaticModifierContextTags = function(ClassPropertyNameTags, ConstructorTag,
 	this.OpenShorthandMethodArgumentsTag
 );
 
-this.SuperAccessorContextTags = function(OpenSuperMethodCallTag, SuperPropertyBasicAssignmentTag, SuperPropertyShorthandAssignmentTag){
+this.SuperAccessorContextTags = function(list){
 	/**
 	 * 父类属性名上下文标签列表
 	 */
 	function SuperAccessorContextTags(){
 		ExpressionContextTags.call(this);
 		
-		this.register(
-			new OpenSuperMethodCallTag(),
-			new SuperPropertyBasicAssignmentTag(),
-			new SuperPropertyShorthandAssignmentTag()
-		);
+		// 注册标签
+		this.delegate(list);
 	};
 	SuperAccessorContextTags = new Rexjs(SuperAccessorContextTags, ExpressionContextTags);
 
 	return SuperAccessorContextTags;
 }(
-	this.OpenSuperMethodCallTag,
-	this.SuperPropertyBasicAssignmentTag,
-	this.SuperPropertyShorthandAssignmentTag
+	// list
+	[
+		this.OpenSuperMethodCallTag,
+		this.SuperPropertyBasicAssignmentTag,
+		this.SuperPropertyShorthandAssignmentTag,
+		this.SuperPropertyPostfixIncrementTag
+	]
 );
 
 this.SuperContextTags = function(OpenSuperCallTag, SuperDotAccessorTag, OpenSuperBracketAccessorTag){

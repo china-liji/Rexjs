@@ -1,7 +1,7 @@
 // 变量声明数组项标签相关
 !function(CloseDeclarationArrayTag, closeNestedDeclarationArrayItemTag){
 
-this.OpenNestedDeclarationArrayItemTag = function(OpenDeclarationArrayTag, DeclarationArrayExpression, ArrayStatement){
+this.OpenNestedDeclarationArrayItemTag = function(OpenDeclarationArrayTag){
 	/**
 	 * 嵌套的变量声明数组起始标签
 	 * @param {Number} _type - 标签类型
@@ -19,29 +19,17 @@ this.OpenNestedDeclarationArrayItemTag = function(OpenDeclarationArrayTag, Decla
 			return closeNestedDeclarationArrayItemTag;
 		},
 		/**
-		 * 标签访问器
-		 * @param {SyntaxParser} parser - 语法解析器
-		 * @param {Context} context - 标签上下文
+		 * 获取拥有该数组的表达式
 		 * @param {Statement} statement - 当前语句
-		 * @param {Statements} statements - 当前语句块
 		 */
-		visitor: function(parser, context, statement, statements){
-			// 设置当前表达式
-			statement.expression = new DeclarationArrayExpression(
-				context,
-				statement.target.expression.arrayOf
-			);
-
-			// 设置当前语句
-			statements.statement = new ArrayStatement(statements);
+		getArrayOf: function(statement){
+			return statement.target.expression.arrayOf;
 		}
 	});
 
 	return OpenNestedDeclarationArrayItemTag;
 }(
-	this.OpenDeclarationArrayTag,
-	this.DeclarationArrayExpression,
-	this.ArrayStatement
+	this.OpenDeclarationArrayTag
 );
 
 this.CloseNestedDeclarationArrayItemTag = function(visitor){

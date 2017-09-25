@@ -1,5 +1,5 @@
 // 对象解构声明的属性值相关
-!function(PropertyDestructuringItemExpression, CloseDeclarationObjectTag, VariableDeclarationTag, BasicAssignmentTag, closeArrayDeclarationPropertyValueTag, closeObjectDeclarationPropertyValueTag){
+!function(PropertyDestructuringItemExpression, CloseDeclarationObjectTag, OpenNestedDeclarationArrayItemTag, VariableDeclarationTag, BasicAssignmentTag, closeArrayDeclarationPropertyValueTag, closeObjectDeclarationPropertyValueTag){
 
 this.OpenObjectDeclarationPropertyValueTag = function(OpenDeclarationObjectTag, DeclarationObjectExpression, PropertyDestructuringStatement){
 	/**
@@ -90,7 +90,7 @@ this.CloseObjectDeclarationPropertyValueTag = function(visitor){
 	CloseDeclarationObjectTag.prototype.visitor
 );
 
-this.OpenArrayDeclarationPropertyValueTag = function(OpenNestedDeclarationArrayItemTag, DeclarationArrayExpression, ArrayStatement){
+this.OpenArrayDeclarationPropertyValueTag = function(DeclarationArrayExpression, visitor){
 	/**
 	 * 数组声明属性值（即：对象解构中所嵌套的对象解构）起始标签
 	 * @param {Number} _type - 标签类型
@@ -108,6 +108,13 @@ this.OpenArrayDeclarationPropertyValueTag = function(OpenNestedDeclarationArrayI
 			return closeArrayDeclarationPropertyValueTag;
 		},
 		/**
+		 * 获取拥有该数组的表达式
+		 * @param {Statement} statement - 当前语句
+		 */
+		getArrayOf: function(statement){
+			return statement.target.target.expression.objectOf;
+		},
+		/**
 		 * 标签访问器
 		 * @param {SyntaxParser} parser - 语法解析器
 		 * @param {Context} context - 标签上下文
@@ -117,14 +124,8 @@ this.OpenArrayDeclarationPropertyValueTag = function(OpenNestedDeclarationArrayI
 		visitor: function(parser, context, statement, statements){
 			var propertyDestructuringStatement = statement.target, propertyExpression = propertyDestructuringStatement.expression;
 
-			// 设置当前表达式
-			statement.expression = new DeclarationArrayExpression(
-				context,
-				propertyDestructuringStatement.target.expression.objectOf
-			);
-
-			// 设置当前语句
-			statements.statement = new ArrayStatement(statements);
+			// 调用父类方法
+			visitor.call(this, parser, context, statement, statements);
 
 			// 设置 destructuringItem 属性，以标识为解构子项
 			propertyExpression.value.destructuringItem = true;
@@ -135,9 +136,8 @@ this.OpenArrayDeclarationPropertyValueTag = function(OpenNestedDeclarationArrayI
 
 	return OpenArrayDeclarationPropertyValueTag;
 }(
-	this.OpenNestedDeclarationArrayItemTag,
 	this.DeclarationArrayExpression,
-	this.ArrayStatement
+	OpenNestedDeclarationArrayItemTag.prototype.visitor
 );
 
 this.CloseArrayDeclarationPropertyValueTag = function(CloseNestedDeclarationArrayItemTag){
@@ -251,6 +251,7 @@ closeObjectDeclarationPropertyValueTag = new this.CloseObjectDeclarationProperty
 	this,
 	this.PropertyDestructuringItemExpression,
 	this.CloseDeclarationObjectTag,
+	this.OpenNestedDeclarationArrayItemTag,
 	this.VariableDeclarationTag,
 	this.BasicAssignmentTag,
 	// closeArrayDeclarationPropertyValueTag

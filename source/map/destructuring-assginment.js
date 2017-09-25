@@ -88,16 +88,16 @@ this.DestructuringAssignmentTag = function(DestructuringAssignmentExpression, vi
 	DestructuringAssignmentTag = new Rexjs(DestructuringAssignmentTag, BasicAssignmentTag);
 
 	DestructuringAssignmentTag.props({
-		// 防止与 BasicAssignmentTag 冲突
-		order: ECMAScriptOrders.DESTRUCTURING_ASSIGNMENT,
 		/**
-		 * 将该二元标签转换为二元表达式
+		 * 获取绑定的表达式，一般在子类使用父类逻辑，而不使用父类表达式的情况下使用
 		 * @param {Context} context - 相关的语法标签上下文
 		 * @param {Expression} left - 该二元表达式左侧运算的表达式
 		 */
-		toExpression: function(context, left){
+		getBoundExpression: function(context, left){
 			return new DestructuringAssignmentExpression(context, left);
 		},
+		// 防止与 BasicAssignmentTag 冲突
+		order: ECMAScriptOrders.DESTRUCTURING_ASSIGNMENT,
 		/**
 		 * 标签访问器
 		 * @param {SyntaxParser} parser - 语法解析器

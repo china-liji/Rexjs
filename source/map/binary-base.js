@@ -88,6 +88,14 @@ this.BinaryTag = function(ExpressionSeparatorTag, BinaryExpression, BinaryStatem
 	
 	BinaryTag.props({
 		/**
+		 * 获取绑定的表达式，一般在子类使用父类逻辑，而不使用父类表达式的情况下使用
+		 * @param {Context} context - 相关的语法标签上下文
+		 * @param {Expression} left - 该二元表达式左侧运算的表达式
+		 */
+		getBoundExpression: function(context, left){
+			return new BinaryExpression(context, left);
+		},
+		/**
 		 * 验证所提供的标签是否为表达式分隔符标签
 		 * @param {Context} context - 所需验证的标签上下文
 		 */
@@ -102,14 +110,6 @@ this.BinaryTag = function(ExpressionSeparatorTag, BinaryExpression, BinaryStatem
 		 */
 		require: function(tagsMap){
 			return tagsMap.expressionTags;
-		},
-		/**
-		 * 将该二元标签转换为二元表达式
-		 * @param {Context} context - 相关的语法标签上下文
-		 * @param {Expression} left - 该二元表达式左侧运算的表达式
-		 */
-		toExpression: function(context, left){
-			return new BinaryExpression(context, left);
 		},
 		/**
 		 * 标签访问器
@@ -139,10 +139,10 @@ this.BinaryTag = function(ExpressionSeparatorTag, BinaryExpression, BinaryStatem
 				}
 
 				// 设置新的右侧表达式
-				exp.right = expression.last = this.toExpression(context, right);
+				exp.right = expression.last = this.getBoundExpression(context, right);
 			}
 			else {
-				var binaryExpression = this.toExpression(context, expression);
+				var binaryExpression = this.getBoundExpression(context, expression);
 
 				// 设置当前表达式并将最后的二元表达式为自己
 				statement.expression = binaryExpression.last = binaryExpression;

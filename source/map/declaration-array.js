@@ -1,16 +1,13 @@
 // 数组解构赋值相关
-!function(BasicAssignmentTag, variableDeclarationArrayItemSeparatorTag, closeDeclarationArrayTag){
+!function(OpenArrayTag, BasicAssignmentTag, variableDeclarationArrayItemSeparatorTag, closeDeclarationArrayTag){
 
 this.DeclarationArrayExpression = function(ArrayExpression){
 	/**
 	 * 变量声明数组表达式
 	 * @param {Context} open - 起始标签上下文
-	 * @param {Expression} arrayOf - 该数组所属的声明表达式
 	 */
-	function DeclarationArrayExpression(open, arrayOf){
+	function DeclarationArrayExpression(open){
 		ArrayExpression.call(this, open);
-
-		this.arrayOf = arrayOf;
 	};
 	DeclarationArrayExpression = new Rexjs(DeclarationArrayExpression, ArrayExpression);
 
@@ -69,7 +66,7 @@ this.DeclarationArrayItemAssignmentReadyStatement = function(){
 	return DeclarationArrayItemAssignmentReadyStatement;
 }();
 
-this.OpenDeclarationArrayTag = function(OpenArrayTag, DeclarationArrayExpression, ArrayStatement){
+this.OpenDeclarationArrayTag = function(DeclarationArrayExpression, visitor){
 	/**
 	 * 变量声明数组起始标签
 	 * @param {Number} _type - 标签类型
@@ -85,6 +82,20 @@ this.OpenDeclarationArrayTag = function(OpenArrayTag, DeclarationArrayExpression
 		 */
 		get binding(){
 			return closeDeclarationArrayTag;
+		},
+		/**
+		 * 获取拥有该数组的表达式
+		 * @param {Statement} statement - 当前语句
+		 */
+		getArrayOf: function(statement){
+			return statement.target.expression;
+		},
+		/**
+		 * 获取绑定的表达式，一般在子类使用父类逻辑，而不使用父类表达式的情况下使用
+		 * @param {Context} context - 相关的语法标签上下文
+		 */
+		getBoundExpression: function(context){
+			return new DeclarationArrayExpression(context);
 		},
 		/**
 		 * 获取绑定的分隔符标签，该标签一般是用于语句的 try、catch 的返回值
@@ -107,18 +118,18 @@ this.OpenDeclarationArrayTag = function(OpenArrayTag, DeclarationArrayExpression
 		 * @param {Statements} statements - 当前语句块
 		 */
 		visitor: function(parser, context, statement, statements){
-			// 设置当前表达式
-			statement.expression = new DeclarationArrayExpression(context, statement.target.expression);
-			// 设置当前语句
-			statements.statement = new ArrayStatement(statements);
+			// 调用父类方法
+			visitor.call(this, parser, context, statement, statements);
+
+			// 通过当前语句给变量声明数组表达式绑定 arrayOf 属性
+			statement.expression.arrayOf = this.getArrayOf(statement);
 		}
 	});
 
 	return OpenDeclarationArrayTag;
 }(
-	this.OpenArrayTag,
 	this.DeclarationArrayExpression,
-	this.ArrayStatement
+	OpenArrayTag.prototype.visitor
 );
 
 this.DeclarationArrayItemTag = function(VariableDeclarationTag, DestructuringItemExpression, IdentifierExpression){
@@ -266,6 +277,7 @@ closeDeclarationArrayTag = new this.CloseDeclarationArrayTag();
 
 }.call(
 	this,
+	this.OpenArrayTag,
 	this.BasicAssignmentTag,
 	// variableDeclarationArrayItemSeparatorTag
 	null,

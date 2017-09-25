@@ -120,15 +120,15 @@ this.SuperPropertyBasicAssignmentTag = function(BasicAssignmentTag, SuperPropert
 	SuperPropertyBasicAssignmentTag = new Rexjs(SuperPropertyBasicAssignmentTag, BasicAssignmentTag);
 	
 	SuperPropertyBasicAssignmentTag.props({
-		order: ECMAScriptOrders.SUPER_PROPERTY_ASSIGNMENT,
 		/**
-		 * 将该二元标签转换为二元表达式
+		 * 获取绑定的表达式，一般在子类使用父类逻辑，而不使用父类表达式的情况下使用
 		 * @param {Context} context - 相关的语法标签上下文
 		 * @param {Expression} left - 该二元表达式左侧运算的表达式
 		 */
-		toExpression: function(context, left){
+		getBoundExpression: function(context, left){
 			return new SuperPropertyBasicAssignmentExpression(context, left);
-		}
+		},
+		order: ECMAScriptOrders.SUPER_PROPERTY_ASSIGNMENT
 	});
 	
 	return SuperPropertyBasicAssignmentTag;
@@ -148,15 +148,15 @@ this.SuperPropertyShorthandAssignmentTag = function(SuperPropertyShorthandAssign
 	SuperPropertyShorthandAssignmentTag = new Rexjs(SuperPropertyShorthandAssignmentTag, ShorthandAssignmentTag);
 	
 	SuperPropertyShorthandAssignmentTag.props({
-		order: ECMAScriptOrders.SUPER_PROPERTY_SHORTHAND_ASSIGNMENT,
 		/**
-		 * 将该二元标签转换为二元表达式
+		 * 获取绑定的表达式，一般在子类使用父类逻辑，而不使用父类表达式的情况下使用
 		 * @param {Context} context - 相关的语法标签上下文
 		 * @param {Expression} left - 该二元表达式左侧运算的表达式
 		 */
-		toExpression: function(context, left){
+		getBoundExpression: function(context, left){
 			return new SuperPropertyShorthandAssignmentExpression(context, left);
 		},
+		order: ECMAScriptOrders.SUPER_PROPERTY_SHORTHAND_ASSIGNMENT,
 		/**
 		 * 标签访问器
 		 * @param {SyntaxParser} parser - 语法解析器

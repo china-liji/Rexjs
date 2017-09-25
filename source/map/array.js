@@ -339,6 +339,13 @@ this.OpenArrayTag = function(OpenBracketTag, ArrayExpression, ArrayStatement){
 			return closeArrayTag;
 		},
 		/**
+		 * 获取绑定的表达式，一般在子类使用父类逻辑，而不使用父类表达式的情况下使用
+		 * @param {Context} context - 相关的语法标签上下文
+		 */
+		getBoundExpression: function(context){
+			return new ArrayExpression(context);
+		},
+		/**
 		 * 获取绑定的分隔符标签，该标签一般是用于语句的 try、catch 的返回值
 		 */
 		get separator(){
@@ -360,7 +367,7 @@ this.OpenArrayTag = function(OpenBracketTag, ArrayExpression, ArrayStatement){
 		 */
 		visitor: function(parser, context, statement, statements){
 			// 设置当前表达式
-			statement.expression = new ArrayExpression(context);
+			statement.expression = this.getBoundExpression(context);
 			// 设置当前语句
 			statements.statement = new ArrayStatement(statements);
 		}

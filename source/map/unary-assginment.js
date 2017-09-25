@@ -1,6 +1,37 @@
 // 一元赋值标签
 !function(VariableTag){
 
+this.PostfixUnaryExpression = function(UnaryExpression){
+	/**
+	 * 后置一元表达式
+	 * @param {Context} context - 标签上下文
+	 * @param {AssignableExpression} operand - 操作对象表达式
+	 */
+	function PostfixUnaryExpression(context, operand){
+		UnaryExpression.call(this, context);
+
+		this.operand = operand;
+	};
+	PostfixUnaryExpression = new Rexjs(PostfixUnaryExpression, UnaryExpression);
+	
+	PostfixUnaryExpression.props({
+		/**
+		 * 提取表达式文本内容
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 */
+		extractTo: function(contentBuilder){
+			// 提取操作对象内容
+			this.operand.extractTo(contentBuilder);
+			// 提取一元操作符的内容
+			contentBuilder.appendContext(this.context);
+		}
+	});
+	
+	return PostfixUnaryExpression;
+}(
+	this.UnaryExpression
+);
+
 this.UnaryAssignmentStatement = function(UnaryStatement, error){
 	/**
 	 * 一元赋值语句
@@ -140,6 +171,14 @@ this.PostfixUnaryAssignmentTag = function(UnaryAssignmentTag, PostfixUnaryExpres
 
 	PostfixUnaryAssignmentTag.props({
 		$class: CLASS_EXPRESSION_CONTEXT,
+		/**
+		 * 获取绑定的表达式，一般在子类使用父类逻辑，而不使用父类表达式的情况下使用
+		 * @param {Context} context - 相关的语法标签上下文
+		 * @param {AssignableExpression} operand - 操作对象表达式
+		 */
+		getBoundExpression: function(context, operand){
+			return new PostfixUnaryExpression(context, operand);
+		},
 		order: ECMAScriptOrders.POSTFIX_UNARY_ASSIGNMENT,
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
@@ -160,13 +199,8 @@ this.PostfixUnaryAssignmentTag = function(UnaryAssignmentTag, PostfixUnaryExpres
 
 			// 如果满足一元赋值标签条件
 			if(this.operable(parser, expression)){
-				(
-					// 设置当前表达式
-					statement.expression = new PostfixUnaryExpression(context)
-				)
-				// 设置 operand 属性
-				.operand = expression;
-
+				// 设置当前表达式
+				statement.expression = this.getBoundExpression(context, expression);
 				return;
 			}
 

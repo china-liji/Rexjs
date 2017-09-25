@@ -33,7 +33,7 @@ this.AssignmentTag = function(BinaryExpression, BinaryStatement, isSeparator, as
 			switch(true){
 				// 如果可赋值
 				case assignable(parser, expression):
-					var binaryExpression = this.toExpression(context, expression);
+					var binaryExpression = this.getBoundExpression(context, expression);
 
 					// 设置当前表达式并将最后的二元表达式为自己
 					statement.expression = binaryExpression.last = binaryExpression;
@@ -46,7 +46,7 @@ this.AssignmentTag = function(BinaryExpression, BinaryStatement, isSeparator, as
 					// 如果该二元表达式是“赋值表达式”，而且其值也是“可赋值表达式”
 					if(last.context.tag.precedence === 0 && assignable(parser, right)){
 						// 设置右侧表达式及记录为最后一个二元表达式
-						last.right = expression.last = this.toExpression(context, right);
+						last.right = expression.last = this.getBoundExpression(context, right);
 						break;
 					}
 

@@ -1763,26 +1763,27 @@ this.StaticModifierContextTags = function(ClassPropertyNameTags, ConstructorTag,
 	this.OpenShorthandMethodArgumentsTag
 );
 
-this.SuperAccessorContextTags = function(OpenSuperMethodCallTag, SuperPropertyBasicAssignmentTag, SuperPropertyShorthandAssignmentTag){
+this.SuperAccessorContextTags = function(list){
 	/**
 	 * 父类属性名上下文标签列表
 	 */
 	function SuperAccessorContextTags(){
 		ExpressionContextTags.call(this);
 		
-		this.register(
-			new OpenSuperMethodCallTag(),
-			new SuperPropertyBasicAssignmentTag(),
-			new SuperPropertyShorthandAssignmentTag()
-		);
+		// 注册标签
+		this.delegate(list);
 	};
 	SuperAccessorContextTags = new Rexjs(SuperAccessorContextTags, ExpressionContextTags);
 
 	return SuperAccessorContextTags;
 }(
-	this.OpenSuperMethodCallTag,
-	this.SuperPropertyBasicAssignmentTag,
-	this.SuperPropertyShorthandAssignmentTag
+	// list
+	[
+		this.OpenSuperMethodCallTag,
+		this.SuperPropertyBasicAssignmentTag,
+		this.SuperPropertyShorthandAssignmentTag,
+		this.SuperPropertyPostfixIncrementTag
+	]
 );
 
 this.SuperContextTags = function(OpenSuperCallTag, SuperDotAccessorTag, OpenSuperBracketAccessorTag){

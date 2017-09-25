@@ -28,34 +28,6 @@ this.UnaryExpression = function(){
 	return UnaryExpression;
 }();
 
-this.PostfixUnaryExpression = function(UnaryExpression){
-	/**
-	 * 后置一元表达式
-	 * @param {Context} context - 标签上下文
-	 */
-	function PostfixUnaryExpression(context){
-		UnaryExpression.call(this, context);
-	};
-	PostfixUnaryExpression = new Rexjs(PostfixUnaryExpression, UnaryExpression);
-	
-	PostfixUnaryExpression.props({
-		/**
-		 * 提取表达式文本内容
-		 * @param {ContentBuilder} contentBuilder - 内容生成器
-		 */
-		extractTo: function(contentBuilder){
-			// 提取操作对象内容
-			this.operand.extractTo(contentBuilder);
-			// 提取一元操作符的内容
-			contentBuilder.appendContext(this.context);
-		}
-	});
-	
-	return PostfixUnaryExpression;
-}(
-	this.UnaryExpression
-);
-
 this.UnaryStatement = function(){
 	/**
 	 * 一元语句
