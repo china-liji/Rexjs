@@ -1,7 +1,7 @@
-var [[]] = [];
+function fn(){ break }
 
 var a = {
-	a(){
+	a(...a){
 		super.b++
 	}
 }

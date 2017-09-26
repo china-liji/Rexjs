@@ -177,13 +177,11 @@ this.OpenFunctionBodyTag = function(OpenBraceTag, FunctionBodyExpression, Functi
 			return closeFunctionBodyTag;
 		},
 		/**
-		 * 进入函数主体语句块内部
-		 * @param {SyntaxParser} parser - 语法解析器
+		 * 获取绑定的语句块，一般在子类使用父类逻辑，而不使用父类语句块的情况下使用
 		 * @param {Statements} statements - 当前语句块
 		 */
-		in: function(parser, statements){
-			// 设置当前语句块
-			parser.statements = new FunctionBodyStatements(statements);
+		getBoundStatements: function(statements){
+			return new FunctionBodyStatements(statements);
 		},
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
@@ -209,11 +207,13 @@ this.OpenFunctionBodyTag = function(OpenBraceTag, FunctionBodyExpression, Functi
 			// 设置表达式
 			.expression = new FunctionBodyExpression(context);
 
-			// 进入函数主体语句块内部
-			this.in(parser, statements);
-			
-			// 获取函数主体语句块的声明集合，注意：parser.statements 并不就是 statements
-			declarationCollection = parser.statements.collections.declaration;
+			// 获取函数主体语句块的声明集合
+			declarationCollection = (
+				// 设置当前语句块
+				parser.statements = this.getBoundStatements(statements)
+			)
+			.collections
+			.declaration;
 
 			// 收集参数名到声明集合下
 			forEach(

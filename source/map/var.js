@@ -121,6 +121,13 @@ this.VarTag = function(VarExpression, VarStatement){
 		get binding(){
 			return varDeclarationSeparatorTag;
 		},
+		/**
+		 * 获取绑定的语句，一般在子类使用父类逻辑，而不使用父类语句的情况下使用
+		 * @param {Statements} statements - 该语句将要所处的语句块
+		 */
+		getBoundStatement: function(statements){
+			return new VarStatement(statements);
+		},
 		regexp: /var/,
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
@@ -146,7 +153,7 @@ this.VarTag = function(VarExpression, VarStatement){
 			// 设置当前表达式
 			statement.expression = new VarExpression(context, statements);
 			// 设置当前语句
-			statements.statement = new VarStatement(statements);
+			statements.statement = this.getBoundStatement(statements);
 		}
 	});
 

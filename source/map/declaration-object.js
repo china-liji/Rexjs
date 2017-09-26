@@ -101,6 +101,13 @@ this.OpenDeclarationObjectTag = function(OpenObjectTag, DeclarationObjectExpress
 			return closeDeclarationObjectTag;
 		},
 		/**
+		 * 获取拥有该对象的表达式
+		 * @param {Statement} statement - 当前语句
+		 */
+		getObjectOf: function(statement){
+			return statement.target.expression;
+		},
+		/**
 		 * 获取绑定的分隔符标签，该标签一般是用于语句的 try、catch 的返回值
 		 */
 		get separator(){
@@ -122,7 +129,11 @@ this.OpenDeclarationObjectTag = function(OpenObjectTag, DeclarationObjectExpress
 		 */
 		visitor: function(parser, context, statement, statements){
 			// 设置当前表达式
-			statement.expression = new DeclarationObjectExpression(context, statement.target.expression);
+			statement.expression = new DeclarationObjectExpression(
+				context,
+				this.getObjectOf(statement)
+			);
+
 			// 设置当前语句
 			statements.statement = new PropertyDestructuringStatement(statements);
 		}

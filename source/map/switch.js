@@ -328,13 +328,11 @@ this.OpenSwitchBodyTag = function(SwitchStatement, SwitchBodyStatements, visitor
 			return closeSwitchBodyTag;
 		},
 		/**
-		 * 进入语句块内部
-		 * @param {SyntaxParser} parser - 语法解析器
+		 * 获取绑定的语句块，一般在子类使用父类逻辑，而不使用父类语句块的情况下使用
 		 * @param {Statements} statements - 当前语句块
 		 */
-		in: function(parser, statements){
-			// 设置当前语句块
-			parser.statements = new SwitchBodyStatements(statements);
+		getBoundStatements: function(statements){
+			return new SwitchBodyStatements(statements);
 		},
 		/**
 		 * 获取此标签接下来所需匹配的标签列表

@@ -987,6 +987,27 @@ this.SyntaxTag = function(SyntaxElement, TagClass, TagType){
 			// 追加标签内容
 			contentBuilder.appendString(content);
 		},
+		/**
+		 * 获取绑定的表达式，一般在子类使用父类逻辑，而不使用父类表达式的情况下使用
+		 * @param {Context} context - 相关的语法标签上下文
+		 */
+		getBoundExpression: function(){
+			return null;
+		},
+		/**
+		 * 获取绑定的语句，一般在子类使用父类逻辑，而不使用父类语句的情况下使用
+		 * @param {Statements} statements - 该语句将要所处的语句块
+		 */
+		getBoundStatement: function(){
+			return null;
+		},
+		/**
+		 * 获取绑定的语句块，一般在子类使用父类逻辑，而不使用父类语句块的情况下使用
+		 * @param {Statements} statements - 该语句将要所处的语句块
+		 */
+		getBoundStatements: function(){
+			return null;
+		},
 		order: 0,
 		regexp: null,
 		/**
@@ -1432,20 +1453,6 @@ this.Expression = function(config, parseInt){
 		 */
 		extractTo: function(contentBuilder){
 			contentBuilder.appendContext(this.context);
-		},
-		/**
-		 * 获取绑定的表达式，一般在子类使用父类逻辑，而不使用父类表达式的情况下使用
-		 * @param {Context} context - 相关的语法标签上下文
-		 */
-		getBoundExpression: function(){
-			return null;
-		},
-		/**
-		 * 获取绑定的语句，一般在子类使用父类逻辑，而不使用父类语句的情况下使用
-		 * @param {Statements} statements - 该语句将要所处的语句块
-		 */
-		getBoundStatement: function(){
-			return null;
 		},
 		state: Expression.STATE_NONE
 	});

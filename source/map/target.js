@@ -1,5 +1,5 @@
 // new.target 表达式相关
-!function(ECMAScriptStatements, PropertyNameTag){
+!function(ECMAScriptStatements, DotAccessorTag, PropertyNameTag){
 
 this.TargetExpression = function(AccessorExpression){
 	/**
@@ -31,7 +31,7 @@ this.TargetExpression = function(AccessorExpression){
 	this.AccessorExpression
 );
 
-this.TargetAccessorTag = function(DotAccessorTag, TargetExpression){
+this.TargetAccessorTag = function(TargetExpression, visitor){
 	/**
 	 * target 访问器标签
 	 * @param {Number} _type - 标签类型
@@ -42,6 +42,13 @@ this.TargetAccessorTag = function(DotAccessorTag, TargetExpression){
 	TargetAccessorTag = new Rexjs(TargetAccessorTag, DotAccessorTag);
 
 	TargetAccessorTag.props({
+		/**
+		 * 获取绑定的表达式，一般在子类使用父类逻辑，而不使用父类表达式的情况下使用
+		 * @param {Context} context - 相关的语法标签上下文
+		 */
+		getBoundExpression: function(context){
+			return new TargetExpression(context);
+		},
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
@@ -57,19 +64,22 @@ this.TargetAccessorTag = function(DotAccessorTag, TargetExpression){
 		 * @param {Statements} statements - 当前语句块
 		 */
 		visitor: function(parser, context, statement, statements){
-			(
+			// 调用父类方法
+			visitor.call(
+				this,
+				parser,
+				context,
 				// 设置当前语句为 target，目的是因为当前已经不属于一元操作语句
-				statements.statement = statement.target
-			)
-			// 设置当前语句的表达式
-			.expression = new TargetExpression(context);
+				statements.statement = statement.target,
+				statements
+			);
 		}
 	});
 
 	return TargetAccessorTag;
 }(
-	this.DotAccessorTag,
-	this.TargetExpression
+	this.TargetExpression,
+	DotAccessorTag.prototype.visitor
 );
 
 this.TargetTag = function(SCOPE_CLOSURE, SCOPE_LAZY, visitor){
@@ -132,5 +142,6 @@ this.TargetTag = function(SCOPE_CLOSURE, SCOPE_LAZY, visitor){
 }.call(
 	this,
 	this.ECMAScriptStatements,
+	this.DotAccessorTag,
 	this.PropertyNameTag
 );

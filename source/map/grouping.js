@@ -1,5 +1,5 @@
 // 分组小括号标签相关
-!function(IdentifierExpression, ArgumentExpression, DefaultArgumentExpression, RestArgumentExpression, groupingSeparatorTag, closeGroupingTag, collectTo){
+!function(IdentifierExpression, ArgumentExpression, DefaultArgumentExpression, RestArgumentExpression, RestTag, groupingSeparatorTag, closeGroupingTag, collectTo){
 
 this.GroupingExpression = function(){
 	/**
@@ -349,7 +349,7 @@ this.OpenGroupingTag = function(OpenParenTag, GroupingExpression, GroupingStatem
 	this.GroupingStatement
 );
 
-this.IllegibleRestTag = function(RestTag, IllegibleRestArgumentExpression, IllegibleRestArgumentStatement){
+this.IllegibleRestTag = function(IllegibleRestArgumentExpression, IllegibleRestArgumentStatement, visitor){
 	/**
 	 * 难以辨别的、可能非法的省略参数标签
 	 * @param {Number} _type - 标签类型
@@ -360,6 +360,17 @@ this.IllegibleRestTag = function(RestTag, IllegibleRestArgumentExpression, Illeg
 	IllegibleRestTag = new Rexjs(IllegibleRestTag, RestTag);
 
 	IllegibleRestTag.props({
+		/**
+		 * 获取绑定的表达式，一般在子类使用父类逻辑，而不使用父类表达式的情况下使用
+		 * @param {Context} context - 相关的语法标签上下文
+		 * @param {GroupingExpression} groupingExpression - 相关的分组小括号表达式
+		 */
+		getBoundExpression: function(context, groupingExpression){
+			return new IllegibleRestArgumentExpression(
+				context,
+				groupingExpression.inner.length
+			);
+		},
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
@@ -377,11 +388,8 @@ this.IllegibleRestTag = function(RestTag, IllegibleRestArgumentExpression, Illeg
 		visitor: function(parser, context, statement, statements){
 			var groupingExpression = statement.target.expression;
 
-			// 设置当前表达式
-			statement.expression = new IllegibleRestArgumentExpression(
-				context,
-				groupingExpression.inner.length
-			);
+			// 调用父类方法
+			visitor.call(this, parser, context, statement, statements);
 
 			// 设置当前语句
 			statements.statement = new IllegibleRestArgumentStatement(statements);
@@ -400,9 +408,9 @@ this.IllegibleRestTag = function(RestTag, IllegibleRestArgumentExpression, Illeg
 
 	return IllegibleRestTag;
 }(
-	this.RestTag,
 	this.IllegibleRestArgumentExpression,
-	this.IllegibleRestArgumentStatement
+	this.IllegibleRestArgumentStatement,
+	RestTag.prototype.visitor
 );
 
 this.GroupingSeparatorTag = function(CommaTag, GroupingStatement){
@@ -490,6 +498,7 @@ closeGroupingTag = new this.CloseGroupingTag();
 	this.ArgumentExpression,
 	this.DefaultArgumentExpression,
 	this.RestArgumentExpression,
+	this.RestTag,
 	// groupingSeparatorTag
 	null,
 	// closeGroupingTag

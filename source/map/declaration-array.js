@@ -144,6 +144,22 @@ this.DeclarationArrayItemTag = function(VariableDeclarationTag, DestructuringIte
 	
 	DeclarationArrayItemTag.props({
 		/**
+		 * 获取该标签所处的数组语句
+		 * @param {Statement} statement - 当前语句
+		 */
+		getArrayStatement: function(statement){
+			return statement;
+		},
+		/**
+		 * 获取绑定的表达式，一般在子类使用父类逻辑，而不使用父类表达式的情况下使用
+		 * @param {Context} context - 相关的语法标签上下文
+		 */
+		getBoundExpression: function(context){
+			return new DestructuringItemExpression(
+				new IdentifierExpression(context)
+			);
+		},
+		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
 		 */
@@ -160,15 +176,13 @@ this.DeclarationArrayItemTag = function(VariableDeclarationTag, DestructuringIte
 		visitor: function(parser, context, statement, statements){
 			(
 				// 修改上下文标签，因为当前标签（即 this）的功能只能替代匹配，而不能替代解析
-				context.tag = statement.target.expression.arrayOf.context.tag.variable
+				context.tag = this.getArrayStatement(statement).target.expression.arrayOf.context.tag.variable
 			)
 			// 收集变量名
 			.collectTo(parser, context, statements);
 
 			// 设置当前表达式
-			statement.expression = new DestructuringItemExpression(
-				new IdentifierExpression(context)
-			);
+			statement.expression = this.getBoundExpression(context);
 		}
 	});
 	

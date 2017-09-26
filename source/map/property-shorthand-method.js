@@ -284,13 +284,11 @@ this.OpenShorthandMethodBodyTag = function(OpenFunctionBodyTag, ShorthandMethodB
 			return closeShorthandMethodBodyTag;
 		},
 		/**
-		 * 进入函数主体语句块内部
-		 * @param {SyntaxParser} parser - 语法解析器
+		 * 获取绑定的语句块，一般在子类使用父类逻辑，而不使用父类语句块的情况下使用
 		 * @param {Statements} statements - 当前语句块
 		 */
-		in: function(parser, statements){
-			// 设置当前语句块
-			parser.statements = new ShorthandMethodBodyStatements(statements);
+		getBoundStatements: function(statements){
+			return new ShorthandMethodBodyStatements(statements);
 		}
 	});
 

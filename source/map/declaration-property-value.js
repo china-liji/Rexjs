@@ -1,7 +1,7 @@
 // 对象解构声明的属性值相关
-!function(PropertyDestructuringItemExpression, CloseDeclarationObjectTag, OpenNestedDeclarationArrayItemTag, VariableDeclarationTag, BasicAssignmentTag, closeArrayDeclarationPropertyValueTag, closeObjectDeclarationPropertyValueTag){
+!function(PropertyDestructuringItemExpression, OpenDeclarationObjectTag, CloseDeclarationObjectTag, OpenNestedDeclarationArrayItemTag, VariableDeclarationTag, BasicAssignmentTag, closeArrayDeclarationPropertyValueTag, closeObjectDeclarationPropertyValueTag){
 
-this.OpenObjectDeclarationPropertyValueTag = function(OpenDeclarationObjectTag, DeclarationObjectExpression, PropertyDestructuringStatement){
+this.OpenObjectDeclarationPropertyValueTag = function(DeclarationObjectExpression, visitor){
 	/**
 	 * 对象声明属性值（即：对象解构中所嵌套的对象解构）起始标签
 	 * @param {Number} _type - 标签类型
@@ -19,6 +19,13 @@ this.OpenObjectDeclarationPropertyValueTag = function(OpenDeclarationObjectTag, 
 			return closeObjectDeclarationPropertyValueTag;
 		},
 		/**
+		 * 获取拥有该对象的表达式
+		 * @param {Statement} statement - 当前语句
+		 */
+		getObjectOf: function(statement){
+			return statement.target.target.expression.objectOf;
+		},
+		/**
 		 * 标签访问器
 		 * @param {SyntaxParser} parser - 语法解析器
 		 * @param {Context} context - 标签上下文
@@ -28,14 +35,8 @@ this.OpenObjectDeclarationPropertyValueTag = function(OpenDeclarationObjectTag, 
 		visitor: function(parser, context, statement, statements){
 			var propertyDestructuringStatement = statement.target, propertyExpression = propertyDestructuringStatement.expression;
 
-			// 设置当前表达式
-			statement.expression = new DeclarationObjectExpression(
-				context,
-				propertyDestructuringStatement.target.expression.objectOf
-			);
-
-			// 设置当前语句
-			statements.statement = new PropertyDestructuringStatement(statements);
+			// 调用父类方法
+			visitor.call(this, parser, context, statement, statements);
 
 			// 设置 destructuringItem 属性，以标识为解构子项
 			propertyExpression.value.destructuringItem = true;
@@ -46,9 +47,8 @@ this.OpenObjectDeclarationPropertyValueTag = function(OpenDeclarationObjectTag, 
 
 	return OpenObjectDeclarationPropertyValueTag;
 }(
-	this.OpenDeclarationObjectTag,
 	this.DeclarationObjectExpression,
-	this.PropertyDestructuringStatement
+	OpenDeclarationObjectTag.prototype.visitor
 );
 
 this.CloseObjectDeclarationPropertyValueTag = function(visitor){
@@ -250,6 +250,7 @@ closeObjectDeclarationPropertyValueTag = new this.CloseObjectDeclarationProperty
 }.call(
 	this,
 	this.PropertyDestructuringItemExpression,
+	this.OpenDeclarationObjectTag,
 	this.CloseDeclarationObjectTag,
 	this.OpenNestedDeclarationArrayItemTag,
 	this.VariableDeclarationTag,

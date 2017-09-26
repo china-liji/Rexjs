@@ -1,7 +1,7 @@
 // 数组声明解构内的对象解构相关
 !function(CloseDeclarationObjectTag, closeObjectDeclarationArrayItemTag){
 
-this.OpenObjectDeclarationArrayItemTag = function(OpenDeclarationObjectTag, DeclarationObjectExpression, PropertyDestructuringStatement){
+this.OpenObjectDeclarationArrayItemTag = function(OpenDeclarationObjectTag){
 	/**
 	 * 对象声明数组项（即数组声明解构中，所嵌套的对象解构）起始标签
 	 * @param {Number} _type - 标签类型
@@ -19,25 +19,17 @@ this.OpenObjectDeclarationArrayItemTag = function(OpenDeclarationObjectTag, Decl
 			return closeObjectDeclarationArrayItemTag;
 		},
 		/**
-		 * 标签访问器
-		 * @param {SyntaxParser} parser - 语法解析器
-		 * @param {Context} context - 标签上下文
+		 * 获取拥有该对象的表达式
 		 * @param {Statement} statement - 当前语句
-		 * @param {Statements} statements - 当前语句块
 		 */
-		visitor: function(parser, context, statement, statements){
-			// 设置当前表达式
-			statement.expression = new DeclarationObjectExpression(context, statement.target.expression.arrayOf);
-			// 设置当前语句
-			statements.statement = new PropertyDestructuringStatement(statements);
+		getObjectOf: function(statement){
+			return statement.target.expression.arrayOf;
 		}
 	});
 
 	return OpenObjectDeclarationArrayItemTag;
 }(
-	this.OpenDeclarationObjectTag,
-	this.DeclarationObjectExpression,
-	this.PropertyDestructuringStatement
+	this.OpenDeclarationObjectTag
 );
 
 this.CloseObjectDeclarationArrayItemTag = function(visitor){

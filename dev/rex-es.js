@@ -2330,6 +2330,14 @@ this.DotAccessorTag = function(DotTag, AccessorExpression){
 	
 	DotAccessorTag.props({
 		$class: CLASS_EXPRESSION_CONTEXT,
+		/**
+		 * 获取绑定的表达式，一般在子类使用父类逻辑，而不使用父类表达式的情况下使用
+		 * @param {Context} context - 相关的语法标签上下文
+		 * @param {Expression} object - 拥有该属性的对象
+		 */
+		getBoundExpression: function(context, object){
+			return new AccessorExpression(context, object);
+		},
 		// 防止与 NumberTag 冲突
 		order: ECMAScriptOrders.DOT_ACCESSOR,
 		/**
@@ -2348,7 +2356,7 @@ this.DotAccessorTag = function(DotTag, AccessorExpression){
 		 */
 		visitor: function(parser, context, statement, statements){
 			// 设置当前表达式
-			statement.expression = new AccessorExpression(context, statement.expression);
+			statement.expression = this.getBoundExpression(context, statement.expression);
 		}
 	});
 	
@@ -6394,8 +6402,6 @@ this.OpenDeclarationArrayTag = function(DeclarationArrayExpression, visitor){
 
 			// 通过当前语句给变量声明数组表达式绑定 arrayOf 属性
 			statement.expression.arrayOf = this.getArrayOf(statement);
-
-			if(!statement.expression.arrayOf)debugger
 		}
 	});
 
@@ -6417,6 +6423,22 @@ this.DeclarationArrayItemTag = function(VariableDeclarationTag, DestructuringIte
 	
 	DeclarationArrayItemTag.props({
 		/**
+		 * 获取该标签所处的数组语句
+		 * @param {Statement} statement - 当前语句
+		 */
+		getArrayStatement: function(statement){
+			return statement;
+		},
+		/**
+		 * 获取绑定的表达式，一般在子类使用父类逻辑，而不使用父类表达式的情况下使用
+		 * @param {Context} context - 相关的语法标签上下文
+		 */
+		getBoundExpression: function(context){
+			return new DestructuringItemExpression(
+				new IdentifierExpression(context)
+			);
+		},
+		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
 		 */
@@ -6433,15 +6455,13 @@ this.DeclarationArrayItemTag = function(VariableDeclarationTag, DestructuringIte
 		visitor: function(parser, context, statement, statements){
 			(
 				// 修改上下文标签，因为当前标签（即 this）的功能只能替代匹配，而不能替代解析
-				context.tag = statement.target.expression.arrayOf.context.tag.variable
+				context.tag = this.getArrayStatement(statement).target.expression.arrayOf.context.tag.variable
 			)
 			// 收集变量名
 			.collectTo(parser, context, statements);
 
 			// 设置当前表达式
-			statement.expression = new DestructuringItemExpression(
-				new IdentifierExpression(context)
-			);
+			statement.expression = this.getBoundExpression(context);
 		}
 	});
 	
@@ -6583,29 +6603,25 @@ this.DeclarationArrayRestItemTag = function(DeclarationArrayItemTag, IdentifierE
 
 	DeclarationArrayRestItemTag.props({
 		/**
+		 * 获取该标签所处的数组语句
+		 * @param {Statement} statement - 当前语句
+		 */
+		getArrayStatement: function(statement){
+			return statement.target;
+		},
+		/**
+		 * 获取绑定的表达式，一般在子类使用父类逻辑，而不使用父类表达式的情况下使用
+		 * @param {Context} context - 相关的语法标签上下文
+		 */
+		getBoundExpression: function(context){
+			return new IdentifierExpression(context);
+		},
+		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
 		 */
 		require: function(tagsMap){
 			return tagsMap.declarationArrayRestItemContextTags;
-		},
-		/**
-		 * 标签访问器
-		 * @param {SyntaxParser} parser - 语法解析器
-		 * @param {Context} context - 标签上下文
-		 * @param {Statement} statement - 当前语句
-		 * @param {Statements} statements - 当前语句块
-		 */
-		visitor: function(parser, context, statement, statements){
-			(
-				// 修改上下文标签，因为当前标签（即 this）的功能只能替代匹配，而不能替代解析
-				context.tag = statement.target.target.expression.arrayOf.context.tag.variable
-			)
-			// 收集变量名
-			.collectTo(parser, context, statements);
-
-			// 设置当前表达式
-			statement.expression = new IdentifierExpression(context);
 		}
 	});
 
@@ -6897,13 +6913,11 @@ this.OpenBlockTag = function(OpenBraceTag, BlockExpression, BlockBodyStatements,
 			return closeBlockTag;
 		},
 		/**
-		 * 进入语句块内部
-		 * @param {SyntaxParser} parser - 语法解析器
+		 * 获取绑定的语句块，一般在子类使用父类逻辑，而不使用父类语句块的情况下使用
 		 * @param {Statements} statements - 当前语句块
 		 */
-		in: function(parser, statements){
-			// 设置当前语句块
-			parser.statements = new BlockBodyStatements(statements);
+		getBoundStatements: function(statements){
+			return new BlockBodyStatements(statements);
 		},
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
@@ -6922,9 +6936,8 @@ this.OpenBlockTag = function(OpenBraceTag, BlockExpression, BlockBodyStatements,
 		visitor: function(parser, context, statement, statements){
 			// 设置表达式
 			statement.expression = new BlockExpression(context, statements);
-			
-			// 进入语句块内部
-			this.in(parser, statements);
+			// 设置当前语句块
+			parser.statements = this.getBoundStatements(statements);
 		}
 	});
 	
@@ -7955,6 +7968,17 @@ this.RestTag = function(SpreadTag, RestArgumentExpression){
 
 	RestTag.props({
 		/**
+		 * 获取绑定的表达式，一般在子类使用父类逻辑，而不使用父类表达式的情况下使用
+		 * @param {Context} context - 相关的语法标签上下文
+		 * @param {FunctionExpression} functionExpression - 相关的函数表达式
+		 */
+		getBoundExpression: function(context, functionExpression){
+			return new RestArgumentExpression(
+				context,
+				functionExpression.arguments.inner.length
+			);
+		},
+		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
 		 */
@@ -7970,10 +7994,7 @@ this.RestTag = function(SpreadTag, RestArgumentExpression){
 		 */
 		visitor: function(parser, context, statement){
 			// 设置当前表达式
-			statement.expression = new RestArgumentExpression(
-				context,
-				statement.target.expression.arguments.inner.length
-			);
+			statement.expression = this.getBoundExpression(context, statement.target.expression);
 		}
 	});
 
@@ -8245,13 +8266,11 @@ this.OpenFunctionBodyTag = function(OpenBraceTag, FunctionBodyExpression, Functi
 			return closeFunctionBodyTag;
 		},
 		/**
-		 * 进入函数主体语句块内部
-		 * @param {SyntaxParser} parser - 语法解析器
+		 * 获取绑定的语句块，一般在子类使用父类逻辑，而不使用父类语句块的情况下使用
 		 * @param {Statements} statements - 当前语句块
 		 */
-		in: function(parser, statements){
-			// 设置当前语句块
-			parser.statements = new FunctionBodyStatements(statements);
+		getBoundStatements: function(statements){
+			return new FunctionBodyStatements(statements);
 		},
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
@@ -8277,11 +8296,13 @@ this.OpenFunctionBodyTag = function(OpenBraceTag, FunctionBodyExpression, Functi
 			// 设置表达式
 			.expression = new FunctionBodyExpression(context);
 
-			// 进入函数主体语句块内部
-			this.in(parser, statements);
-			
-			// 获取函数主体语句块的声明集合，注意：parser.statements 并不就是 statements
-			declarationCollection = parser.statements.collections.declaration;
+			// 获取函数主体语句块的声明集合
+			declarationCollection = (
+				// 设置当前语句块
+				parser.statements = this.getBoundStatements(statements)
+			)
+			.collections
+			.declaration;
 
 			// 收集参数名到声明集合下
 			forEach(
@@ -8363,7 +8384,7 @@ closeFunctionBodyTag = new this.CloseFunctionBodyTag();
 eval(
 									function(){
 										// new.target 表达式相关
-!function(ECMAScriptStatements, PropertyNameTag){
+!function(ECMAScriptStatements, DotAccessorTag, PropertyNameTag){
 
 this.TargetExpression = function(AccessorExpression){
 	/**
@@ -8395,7 +8416,7 @@ this.TargetExpression = function(AccessorExpression){
 	this.AccessorExpression
 );
 
-this.TargetAccessorTag = function(DotAccessorTag, TargetExpression){
+this.TargetAccessorTag = function(TargetExpression, visitor){
 	/**
 	 * target 访问器标签
 	 * @param {Number} _type - 标签类型
@@ -8406,6 +8427,13 @@ this.TargetAccessorTag = function(DotAccessorTag, TargetExpression){
 	TargetAccessorTag = new Rexjs(TargetAccessorTag, DotAccessorTag);
 
 	TargetAccessorTag.props({
+		/**
+		 * 获取绑定的表达式，一般在子类使用父类逻辑，而不使用父类表达式的情况下使用
+		 * @param {Context} context - 相关的语法标签上下文
+		 */
+		getBoundExpression: function(context){
+			return new TargetExpression(context);
+		},
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
@@ -8421,19 +8449,22 @@ this.TargetAccessorTag = function(DotAccessorTag, TargetExpression){
 		 * @param {Statements} statements - 当前语句块
 		 */
 		visitor: function(parser, context, statement, statements){
-			(
+			// 调用父类方法
+			visitor.call(
+				this,
+				parser,
+				context,
 				// 设置当前语句为 target，目的是因为当前已经不属于一元操作语句
-				statements.statement = statement.target
-			)
-			// 设置当前语句的表达式
-			.expression = new TargetExpression(context);
+				statements.statement = statement.target,
+				statements
+			);
 		}
 	});
 
 	return TargetAccessorTag;
 }(
-	this.DotAccessorTag,
-	this.TargetExpression
+	this.TargetExpression,
+	DotAccessorTag.prototype.visitor
 );
 
 this.TargetTag = function(SCOPE_CLOSURE, SCOPE_LAZY, visitor){
@@ -8496,6 +8527,7 @@ this.TargetTag = function(SCOPE_CLOSURE, SCOPE_LAZY, visitor){
 }.call(
 	this,
 	this.ECMAScriptStatements,
+	this.DotAccessorTag,
 	this.PropertyNameTag
 );
 									}
@@ -8510,7 +8542,7 @@ this.TargetTag = function(SCOPE_CLOSURE, SCOPE_LAZY, visitor){
 eval(
 									function(){
 										// 分组小括号标签相关
-!function(IdentifierExpression, ArgumentExpression, DefaultArgumentExpression, RestArgumentExpression, groupingSeparatorTag, closeGroupingTag, collectTo){
+!function(IdentifierExpression, ArgumentExpression, DefaultArgumentExpression, RestArgumentExpression, RestTag, groupingSeparatorTag, closeGroupingTag, collectTo){
 
 this.GroupingExpression = function(){
 	/**
@@ -8860,7 +8892,7 @@ this.OpenGroupingTag = function(OpenParenTag, GroupingExpression, GroupingStatem
 	this.GroupingStatement
 );
 
-this.IllegibleRestTag = function(RestTag, IllegibleRestArgumentExpression, IllegibleRestArgumentStatement){
+this.IllegibleRestTag = function(IllegibleRestArgumentExpression, IllegibleRestArgumentStatement, visitor){
 	/**
 	 * 难以辨别的、可能非法的省略参数标签
 	 * @param {Number} _type - 标签类型
@@ -8871,6 +8903,17 @@ this.IllegibleRestTag = function(RestTag, IllegibleRestArgumentExpression, Illeg
 	IllegibleRestTag = new Rexjs(IllegibleRestTag, RestTag);
 
 	IllegibleRestTag.props({
+		/**
+		 * 获取绑定的表达式，一般在子类使用父类逻辑，而不使用父类表达式的情况下使用
+		 * @param {Context} context - 相关的语法标签上下文
+		 * @param {GroupingExpression} groupingExpression - 相关的分组小括号表达式
+		 */
+		getBoundExpression: function(context, groupingExpression){
+			return new IllegibleRestArgumentExpression(
+				context,
+				groupingExpression.inner.length
+			);
+		},
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
@@ -8888,11 +8931,8 @@ this.IllegibleRestTag = function(RestTag, IllegibleRestArgumentExpression, Illeg
 		visitor: function(parser, context, statement, statements){
 			var groupingExpression = statement.target.expression;
 
-			// 设置当前表达式
-			statement.expression = new IllegibleRestArgumentExpression(
-				context,
-				groupingExpression.inner.length
-			);
+			// 调用父类方法
+			visitor.call(this, parser, context, statement, statements);
 
 			// 设置当前语句
 			statements.statement = new IllegibleRestArgumentStatement(statements);
@@ -8911,9 +8951,9 @@ this.IllegibleRestTag = function(RestTag, IllegibleRestArgumentExpression, Illeg
 
 	return IllegibleRestTag;
 }(
-	this.RestTag,
 	this.IllegibleRestArgumentExpression,
-	this.IllegibleRestArgumentStatement
+	this.IllegibleRestArgumentStatement,
+	RestTag.prototype.visitor
 );
 
 this.GroupingSeparatorTag = function(CommaTag, GroupingStatement){
@@ -9001,6 +9041,7 @@ closeGroupingTag = new this.CloseGroupingTag();
 	this.ArgumentExpression,
 	this.DefaultArgumentExpression,
 	this.RestArgumentExpression,
+	this.RestTag,
 	// groupingSeparatorTag
 	null,
 	// closeGroupingTag
@@ -11077,13 +11118,11 @@ this.OpenShorthandMethodBodyTag = function(OpenFunctionBodyTag, ShorthandMethodB
 			return closeShorthandMethodBodyTag;
 		},
 		/**
-		 * 进入函数主体语句块内部
-		 * @param {SyntaxParser} parser - 语法解析器
+		 * 获取绑定的语句块，一般在子类使用父类逻辑，而不使用父类语句块的情况下使用
 		 * @param {Statements} statements - 当前语句块
 		 */
-		in: function(parser, statements){
-			// 设置当前语句块
-			parser.statements = new ShorthandMethodBodyStatements(statements);
+		getBoundStatements: function(statements){
+			return new ShorthandMethodBodyStatements(statements);
 		}
 	});
 
@@ -11972,6 +12011,13 @@ this.OpenDeclarationObjectTag = function(OpenObjectTag, DeclarationObjectExpress
 			return closeDeclarationObjectTag;
 		},
 		/**
+		 * 获取拥有该对象的表达式
+		 * @param {Statement} statement - 当前语句
+		 */
+		getObjectOf: function(statement){
+			return statement.target.expression;
+		},
+		/**
 		 * 获取绑定的分隔符标签，该标签一般是用于语句的 try、catch 的返回值
 		 */
 		get separator(){
@@ -11993,7 +12039,11 @@ this.OpenDeclarationObjectTag = function(OpenObjectTag, DeclarationObjectExpress
 		 */
 		visitor: function(parser, context, statement, statements){
 			// 设置当前表达式
-			statement.expression = new DeclarationObjectExpression(context, statement.target.expression);
+			statement.expression = new DeclarationObjectExpression(
+				context,
+				this.getObjectOf(statement)
+			);
+
 			// 设置当前语句
 			statements.statement = new PropertyDestructuringStatement(statements);
 		}
@@ -12447,9 +12497,9 @@ this.DeclarationPropertyNameSeparatorTag = function(visitor){
 eval(
 									function(){
 										// 对象解构声明的属性值相关
-!function(PropertyDestructuringItemExpression, CloseDeclarationObjectTag, OpenNestedDeclarationArrayItemTag, VariableDeclarationTag, BasicAssignmentTag, closeArrayDeclarationPropertyValueTag, closeObjectDeclarationPropertyValueTag){
+!function(PropertyDestructuringItemExpression, OpenDeclarationObjectTag, CloseDeclarationObjectTag, OpenNestedDeclarationArrayItemTag, VariableDeclarationTag, BasicAssignmentTag, closeArrayDeclarationPropertyValueTag, closeObjectDeclarationPropertyValueTag){
 
-this.OpenObjectDeclarationPropertyValueTag = function(OpenDeclarationObjectTag, DeclarationObjectExpression, PropertyDestructuringStatement){
+this.OpenObjectDeclarationPropertyValueTag = function(DeclarationObjectExpression, visitor){
 	/**
 	 * 对象声明属性值（即：对象解构中所嵌套的对象解构）起始标签
 	 * @param {Number} _type - 标签类型
@@ -12467,6 +12517,13 @@ this.OpenObjectDeclarationPropertyValueTag = function(OpenDeclarationObjectTag, 
 			return closeObjectDeclarationPropertyValueTag;
 		},
 		/**
+		 * 获取拥有该对象的表达式
+		 * @param {Statement} statement - 当前语句
+		 */
+		getObjectOf: function(statement){
+			return statement.target.target.expression.objectOf;
+		},
+		/**
 		 * 标签访问器
 		 * @param {SyntaxParser} parser - 语法解析器
 		 * @param {Context} context - 标签上下文
@@ -12476,14 +12533,8 @@ this.OpenObjectDeclarationPropertyValueTag = function(OpenDeclarationObjectTag, 
 		visitor: function(parser, context, statement, statements){
 			var propertyDestructuringStatement = statement.target, propertyExpression = propertyDestructuringStatement.expression;
 
-			// 设置当前表达式
-			statement.expression = new DeclarationObjectExpression(
-				context,
-				propertyDestructuringStatement.target.expression.objectOf
-			);
-
-			// 设置当前语句
-			statements.statement = new PropertyDestructuringStatement(statements);
+			// 调用父类方法
+			visitor.call(this, parser, context, statement, statements);
 
 			// 设置 destructuringItem 属性，以标识为解构子项
 			propertyExpression.value.destructuringItem = true;
@@ -12494,9 +12545,8 @@ this.OpenObjectDeclarationPropertyValueTag = function(OpenDeclarationObjectTag, 
 
 	return OpenObjectDeclarationPropertyValueTag;
 }(
-	this.OpenDeclarationObjectTag,
 	this.DeclarationObjectExpression,
-	this.PropertyDestructuringStatement
+	OpenDeclarationObjectTag.prototype.visitor
 );
 
 this.CloseObjectDeclarationPropertyValueTag = function(visitor){
@@ -12698,6 +12748,7 @@ closeObjectDeclarationPropertyValueTag = new this.CloseObjectDeclarationProperty
 }.call(
 	this,
 	this.PropertyDestructuringItemExpression,
+	this.OpenDeclarationObjectTag,
 	this.CloseDeclarationObjectTag,
 	this.OpenNestedDeclarationArrayItemTag,
 	this.VariableDeclarationTag,
@@ -12852,7 +12903,7 @@ eval(
 										// 数组声明解构内的对象解构相关
 !function(CloseDeclarationObjectTag, closeObjectDeclarationArrayItemTag){
 
-this.OpenObjectDeclarationArrayItemTag = function(OpenDeclarationObjectTag, DeclarationObjectExpression, PropertyDestructuringStatement){
+this.OpenObjectDeclarationArrayItemTag = function(OpenDeclarationObjectTag){
 	/**
 	 * 对象声明数组项（即数组声明解构中，所嵌套的对象解构）起始标签
 	 * @param {Number} _type - 标签类型
@@ -12870,25 +12921,17 @@ this.OpenObjectDeclarationArrayItemTag = function(OpenDeclarationObjectTag, Decl
 			return closeObjectDeclarationArrayItemTag;
 		},
 		/**
-		 * 标签访问器
-		 * @param {SyntaxParser} parser - 语法解析器
-		 * @param {Context} context - 标签上下文
+		 * 获取拥有该对象的表达式
 		 * @param {Statement} statement - 当前语句
-		 * @param {Statements} statements - 当前语句块
 		 */
-		visitor: function(parser, context, statement, statements){
-			// 设置当前表达式
-			statement.expression = new DeclarationObjectExpression(context, statement.target.expression.arrayOf);
-			// 设置当前语句
-			statements.statement = new PropertyDestructuringStatement(statements);
+		getObjectOf: function(statement){
+			return statement.target.expression.arrayOf;
 		}
 	});
 
 	return OpenObjectDeclarationArrayItemTag;
 }(
-	this.OpenDeclarationObjectTag,
-	this.DeclarationObjectExpression,
-	this.PropertyDestructuringStatement
+	this.OpenDeclarationObjectTag
 );
 
 this.CloseObjectDeclarationArrayItemTag = function(visitor){
@@ -13876,6 +13919,13 @@ this.VarTag = function(VarExpression, VarStatement){
 		get binding(){
 			return varDeclarationSeparatorTag;
 		},
+		/**
+		 * 获取绑定的语句，一般在子类使用父类逻辑，而不使用父类语句的情况下使用
+		 * @param {Statements} statements - 该语句将要所处的语句块
+		 */
+		getBoundStatement: function(statements){
+			return new VarStatement(statements);
+		},
 		regexp: /var/,
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
@@ -13901,7 +13951,7 @@ this.VarTag = function(VarExpression, VarStatement){
 			// 设置当前表达式
 			statement.expression = new VarExpression(context, statements);
 			// 设置当前语句
-			statements.statement = new VarStatement(statements);
+			statements.statement = this.getBoundStatement(statements);
 		}
 	});
 
@@ -14208,6 +14258,13 @@ this.ConstTag = function(LetTag, ConstStatement){
 			// 追加标签内容
 			contentBuilder.appendString(config.es6Base ? "var" : content);
 		},
+		/**
+		 * 获取绑定的语句，一般在子类使用父类逻辑，而不使用父类语句的情况下使用
+		 * @param {Statements} statements - 该语句将要所处的语句块
+		 */
+		getBoundStatement: function(statements){
+			return new ConstStatement(statements);
+		},
 		regexp: /const/,
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
@@ -14221,19 +14278,6 @@ this.ConstTag = function(LetTag, ConstStatement){
 		 */
 		get variable(){
 			return constVariableTag;
-		},
-		/**
-		 * 标签访问器
-		 * @param {SyntaxParser} parser - 语法解析器
-		 * @param {Context} context - 标签上下文
-		 * @param {Statement} statement - 当前语句
-		 * @param {Statements} statements - 当前语句块
-		 */
-		visitor: function(parser, context, statement, statements){
-			// 设置当前表达式
-			statement.expression = new VarExpression(context, statements);
-			// 设置当前语句
-			statements.statement = new ConstStatement(statements);
 		}
 	});
 
@@ -17220,13 +17264,11 @@ this.OpenSwitchBodyTag = function(SwitchStatement, SwitchBodyStatements, visitor
 			return closeSwitchBodyTag;
 		},
 		/**
-		 * 进入语句块内部
-		 * @param {SyntaxParser} parser - 语法解析器
+		 * 获取绑定的语句块，一般在子类使用父类逻辑，而不使用父类语句块的情况下使用
 		 * @param {Statements} statements - 当前语句块
 		 */
-		in: function(parser, statements){
-			// 设置当前语句块
-			parser.statements = new SwitchBodyStatements(statements);
+		getBoundStatements: function(statements){
+			return new SwitchBodyStatements(statements);
 		},
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
@@ -19538,13 +19580,11 @@ this.OpenConstructorBodyTag = function(OpenShorthandMethodBodyTag, ConstructorBo
 			return closeConstructorBodyTag;
 		},
 		/**
-		 * 进入函数主体语句块内部
-		 * @param {SyntaxParser} parser - 语法解析器
+		 * 获取绑定的语句块，一般在子类使用父类逻辑，而不使用父类语句块的情况下使用
 		 * @param {Statements} statements - 当前语句块
 		 */
-		in: function(parser, statements){
-			// 设置当前语句块
-			parser.statements = new ConstructorBodyStatements(statements);
+		getBoundStatements: function(statements){
+			return new ConstructorBodyStatements(statements);
 		}
 	});
 

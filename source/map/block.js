@@ -130,13 +130,11 @@ this.OpenBlockTag = function(OpenBraceTag, BlockExpression, BlockBodyStatements,
 			return closeBlockTag;
 		},
 		/**
-		 * 进入语句块内部
-		 * @param {SyntaxParser} parser - 语法解析器
+		 * 获取绑定的语句块，一般在子类使用父类逻辑，而不使用父类语句块的情况下使用
 		 * @param {Statements} statements - 当前语句块
 		 */
-		in: function(parser, statements){
-			// 设置当前语句块
-			parser.statements = new BlockBodyStatements(statements);
+		getBoundStatements: function(statements){
+			return new BlockBodyStatements(statements);
 		},
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
@@ -155,9 +153,8 @@ this.OpenBlockTag = function(OpenBraceTag, BlockExpression, BlockBodyStatements,
 		visitor: function(parser, context, statement, statements){
 			// 设置表达式
 			statement.expression = new BlockExpression(context, statements);
-			
-			// 进入语句块内部
-			this.in(parser, statements);
+			// 设置当前语句块
+			parser.statements = this.getBoundStatements(statements);
 		}
 	});
 	
