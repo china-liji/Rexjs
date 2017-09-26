@@ -326,7 +326,7 @@ this.OpenForConditionTag = function(OpenParenTag, ConditionStatement, ForInitCon
 	this.ForInitConditionStatement
 );
 
-this.ForInitConditionItemSeparatorTag = function(CommaTag, CommaExpression, ForInitConditionSeparatorStatement, visitor){
+this.ForInitConditionItemSeparatorTag = function(CommaTag, ForInitConditionSeparatorStatement, visitor){
 	/**
 	 * for 循环初始化条件项分隔符标签
 	 * @param {Number} _type - 标签类型
@@ -338,24 +338,17 @@ this.ForInitConditionItemSeparatorTag = function(CommaTag, CommaExpression, ForI
 
 	ForInitConditionItemSeparatorTag.props({
 		/**
-		 * 标签访问器
-		 * @param {SyntaxParser} parser - 语法解析器
-		 * @param {Context} context - 标签上下文
-		 * @param {Statement} statement - 当前语句
-		 * @param {Statements} statements - 当前语句块
+		 * 获取绑定的语句，一般在子类使用父类逻辑，而不使用父类语句的情况下使用
+		 * @param {Statements} statements - 该语句将要所处的语句块
 		 */
-		visitor: function(parser, context, statement, statements){
-			// 设置当前表达式
-			statement.expression = new CommaExpression(context, statement.expression);
-			// 设置当前语句
-			statements.statement = new ForInitConditionSeparatorStatement(statements);
+		getBoundStatement: function(statements){
+			return new ForInitConditionSeparatorStatement(statements);
 		}
 	});
 
 	return ForInitConditionItemSeparatorTag;
 }(
 	this.CommaTag,
-	this.CommaExpression,
 	this.ForInitConditionSeparatorStatement
 );
 

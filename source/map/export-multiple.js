@@ -1,5 +1,5 @@
 // 模块输出多成员表达式相关
-!function(CloseMultipleMembersTag, closeExportMultipleMembersTag){
+!function(OpenMultipleMembersTag, CloseMultipleMembersTag, closeExportMultipleMembersTag){
 
 this.PseudoImportExpression = function(ImportExpression){
 	/**
@@ -37,7 +37,7 @@ this.PseudoImportExpression = function(ImportExpression){
 	this.ImportExpression
 );
 
-this.OpenExportMultipleMembersTag = function(OpenMultipleMembersTag, PseudoImportExpression, MultipleMembersExpression, MultipleMembersStatement){
+this.OpenExportMultipleMembersTag = function(PseudoImportExpression, visitor){
 	/**
 	 * 多成员输出起始标签
 	 * @param {Number} _type - 标签类型
@@ -62,35 +62,26 @@ this.OpenExportMultipleMembersTag = function(OpenMultipleMembersTag, PseudoImpor
 		 * @param {Statements} statements - 当前语句块
 		 */
 		visitor: function(parser, context, statement, statements){
-			var multipleMembersExpression = new MultipleMembersExpression(context);
-
-			// 告知该表达式所属语句不是导入语句
-			multipleMembersExpression.import = false;
-
-			// 设置当前表达式
-			(
-				statement.expression = new PseudoImportExpression(
-					statement.target.expression.context,
-					parser.file
-				)
-			)
-			.members
-			// 添加成员
-			.add(
-				multipleMembersExpression
+			var pseudoImportExpression = new PseudoImportExpression(
+				statement.target.expression.context,
+				parser.file
 			);
 
-			// 设置当前语句
-			statements.statement = new MultipleMembersStatement(statements);
+			// 设置当前表达式
+			statement.expression = pseudoImportExpression;
+
+			// 调用父类方法
+			visitor.call(this, parser, context, statement, statements);
+
+			// 告知该表达式所属语句不是导入语句
+			pseudoImportExpression.members.latest.import = false;
 		}
 	});
 
 	return OpenExportMultipleMembersTag;
 }(
-	this.OpenMultipleMembersTag,
 	this.PseudoImportExpression,
-	this.MultipleMembersExpression,
-	this.MultipleMembersStatement
+	OpenMultipleMembersTag.prototype.visitor
 );
 
 this.CloseExportMultipleMembersTag = function(visitor){
@@ -136,6 +127,7 @@ closeExportMultipleMembersTag = new this.CloseExportMultipleMembersTag();
 
 }.call(
 	this,
+	this.OpenMultipleMembersTag,
 	this.CloseMultipleMembersTag,
 	// closeExportMultipleMembersTag
 	null

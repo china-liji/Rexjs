@@ -2333,10 +2333,10 @@ this.DotAccessorTag = function(DotTag, AccessorExpression){
 		/**
 		 * 获取绑定的表达式，一般在子类使用父类逻辑，而不使用父类表达式的情况下使用
 		 * @param {Context} context - 相关的语法标签上下文
-		 * @param {Expression} object - 拥有该属性的对象
+		 * @param {Statement} statement - 当前语句
 		 */
-		getBoundExpression: function(context, object){
-			return new AccessorExpression(context, object);
+		getBoundExpression: function(context, statement){
+			return new AccessorExpression(context, statement.expression);
 		},
 		// 防止与 NumberTag 冲突
 		order: ECMAScriptOrders.DOT_ACCESSOR,
@@ -2356,7 +2356,7 @@ this.DotAccessorTag = function(DotTag, AccessorExpression){
 		 */
 		visitor: function(parser, context, statement, statements){
 			// 设置当前表达式
-			statement.expression = this.getBoundExpression(context, statement.expression);
+			statement.expression = this.getBoundExpression(context, statement);
 		}
 	});
 	
@@ -2495,6 +2495,21 @@ this.OpenBracketAccessorTag = function(OpenBracketTag, BracketAccessorExpression
 		get binding(){
 			return closeBracketAccessorTag;
 		},
+		/**
+		 * 获取绑定的表达式，一般在子类使用父类逻辑，而不使用父类表达式的情况下使用
+		 * @param {Context} context - 相关的语法标签上下文
+		 * @param {Statement} statement - 当前语句
+		 */
+		getBoundExpression: function(context, statement){
+			return new BracketAccessorExpression(context, statement.expression);
+		},
+		/**
+		 * 获取绑定的语句，一般在子类使用父类逻辑，而不使用父类语句的情况下使用
+		 * @param {Statements} statements - 该语句将要所处的语句块
+		 */
+		getBoundStatement: function(statements){
+			return new BracketAccessorStatement(statements);
+		},
 		// 防止与起始数组标签冲突
 		order: ECMAScriptOrders.OPEN_BRACKET_ACCESSOR,
 		/**
@@ -2513,9 +2528,9 @@ this.OpenBracketAccessorTag = function(OpenBracketTag, BracketAccessorExpression
 		 */
 		visitor: function(parser, context, statement, statements){
 			// 设置当前表达式
-			statement.expression = new BracketAccessorExpression(context, statement.expression);
+			statement.expression = this.getBoundExpression(context, statement);
 			// 设置当前语句
-			statements.statement = new BracketAccessorStatement(statements);
+			statements.statement = this.getBoundStatement(statements);
 		}
 	});
 	
@@ -2658,6 +2673,13 @@ this.CommaTag = function(ExpressionSeparatorTag, CommaExpression, CommaStatement
 		get binding(){
 			return commaSiblingTag;
 		},
+		/**
+		 * 获取绑定的语句，一般在子类使用父类逻辑，而不使用父类语句的情况下使用
+		 * @param {Statements} statements - 该语句将要所处的语句块
+		 */
+		getBoundStatement: function(statements){
+			return new CommaStatement(statements);
+		},
 		regexp: /,/,
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
@@ -2677,7 +2699,7 @@ this.CommaTag = function(ExpressionSeparatorTag, CommaExpression, CommaStatement
 			// 设置当前表达式
 			statement.expression = new CommaExpression(context, statement.expression);
 			// 设置当前语句
-			statements.statement = new CommaStatement(statements);
+			statements.statement = this.getBoundStatement(statements);
 		}
 	});
 	
@@ -4983,6 +5005,14 @@ this.OpenCallTag = function(OpenParenTag, CallExpression, CallStatement){
 		get binding(){
 			return closeCallTag;
 		},
+		/**
+		 * 获取绑定的表达式，一般在子类使用父类逻辑，而不使用父类表达式的情况下使用
+		 * @param {Context} context - 相关的语法标签上下文
+		 * @param {Statement} statement - 当前语句
+		 */
+		getBoundExpression: function(context, statement){
+			return new CallExpression(context, statement);
+		},
 		// 防止与分组小括号冲突
 		order: ECMAScriptOrders.OPEN_CALL,
 		/**
@@ -5007,7 +5037,7 @@ this.OpenCallTag = function(OpenParenTag, CallExpression, CallStatement){
 		 */
 		visitor: function(parser, context, statement, statements){
 			// 设置当前表达式
-			statement.expression = new CallExpression(context, statement);
+			statement.expression = this.getBoundExpression(context, statement);
 			// 设置当前语句
 			statements.statement = new CallStatement(statements);
 		}
@@ -15974,7 +16004,7 @@ this.OpenForConditionTag = function(OpenParenTag, ConditionStatement, ForInitCon
 	this.ForInitConditionStatement
 );
 
-this.ForInitConditionItemSeparatorTag = function(CommaTag, CommaExpression, ForInitConditionSeparatorStatement, visitor){
+this.ForInitConditionItemSeparatorTag = function(CommaTag, ForInitConditionSeparatorStatement, visitor){
 	/**
 	 * for 循环初始化条件项分隔符标签
 	 * @param {Number} _type - 标签类型
@@ -15986,24 +16016,17 @@ this.ForInitConditionItemSeparatorTag = function(CommaTag, CommaExpression, ForI
 
 	ForInitConditionItemSeparatorTag.props({
 		/**
-		 * 标签访问器
-		 * @param {SyntaxParser} parser - 语法解析器
-		 * @param {Context} context - 标签上下文
-		 * @param {Statement} statement - 当前语句
-		 * @param {Statements} statements - 当前语句块
+		 * 获取绑定的语句，一般在子类使用父类逻辑，而不使用父类语句的情况下使用
+		 * @param {Statements} statements - 该语句将要所处的语句块
 		 */
-		visitor: function(parser, context, statement, statements){
-			// 设置当前表达式
-			statement.expression = new CommaExpression(context, statement.expression);
-			// 设置当前语句
-			statements.statement = new ForInitConditionSeparatorStatement(statements);
+		getBoundStatement: function(statements){
+			return new ForInitConditionSeparatorStatement(statements);
 		}
 	});
 
 	return ForInitConditionItemSeparatorTag;
 }(
 	this.CommaTag,
-	this.CommaExpression,
 	this.ForInitConditionSeparatorStatement
 );
 
@@ -20528,19 +20551,18 @@ this.SuperTag = function(LiteralTag, SuperExpression, SuperStatement){
 eval(
 									function(){
 										// 父类调用相关
-!function(CallExpression, CallStatement){
+!function(CallExpression, OpenCallTag){
 
 this.SuperCallExpression = function(extractTo){
 	/**
 	 * 父类调用表达式
 	 * @param {Context} open - 起始标签上下文
 	 * @param {ECMAScriptStatement} statement - 当前语句
-	 * @param {String} reference - 构造函数中 this 的指向
 	 */
-	function SuperCallExpression(open, statement, constructorReference){
+	function SuperCallExpression(open, statement){
 		CallExpression.call(this, open, statement);
 
-		this.constructorReference = constructorReference;
+		this.constructorReference = statement.statements.closure.reference;
 	};
 	SuperCallExpression = new Rexjs(SuperCallExpression, CallExpression);
 
@@ -20605,12 +20627,11 @@ this.SuperMethodCallExpression = function(extractTo){
 	 * 父类方法调用表达式
 	 * @param {Context} open - 起始标签上下文
 	 * @param {ECMAScriptStatement} statement - 当前语句
-	 * @param {String} boundThis - 解析时，使用 Function.apply、call 或 bind 时，所需传递的 this
 	 */
-	function SuperMethodCallExpression(open, statement, boundThis){
+	function SuperMethodCallExpression(open, statement){
 		CallExpression.call(this, open, statement);
 
-		this.boundThis = boundThis;
+		this.boundThis = statement.statements.closure.reference;
 	};
 	SuperMethodCallExpression = new Rexjs(SuperMethodCallExpression, CallExpression);
 
@@ -20659,7 +20680,7 @@ this.SuperMethodCallExpression = function(extractTo){
 	CallExpression.prototype.extractTo
 );
 
-this.OpenSuperCallTag = function(OpenCallTag, SuperCallExpression){
+this.OpenSuperCallTag = function(SuperCallExpression, visitor){
 	/**
 	 * 起始父类调用小括号标签
 	 * @param {Number} _type - 标签类型
@@ -20672,43 +20693,13 @@ this.OpenSuperCallTag = function(OpenCallTag, SuperCallExpression){
 	OpenSuperCallTag.props({
 		$type: TYPE_MISTAKABLE,
 		/**
-		 * 标签访问器
-		 * @param {SyntaxParser} parser - 语法解析器
-		 * @param {Context} context - 标签上下文
+		 * 获取绑定的表达式，一般在子类使用父类逻辑，而不使用父类表达式的情况下使用
+		 * @param {Context} context - 相关的语法标签上下文
 		 * @param {Statement} statement - 当前语句
-		 * @param {Statements} statements - 当前语句块
 		 */
-		visitor: function(parser, context, statement, statements){
-			var closure = statements.closure;
-
-			// 向当前闭包申请调用 super
-			closure.applySuperCall(parser, statement.expression.context, context);
-
-			// 设置当前表达式
-			statement.expression = new SuperCallExpression(context, statement, closure.reference);
-			// 设置当前语句
-			statements.statement = new CallStatement(statements);
-		}
-	});
-	
-	return OpenSuperCallTag;
-}(
-	this.OpenCallTag,
-	this.SuperCallExpression
-);
-
-this.OpenSuperMethodCallTag = function(OpenSuperCallTag, SuperMethodCallExpression, ConstructorBodyStatements){
-	/**
-	 * 起始父类方法调用小括号标签
-	 * @param {Number} _type - 标签类型
-	 */
-	function OpenSuperMethodCallTag(_type){
-		OpenSuperCallTag.call(this, _type);
-	};
-	OpenSuperMethodCallTag = new Rexjs(OpenSuperMethodCallTag, OpenSuperCallTag);
-	
-	OpenSuperMethodCallTag.props({
-		order: ECMAScriptOrders.OPEN_SUPER_METHOD_CALL,
+		getBoundExpression: function(context, statement){
+			return new SuperCallExpression(context, statement);
+		},
 		/**
 		 * 标签访问器
 		 * @param {SyntaxParser} parser - 语法解析器
@@ -20717,29 +20708,52 @@ this.OpenSuperMethodCallTag = function(OpenSuperCallTag, SuperMethodCallExpressi
 		 * @param {Statements} statements - 当前语句块
 		 */
 		visitor: function(parser, context, statement, statements){
-			// 设置当前表达式
-			statement.expression = new SuperMethodCallExpression(
-				context,
-				statement,
-				statements.closure.reference
-			);
+			// 向当前闭包申请调用 super
+			statements.closure.applySuperCall(parser, statement.expression.context, context);
 
-			// 设置当前语句
-			statements.statement = new CallStatement(statements);
+			// 调用父类方法
+			visitor.call(this, parser, context, statement, statements);
 		}
+	});
+	
+	return OpenSuperCallTag;
+}(
+	this.SuperCallExpression,
+	OpenCallTag.prototype.visitor
+);
+
+this.OpenSuperMethodCallTag = function(SuperMethodCallExpression){
+	/**
+	 * 起始父类方法调用小括号标签
+	 * @param {Number} _type - 标签类型
+	 */
+	function OpenSuperMethodCallTag(_type){
+		OpenCallTag.call(this, _type);
+	};
+	OpenSuperMethodCallTag = new Rexjs(OpenSuperMethodCallTag, OpenCallTag);
+	
+	OpenSuperMethodCallTag.props({
+		$type: TYPE_MISTAKABLE,
+		/**
+		 * 获取绑定的表达式，一般在子类使用父类逻辑，而不使用父类表达式的情况下使用
+		 * @param {Context} context - 相关的语法标签上下文
+		 * @param {Statement} statement - 当前语句
+		 */
+		getBoundExpression: function(context, statement){
+			return new SuperMethodCallExpression(context, statement);
+		},
+		order: ECMAScriptOrders.OPEN_SUPER_METHOD_CALL
 	});
 	
 	return OpenSuperMethodCallTag;
 }(
-	this.OpenSuperCallTag,
-	this.SuperMethodCallExpression,
-	this.ConstructorBodyStatements
+	this.SuperMethodCallExpression
 );
 
 }.call(
 	this,
 	this.CallExpression,
-	this.CallStatement
+	this.OpenCallTag
 );
 									}
 									.toString()
@@ -20753,19 +20767,18 @@ this.OpenSuperMethodCallTag = function(OpenSuperCallTag, SuperMethodCallExpressi
 eval(
 									function(){
 										// 父类属性相关
-!function(AccessorExpression, BracketAccessorExpression, closeSuperBracketAccessorTag, compileSuperAccessor){
+!function(AccessorExpression, BracketAccessorExpression, OpenBracketAccessorTag, DotAccessorTag, closeSuperBracketAccessorTag, compileSuperAccessor){
 
 this.SuperBracketAccessorExpression = function(extractTo){
 	/**
 	 * 父类中括号属性访问器表达式
 	 * @param {Context} context - 语法标签上下文
-	 * @param {Expression} object - 拥有该属性的对象
-	 * @param {String} closureReference - 闭包中的 this 指向
+	 * @param {Statement} statement - 当前语句
 	 */
-	function SuperBracketAccessorExpression(context, object, closureReference){
-		BracketAccessorExpression.call(this, context, object);
+	function SuperBracketAccessorExpression(context, statement){
+		BracketAccessorExpression.call(this, context, statement.expression);
 
-		this.closureReference = closureReference;
+		this.closureReference = statement.statements.closure.reference;
 	};
 	SuperBracketAccessorExpression = new Rexjs(SuperBracketAccessorExpression, BracketAccessorExpression);
 	
@@ -20809,13 +20822,12 @@ this.SuperDotAccessorExpression = function(extractTo){
 	/**
 	 * 父类点属性访问器表达式
 	 * @param {Context} context - 语法标签上下文
-	 * @param {Expression} object - 拥有该属性的对象
-	 * @param {String} closureReference - 闭包中的 this 指向
+	 * @param {Statement} statement - 当前语句
 	 */
-	function SuperDotAccessorExpression(context, object, closureReference){
-		AccessorExpression.call(this, context, object);
+	function SuperDotAccessorExpression(context, statement){
+		AccessorExpression.call(this, context, statement.expression);
 
-		this.closureReference = closureReference;
+		this.closureReference = statement.statements.closure.reference;
 	};
 	SuperDotAccessorExpression = new Rexjs(SuperDotAccessorExpression, AccessorExpression);
 	
@@ -20855,7 +20867,7 @@ this.SuperDotAccessorExpression = function(extractTo){
 	AccessorExpression.prototype.extractTo
 );
 
-this.OpenSuperBracketAccessorTag = function(OpenBracketAccessorTag, SuperBracketAccessorExpression, BracketAccessorStatement){
+this.OpenSuperBracketAccessorTag = function(SuperBracketAccessorExpression, BracketAccessorStatement, visitor){
 	/**
 	 * 起始父类中括号属性访问器标签
 	 * @param {Number} _type - 标签类型
@@ -20874,6 +20886,21 @@ this.OpenSuperBracketAccessorTag = function(OpenBracketAccessorTag, SuperBracket
 			return closeSuperBracketAccessorTag;
 		},
 		/**
+		 * 获取绑定的表达式，一般在子类使用父类逻辑，而不使用父类表达式的情况下使用
+		 * @param {Context} context - 相关的语法标签上下文
+		 * @param {Statement} statement - 当前语句
+		 */
+		getBoundExpression: function(context, statement){
+			return new SuperBracketAccessorExpression(context, statement);
+		},
+		/**
+		 * 获取绑定的语句，一般在子类使用父类逻辑，而不使用父类语句的情况下使用
+		 * @param {Statements} statements - 该语句将要所处的语句块
+		 */
+		getBoundStatement: function(statements){
+			return new BracketAccessorStatement(statements);
+		},
+		/**
 		 * 标签访问器
 		 * @param {SyntaxParser} parser - 语法解析器
 		 * @param {Context} context - 标签上下文
@@ -20881,23 +20908,18 @@ this.OpenSuperBracketAccessorTag = function(OpenBracketAccessorTag, SuperBracket
 		 * @param {Statements} statements - 当前语句块
 		 */
 		visitor: function(parser, context, statement, statements){
-			var expression = statement.expression, closure = statements.closure;
-
 			// 向当前闭包申请调用 super
-			closure.applySuper(parser, expression.context, context);
-			
-			// 设置当前表达式
-			statement.expression = new SuperBracketAccessorExpression(context, expression, closure.reference);
-			// 设置当前语句
-			statements.statement = new BracketAccessorStatement(statements);
+			statements.closure.applySuper(parser, statement.expression.context, context);
+			// 调用父类方法
+			visitor.call(this, parser, context, statement, statements);
 		}
 	});
 	
 	return OpenSuperBracketAccessorTag;
 }(
-	this.OpenBracketAccessorTag,
 	this.SuperBracketAccessorExpression,
-	this.BracketAccessorStatement
+	this.BracketAccessorStatement,
+	OpenBracketAccessorTag.prototype.visitor
 );
 
 this.CloseSuperBracketAccessorTag = function(CloseBracketAccessorTag){
@@ -20925,7 +20947,7 @@ this.CloseSuperBracketAccessorTag = function(CloseBracketAccessorTag){
 	this.CloseBracketAccessorTag
 );
 
-this.SuperDotAccessorTag = function(DotAccessorTag, SuperDotAccessorExpression){
+this.SuperDotAccessorTag = function(SuperDotAccessorExpression, visitor){
 	/**
 	 * 父类点属性访问器标签
 	 * @param {Number} _type - 标签类型
@@ -20937,6 +20959,14 @@ this.SuperDotAccessorTag = function(DotAccessorTag, SuperDotAccessorExpression){
 	
 	SuperDotAccessorTag.props({
 		$type: TYPE_MISTAKABLE,
+		/**
+		 * 获取绑定的表达式，一般在子类使用父类逻辑，而不使用父类表达式的情况下使用
+		 * @param {Context} context - 相关的语法标签上下文
+		 * @param {Statement} statement - 当前语句
+		 */
+		getBoundExpression: function(context, statement){
+			return new SuperDotAccessorExpression(context, statement);
+		},
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
@@ -20952,20 +20982,17 @@ this.SuperDotAccessorTag = function(DotAccessorTag, SuperDotAccessorExpression){
 		 * @param {Statements} statements - 当前语句块
 		 */
 		visitor: function(parser, context, statement, statements){
-			var closure = statements.closure, expression = statement.expression;
-
 			// 向当前闭包申请调用 super
-			closure.applySuper(parser, expression.context, context);
-			
-			// 设置当前表达式
-			statement.expression = new SuperDotAccessorExpression(context, expression, closure.reference);
+			statements.closure.applySuper(parser, statement.expression.context, context);
+			// 调用父类方法
+			visitor.call(this, parser, context, statement, statements);
 		}
 	});
 	
 	return SuperDotAccessorTag;
 }(
-	this.DotAccessorTag,
-	this.SuperDotAccessorExpression
+	this.SuperDotAccessorExpression,
+	DotAccessorTag.prototype.visitor
 );
 
 this.SuperPropertyNameTag = function(PropertyNameTag){
@@ -20999,6 +21026,8 @@ closeSuperBracketAccessorTag = new this.CloseSuperBracketAccessorTag();
 	this,
 	this.AccessorExpression,
 	this.BracketAccessorExpression,
+	this.OpenBracketAccessorTag,
+	this.DotAccessorTag,
 	// closeSuperBracketAccessorTag
 	null,
 	// compileSuperAccessor
@@ -22716,7 +22745,7 @@ this.DefaultExportTag = function(DefaultTag, DefaultExportExpression, DefaultExp
 eval(
 									function(){
 										// 模块输出多成员表达式相关
-!function(CloseMultipleMembersTag, closeExportMultipleMembersTag){
+!function(OpenMultipleMembersTag, CloseMultipleMembersTag, closeExportMultipleMembersTag){
 
 this.PseudoImportExpression = function(ImportExpression){
 	/**
@@ -22754,7 +22783,7 @@ this.PseudoImportExpression = function(ImportExpression){
 	this.ImportExpression
 );
 
-this.OpenExportMultipleMembersTag = function(OpenMultipleMembersTag, PseudoImportExpression, MultipleMembersExpression, MultipleMembersStatement){
+this.OpenExportMultipleMembersTag = function(PseudoImportExpression, visitor){
 	/**
 	 * 多成员输出起始标签
 	 * @param {Number} _type - 标签类型
@@ -22779,35 +22808,26 @@ this.OpenExportMultipleMembersTag = function(OpenMultipleMembersTag, PseudoImpor
 		 * @param {Statements} statements - 当前语句块
 		 */
 		visitor: function(parser, context, statement, statements){
-			var multipleMembersExpression = new MultipleMembersExpression(context);
-
-			// 告知该表达式所属语句不是导入语句
-			multipleMembersExpression.import = false;
-
-			// 设置当前表达式
-			(
-				statement.expression = new PseudoImportExpression(
-					statement.target.expression.context,
-					parser.file
-				)
-			)
-			.members
-			// 添加成员
-			.add(
-				multipleMembersExpression
+			var pseudoImportExpression = new PseudoImportExpression(
+				statement.target.expression.context,
+				parser.file
 			);
 
-			// 设置当前语句
-			statements.statement = new MultipleMembersStatement(statements);
+			// 设置当前表达式
+			statement.expression = pseudoImportExpression;
+
+			// 调用父类方法
+			visitor.call(this, parser, context, statement, statements);
+
+			// 告知该表达式所属语句不是导入语句
+			pseudoImportExpression.members.latest.import = false;
 		}
 	});
 
 	return OpenExportMultipleMembersTag;
 }(
-	this.OpenMultipleMembersTag,
 	this.PseudoImportExpression,
-	this.MultipleMembersExpression,
-	this.MultipleMembersStatement
+	OpenMultipleMembersTag.prototype.visitor
 );
 
 this.CloseExportMultipleMembersTag = function(visitor){
@@ -22853,6 +22873,7 @@ closeExportMultipleMembersTag = new this.CloseExportMultipleMembersTag();
 
 }.call(
 	this,
+	this.OpenMultipleMembersTag,
 	this.CloseMultipleMembersTag,
 	// closeExportMultipleMembersTag
 	null

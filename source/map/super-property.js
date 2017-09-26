@@ -1,17 +1,16 @@
 // 父类属性相关
-!function(AccessorExpression, BracketAccessorExpression, closeSuperBracketAccessorTag, compileSuperAccessor){
+!function(AccessorExpression, BracketAccessorExpression, OpenBracketAccessorTag, DotAccessorTag, closeSuperBracketAccessorTag, compileSuperAccessor){
 
 this.SuperBracketAccessorExpression = function(extractTo){
 	/**
 	 * 父类中括号属性访问器表达式
 	 * @param {Context} context - 语法标签上下文
-	 * @param {Expression} object - 拥有该属性的对象
-	 * @param {String} closureReference - 闭包中的 this 指向
+	 * @param {Statement} statement - 当前语句
 	 */
-	function SuperBracketAccessorExpression(context, object, closureReference){
-		BracketAccessorExpression.call(this, context, object);
+	function SuperBracketAccessorExpression(context, statement){
+		BracketAccessorExpression.call(this, context, statement.expression);
 
-		this.closureReference = closureReference;
+		this.closureReference = statement.statements.closure.reference;
 	};
 	SuperBracketAccessorExpression = new Rexjs(SuperBracketAccessorExpression, BracketAccessorExpression);
 	
@@ -55,13 +54,12 @@ this.SuperDotAccessorExpression = function(extractTo){
 	/**
 	 * 父类点属性访问器表达式
 	 * @param {Context} context - 语法标签上下文
-	 * @param {Expression} object - 拥有该属性的对象
-	 * @param {String} closureReference - 闭包中的 this 指向
+	 * @param {Statement} statement - 当前语句
 	 */
-	function SuperDotAccessorExpression(context, object, closureReference){
-		AccessorExpression.call(this, context, object);
+	function SuperDotAccessorExpression(context, statement){
+		AccessorExpression.call(this, context, statement.expression);
 
-		this.closureReference = closureReference;
+		this.closureReference = statement.statements.closure.reference;
 	};
 	SuperDotAccessorExpression = new Rexjs(SuperDotAccessorExpression, AccessorExpression);
 	
@@ -101,7 +99,7 @@ this.SuperDotAccessorExpression = function(extractTo){
 	AccessorExpression.prototype.extractTo
 );
 
-this.OpenSuperBracketAccessorTag = function(OpenBracketAccessorTag, SuperBracketAccessorExpression, BracketAccessorStatement){
+this.OpenSuperBracketAccessorTag = function(SuperBracketAccessorExpression, BracketAccessorStatement, visitor){
 	/**
 	 * 起始父类中括号属性访问器标签
 	 * @param {Number} _type - 标签类型
@@ -120,6 +118,21 @@ this.OpenSuperBracketAccessorTag = function(OpenBracketAccessorTag, SuperBracket
 			return closeSuperBracketAccessorTag;
 		},
 		/**
+		 * 获取绑定的表达式，一般在子类使用父类逻辑，而不使用父类表达式的情况下使用
+		 * @param {Context} context - 相关的语法标签上下文
+		 * @param {Statement} statement - 当前语句
+		 */
+		getBoundExpression: function(context, statement){
+			return new SuperBracketAccessorExpression(context, statement);
+		},
+		/**
+		 * 获取绑定的语句，一般在子类使用父类逻辑，而不使用父类语句的情况下使用
+		 * @param {Statements} statements - 该语句将要所处的语句块
+		 */
+		getBoundStatement: function(statements){
+			return new BracketAccessorStatement(statements);
+		},
+		/**
 		 * 标签访问器
 		 * @param {SyntaxParser} parser - 语法解析器
 		 * @param {Context} context - 标签上下文
@@ -127,23 +140,18 @@ this.OpenSuperBracketAccessorTag = function(OpenBracketAccessorTag, SuperBracket
 		 * @param {Statements} statements - 当前语句块
 		 */
 		visitor: function(parser, context, statement, statements){
-			var expression = statement.expression, closure = statements.closure;
-
 			// 向当前闭包申请调用 super
-			closure.applySuper(parser, expression.context, context);
-			
-			// 设置当前表达式
-			statement.expression = new SuperBracketAccessorExpression(context, expression, closure.reference);
-			// 设置当前语句
-			statements.statement = new BracketAccessorStatement(statements);
+			statements.closure.applySuper(parser, statement.expression.context, context);
+			// 调用父类方法
+			visitor.call(this, parser, context, statement, statements);
 		}
 	});
 	
 	return OpenSuperBracketAccessorTag;
 }(
-	this.OpenBracketAccessorTag,
 	this.SuperBracketAccessorExpression,
-	this.BracketAccessorStatement
+	this.BracketAccessorStatement,
+	OpenBracketAccessorTag.prototype.visitor
 );
 
 this.CloseSuperBracketAccessorTag = function(CloseBracketAccessorTag){
@@ -171,7 +179,7 @@ this.CloseSuperBracketAccessorTag = function(CloseBracketAccessorTag){
 	this.CloseBracketAccessorTag
 );
 
-this.SuperDotAccessorTag = function(DotAccessorTag, SuperDotAccessorExpression){
+this.SuperDotAccessorTag = function(SuperDotAccessorExpression, visitor){
 	/**
 	 * 父类点属性访问器标签
 	 * @param {Number} _type - 标签类型
@@ -183,6 +191,14 @@ this.SuperDotAccessorTag = function(DotAccessorTag, SuperDotAccessorExpression){
 	
 	SuperDotAccessorTag.props({
 		$type: TYPE_MISTAKABLE,
+		/**
+		 * 获取绑定的表达式，一般在子类使用父类逻辑，而不使用父类表达式的情况下使用
+		 * @param {Context} context - 相关的语法标签上下文
+		 * @param {Statement} statement - 当前语句
+		 */
+		getBoundExpression: function(context, statement){
+			return new SuperDotAccessorExpression(context, statement);
+		},
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
@@ -198,20 +214,17 @@ this.SuperDotAccessorTag = function(DotAccessorTag, SuperDotAccessorExpression){
 		 * @param {Statements} statements - 当前语句块
 		 */
 		visitor: function(parser, context, statement, statements){
-			var closure = statements.closure, expression = statement.expression;
-
 			// 向当前闭包申请调用 super
-			closure.applySuper(parser, expression.context, context);
-			
-			// 设置当前表达式
-			statement.expression = new SuperDotAccessorExpression(context, expression, closure.reference);
+			statements.closure.applySuper(parser, statement.expression.context, context);
+			// 调用父类方法
+			visitor.call(this, parser, context, statement, statements);
 		}
 	});
 	
 	return SuperDotAccessorTag;
 }(
-	this.DotAccessorTag,
-	this.SuperDotAccessorExpression
+	this.SuperDotAccessorExpression,
+	DotAccessorTag.prototype.visitor
 );
 
 this.SuperPropertyNameTag = function(PropertyNameTag){
@@ -245,6 +258,8 @@ closeSuperBracketAccessorTag = new this.CloseSuperBracketAccessorTag();
 	this,
 	this.AccessorExpression,
 	this.BracketAccessorExpression,
+	this.OpenBracketAccessorTag,
+	this.DotAccessorTag,
 	// closeSuperBracketAccessorTag
 	null,
 	// compileSuperAccessor

@@ -83,6 +83,21 @@ this.OpenBracketAccessorTag = function(OpenBracketTag, BracketAccessorExpression
 		get binding(){
 			return closeBracketAccessorTag;
 		},
+		/**
+		 * 获取绑定的表达式，一般在子类使用父类逻辑，而不使用父类表达式的情况下使用
+		 * @param {Context} context - 相关的语法标签上下文
+		 * @param {Statement} statement - 当前语句
+		 */
+		getBoundExpression: function(context, statement){
+			return new BracketAccessorExpression(context, statement.expression);
+		},
+		/**
+		 * 获取绑定的语句，一般在子类使用父类逻辑，而不使用父类语句的情况下使用
+		 * @param {Statements} statements - 该语句将要所处的语句块
+		 */
+		getBoundStatement: function(statements){
+			return new BracketAccessorStatement(statements);
+		},
 		// 防止与起始数组标签冲突
 		order: ECMAScriptOrders.OPEN_BRACKET_ACCESSOR,
 		/**
@@ -101,9 +116,9 @@ this.OpenBracketAccessorTag = function(OpenBracketTag, BracketAccessorExpression
 		 */
 		visitor: function(parser, context, statement, statements){
 			// 设置当前表达式
-			statement.expression = new BracketAccessorExpression(context, statement.expression);
+			statement.expression = this.getBoundExpression(context, statement);
 			// 设置当前语句
-			statements.statement = new BracketAccessorStatement(statements);
+			statements.statement = this.getBoundStatement(statements);
 		}
 	});
 	

@@ -52,10 +52,10 @@ this.DotAccessorTag = function(DotTag, AccessorExpression){
 		/**
 		 * 获取绑定的表达式，一般在子类使用父类逻辑，而不使用父类表达式的情况下使用
 		 * @param {Context} context - 相关的语法标签上下文
-		 * @param {Expression} object - 拥有该属性的对象
+		 * @param {Statement} statement - 当前语句
 		 */
-		getBoundExpression: function(context, object){
-			return new AccessorExpression(context, object);
+		getBoundExpression: function(context, statement){
+			return new AccessorExpression(context, statement.expression);
 		},
 		// 防止与 NumberTag 冲突
 		order: ECMAScriptOrders.DOT_ACCESSOR,
@@ -75,7 +75,7 @@ this.DotAccessorTag = function(DotTag, AccessorExpression){
 		 */
 		visitor: function(parser, context, statement, statements){
 			// 设置当前表达式
-			statement.expression = this.getBoundExpression(context, statement.expression);
+			statement.expression = this.getBoundExpression(context, statement);
 		}
 	});
 	
