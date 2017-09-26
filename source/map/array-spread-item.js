@@ -40,7 +40,7 @@ this.ArraySpreadItemExpression = function(SpreadExpression){
 	this.SpreadExpression
 );
 
-this.ArraySpreadTag = function(SpreadTag, ArraySpreadItemExpression, SpreadStatement){
+this.ArraySpreadTag = function(SpreadTag, ArraySpreadItemExpression){
 	/**
 	 * 数组拓展符标签
 	 * @param {Number} _type - 标签类型
@@ -52,28 +52,22 @@ this.ArraySpreadTag = function(SpreadTag, ArraySpreadItemExpression, SpreadState
 	
 	ArraySpreadTag.props({
 		/**
-		 * 标签访问器
-		 * @param {SyntaxParser} parser - 语法解析器
-		 * @param {Context} context - 标签上下文
+		 * 获取绑定的表达式，一般在子类使用父类逻辑，而不使用父类表达式的情况下使用
+		 * @param {Context} context - 相关的语法标签上下文
 		 * @param {Statement} statement - 当前语句
-		 * @param {Statements} statements - 当前语句块
 		 */
-		visitor: function(parser, context, statement, statements){
+		getBoundExpression: function(context, statement){
 			// 告知数组表达式有拓展符
 			statement.target.expression.spread = true;
 
-			// 设置当前表达式
-			statement.expression = new ArraySpreadItemExpression(context);
-			// 设置当前语句
-			statements.statement = new SpreadStatement(statements);
+			return new ArraySpreadItemExpression(context);
 		}
 	});
 	
 	return ArraySpreadTag;
 }(
 	this.SpreadTag,
-	this.ArraySpreadItemExpression,
-	this.SpreadStatement
+	this.ArraySpreadItemExpression
 );
 
 }.call(
