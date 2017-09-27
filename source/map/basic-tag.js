@@ -193,7 +193,14 @@ this.ModuleTag = function(FLOW_MAIN){
 					context,
 					ECMAScriptErrors.template("ILLEGAL_STATEMENT", context.content)
 				);
+
+				return;
 			}
+
+			// 设置当前表达式
+			statement.expression = this.getBoundExpression(context, parser.file);
+			// 设置当前语句
+			statements.statement = this.getBoundStatement(statements);
 		}
 	});
 

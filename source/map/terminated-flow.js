@@ -104,6 +104,21 @@ this.TerminatedFlowTag = function(TerminatedFlowExpression, TerminatedFlowStatem
 		$class: CLASS_STATEMENT_BEGIN,
 		flow: ECMAScriptStatement.FLOW_MAIN,
 		/**
+		 * 获取绑定的表达式，一般在子类使用父类逻辑，而不使用父类表达式的情况下使用
+		 * @param {Context} context - 相关的语法标签上下文
+		 * @param {Statements} statements - 当前语句块
+		 */
+		getBoundExpression: function(context, statements){
+			return new TerminatedFlowExpression(context, statements);
+		},
+		/**
+		 * 获取绑定的语句，一般在子类使用父类逻辑，而不使用父类语句的情况下使用
+		 * @param {Statements} statements - 该语句将要所处的语句块
+		 */
+		getBoundStatement: function(statements){
+			return new TerminatedFlowStatement(statements);
+		},
+		/**
 		 * 从相关生成器中获取当前所需使用的生成器索引值
 		 * @param {GeneratorExpression} generatorExpression - 相关生成器表达式
 		 * @param {TerminatedFlowExpression} terminatedFlowExpression - 该标签相关的中断流表达式
@@ -128,9 +143,9 @@ this.TerminatedFlowTag = function(TerminatedFlowExpression, TerminatedFlowStatem
 		 */
 		visitor: function(parser, context, statement, statements){
 			// 设置表达式
-			statement.expression = new TerminatedFlowExpression(context, statements);
+			statement.expression = this.getBoundExpression(context, statements);
 			// 设置当前语句
-			statements.statement = new TerminatedFlowStatement(statements);
+			statements.statement = this.getBoundStatement(statements);
 		}
 	});
 	

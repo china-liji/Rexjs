@@ -1,16 +1,13 @@
 // 模板参数相关
-!function(TemplateExpression, PlaceHolderExpression){
+!function(TemplateExpression, PlaceHolderExpression, OpenTemplateTag){
 
 this.TemplateParameterExpression = function(extractTo, compileInner){
 	/**
 	 * 模板参数表达式
 	 * @param {Context} open - 起始标签上下文
-	 * @param {Expression} operand - 操作对象表达式
 	 */
-	function TemplateParameterExpression(open, operand){
+	function TemplateParameterExpression(open){
 		TemplateExpression.call(this, open);
-
-		this.operand = operand;
 	};
 	TemplateParameterExpression = new Rexjs(TemplateParameterExpression, TemplateExpression);
 
@@ -86,7 +83,7 @@ this.TemplateParameterExpression = function(extractTo, compileInner){
 	}
 );
 
-this.OpenTemplateParameterTag = function(OpenTemplateTag, TemplateParameterExpression, TemplateStatement){
+this.OpenTemplateParameterTag = function(TemplateParameterExpression, visitor){
 	/**
 	 * 起始模板参数标签
 	 * @param {Number} _type - 标签类型
@@ -98,6 +95,13 @@ this.OpenTemplateParameterTag = function(OpenTemplateTag, TemplateParameterExpre
 
 	OpenTemplateParameterTag.props({
 		$class: CLASS_EXPRESSION_CONTEXT,
+		/**
+		 * 获取绑定的表达式，一般在子类使用父类逻辑，而不使用父类表达式的情况下使用
+		 * @param {Context} context - 相关的语法标签上下文
+		 */
+		getBoundExpression: function(context){
+			return new TemplateParameterExpression(context);
+		},
 		order: ECMAScriptOrders.TEMPLATE_PARAMETER,
 		/**
 		 * 标签访问器
@@ -107,22 +111,25 @@ this.OpenTemplateParameterTag = function(OpenTemplateTag, TemplateParameterExpre
 		 * @param {Statements} statements - 当前语句块
 		 */
 		visitor: function(parser, context, statement, statements){
-			// 设置当前表达式
-			statement.expression = new TemplateParameterExpression(context, statement.expression);
-			// 设置当前语句
-			statements.statement = new TemplateStatement(statements);
+			var expression = statement.expression;
+
+			// 调用父类方法
+			visitor.call(this, parser, context, statement, statements);
+
+			// 设置 templateParameterExpression 表达式的 operand 属性
+			statement.expression.operand = expression;
 		}
 	});
 
 	return OpenTemplateParameterTag;
 }(
-	this.OpenTemplateTag,
 	this.TemplateParameterExpression,
-	this.TemplateStatement
+	OpenTemplateTag.prototype.visitor
 );
 
 }.call(
 	this,
 	this.TemplateExpression,
-	this.PlaceHolderExpression
+	this.PlaceHolderExpression,
+	this.OpenTemplateTag
 );

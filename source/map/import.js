@@ -1,5 +1,5 @@
 // import 关键字相关
-!function(ModuleTag){
+!function(){
 
 this.ImportExpression = function(compileMember){
 	/**
@@ -84,7 +84,7 @@ this.ImportExpression = function(compileMember){
 	}
 );
 
-this.ImportTag = function(ImportExpression, visitor){
+this.ImportTag = function(ModuleTag, ImportExpression){
 	/**
 	 * import 关键字标签
 	 * @param {Number} _type - 标签类型
@@ -95,6 +95,21 @@ this.ImportTag = function(ImportExpression, visitor){
 	ImportTag = new Rexjs(ImportTag, ModuleTag);
 
 	ImportTag.props({
+		/**
+		 * 获取绑定的表达式，一般在子类使用父类逻辑，而不使用父类表达式的情况下使用
+		 * @param {Context} context - 相关的语法标签上下文
+		 * @param {File} file - 当前解析源文件信息
+		 */
+		getBoundExpression: function(context, file){
+			return new ImportExpression(context, file);;
+		},
+		/**
+		 * 获取绑定的语句，一般在子类使用父类逻辑，而不使用父类语句的情况下使用
+		 * @param {Statements} statements - 该语句将要所处的语句块
+		 */
+		getBoundStatement: function(statements){
+			return statements.statement;
+		},
 		regexp: /import/,
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
@@ -102,27 +117,13 @@ this.ImportTag = function(ImportExpression, visitor){
 		 */
 		require: function(tagsMap){
 			return tagsMap.importContextTags;
-		},
-		/**
-		 * 标签访问器
-		 * @param {SyntaxParser} parser - 语法解析器
-		 * @param {Context} context - 标签上下文
-		 * @param {Statement} statement - 当前语句
-		 * @param {Statements} statements - 当前语句块
-		 */
-		visitor: function(parser, context, statement, statements){
-			// 先调用父类方法，进行环境上下文检测
-			visitor.call(this, parser, context, statement, statements);
-
-			// 设置当前表达式
-			statement.expression = new ImportExpression(context, parser.file);
 		}
 	});
 
 	return ImportTag;
 }(
-	this.ImportExpression,
-	ModuleTag.prototype.visitor
+	this.ModuleTag,
+	this.ImportExpression
 );
 
 this.MemberSeparatorTag = function(CommaTag){
@@ -240,6 +241,5 @@ this.ModuleNameTag = function(StringTag){
 );
 
 }.call(
-	this,
-	this.ModuleTag
+	this
 );

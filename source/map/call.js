@@ -113,6 +113,24 @@ this.CallExpression = function(AccessorExpression, BracketAccessorExpression, Un
 		operand: null,
 		spread: false,
 		/**
+		 * 当匹配到拓展符时的处理逻辑
+		 * @param {Statements} statements - 当前语句块
+		 */
+		spreadMatched: function(statements){
+			// 如果已经告知过
+			if(this.spread){
+				return;
+			}
+
+			// 如果操作对象是属性表达式
+			if(this.operand instanceof AccessorExpression){
+				// 生成变量名
+				this.boundThis = statements.collections.generate();
+			}
+
+			this.spread = true;
+		},
+		/**
 		 * 当拓展符存在时，以普通拓展符情况提取表达式内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
 		 */
@@ -127,24 +145,6 @@ this.CallExpression = function(AccessorExpression, BracketAccessorExpression, Un
 			extractTo.call(this, contentBuilder);
 			// 追加 apply 方法的结束小括号
 			contentBuilder.appendString(")");
-		},
-		/**
-		 * 告知该表达式有拓展符
-		 * @param {Statements} statements - 当前语句块
-		 */
-		withSpread: function(statements){
-			// 如果已经告知过
-			if(this.spread){
-				return;
-			}
-
-			// 如果操作对象是属性表达式
-			if(this.operand instanceof AccessorExpression){
-				// 生成变量名
-				this.boundThis = statements.collections.generate();
-			}
-
-			this.spread = true;
 		}
 	});
 

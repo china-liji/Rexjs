@@ -102,6 +102,20 @@ this.OpenTemplateTag = function(TemplateExpression, TemplateStatement){
 		get binding(){
 			return closeTemplateTag;
 		},
+		/**
+		 * 获取绑定的表达式，一般在子类使用父类逻辑，而不使用父类表达式的情况下使用
+		 * @param {Context} context - 相关的语法标签上下文
+		 */
+		getBoundExpression: function(context){
+			return new TemplateExpression(context);
+		},
+		/**
+		 * 获取绑定的语句，一般在子类使用父类逻辑，而不使用父类语句的情况下使用
+		 * @param {Statements} statements - 该语句将要所处的语句块
+		 */
+		getBoundStatement: function(statements){
+			return new TemplateStatement(statements);
+		},
 		regexp: /`/,
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
@@ -119,9 +133,9 @@ this.OpenTemplateTag = function(TemplateExpression, TemplateStatement){
 		 */
 		visitor: function(parser, context, statement, statements){
 			// 设置当前表达式
-			statement.expression = new TemplateExpression(context);
+			statement.expression = this.getBoundExpression(context);
 			// 设置当前语句
-			statements.statement = new TemplateStatement(statements);
+			statements.statement = this.getBoundStatement(statements);
 		}
 	});
 

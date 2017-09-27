@@ -1,16 +1,13 @@
 // 对象声明解构赋值相关
-!function(PropertyDestructuringItemExpression, PropertyStatement, variableDeclarationPropertySeparatorTag, closeDeclarationObjectTag){
+!function(PropertyDestructuringItemExpression, PropertyStatement, OpenObjectTag, variableDeclarationPropertySeparatorTag, closeDeclarationObjectTag){
 	
 this.DeclarationObjectExpression = function(ObjectExpression){
 	/**
 	 * 变量声明数组表达式
 	 * @param {Context} open - 起始标签上下文
-	 * @param {Expression} objectOf - 该对象所属的声明表达式
 	 */
-	function DeclarationObjectExpression(open, objectOf){
+	function DeclarationObjectExpression(open){
 		ObjectExpression.call(this, open);
-
-		this.objectOf = objectOf;
 	};
 	DeclarationObjectExpression = new Rexjs(DeclarationObjectExpression, ObjectExpression);
 
@@ -83,7 +80,7 @@ this.PropertyDestructuringStatement = function(catchMethod, tryMethod, both){
 	}
 );
 
-this.OpenDeclarationObjectTag = function(OpenObjectTag, DeclarationObjectExpression, PropertyDestructuringStatement){
+this.OpenDeclarationObjectTag = function(DeclarationObjectExpression, PropertyDestructuringStatement, visitor){
 	/**
 	 * 变量声明对象起始标签
 	 * @param {Number} _type - 标签类型
@@ -99,6 +96,20 @@ this.OpenDeclarationObjectTag = function(OpenObjectTag, DeclarationObjectExpress
 		 */
 		get binding(){
 			return closeDeclarationObjectTag;
+		},
+		/**
+		 * 获取绑定的表达式，一般在子类使用父类逻辑，而不使用父类表达式的情况下使用
+		 * @param {Context} context - 相关的语法标签上下文
+		 */
+		getBoundExpression: function(context){
+			return new DeclarationObjectExpression(context);
+		},
+		/**
+		 * 获取绑定的语句，一般在子类使用父类逻辑，而不使用父类语句的情况下使用
+		 * @param {Statements} statements - 该语句将要所处的语句块
+		 */
+		getBoundStatement: function(statements){
+			return new PropertyDestructuringStatement(statements);
 		},
 		/**
 		 * 获取拥有该对象的表达式
@@ -128,22 +139,20 @@ this.OpenDeclarationObjectTag = function(OpenObjectTag, DeclarationObjectExpress
 		 * @param {Statements} statements - 当前语句块
 		 */
 		visitor: function(parser, context, statement, statements){
-			// 设置当前表达式
-			statement.expression = new DeclarationObjectExpression(
-				context,
-				this.getObjectOf(statement)
-			);
+			// 调用父类方法
+			visitor.call(this, parser, context, statement, statements);
 
-			// 设置当前语句
-			statements.statement = new PropertyDestructuringStatement(statements);
+			// 通过当前语句给变量声明对象表达式绑定 objectOf 属性
+			statement.expression.objectOf = this.getObjectOf(statement);
 		}
 	});
 
 	return OpenDeclarationObjectTag;
 }(
-	this.OpenObjectTag,
+	
 	this.DeclarationObjectExpression,
-	this.PropertyDestructuringStatement
+	this.PropertyDestructuringStatement,
+	OpenObjectTag.prototype.visitor
 );
 
 this.DeclarationPropertySeparatorTag = function(PropertySeparatorTag, PropertyDestructuringStatement){
@@ -158,22 +167,18 @@ this.DeclarationPropertySeparatorTag = function(PropertySeparatorTag, PropertyDe
 
 	DeclarationPropertySeparatorTag.props({
 		/**
+		 * 获取绑定的语句，一般在子类使用父类逻辑，而不使用父类语句的情况下使用
+		 * @param {Statements} statements - 该语句将要所处的语句块
+		 */
+		getBoundStatement: function(statements){
+			return new PropertyDestructuringStatement(statements);
+		},
+		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
 		 */
 		require: function(tagsMap){
 			return tagsMap.declarationPropertyNameTags;
-		},
-		/**
-		 * 标签访问器
-		 * @param {SyntaxParser} parser - 语法解析器
-		 * @param {Context} context - 标签上下文
-		 * @param {Statement} statement - 当前语句
-		 * @param {Statements} statements - 当前语句块
-		 */
-		visitor: function(parser, context, statement, statements){
-			// 设置当前语句
-			statements.statement = new PropertyDestructuringStatement(statements);
 		}
 	});
 
@@ -216,6 +221,7 @@ closeDeclarationObjectTag = new this.CloseDeclarationObjectTag();
 	this,
 	this.PropertyDestructuringItemExpression,
 	this.PropertyStatement,
+	this.OpenObjectTag,
 	// variableDeclarationPropertySeparatorTag
 	null,
 	// closeDeclarationObjectTag

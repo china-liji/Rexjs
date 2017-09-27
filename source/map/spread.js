@@ -93,8 +93,8 @@ this.SpreadTag = function(SpreadExpression, SpreadStatement, AccessorExpression,
 		 * @param {Statement} statement - 当前语句
 		 */
 		getBoundExpression: function(context, statement){
-			// 告知 call 表达式有拓展符
-			statement.target.expression.withSpread(statement.statements);
+			// 当匹配到拓展符时的处理逻辑
+			statement.target.expression.spreadMatched(statement.statements);
 
 			return new SpreadExpression(context);
 		},

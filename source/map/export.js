@@ -1,5 +1,5 @@
 // export 标签相关
-!function(ModuleTag, VarExpression, FunctionDeclarationExpression, ClassDeclarationExpression, exportVariable){
+!function(VarExpression, FunctionDeclarationExpression, ClassDeclarationExpression, exportVariable){
 
 this.ExportExpression = function(compile){
 	/**
@@ -116,7 +116,7 @@ this.ExportStatement = function(){
 	return ExportStatement;
 }();
 
-this.ExportTag = function(ExportExpression, ExportStatement, fromTag, visitor){
+this.ExportTag = function(ModuleTag, ExportExpression, ExportStatement, fromTag){
 	/**
 	 * export 关键字标签
 	 * @param {Number} _type - 标签类型
@@ -134,6 +134,21 @@ this.ExportTag = function(ExportExpression, ExportStatement, fromTag, visitor){
 			return fromTag;
 		},
 		/**
+		 * 获取绑定的表达式，一般在子类使用父类逻辑，而不使用父类表达式的情况下使用
+		 * @param {Context} context - 相关的语法标签上下文
+		 * @param {File} file - 当前解析源文件信息
+		 */
+		getBoundExpression: function(context, file){
+			return new ExportExpression(context, file);;
+		},
+		/**
+		 * 获取绑定的语句，一般在子类使用父类逻辑，而不使用父类语句的情况下使用
+		 * @param {Statements} statements - 该语句将要所处的语句块
+		 */
+		getBoundStatement: function(statements){
+			return new ExportStatement(statements);
+		},
+		/**
 		 * 收集该表达式所产生的变量名
 		 * @param {SyntaxParser} parser - 语法解析器
 		 * @param {Context} variable - 变量名标签上下文
@@ -146,37 +161,20 @@ this.ExportTag = function(ExportExpression, ExportStatement, fromTag, visitor){
 		 */
 		require: function(tagsMap){
 			return tagsMap.exportContextTags;
-		},
-		/**
-		 * 标签访问器
-		 * @param {SyntaxParser} parser - 语法解析器
-		 * @param {Context} context - 标签上下文
-		 * @param {Statement} statement - 当前语句
-		 * @param {Statements} statements - 当前语句块
-		 */
-		visitor: function(parser, context, statement, statements){
-			// 先调用父类方法，进行环境上下文检测
-			visitor.call(this, parser, context, statement, statements);
-
-			// 设置当前表达式
-			statement.expression = new ExportExpression(context, parser.file);
-			// 设置当前语句
-			statements.statement = new ExportStatement(statements);
 		}
 	});
 
 	return ExportTag;
 }(
+	this.ModuleTag,
 	this.ExportExpression,
 	this.ExportStatement,
 	// fromTag
-	new this.FromTag(),
-	ModuleTag.prototype.visitor
+	new this.FromTag()
 );
 
 }.call(
 	this,
-	this.ModuleTag,
 	this.VarExpression,
 	this.FunctionDeclarationExpression,
 	this.ClassDeclarationExpression,

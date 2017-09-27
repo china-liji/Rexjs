@@ -60,7 +60,7 @@ this.SuperCallExpression = function(extractTo){
 		 * 告知该表达式有拓展符
 		 * @param {Statements} statements - 当前语句块
 		 */
-		withSpread: function(){
+		spreadMatched: function(){
 			this.spread = true;
 		}
 	});
@@ -115,10 +115,10 @@ this.SuperMethodCallExpression = function(extractTo){
 			extractTo.call(this, contentBuilder);
 		},
 		/**
-		 * 告知该表达式有拓展符
+		 * 当匹配到拓展符时的处理逻辑
 		 * @param {Statements} statements - 当前语句块
 		 */
-		withSpread: function(){
+		spreadMatched: function(){
 			this.spread = true;
 		}
 	});
