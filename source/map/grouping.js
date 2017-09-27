@@ -363,12 +363,12 @@ this.IllegibleRestTag = function(IllegibleRestArgumentExpression, IllegibleRestA
 		/**
 		 * 获取绑定的表达式，一般在子类使用父类逻辑，而不使用父类表达式的情况下使用
 		 * @param {Context} context - 相关的语法标签上下文
-		 * @param {GroupingExpression} groupingExpression - 相关的分组小括号表达式
+		 * @param {Statement} statement - 当前语句
 		 */
-		getBoundExpression: function(context, groupingExpression){
+		getBoundExpression: function(context, statement){
 			return new IllegibleRestArgumentExpression(
 				context,
-				groupingExpression.inner.length
+				statement.target.expression.inner.length
 			);
 		},
 		/**

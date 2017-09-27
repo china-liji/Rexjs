@@ -5,10 +5,9 @@ this.SuperPropertyBasicAssignmentExpression = function(){
 	/**
 	 * 父类属性基础赋值表达式
 	 * @param {Context} context - 语法标签上下文
-	 * @param {Expression} left - 该二元表达式左侧运算的表达式
 	 */
-	function SuperPropertyBasicAssignmentExpression(context, left){
-		BinaryExpression.call(this, context, left);
+	function SuperPropertyBasicAssignmentExpression(context){
+		BinaryExpression.call(this, context);
 	};
 	SuperPropertyBasicAssignmentExpression = new Rexjs(SuperPropertyBasicAssignmentExpression, BinaryExpression);
 
@@ -51,10 +50,9 @@ this.SuperPropertyShorthandAssignmentExpression = function(extractTo, compile){
 	/**
 	 * 父类属性简写赋值表达式
 	 * @param {Context} context - 语法标签上下文
-	 * @param {Expression} left - 该二元表达式左侧运算的表达式
 	 */
-	function SuperPropertyShorthandAssignmentExpression(context, left){
-		BinaryExpression.call(this, context, left);
+	function SuperPropertyShorthandAssignmentExpression(context){
+		BinaryExpression.call(this, context);
 	};
 	SuperPropertyShorthandAssignmentExpression = new Rexjs(SuperPropertyShorthandAssignmentExpression, BinaryExpression);
 
@@ -123,10 +121,9 @@ this.SuperPropertyBasicAssignmentTag = function(BasicAssignmentTag, SuperPropert
 		/**
 		 * 获取绑定的表达式，一般在子类使用父类逻辑，而不使用父类表达式的情况下使用
 		 * @param {Context} context - 相关的语法标签上下文
-		 * @param {Expression} left - 该二元表达式左侧运算的表达式
 		 */
-		getBoundExpression: function(context, left){
-			return new SuperPropertyBasicAssignmentExpression(context, left);
+		getBoundExpression: function(context){
+			return new SuperPropertyBasicAssignmentExpression(context);
 		},
 		order: ECMAScriptOrders.SUPER_PROPERTY_ASSIGNMENT
 	});
@@ -151,10 +148,9 @@ this.SuperPropertyShorthandAssignmentTag = function(SuperPropertyShorthandAssign
 		/**
 		 * 获取绑定的表达式，一般在子类使用父类逻辑，而不使用父类表达式的情况下使用
 		 * @param {Context} context - 相关的语法标签上下文
-		 * @param {Expression} left - 该二元表达式左侧运算的表达式
 		 */
-		getBoundExpression: function(context, left){
-			return new SuperPropertyShorthandAssignmentExpression(context, left);
+		getBoundExpression: function(context){
+			return new SuperPropertyShorthandAssignmentExpression(context);
 		},
 		order: ECMAScriptOrders.SUPER_PROPERTY_SHORTHAND_ASSIGNMENT,
 		/**

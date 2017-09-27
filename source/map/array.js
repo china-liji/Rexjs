@@ -346,6 +346,13 @@ this.OpenArrayTag = function(OpenBracketTag, ArrayExpression, ArrayStatement){
 			return new ArrayExpression(context);
 		},
 		/**
+		 * 获取绑定的语句，一般在子类使用父类逻辑，而不使用父类语句的情况下使用
+		 * @param {Statements} statements - 该语句将要所处的语句块
+		 */
+		getBoundStatement: function(statements){
+			return new ArrayStatement(statements);
+		},
+		/**
 		 * 获取绑定的分隔符标签，该标签一般是用于语句的 try、catch 的返回值
 		 */
 		get separator(){
@@ -365,12 +372,7 @@ this.OpenArrayTag = function(OpenBracketTag, ArrayExpression, ArrayStatement){
 		 * @param {Statement} statement - 当前语句
 		 * @param {Statements} statements - 当前语句块
 		 */
-		visitor: function(parser, context, statement, statements){
-			// 设置当前表达式
-			statement.expression = this.getBoundExpression(context);
-			// 设置当前语句
-			statements.statement = new ArrayStatement(statements);
-		}
+		visitor: commonVisitor
 	});
 	
 	return OpenArrayTag;

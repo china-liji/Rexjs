@@ -122,12 +122,7 @@ this.SpreadTag = function(SpreadExpression, SpreadStatement, AccessorExpression,
 		 * @param {Statement} statement - 当前语句
 		 * @param {Statements} statements - 当前语句块
 		 */
-		visitor: function(parser, context, statement, statements){
-			// 设置当前表达式
-			statement.expression = this.getBoundExpression(context, statement);
-			// 设置当前语句
-			statements.statement = this.getBoundStatement(statements);
-		}
+		visitor: commonVisitor
 	});
 	
 	return SpreadTag;

@@ -234,6 +234,13 @@ this.OpenCallTag = function(OpenParenTag, CallExpression, CallStatement){
 		getBoundExpression: function(context, statement){
 			return new CallExpression(context, statement);
 		},
+		/**
+		 * 获取绑定的语句，一般在子类使用父类逻辑，而不使用父类语句的情况下使用
+		 * @param {Statements} statements - 该语句将要所处的语句块
+		 */
+		getBoundStatement: function(statements){
+			return new CallStatement(statements);
+		},
 		// 防止与分组小括号冲突
 		order: ECMAScriptOrders.OPEN_CALL,
 		/**
@@ -256,12 +263,7 @@ this.OpenCallTag = function(OpenParenTag, CallExpression, CallStatement){
 		 * @param {Statement} statement - 当前语句
 		 * @param {Statements} statements - 当前语句块
 		 */
-		visitor: function(parser, context, statement, statements){
-			// 设置当前表达式
-			statement.expression = this.getBoundExpression(context, statement);
-			// 设置当前语句
-			statements.statement = new CallStatement(statements);
-		}
+		visitor: commonVisitor
 	});
 	
 	return OpenCallTag;

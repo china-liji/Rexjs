@@ -1,7 +1,7 @@
 // 特殊的二元标签
 !function(BinaryTag, AssignableExpression, IdentifierExpression, VariableDeclarationTag){
 
-this.AssignmentTag = function(BinaryExpression, BinaryStatement, isSeparator, assignable){
+this.AssignmentTag = function(BinaryExpression, isSeparator, assignable){
 	/**
 	 * 二元赋值运算符标签
 	 * @param {Number} _type - 标签类型
@@ -33,10 +33,12 @@ this.AssignmentTag = function(BinaryExpression, BinaryStatement, isSeparator, as
 			switch(true){
 				// 如果可赋值
 				case assignable(parser, expression):
-					var binaryExpression = this.getBoundExpression(context, expression);
+					var binaryExpression = context.setExpressionOf(statement);
 
-					// 设置当前表达式并将最后的二元表达式为自己
-					statement.expression = binaryExpression.last = binaryExpression;
+					// 设置左侧表达式
+					binaryExpression.left = expression;
+					// 设置最后的二元表达式为自己
+					binaryExpression.last = binaryExpression;
 					break;
 
 				// 如果表达式是二元表达式
@@ -45,8 +47,15 @@ this.AssignmentTag = function(BinaryExpression, BinaryStatement, isSeparator, as
 
 					// 如果该二元表达式是“赋值表达式”，而且其值也是“可赋值表达式”
 					if(last.context.tag.precedence === 0 && assignable(parser, right)){
-						// 设置右侧表达式及记录为最后一个二元表达式
-						last.right = expression.last = this.getBoundExpression(context, right);
+						// 设置新的右侧表达式并设置当前表达式
+						(
+							last.right = expression.last = context.setExpressionOf(
+								// 仅仅为了模拟环境
+								new BoxStatement(statements)
+							)
+						)
+						// 设置左侧表达式
+						.left = right;
 						break;
 					}
 
@@ -57,14 +66,13 @@ this.AssignmentTag = function(BinaryExpression, BinaryStatement, isSeparator, as
 			}
 
 			// 设置当前语句
-			statements.statement = new BinaryStatement(statements);
+			context.setStatementOf(statements);
 		}
 	});
 	
 	return AssignmentTag;
 }(
 	this.BinaryExpression,
-	this.BinaryStatement,
 	BinaryTag.prototype.isSeparator,
 	// assignable
 	function(parser, expression){

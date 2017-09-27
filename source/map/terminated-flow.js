@@ -106,10 +106,10 @@ this.TerminatedFlowTag = function(TerminatedFlowExpression, TerminatedFlowStatem
 		/**
 		 * 获取绑定的表达式，一般在子类使用父类逻辑，而不使用父类表达式的情况下使用
 		 * @param {Context} context - 相关的语法标签上下文
-		 * @param {Statements} statements - 当前语句块
+		 * @param {Statement} statement - 当前语句
 		 */
-		getBoundExpression: function(context, statements){
-			return new TerminatedFlowExpression(context, statements);
+		getBoundExpression: function(context, statement){
+			return new TerminatedFlowExpression(context, statement.statements);
 		},
 		/**
 		 * 获取绑定的语句，一般在子类使用父类逻辑，而不使用父类语句的情况下使用
@@ -141,12 +141,7 @@ this.TerminatedFlowTag = function(TerminatedFlowExpression, TerminatedFlowStatem
 		 * @param {Statement} statement - 当前语句
 		 * @param {Statements} statements - 当前语句块
 		 */
-		visitor: function(parser, context, statement, statements){
-			// 设置表达式
-			statement.expression = this.getBoundExpression(context, statements);
-			// 设置当前语句
-			statements.statement = this.getBoundStatement(statements);
-		}
+		visitor: commonVisitor
 	});
 	
 	return TerminatedFlowTag;

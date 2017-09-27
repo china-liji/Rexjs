@@ -177,6 +177,21 @@ this.OpenFunctionBodyTag = function(OpenBraceTag, FunctionBodyExpression, Functi
 			return closeFunctionBodyTag;
 		},
 		/**
+		 * 获取绑定的表达式，一般在子类使用父类逻辑，而不使用父类表达式的情况下使用
+		 * @param {Context} context - 相关的语法标签上下文
+		 * @param {Statement} statement - 当前语句
+		 */
+		getBoundExpression: function(context){
+			return new FunctionBodyExpression(context);
+		},
+		/**
+		 * 获取绑定的语句，一般在子类使用父类逻辑，而不使用父类语句的情况下使用
+		 * @param {Statements} statements - 该语句将要所处的语句块
+		 */
+		getBoundStatement: function(statements){
+			return new BoxStatement(statements);
+		},
+		/**
 		 * 获取绑定的语句块，一般在子类使用父类逻辑，而不使用父类语句块的情况下使用
 		 * @param {Statements} statements - 当前语句块
 		 */
@@ -200,20 +215,17 @@ this.OpenFunctionBodyTag = function(OpenBraceTag, FunctionBodyExpression, Functi
 		visitor: function(parser, context, statement, statements){
 			var declarationCollection;
 			
-			(
-				// 设置当前语句
-				statements.statement = new BoxStatement(statements)
-			)
-			// 设置表达式
-			.expression = new FunctionBodyExpression(context);
+			// 再设置当前表达式
+			context.setExpressionOf(
+				// 先设置当前语句
+				context.setStatementOf(statements)
+			);
+			
+			// 最后设置当前语句块
+			statements = context.setStatementsOf(parser);
 
 			// 获取函数主体语句块的声明集合
-			declarationCollection = (
-				// 设置当前语句块
-				parser.statements = this.getBoundStatements(statements)
-			)
-			.collections
-			.declaration;
+			declarationCollection = statements.collections.declaration;
 
 			// 收集参数名到声明集合下
 			forEach(

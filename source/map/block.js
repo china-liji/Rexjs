@@ -130,6 +130,14 @@ this.OpenBlockTag = function(OpenBraceTag, BlockExpression, BlockBodyStatements,
 			return closeBlockTag;
 		},
 		/**
+		 * 获取绑定的表达式，一般在子类使用父类逻辑，而不使用父类表达式的情况下使用
+		 * @param {Context} context - 相关的语法标签上下文
+		 * @param {Statement} statement - 当前语句
+		 */
+		getBoundExpression: function(context, statement){
+			return new BlockExpression(context, statement.statements);
+		},
+		/**
 		 * 获取绑定的语句块，一般在子类使用父类逻辑，而不使用父类语句块的情况下使用
 		 * @param {Statements} statements - 当前语句块
 		 */
@@ -151,10 +159,10 @@ this.OpenBlockTag = function(OpenBraceTag, BlockExpression, BlockBodyStatements,
 		 * @param {Statements} statements - 当前语句块
 		 */
 		visitor: function(parser, context, statement, statements){
-			// 设置表达式
-			statement.expression = new BlockExpression(context, statements);
+			// 设置当前表达式
+			context.setExpressionOf(statement);
 			// 设置当前语句块
-			parser.statements = this.getBoundStatements(statements);
+			context.setStatementsOf(parser);
 		}
 	});
 	

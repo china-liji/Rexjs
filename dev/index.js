@@ -1,3 +1,7 @@
+function a(){
+	
+}
+
 var a = {
 	a(...a){
 		super.b++

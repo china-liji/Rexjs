@@ -174,15 +174,15 @@ this.DeclarationArrayItemTag = function(VariableDeclarationTag, DestructuringIte
 		 * @param {Statements} statements - 当前语句块
 		 */
 		visitor: function(parser, context, statement, statements){
+			// 设置当前表达式
+			context.setExpressionOf(statement);
+			
 			(
 				// 修改上下文标签，因为当前标签（即 this）的功能只能替代匹配，而不能替代解析
 				context.tag = this.getArrayStatement(statement).target.expression.arrayOf.context.tag.variable
 			)
 			// 收集变量名
 			.collectTo(parser, context, statements);
-
-			// 设置当前表达式
-			statement.expression = this.getBoundExpression(context);
 		}
 	});
 	

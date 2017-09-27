@@ -146,10 +146,10 @@ this.TerminatedBranchFlowTag = function(TerminatedFlowTag, TerminatedBranchFlowE
 		/**
 		 * 获取绑定的表达式，一般在子类使用父类逻辑，而不使用父类表达式的情况下使用
 		 * @param {Context} context - 相关的语法标签上下文
-		 * @param {Statements} statements - 当前语句块
+		 * @param {Statement} statement - 当前语句
 		 */
-		getBoundExpression: function(context, statements){
-			return new TerminatedBranchFlowExpression(context, statements);
+		getBoundExpression: function(context, statement){
+			return new TerminatedBranchFlowExpression(context, statement.statements);
 		},
 		/**
 		 * 获取绑定的语句，一般在子类使用父类逻辑，而不使用父类语句的情况下使用

@@ -342,6 +342,27 @@ this.Context = function(){
 	Context.props({
 		content: "",
 		position: 0,
+		/**
+		 * 给语句设置相关表达式，此方法存在的目的是保证 getBoundExpression 必须传入 context 与 statement 这 2 个参数
+		 * @param {Statement} statement - 当前语句
+		 */
+		setExpressionOf: function(statement){
+			return statement.expression = this.tag.getBoundExpression(this, statement);
+		},
+		/**
+		 * 给语句块设置相关语句，此方法存在的目的是为了保持与 setExpressionOf 的使用一致性
+		 * @param {Statements} statements - 当前语句块
+		 */
+		setStatementOf: function(statements){
+			return statements.statement = this.tag.getBoundStatement(statements);
+		},
+		/**
+		 * 给解析设置相关语句块，此方法存在的目的是为了保持与 setExpressionOf 的使用一致性
+		 * @param {Statements} statements - 当前语句块
+		 */
+		setStatementsOf: function(parser){
+			return parser.statements = this.tag.getBoundStatements(parser.statements);
+		},
 		tag: null
 	});
 	
@@ -990,6 +1011,7 @@ this.SyntaxTag = function(SyntaxElement, TagClass, TagType){
 		/**
 		 * 获取绑定的表达式，一般在子类使用父类逻辑，而不使用父类表达式的情况下使用
 		 * @param {Context} context - 相关的语法标签上下文
+		 * @param {Statement} statement - 当前语句
 		 */
 		getBoundExpression: function(){
 			return null;

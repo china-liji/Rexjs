@@ -5,10 +5,9 @@ this.DestructuringAssignmentExpression = function(extractTo, extractRight){
 	/**
 	 * 解构赋值表达式
 	 * @param {Context} context - 语法标签上下文
-	 * @param {Expression} left - 左侧表达式
 	 */
-	function DestructuringAssignmentExpression(context, left){
-		BinaryExpression.call(this, context, left);
+	function DestructuringAssignmentExpression(context){
+		BinaryExpression.call(this, context);
 	};
 	DestructuringAssignmentExpression = new Rexjs(DestructuringAssignmentExpression, BinaryExpression);
 
@@ -91,10 +90,9 @@ this.DestructuringAssignmentTag = function(DestructuringAssignmentExpression, vi
 		/**
 		 * 获取绑定的表达式，一般在子类使用父类逻辑，而不使用父类表达式的情况下使用
 		 * @param {Context} context - 相关的语法标签上下文
-		 * @param {Expression} left - 该二元表达式左侧运算的表达式
 		 */
-		getBoundExpression: function(context, left){
-			return new DestructuringAssignmentExpression(context, left);
+		getBoundExpression: function(context){
+			return new DestructuringAssignmentExpression(context);
 		},
 		// 防止与 BasicAssignmentTag 冲突
 		order: ECMAScriptOrders.DESTRUCTURING_ASSIGNMENT,

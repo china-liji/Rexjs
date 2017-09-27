@@ -174,10 +174,10 @@ this.PostfixUnaryAssignmentTag = function(UnaryAssignmentTag, PostfixUnaryExpres
 		/**
 		 * 获取绑定的表达式，一般在子类使用父类逻辑，而不使用父类表达式的情况下使用
 		 * @param {Context} context - 相关的语法标签上下文
-		 * @param {AssignableExpression} operand - 操作对象表达式
+		 * @param {Statement} statement - 当前语句
 		 */
-		getBoundExpression: function(context, operand){
-			return new PostfixUnaryExpression(context, operand);
+		getBoundExpression: function(context, statement){
+			return new PostfixUnaryExpression(context, statement.expression);
 		},
 		order: ECMAScriptOrders.POSTFIX_UNARY_ASSIGNMENT,
 		/**
@@ -195,12 +195,10 @@ this.PostfixUnaryAssignmentTag = function(UnaryAssignmentTag, PostfixUnaryExpres
 		 * @param {Statements} statements - 当前语句块
 		 */
 		visitor: function(parser, context, statement, statements){
-			var expression = statement.expression;
-
 			// 如果满足一元赋值标签条件
-			if(this.operable(parser, expression)){
+			if(this.operable(parser, statement.expression)){
 				// 设置当前表达式
-				statement.expression = this.getBoundExpression(context, expression);
+				context.setExpressionOf(statement);
 				return;
 			}
 

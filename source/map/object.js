@@ -366,12 +366,7 @@ this.OpenObjectTag = function(OpenBraceTag, ObjectExpression, PropertyStatement)
 		 * @param {Statement} statement - 当前语句
 		 * @param {Statements} statements - 当前语句块
 		 */
-		visitor: function(parser, context, statement, statements){
-			// 设置当前表达式
-			statement.expression = this.getBoundExpression(context);
-			// 设置当前语句
-			statements.statement = this.getBoundStatement(statements);
-		}
+		visitor: commonVisitor
 	});
 
 	return OpenObjectTag;
@@ -415,7 +410,7 @@ this.PropertySeparatorTag = function(CommaTag, PropertyStatement){
 		 */
 		visitor: function(parser, context, statement, statements){
 			// 设置当前语句
-			statements.statement = this.getBoundStatement(statements);
+			context.setStatementOf(statements);
 		}
 	});
 

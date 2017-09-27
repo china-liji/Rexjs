@@ -59,12 +59,12 @@ this.RestTag = function(SpreadTag, RestArgumentExpression){
 		/**
 		 * 获取绑定的表达式，一般在子类使用父类逻辑，而不使用父类表达式的情况下使用
 		 * @param {Context} context - 相关的语法标签上下文
-		 * @param {FunctionExpression} functionExpression - 相关的函数表达式
+		 * @param {Statement} statement - 当前语句
 		 */
-		getBoundExpression: function(context, functionExpression){
+		getBoundExpression: function(context, statement){
 			return new RestArgumentExpression(
 				context,
-				functionExpression.arguments.inner.length
+				statement.target.expression.arguments.inner.length
 			);
 		},
 		/**
@@ -83,7 +83,7 @@ this.RestTag = function(SpreadTag, RestArgumentExpression){
 		 */
 		visitor: function(parser, context, statement){
 			// 设置当前表达式
-			statement.expression = this.getBoundExpression(context, statement.target.expression);
+			context.setExpressionOf(statement);
 		}
 	});
 

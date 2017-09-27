@@ -379,7 +379,7 @@ this.ForConditionSeparatorTag = function(SemicolonTag){
 		 */
 		visitor: function(parser, context, statement, statements){
 			// 设置当前语句
-			statements.statement = this.getBoundStatement(statements);
+			context.setStatementOf(statements);
 		}
 	});
 

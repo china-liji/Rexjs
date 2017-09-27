@@ -35,5 +35,13 @@ Rexjs.static(this);
 		.match(
 			/^\/(.+)\/$/
 		)[1],
-	new Rexjs.SyntaxConfig("es6Base", "es6Module", "rexjs")
+	// config
+	new Rexjs.SyntaxConfig("es6Base", "es6Module", "rexjs"),
+	// commonVisitor
+	function(parser, context, statement, statements){
+		// 设置当前表达式
+		context.setExpressionOf(statement);
+		// 设置当前语句
+		context.setStatementOf(statements);
+	}
 );

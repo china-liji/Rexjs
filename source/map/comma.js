@@ -77,6 +77,14 @@ this.CommaTag = function(ExpressionSeparatorTag, CommaExpression, CommaStatement
 			return commaSiblingTag;
 		},
 		/**
+		 * 获取绑定的表达式，一般在子类使用父类逻辑，而不使用父类表达式的情况下使用
+		 * @param {Context} context - 相关的语法标签上下文
+		 * @param {Statement} statement - 当前语句
+		 */
+		getBoundExpression: function(context, statement){
+			return new CommaExpression(context, statement.expression);
+		},
+		/**
 		 * 获取绑定的语句，一般在子类使用父类逻辑，而不使用父类语句的情况下使用
 		 * @param {Statements} statements - 该语句将要所处的语句块
 		 */
@@ -98,12 +106,7 @@ this.CommaTag = function(ExpressionSeparatorTag, CommaExpression, CommaStatement
 		 * @param {Statement} statement - 当前语句
 		 * @param {Statements} statements - 当前语句块
 		 */
-		visitor: function(parser, context, statement, statements){
-			// 设置当前表达式
-			statement.expression = new CommaExpression(context, statement.expression);
-			// 设置当前语句
-			statements.statement = this.getBoundStatement(statements);
-		}
+		visitor: commonVisitor
 	});
 	
 	return CommaTag;

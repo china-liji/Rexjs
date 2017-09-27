@@ -5,9 +5,12 @@ this.TemplateParameterExpression = function(extractTo, compileInner){
 	/**
 	 * 模板参数表达式
 	 * @param {Context} open - 起始标签上下文
+	 * @param {Expression} operand - 被作为函数调用的表达式
 	 */
-	function TemplateParameterExpression(open){
+	function TemplateParameterExpression(open, operand){
 		TemplateExpression.call(this, open);
+
+		this.operand = operand;
 	};
 	TemplateParameterExpression = new Rexjs(TemplateParameterExpression, TemplateExpression);
 
@@ -98,27 +101,12 @@ this.OpenTemplateParameterTag = function(TemplateParameterExpression, visitor){
 		/**
 		 * 获取绑定的表达式，一般在子类使用父类逻辑，而不使用父类表达式的情况下使用
 		 * @param {Context} context - 相关的语法标签上下文
-		 */
-		getBoundExpression: function(context){
-			return new TemplateParameterExpression(context);
-		},
-		order: ECMAScriptOrders.TEMPLATE_PARAMETER,
-		/**
-		 * 标签访问器
-		 * @param {SyntaxParser} parser - 语法解析器
-		 * @param {Context} context - 标签上下文
 		 * @param {Statement} statement - 当前语句
-		 * @param {Statements} statements - 当前语句块
 		 */
-		visitor: function(parser, context, statement, statements){
-			var expression = statement.expression;
-
-			// 调用父类方法
-			visitor.call(this, parser, context, statement, statements);
-
-			// 设置 templateParameterExpression 表达式的 operand 属性
-			statement.expression.operand = expression;
-		}
+		getBoundExpression: function(context, statement){
+			return new TemplateParameterExpression(context, statement.expression);
+		},
+		order: ECMAScriptOrders.TEMPLATE_PARAMETER
 	});
 
 	return OpenTemplateParameterTag;

@@ -48,6 +48,13 @@ this.IteratorTag = function(BinaryKeywordTag, BinaryExpression, IterationStateme
 
 	IteratorTag.props({
 		/**
+		 * 获取绑定的语句，一般在子类使用父类逻辑，而不使用父类语句的情况下使用
+		 * @param {Statements} statements - 该语句将要所处的语句块
+		 */
+		getBoundStatement: function(statements){
+			return new IterationStatement(statements);
+		},
+		/**
 		 * 判断编译时是否需要临时变量名
 		 * @param {Statements} statements - 当前语句块
 		 */
@@ -62,7 +69,7 @@ this.IteratorTag = function(BinaryKeywordTag, BinaryExpression, IterationStateme
 		 * @param {Statements} statements - 当前语句块
 		 */
 		visitor: function(parser, context, statement, statements){
-			var forExpression = statement.target.expression;
+			var expression = statement.expression, forExpression = statement.target.expression;
 
 			// 设置 for 表达式的 iterator 属性
 			forExpression.iterator = context.content;
@@ -73,10 +80,11 @@ this.IteratorTag = function(BinaryKeywordTag, BinaryExpression, IterationStateme
 				forExpression.variable = statements.collections.generate();
 			}
 
-			// 设置当前表达式
-			statement.expression = new BinaryExpression(context, statement.expression);
-			// 设置当前语句
-			statements.statement = new IterationStatement(statements);
+			// 调用公共访问器方法
+			commonVisitor.call(this, parser, context, statement, statements);
+			
+			// 设置当前表达式的左侧表达式
+			statement.expression.left  = expression;
 		}
 	});
 

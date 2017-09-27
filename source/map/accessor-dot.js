@@ -75,7 +75,7 @@ this.DotAccessorTag = function(DotTag, AccessorExpression){
 		 */
 		visitor: function(parser, context, statement, statements){
 			// 设置当前表达式
-			statement.expression = this.getBoundExpression(context, statement);
+			context.setExpressionOf(statement);
 		}
 	});
 	

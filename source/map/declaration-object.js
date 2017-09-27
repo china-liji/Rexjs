@@ -5,9 +5,12 @@ this.DeclarationObjectExpression = function(ObjectExpression){
 	/**
 	 * 变量声明数组表达式
 	 * @param {Context} open - 起始标签上下文
+	 * @param {Expression} objectOf - 该对象声明所处语句的表达式
 	 */
-	function DeclarationObjectExpression(open){
+	function DeclarationObjectExpression(open, objectOf){
 		ObjectExpression.call(this, open);
+
+		this.objectOf = objectOf;
 	};
 	DeclarationObjectExpression = new Rexjs(DeclarationObjectExpression, ObjectExpression);
 
@@ -100,9 +103,13 @@ this.OpenDeclarationObjectTag = function(DeclarationObjectExpression, PropertyDe
 		/**
 		 * 获取绑定的表达式，一般在子类使用父类逻辑，而不使用父类表达式的情况下使用
 		 * @param {Context} context - 相关的语法标签上下文
+		 * @param {Statement} statement - 当前语句
 		 */
-		getBoundExpression: function(context){
-			return new DeclarationObjectExpression(context);
+		getBoundExpression: function(context, statement){
+			return new DeclarationObjectExpression(
+				context,
+				this.getObjectOf(statement)
+			);
 		},
 		/**
 		 * 获取绑定的语句，一般在子类使用父类逻辑，而不使用父类语句的情况下使用
@@ -130,20 +137,6 @@ this.OpenDeclarationObjectTag = function(DeclarationObjectExpression, PropertyDe
 		 */
 		require: function(tagsMap){
 			return tagsMap.declarationPropertyNameTags;
-		},
-		/**
-		 * 标签访问器
-		 * @param {SyntaxParser} parser - 语法解析器
-		 * @param {Context} context - 标签上下文
-		 * @param {Statement} statement - 当前语句
-		 * @param {Statements} statements - 当前语句块
-		 */
-		visitor: function(parser, context, statement, statements){
-			// 调用父类方法
-			visitor.call(this, parser, context, statement, statements);
-
-			// 通过当前语句给变量声明对象表达式绑定 objectOf 属性
-			statement.expression.objectOf = this.getObjectOf(statement);
 		}
 	});
 

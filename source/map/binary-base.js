@@ -7,10 +7,8 @@ this.BinaryExpression = function(){
 	 * @param {Context} context - 语法标签上下文
 	 * @param {Expression} left - 该二元表达式左侧运算的表达式
 	 */
-	function BinaryExpression(context, left){
+	function BinaryExpression(context){
 		Expression.call(this, context);
-
-		this.left = left;
 	};
 	BinaryExpression = new Rexjs(BinaryExpression, Expression);
 
@@ -92,8 +90,15 @@ this.BinaryTag = function(ExpressionSeparatorTag, BinaryExpression, BinaryStatem
 		 * @param {Context} context - 相关的语法标签上下文
 		 * @param {Expression} left - 该二元表达式左侧运算的表达式
 		 */
-		getBoundExpression: function(context, left){
-			return new BinaryExpression(context, left);
+		getBoundExpression: function(context){
+			return new BinaryExpression(context);
+		},
+		/**
+		 * 获取绑定的语句，一般在子类使用父类逻辑，而不使用父类语句的情况下使用
+		 * @param {Statements} statements - 该语句将要所处的语句块
+		 */
+		getBoundStatement: function(statements){
+			return new BinaryStatement(statements);
 		},
 		/**
 		 * 验证所提供的标签是否为表达式分隔符标签
@@ -138,18 +143,28 @@ this.BinaryTag = function(ExpressionSeparatorTag, BinaryExpression, BinaryStatem
 					right = right.right;
 				}
 
-				// 设置新的右侧表达式
-				exp.right = expression.last = this.getBoundExpression(context, right);
+				// 设置新的右侧表达式并设置当前表达式
+				(
+					exp.right = expression.last = context.setExpressionOf(
+						// 仅仅为了模拟环境
+						new BoxStatement(statements)
+					)
+				)
+				// 设置左侧表达式
+				.left = right;
 			}
 			else {
-				var binaryExpression = this.getBoundExpression(context, expression);
+				// 设置当前表达式
+				var binaryExpression = context.setExpressionOf(statement);
 
-				// 设置当前表达式并将最后的二元表达式为自己
-				statement.expression = binaryExpression.last = binaryExpression;
+				// 设置左侧表达式
+				binaryExpression.left = expression;
+				// 设置最后的二元表达式为自己
+				binaryExpression.last = binaryExpression;
 			}
 
 			// 设置当前语句
-			statements.statement = new BinaryStatement(statements);
+			context.setStatementOf(statements);
 		}
 	});
 	

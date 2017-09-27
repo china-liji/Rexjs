@@ -136,10 +136,9 @@ this.ExportTag = function(ModuleTag, ExportExpression, ExportStatement, fromTag)
 		/**
 		 * 获取绑定的表达式，一般在子类使用父类逻辑，而不使用父类表达式的情况下使用
 		 * @param {Context} context - 相关的语法标签上下文
-		 * @param {File} file - 当前解析源文件信息
 		 */
-		getBoundExpression: function(context, file){
-			return new ExportExpression(context, file);;
+		getBoundExpression: function(context){
+			return new ExportExpression(context);;
 		},
 		/**
 		 * 获取绑定的语句，一般在子类使用父类逻辑，而不使用父类语句的情况下使用

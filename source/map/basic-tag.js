@@ -197,10 +197,11 @@ this.ModuleTag = function(FLOW_MAIN){
 				return;
 			}
 
-			// 设置当前表达式
-			statement.expression = this.getBoundExpression(context, parser.file);
-			// 设置当前语句
-			statements.statement = this.getBoundStatement(statements);
+			// 调用公共访问器
+			commonVisitor(parser, context, statement, statements);
+
+			// 设置当前表达式的 file 属性
+			statement.expression.file = parser.file;
 		}
 	});
 

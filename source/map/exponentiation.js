@@ -57,10 +57,9 @@ this.ExponentiationTag = function(BinaryTag, ExponentiationExpression){
 		/**
 		 * 获取绑定的表达式，一般在子类使用父类逻辑，而不使用父类表达式的情况下使用
 		 * @param {Context} context - 相关的语法标签上下文
-		 * @param {Expression} left - 该二元表达式左侧运算的表达式
 		 */
-		getBoundExpression: function(context, left){
-			return new ExponentiationExpression(context, left);
+		getBoundExpression: function(context){
+			return new ExponentiationExpression(context);
 		},
 		// 防止与 "*" 冲突
 		order: ECMAScriptOrders.EXPONENTIATION,
