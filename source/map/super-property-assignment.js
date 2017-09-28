@@ -1,5 +1,5 @@
 // 父类属性赋值相关
-!function(BinaryExpression, ShorthandAssignmentTag, extractTo){
+!function(BinaryExpression, extractTo){
 
 this.SuperPropertyBasicAssignmentExpression = function(){
 	/**
@@ -82,14 +82,15 @@ this.SuperPropertyShorthandAssignmentExpression = function(extractTo, compile){
 	function(contentBuilder, left, right, variable, content){
 		var propertyOwner = left.object.propertyOwner, closureReference = left.closureReference;
 
-		// 追加设置 父类属性方法的起始代码 及 属性变量名
-		contentBuilder.appendString("(Rexjs.Super.setProperty(" + propertyOwner);
-		// 追加当前环境的 this 指向
-		contentBuilder.appendString("," + closureReference + "," + variable + "=");
+		// 追加设置 父类属性方法的起始代码、属性变量名 及 当前环境的 this 指向
+		contentBuilder.appendString(
+			"(Rexjs.Super.setProperty(" + propertyOwner + "," + closureReference + "," + variable + "="
+		);
+
 		// 编译属性名
 		left.compilePropertyTo(contentBuilder);
 
-		// 追加参数分隔符
+		// 追加获取属性值代码
 		contentBuilder.appendString(
 			",Rexjs.Super.getProperty(" +
 				propertyOwner + "," +
@@ -134,7 +135,7 @@ this.SuperPropertyBasicAssignmentTag = function(BasicAssignmentTag, SuperPropert
 	this.SuperPropertyBasicAssignmentExpression
 );
 
-this.SuperPropertyShorthandAssignmentTag = function(SuperPropertyShorthandAssignmentExpression, visitor){
+this.SuperPropertyShorthandAssignmentTag = function(ShorthandAssignmentTag, SuperPropertyShorthandAssignmentExpression){
 	/**
 	 * 父类属性简写赋值标签
 	 * @param {Number} _type - 标签类型
@@ -148,38 +149,30 @@ this.SuperPropertyShorthandAssignmentTag = function(SuperPropertyShorthandAssign
 		/**
 		 * 获取绑定的表达式，一般在子类使用父类逻辑，而不使用父类表达式的情况下使用
 		 * @param {Context} context - 相关的语法标签上下文
-		 */
-		getBoundExpression: function(context){
-			return new SuperPropertyShorthandAssignmentExpression(context);
-		},
-		order: ECMAScriptOrders.SUPER_PROPERTY_SHORTHAND_ASSIGNMENT,
-		/**
-		 * 标签访问器
-		 * @param {SyntaxParser} parser - 语法解析器
-		 * @param {Context} context - 标签上下文
 		 * @param {Statement} statement - 当前语句
-		 * @param {Statements} statements - 当前语句块
 		 */
-		visitor: function(parser, context, statement, statements){
-			visitor.call(this, parser, context, statement, statements);
+		getBoundExpression: function(context, statement){
+			var expression = new SuperPropertyShorthandAssignmentExpression(context);
 
-			// 如果需要编译
+			// 如果需要解析
 			if(config.es6Base){
 				// 生成并记录临时变量名
-				statement.expression.variable = statements.collections.generate();
+				expression.variable = statement.statements.collections.generate();
 			}
-		}
+
+			return expression;
+		},
+		order: ECMAScriptOrders.SUPER_PROPERTY_SHORTHAND_ASSIGNMENT
 	});
 	
 	return SuperPropertyShorthandAssignmentTag;
 }(
-	this.SuperPropertyShorthandAssignmentExpression,
-	ShorthandAssignmentTag.prototype.visitor
+	this.ShorthandAssignmentTag,
+	this.SuperPropertyShorthandAssignmentExpression
 );
 
 }.call(
 	this,
 	this.BinaryExpression,
-	this.ShorthandAssignmentTag,
 	this.BinaryExpression.prototype.extractTo
 );

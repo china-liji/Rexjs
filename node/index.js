@@ -168,7 +168,7 @@ module.exports = { DevSource: this.DevSource, Source: this.Source };
 		"unary-assginment.js",
 		"unary-assginment-extension.js",
 		"binary-base.js",
-		"binary-special.js",
+		"binary-extension.js",
 		"binary-all.js",
 		"exponentiation.js",
 		"ternary.js",

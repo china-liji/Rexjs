@@ -136,15 +136,15 @@ this.CallExpression = function(AccessorExpression, BracketAccessorExpression, Un
 		 */
 		spreadTo: function(contentBuilder){
 			// 追加 apply
-			contentBuilder.appendString("Function.apply.call(");
+			contentBuilder.appendString("(Function.apply.call(");
 			// 提取操作对象
 			this.operand.extractTo(contentBuilder);
-			// 追加 apply 方法的参数
+			// 追加参数
 			contentBuilder.appendString("," + this.boundThis + ",Rexjs.SpreadItem.combine");
 			// 调用父类方法
 			extractTo.call(this, contentBuilder);
-			// 追加 apply 方法的结束小括号
-			contentBuilder.appendString(")");
+			// 追加结束小括号
+			contentBuilder.appendString("))");
 		}
 	});
 

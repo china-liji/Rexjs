@@ -371,10 +371,12 @@ this.Super = function(getPropertyDescriptor){
 
 			// 如果描述符存在
 			if(descriptor){
-				var get = descriptor.get;
-
 				// 如果是 get 访问器，则调用 get 方法，否则返回属性值
-				return get ? get.call(classInstance) : descriptor.value;
+				return (
+					descriptor.hasOwnProperty("get") ?
+						descriptor.get.call(classInstance) :
+						descriptor.value
+				);
 			}
 
 			return void 0;
@@ -398,8 +400,8 @@ this.Super = function(getPropertyDescriptor){
 		setProperty: function(classPrototype, classInstance, name, value){
 			var descriptor = getPropertyDescriptor(classPrototype, name);
 
-			// 如果描述符存在
-			if(descriptor){
+			// 如果描述符存在而且是访问器
+			if(descriptor && descriptor.hasOwnProperty("set")){
 				var set = descriptor.set;
 
 				// 如果是 set 访问器

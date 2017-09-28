@@ -1,4 +1,4 @@
-// 特殊的二元标签
+// 二元标签子类
 !function(BinaryTag, AssignableExpression, IdentifierExpression, VariableDeclarationTag){
 
 this.AssignmentTag = function(BinaryExpression, isSeparator, assignable){

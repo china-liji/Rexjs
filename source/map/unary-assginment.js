@@ -110,6 +110,13 @@ this.UnaryAssignmentTag = function(UnaryTag, UnaryExpression, UnaryAssignmentSta
 
 	UnaryAssignmentTag.props({
 		/**
+		 * 获取绑定的语句，一般在子类使用父类逻辑，而不使用父类语句的情况下使用
+		 * @param {Statements} statements - 该语句将要所处的语句块
+		 */
+		getBoundStatement: function(statements){
+			return new UnaryAssignmentStatement(statements);
+		},
+		/**
 		 * 判断该一元表达式在当前表达式中，是否能使用
 		 * @param {SyntaxParser} parser - 语法解析器
 		 * @param {Expression} expression - 当前表达式
@@ -134,20 +141,7 @@ this.UnaryAssignmentTag = function(UnaryTag, UnaryExpression, UnaryAssignmentSta
 
 			return false;
 		},
-		order: ECMAScriptOrders.UNARY_ASSIGNMENT,
-		/**
-		 * 标签访问器
-		 * @param {SyntaxParser} parser - 语法解析器
-		 * @param {Context} context - 标签上下文
-		 * @param {Statement} statement - 当前语句
-		 * @param {Statements} statements - 当前语句块
-		 */
-		visitor: function(parser, context, statement, statements){
-			// 设置当前表达式
-			statement.expression = new UnaryExpression(context);
-			// 设置当前语句
-			statements.statement = new UnaryAssignmentStatement(statements);
-		}
+		order: ECMAScriptOrders.UNARY_ASSIGNMENT
 	});
 
 	return UnaryAssignmentTag;

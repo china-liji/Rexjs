@@ -1782,7 +1782,8 @@ this.SuperAccessorContextTags = function(list){
 		this.OpenSuperMethodCallTag,
 		this.SuperPropertyBasicAssignmentTag,
 		this.SuperPropertyShorthandAssignmentTag,
-		this.SuperPropertyPostfixIncrementTag
+		this.SuperPropertyPostfixIncrementTag,
+		this.SuperPropertyPostfixDecrementTag
 	]
 );
 

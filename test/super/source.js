@@ -202,13 +202,17 @@ if(!Object.setPrototypeOf){
 
 var a = {
 	get x(){ return this.y + 2 },
-	set x(value){ this.x_a = value; }
+	set x(value){ this.x_a = value; },
+	value: 88
 }
 
 var b = {
 	y: 2,
 	get x(){ return super.x },
-	set x(value){ this.x_b = value; }
+	set x(value){ this.x_b = value; },
+	postfixIncrementSuper(){
+		return super.value++;
+	}
 }
 
 Object.setPrototypeOf(b,a);
@@ -239,6 +243,18 @@ Object.setPrototypeOf(d, c)
 
 if(b.x !== 4){
 	throw "父级属性访问器不正确：可能没有绑定调用 super 时所处的 this";
+}
+
+if(b.postfixIncrementSuper() !== 88){
+	throw "父类属性递增返回值错误";
+}
+
+if(b.value !== 89){
+	throw "非访问器形式的父类属性设置，结果应设置在子类上";
+}
+
+if(a.value !== 88){
+	throw "非访问器形式的父类属性设置，结果不应该置在父类上";
 }
 
 if(d.getX.call(b) !== 52){

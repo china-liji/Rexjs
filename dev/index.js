@@ -1,14 +1,16 @@
-function a(){
-	
-}
-
 var a = {
-	a(...a){
-		super.b++
+	a: 1
+};
+
+var b = {
+	b(){
+		--super.a
 	}
 }
 
-var {...a } = obj
+Object.setPrototypeOf(b,a);
+
+b.b();
 
 debugger
 

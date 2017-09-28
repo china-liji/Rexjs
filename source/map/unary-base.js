@@ -80,6 +80,21 @@ this.UnaryTag = function(UnaryExpression, UnaryStatement, ExpressionSeparatorTag
 	UnaryTag.props({
 		$class: CLASS_EXPRESSION,
 		/**
+		 * 获取绑定的表达式，一般在子类使用父类逻辑，而不使用父类表达式的情况下使用
+		 * @param {Context} context - 相关的语法标签上下文
+		 * @param {Statement} statement - 当前语句
+		 */
+		getBoundExpression: function(context){
+			return new UnaryExpression(context);
+		},
+		/**
+		 * 获取绑定的语句，一般在子类使用父类逻辑，而不使用父类语句的情况下使用
+		 * @param {Statements} statements - 该语句将要所处的语句块
+		 */
+		getBoundStatement: function(statements){
+			return new UnaryStatement(statements);
+		},
+		/**
 		 * 验证所提供的标签是否为表达式分隔符标签
 		 * @param {Context} context - 所需验证的标签上下文
 		 * @param {Expression} operand - 该一元表达式所操作的对象
@@ -101,12 +116,7 @@ this.UnaryTag = function(UnaryExpression, UnaryStatement, ExpressionSeparatorTag
 		 * @param {Statement} statement - 当前语句
 		 * @param {Statements} statements - 当前语句块
 		 */
-		visitor: function(parser, context, statement, statements){
-			// 设置临时表达式
-			statement.expression = new UnaryExpression(context);
-			// 设置当前语句
-			statements.statement = new UnaryStatement(statements);
-		}
+		visitor: commonVisitor
 	});
 	
 	return UnaryTag;

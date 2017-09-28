@@ -2684,6 +2684,21 @@ this.UnaryTag = function(UnaryExpression, UnaryStatement, ExpressionSeparatorTag
 	UnaryTag.props({
 		$class: CLASS_EXPRESSION,
 		/**
+		 * 获取绑定的表达式，一般在子类使用父类逻辑，而不使用父类表达式的情况下使用
+		 * @param {Context} context - 相关的语法标签上下文
+		 * @param {Statement} statement - 当前语句
+		 */
+		getBoundExpression: function(context){
+			return new UnaryExpression(context);
+		},
+		/**
+		 * 获取绑定的语句，一般在子类使用父类逻辑，而不使用父类语句的情况下使用
+		 * @param {Statements} statements - 该语句将要所处的语句块
+		 */
+		getBoundStatement: function(statements){
+			return new UnaryStatement(statements);
+		},
+		/**
 		 * 验证所提供的标签是否为表达式分隔符标签
 		 * @param {Context} context - 所需验证的标签上下文
 		 * @param {Expression} operand - 该一元表达式所操作的对象
@@ -2705,12 +2720,7 @@ this.UnaryTag = function(UnaryExpression, UnaryStatement, ExpressionSeparatorTag
 		 * @param {Statement} statement - 当前语句
 		 * @param {Statements} statements - 当前语句块
 		 */
-		visitor: function(parser, context, statement, statements){
-			// 设置临时表达式
-			statement.expression = new UnaryExpression(context);
-			// 设置当前语句
-			statements.statement = new UnaryStatement(statements);
-		}
+		visitor: commonVisitor
 	});
 	
 	return UnaryTag;
@@ -3148,6 +3158,13 @@ this.UnaryAssignmentTag = function(UnaryTag, UnaryExpression, UnaryAssignmentSta
 
 	UnaryAssignmentTag.props({
 		/**
+		 * 获取绑定的语句，一般在子类使用父类逻辑，而不使用父类语句的情况下使用
+		 * @param {Statements} statements - 该语句将要所处的语句块
+		 */
+		getBoundStatement: function(statements){
+			return new UnaryAssignmentStatement(statements);
+		},
+		/**
 		 * 判断该一元表达式在当前表达式中，是否能使用
 		 * @param {SyntaxParser} parser - 语法解析器
 		 * @param {Expression} expression - 当前表达式
@@ -3172,20 +3189,7 @@ this.UnaryAssignmentTag = function(UnaryTag, UnaryExpression, UnaryAssignmentSta
 
 			return false;
 		},
-		order: ECMAScriptOrders.UNARY_ASSIGNMENT,
-		/**
-		 * 标签访问器
-		 * @param {SyntaxParser} parser - 语法解析器
-		 * @param {Context} context - 标签上下文
-		 * @param {Statement} statement - 当前语句
-		 * @param {Statements} statements - 当前语句块
-		 */
-		visitor: function(parser, context, statement, statements){
-			// 设置当前表达式
-			statement.expression = new UnaryExpression(context);
-			// 设置当前语句
-			statements.statement = new UnaryAssignmentStatement(statements);
-		}
+		order: ECMAScriptOrders.UNARY_ASSIGNMENT
 	});
 
 	return UnaryAssignmentTag;
@@ -3589,7 +3593,7 @@ this.BinaryTag = function(ExpressionSeparatorTag, BinaryExpression, BinaryStatem
 );
 
 
-// 特殊的二元标签
+// 二元标签子类
 !function(BinaryTag, AssignableExpression, IdentifierExpression, VariableDeclarationTag){
 
 this.AssignmentTag = function(BinaryExpression, isSeparator, assignable){
@@ -4689,15 +4693,15 @@ this.CallExpression = function(AccessorExpression, BracketAccessorExpression, Un
 		 */
 		spreadTo: function(contentBuilder){
 			// 追加 apply
-			contentBuilder.appendString("Function.apply.call(");
+			contentBuilder.appendString("(Function.apply.call(");
 			// 提取操作对象
 			this.operand.extractTo(contentBuilder);
-			// 追加 apply 方法的参数
+			// 追加参数
 			contentBuilder.appendString("," + this.boundThis + ",Rexjs.SpreadItem.combine");
 			// 调用父类方法
 			extractTo.call(this, contentBuilder);
-			// 追加 apply 方法的结束小括号
-			contentBuilder.appendString(")");
+			// 追加结束小括号
+			contentBuilder.appendString("))");
 		}
 	});
 
@@ -19754,7 +19758,7 @@ this.SuperTag = function(LiteralTag, SuperExpression, SuperStatement){
 		 * @param {Statement} statement - 当前语句
 		 * @param {Statements} statements - 当前语句块
 		 */
-		visitor: function(parser, context, statement, statements){
+		visitor: function(parser, context, statement, statements){debugger
 			var closure = statements.closure;
 
 			// 如果存在闭包
@@ -20285,7 +20289,7 @@ closeSuperBracketAccessorTag = new this.CloseSuperBracketAccessorTag();
 
 
 // 父类属性赋值相关
-!function(BinaryExpression, ShorthandAssignmentTag, extractTo){
+!function(BinaryExpression, extractTo){
 
 this.SuperPropertyBasicAssignmentExpression = function(){
 	/**
@@ -20368,14 +20372,15 @@ this.SuperPropertyShorthandAssignmentExpression = function(extractTo, compile){
 	function(contentBuilder, left, right, variable, content){
 		var propertyOwner = left.object.propertyOwner, closureReference = left.closureReference;
 
-		// 追加设置 父类属性方法的起始代码 及 属性变量名
-		contentBuilder.appendString("(Rexjs.Super.setProperty(" + propertyOwner);
-		// 追加当前环境的 this 指向
-		contentBuilder.appendString("," + closureReference + "," + variable + "=");
+		// 追加设置 父类属性方法的起始代码、属性变量名 及 当前环境的 this 指向
+		contentBuilder.appendString(
+			"(Rexjs.Super.setProperty(" + propertyOwner + "," + closureReference + "," + variable + "="
+		);
+
 		// 编译属性名
 		left.compilePropertyTo(contentBuilder);
 
-		// 追加参数分隔符
+		// 追加获取属性值代码
 		contentBuilder.appendString(
 			",Rexjs.Super.getProperty(" +
 				propertyOwner + "," +
@@ -20420,7 +20425,7 @@ this.SuperPropertyBasicAssignmentTag = function(BasicAssignmentTag, SuperPropert
 	this.SuperPropertyBasicAssignmentExpression
 );
 
-this.SuperPropertyShorthandAssignmentTag = function(SuperPropertyShorthandAssignmentExpression, visitor){
+this.SuperPropertyShorthandAssignmentTag = function(ShorthandAssignmentTag, SuperPropertyShorthandAssignmentExpression){
 	/**
 	 * 父类属性简写赋值标签
 	 * @param {Number} _type - 标签类型
@@ -20434,45 +20439,37 @@ this.SuperPropertyShorthandAssignmentTag = function(SuperPropertyShorthandAssign
 		/**
 		 * 获取绑定的表达式，一般在子类使用父类逻辑，而不使用父类表达式的情况下使用
 		 * @param {Context} context - 相关的语法标签上下文
-		 */
-		getBoundExpression: function(context){
-			return new SuperPropertyShorthandAssignmentExpression(context);
-		},
-		order: ECMAScriptOrders.SUPER_PROPERTY_SHORTHAND_ASSIGNMENT,
-		/**
-		 * 标签访问器
-		 * @param {SyntaxParser} parser - 语法解析器
-		 * @param {Context} context - 标签上下文
 		 * @param {Statement} statement - 当前语句
-		 * @param {Statements} statements - 当前语句块
 		 */
-		visitor: function(parser, context, statement, statements){
-			visitor.call(this, parser, context, statement, statements);
+		getBoundExpression: function(context, statement){
+			var expression = new SuperPropertyShorthandAssignmentExpression(context);
 
-			// 如果需要编译
+			// 如果需要解析
 			if(config.es6Base){
 				// 生成并记录临时变量名
-				statement.expression.variable = statements.collections.generate();
+				expression.variable = statement.statements.collections.generate();
 			}
-		}
+
+			return expression;
+		},
+		order: ECMAScriptOrders.SUPER_PROPERTY_SHORTHAND_ASSIGNMENT
 	});
 	
 	return SuperPropertyShorthandAssignmentTag;
 }(
-	this.SuperPropertyShorthandAssignmentExpression,
-	ShorthandAssignmentTag.prototype.visitor
+	this.ShorthandAssignmentTag,
+	this.SuperPropertyShorthandAssignmentExpression
 );
 
 }.call(
 	this,
 	this.BinaryExpression,
-	this.ShorthandAssignmentTag,
 	this.BinaryExpression.prototype.extractTo
 );
 
 
 // 父类属性一元赋值标签子类相关
-!function(UnaryExpression, PostfixUnaryExpression, SUPER_PROPERTY_POSTFIX_UNARY_ASSIGNMENT){
+!function(UnaryExpression, PostfixUnaryExpression, SUPER_PROPERTY_POSTFIX_UNARY_ASSIGNMENT, getBoundPostfixExpression){
 
 this.SuperPropertyPrefixUnaryAssignmentExpression = function(extractTo){
 	/**
@@ -20508,7 +20505,7 @@ this.SuperPropertyPrefixUnaryAssignmentExpression = function(extractTo){
 	UnaryExpression.prototype.extractTo
 );
 
-this.SuperPropertyPostfixUnaryAssignmentExpression = function(extractTo){
+this.SuperPropertyPostfixUnaryAssignmentExpression = function(extractTo, compile){
 	/**
 	 * 父类属性后置一元赋值表达式
 	 * @param {Context} context - 标签上下文
@@ -20525,25 +20522,76 @@ this.SuperPropertyPostfixUnaryAssignmentExpression = function(extractTo){
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
 		 */
 		extractTo: function(contentBuilder){
-			if(config.es6Base){debugger
-				// 提取操作对象内容
-				this.operand.extractTo(contentBuilder);
-				// 提取一元操作符的内容
-				contentBuilder.appendContext(this.context);
+			// 如果需要编译
+			if(config.es6Base){
+				// 编译表达式
+				compile(contentBuilder, this.operand, this.context, this.nameVariable, this.valueVariable);
 				return;
 			}
 
 			// 调用父类方法
 			extractTo.call(this, contentBuilder);
-		}
+		},
+		nameVariable: "",
+		valueVariable: ""
 	});
 	
 	return SuperPropertyPostfixUnaryAssignmentExpression;
 }(
-	PostfixUnaryExpression.prototype.extractTo
+	PostfixUnaryExpression.prototype.extractTo,
+	// compile
+	function(contentBuilder, operand, context, nameVariable, valueVariable){
+		var propertyOwner = operand.object.propertyOwner, closureReference = operand.closureReference;
+
+		// 追加设置 父类属性方法的起始代码 及 属性变量名
+		contentBuilder.appendString("(Rexjs.Super.setProperty(" + propertyOwner);
+		// 追加当前环境的 this 指向
+		contentBuilder.appendString("," + closureReference + "," + nameVariable + "=");
+		// 编译属性名
+		operand.compilePropertyTo(contentBuilder);
+
+		// 追加参数分隔符
+		contentBuilder.appendString(
+			",(" + valueVariable + "=Rexjs.Super.getProperty(" +
+				propertyOwner + "," +
+				closureReference + "," +
+				nameVariable +
+			"))" +
+			context.content[0] +
+			"1"
+		);
+
+		// 追加一系列结束小括号
+		contentBuilder.appendString(")," + valueVariable + ")");
+	}
 );
 
-this.SuperPropertyPostfixIncrementTag = function(PostfixIncrementTag, SuperPropertyPostfixUnaryAssignmentExpression){
+getBoundPostfixExpression = function(SuperPropertyPostfixUnaryAssignmentExpression){
+	/**
+	 * 获取绑定的表达式，一般在子类使用父类逻辑，而不使用父类表达式的情况下使用
+	 * @param {Context} context - 相关的语法标签上下文
+	 * @param {Statement} statement - 当前语句
+	 */
+	return function(context, statement){
+		var expression = new SuperPropertyPostfixUnaryAssignmentExpression(context, statement.expression);
+
+		// 如果需要解析
+		if(config.es6Base){
+			var collections = statement.statements.collections;
+			
+			// 生成并记录属性名临时变量名
+			expression.nameVariable = collections.generate();
+			// 生成并记录属性值临时变量名
+			expression.valueVariable = collections.generate();
+		}
+
+		return expression;
+	};
+}(
+	this.SuperPropertyPostfixUnaryAssignmentExpression
+);
+
+this.SuperPropertyPostfixIncrementTag = function(PostfixIncrementTag){
 	/**
 	 * 父类属性后置递增标签
 	 * @param {Number} _type - 标签类型
@@ -20554,31 +20602,42 @@ this.SuperPropertyPostfixIncrementTag = function(PostfixIncrementTag, SuperPrope
 	SuperPropertyPostfixIncrementTag = new Rexjs(SuperPropertyPostfixIncrementTag, PostfixIncrementTag);
 	
 	SuperPropertyPostfixIncrementTag.props({
-		order: SUPER_PROPERTY_POSTFIX_UNARY_ASSIGNMENT,
-		/**
-		 * 标签访问器
-		 * @param {SyntaxParser} parser - 语法解析器
-		 * @param {Context} context - 标签上下文
-		 * @param {Statement} statement - 当前语句
-		 * @param {Statements} statements - 当前语句块
-		 */
-		visitor: function(parser, context, statement, statements){
-			// 设置当前表达式
-			statement.expression = new SuperPropertyPostfixUnaryAssignmentExpression(context, statement.expression);
-		}
+		getBoundExpression: getBoundPostfixExpression,
+		order: SUPER_PROPERTY_POSTFIX_UNARY_ASSIGNMENT
 	});
 	
 	return SuperPropertyPostfixIncrementTag;
 }(
-	this.PostfixIncrementTag,
-	this.SuperPropertyPostfixUnaryAssignmentExpression
+	this.PostfixIncrementTag
+);
+
+this.SuperPropertyPostfixDecrementTag = function(PostfixDecrementTag){
+	/**
+	 * 父类属性后置递减标签
+	 * @param {Number} _type - 标签类型
+	 */
+	function SuperPropertyPostfixDecrementTag(_type){
+		PostfixDecrementTag.call(this, _type);
+	};
+	SuperPropertyPostfixDecrementTag = new Rexjs(SuperPropertyPostfixDecrementTag, PostfixDecrementTag);
+	
+	SuperPropertyPostfixDecrementTag.props({
+		getBoundExpression: getBoundPostfixExpression,
+		order: SUPER_PROPERTY_POSTFIX_UNARY_ASSIGNMENT
+	});
+	
+	return SuperPropertyPostfixDecrementTag;
+}(
+	this.PostfixDecrementTag
 );
 
 }.call(
 	this,
 	this.UnaryExpression,
 	this.PostfixUnaryExpression,
-	ECMAScriptOrders.SUPER_PROPERTY_POSTFIX_UNARY_ASSIGNMENT
+	ECMAScriptOrders.SUPER_PROPERTY_POSTFIX_UNARY_ASSIGNMENT,
+	// getBoundPostfixExpression
+	null
 );
 
 
@@ -24395,7 +24454,8 @@ this.SuperAccessorContextTags = function(list){
 		this.OpenSuperMethodCallTag,
 		this.SuperPropertyBasicAssignmentTag,
 		this.SuperPropertyShorthandAssignmentTag,
-		this.SuperPropertyPostfixIncrementTag
+		this.SuperPropertyPostfixIncrementTag,
+		this.SuperPropertyPostfixDecrementTag
 	]
 );
 
