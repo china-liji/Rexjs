@@ -1,5 +1,5 @@
 // 父类属性赋值相关
-!function(BinaryExpression, extractTo){
+!function(UnaryExpression, PostfixUnaryExpression, BinaryExpression, SUPER_PROPERTY_POSTFIX_UNARY_ASSIGNMENT, extractTo, getBoundPostfixExpression, compileHead){
 
 this.SuperPropertyBasicAssignmentExpression = function(){
 	/**
@@ -80,23 +80,10 @@ this.SuperPropertyShorthandAssignmentExpression = function(extractTo, compile){
 	BinaryExpression.prototype.extractTo,
 	// compile
 	function(contentBuilder, left, right, variable, content){
-		var propertyOwner = left.object.propertyOwner, closureReference = left.closureReference;
-
-		// 追加设置 父类属性方法的起始代码、属性变量名 及 当前环境的 this 指向
-		contentBuilder.appendString(
-			"(Rexjs.Super.setProperty(" + propertyOwner + "," + closureReference + "," + variable + "="
-		);
-
-		// 编译属性名
-		left.compilePropertyTo(contentBuilder);
-
 		// 追加获取属性值代码
 		contentBuilder.appendString(
-			",Rexjs.Super.getProperty(" +
-				propertyOwner + "," +
-				closureReference + "," +
-				variable +
-			")" +
+			// 编译头部
+			compileHead(contentBuilder, left, variable) +
 			content.substring(0, content.length - 1) +
 			"("
 		);
@@ -106,6 +93,114 @@ this.SuperPropertyShorthandAssignmentExpression = function(extractTo, compile){
 		// 追加一系列结束小括号
 		contentBuilder.appendString(")))");
 	}
+);
+
+this.SuperPropertyPrefixUnaryAssignmentExpression = function(extractTo){
+	/**
+	 * 父类属性前置一元赋值表达式
+	 * @param {Context} context - 标签上下文
+	 */
+	function SuperPropertyPrefixUnaryAssignmentExpression(context){
+		UnaryExpression.call(this, context);
+	};
+	SuperPropertyPrefixUnaryAssignmentExpression = new Rexjs(SuperPropertyPrefixUnaryAssignmentExpression, UnaryExpression);
+	
+	SuperPropertyPrefixUnaryAssignmentExpression.props({
+		/**
+		 * 提取表达式文本内容
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 */
+		extractTo: function(contentBuilder){
+			if(config.es6Base){
+				// 提取操作对象内容
+				this.operand.extractTo(contentBuilder);
+				// 提取一元操作符的内容
+				contentBuilder.appendContext(this.context);
+				return;
+			}
+
+			// 调用父类方法
+			extractTo.call(this, contentBuilder);
+		}
+	});
+	
+	return SuperPropertyPrefixUnaryAssignmentExpression;
+}(
+	UnaryExpression.prototype.extractTo
+);
+
+this.SuperPropertyPostfixUnaryAssignmentExpression = function(extractTo, compile){
+	/**
+	 * 父类属性后置一元赋值表达式
+	 * @param {Context} context - 标签上下文
+	 * @param {AssignableExpression} operand - 操作对象表达式
+	 */
+	function SuperPropertyPostfixUnaryAssignmentExpression(context, operand){
+		PostfixUnaryExpression.call(this, context, operand);
+	};
+	SuperPropertyPostfixUnaryAssignmentExpression = new Rexjs(SuperPropertyPostfixUnaryAssignmentExpression, PostfixUnaryExpression);
+	
+	SuperPropertyPostfixUnaryAssignmentExpression.props({
+		/**
+		 * 提取表达式文本内容
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 */
+		extractTo: function(contentBuilder){
+			// 如果需要编译
+			if(config.es6Base){
+				// 编译表达式
+				compile(contentBuilder, this.operand, this.nameVariable, this.valueVariable, this.context.content);
+				return;
+			}
+
+			// 调用父类方法
+			extractTo.call(this, contentBuilder);
+		},
+		nameVariable: "",
+		valueVariable: ""
+	});
+	
+	return SuperPropertyPostfixUnaryAssignmentExpression;
+}(
+	PostfixUnaryExpression.prototype.extractTo,
+	// compile
+	function(contentBuilder, operand, nameVariable, valueVariable, content){
+		// 追加获取属性值代码
+		contentBuilder.appendString(
+			"(" + valueVariable + "=" +
+			// 编译头部
+			compileHead(contentBuilder, operand, nameVariable) +
+			")" + content[0] + "1"
+		);
+
+		// 追加一系列结束小括号
+		contentBuilder.appendString(")," + valueVariable + ")");
+	}
+);
+
+getBoundPostfixExpression = function(SuperPropertyPostfixUnaryAssignmentExpression){
+	/**
+	 * 获取绑定的表达式，一般在子类使用父类逻辑，而不使用父类表达式的情况下使用
+	 * @param {Context} context - 相关的语法标签上下文
+	 * @param {Statement} statement - 当前语句
+	 */
+	return function(context, statement){
+		var expression = new SuperPropertyPostfixUnaryAssignmentExpression(context, statement.expression);
+
+		// 如果需要解析
+		if(config.es6Base){
+			var collections = statement.statements.collections;
+			
+			// 生成并记录属性名临时变量名
+			expression.nameVariable = collections.generate();
+			// 生成并记录属性值临时变量名
+			expression.valueVariable = collections.generate();
+		}
+
+		return expression;
+	};
+}(
+	this.SuperPropertyPostfixUnaryAssignmentExpression
 );
 
 this.SuperPropertyBasicAssignmentTag = function(BasicAssignmentTag, SuperPropertyBasicAssignmentExpression){
@@ -171,8 +266,75 @@ this.SuperPropertyShorthandAssignmentTag = function(ShorthandAssignmentTag, Supe
 	this.SuperPropertyShorthandAssignmentExpression
 );
 
+this.SuperPropertyPostfixIncrementTag = function(PostfixIncrementTag){
+	/**
+	 * 父类属性后置递增标签
+	 * @param {Number} _type - 标签类型
+	 */
+	function SuperPropertyPostfixIncrementTag(_type){
+		PostfixIncrementTag.call(this, _type);
+	};
+	SuperPropertyPostfixIncrementTag = new Rexjs(SuperPropertyPostfixIncrementTag, PostfixIncrementTag);
+	
+	SuperPropertyPostfixIncrementTag.props({
+		getBoundExpression: getBoundPostfixExpression,
+		order: SUPER_PROPERTY_POSTFIX_UNARY_ASSIGNMENT
+	});
+	
+	return SuperPropertyPostfixIncrementTag;
+}(
+	this.PostfixIncrementTag
+);
+
+this.SuperPropertyPostfixDecrementTag = function(PostfixDecrementTag){
+	/**
+	 * 父类属性后置递减标签
+	 * @param {Number} _type - 标签类型
+	 */
+	function SuperPropertyPostfixDecrementTag(_type){
+		PostfixDecrementTag.call(this, _type);
+	};
+	SuperPropertyPostfixDecrementTag = new Rexjs(SuperPropertyPostfixDecrementTag, PostfixDecrementTag);
+	
+	SuperPropertyPostfixDecrementTag.props({
+		getBoundExpression: getBoundPostfixExpression,
+		order: SUPER_PROPERTY_POSTFIX_UNARY_ASSIGNMENT
+	});
+	
+	return SuperPropertyPostfixDecrementTag;
+}(
+	this.PostfixDecrementTag
+);
+
 }.call(
 	this,
+	this.UnaryExpression,
+	this.PostfixUnaryExpression,
 	this.BinaryExpression,
-	this.BinaryExpression.prototype.extractTo
+	ECMAScriptOrders.SUPER_PROPERTY_POSTFIX_UNARY_ASSIGNMENT,
+	this.BinaryExpression.prototype.extractTo,
+	// getBoundPostfixExpression
+	null,
+	// compileHead
+	function(contentBuilder, operand, variable){
+		var propertyOwner = operand.object.propertyOwner, closureReference = operand.closureReference;
+
+		// 追加设置 父类属性方法的起始代码、属性变量名 及 当前环境的 this 指向
+		contentBuilder.appendString(
+			"(Rexjs.Super.setProperty(" + propertyOwner + "," + closureReference + "," + variable + "="
+		);
+
+		// 编译属性名
+		operand.compilePropertyTo(contentBuilder);
+		// 追加分号
+		contentBuilder.appendString(",");
+
+		return (
+			"Rexjs.Super.getProperty(" +
+				propertyOwner + "," +
+				closureReference + "," +
+				variable +
+			")"
+		);
+	}
 );

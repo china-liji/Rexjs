@@ -82,7 +82,7 @@ this.SuperStatement = function(){
 	return SuperStatement;
 }();
 
-this.SuperTag = function(LiteralTag, SuperExpression, SuperStatement){
+this.SuperTag = function(LiteralTag, SuperExpression, SuperPropertyPrefixUnaryAssignmentExpression, SuperStatement, UnaryAssignmentStatement){
 	/**
 	 * super 关键字标签
 	 * @param {Number} _type - 标签类型
@@ -118,6 +118,14 @@ this.SuperTag = function(LiteralTag, SuperExpression, SuperStatement){
 
 				// 如果需要编译
 				if(config.es6Base){
+					// 如果是一元赋值语句
+					if(statement instanceof UnaryAssignmentStatement){
+						var target = statement.target;
+
+						// 设置 target 表达式
+						target.expression = new SuperPropertyPrefixUnaryAssignmentExpression(target.expression.context);
+					}
+
 					// 记录拥有者变量名
 					superExpression.propertyOwner = propertyStatement.expression.requestVariableOf(
 						targetStatements,
@@ -144,7 +152,9 @@ this.SuperTag = function(LiteralTag, SuperExpression, SuperStatement){
 }(
 	this.LiteralTag,
 	this.SuperExpression,
-	this.SuperStatement
+	this.SuperPropertyPrefixUnaryAssignmentExpression,
+	this.SuperStatement,
+	this.UnaryAssignmentStatement
 );
 
 }.call(
