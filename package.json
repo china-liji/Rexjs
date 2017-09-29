@@ -1,11 +1,11 @@
 {
 	"name": "rexjs",
 	"version": "1.0.1",
-	"description": "这是个 JavaScript 语言解析器，用于解析 ES6 语法",
+	"description": "Rexjs - 是一款又快、又小、性价比极高的 JavaScript(ES6+) 语法的编译器！",
 	"main": "node/index.js",
 	"repository": {
 		"type": "git",
-		"url": "https://git.oschina.net/jQun/Rexjs.git"
+		"url": "https://gitee.com/jQun/Rexjs"
 	},
 	"keywords": [
 		"rex",

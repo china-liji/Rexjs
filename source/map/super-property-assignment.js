@@ -109,7 +109,7 @@ this.SuperPropertyUnaryAssignmentExpression = function(extractTo){
 		 */
 		extractTo: function(contentBuilder){
 			// 如果需要编译
-			if(config.es6Base){debugger
+			if(config.es6Base){
 				// 追加获取属性值代码
 				contentBuilder.appendString(
 					// 编译头部

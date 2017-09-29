@@ -1,19 +1,24 @@
-var a = {
-	a: 1
+// 无构造函数
+class C extends Rexjs.List {
+	constructor(){
+		super();
+
+		this.z = 45;
+	};
+
+	static get x(){
+		return super.x++ += 100;
+	};
+
+	get x(){
+		return super.x;
+	};
+
+	set x(value){
+		this.x_b = value;
+	};
+
+	get y(){
+		return 2;
+	};
 };
-
-var b = {
-	b(){
-		super.a++
-	}
-}
-
-Object.setPrototypeOf(b,a);
-
-b.b();
-
-debugger
-
-
-// withSpread
-// 11400 new \w*statement\(

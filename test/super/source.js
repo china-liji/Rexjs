@@ -71,7 +71,7 @@ if(new X5() !== obj){
 }
 
 if(obj.value !== 16.8){
-	throw "123";
+	throw "obj 的 value 属性值不对";
 }
 
 if(X5.color !== "red"){
@@ -207,15 +207,15 @@ var a = {
 }
 
 var b = {
-	y: 2,
-	get x(){ return super.x },
-	set x(value){ this.x_b = value; },
 	postfixIncrementSuper(){
-		return super.value++;
+		return super.value++ + 100;
 	},
 	prefixDecrementSuper(){
 		return --super.value;
-	}
+	},
+	get x(){ return super.x },
+	set x(value){ this.x_b = value; },
+	y: 2
 }
 
 Object.setPrototypeOf(b,a);
@@ -229,17 +229,17 @@ var c = {
 }
 
 var d = {
-	y: 100,
 	getX(){
 		return super.x += 5
 	},
-	set x(value){ this.x_d = value; },
 	getY(){
 		return super.y = 66
 	},
 	getZ(){
 		return super.y
-	}
+	},
+	set x(value){ this.x_d = value; },
+	y: 100
 }
 
 Object.setPrototypeOf(d, c)
@@ -248,7 +248,7 @@ if(b.x !== 4){
 	throw "父级属性访问器不正确：可能没有绑定调用 super 时所处的 this";
 }
 
-if(b.postfixIncrementSuper() !== 88){
+if(b.postfixIncrementSuper() !== 188){
 	throw "父类属性后置递增返回值错误";
 }
 
