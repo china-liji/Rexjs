@@ -4,7 +4,7 @@ var a = {
 
 var b = {
 	b(){
-		--super.a
+		super.a++
 	}
 }
 

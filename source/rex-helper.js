@@ -354,7 +354,7 @@ this.Super = function(getPropertyDescriptor){
 		/**
 		 * 调用父类的方法
 		 * @param {Rexjs, Object} classInstance - 类的实例
-		 *  @param {Function} method - 父类的方法
+		 * @param {Function} method - 父类的方法
 		 * @param {Array} args - 参数列表
 		 */
 		execMethod: function(classInstance, method, args){

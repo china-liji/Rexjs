@@ -1,5 +1,5 @@
 // 父类属性赋值相关
-!function(UnaryExpression, PostfixUnaryExpression, BinaryExpression, SUPER_PROPERTY_POSTFIX_UNARY_ASSIGNMENT, extractTo, getBoundPostfixExpression, compileHead){
+!function(UnaryExpression, PostfixUnaryExpression, BinaryExpression, UnaryAssignmentStatement, SUPER_PROPERTY_POSTFIX_UNARY_ASSIGNMENT, extractTo, getBoundPostfixExpression, compileHead){
 
 this.SuperPropertyBasicAssignmentExpression = function(){
 	/**
@@ -46,7 +46,7 @@ this.SuperPropertyBasicAssignmentExpression = function(){
 	return SuperPropertyBasicAssignmentExpression;
 }();
 
-this.SuperPropertyShorthandAssignmentExpression = function(extractTo, compile){
+this.SuperPropertyShorthandAssignmentExpression = function(extractTo){
 	/**
 	 * 父类属性简写赋值表达式
 	 * @param {Context} context - 语法标签上下文
@@ -64,8 +64,20 @@ this.SuperPropertyShorthandAssignmentExpression = function(extractTo, compile){
 		extractTo: function(contentBuilder){
 			// 如果需要编译
 			if(config.es6Base){
-				// 编译表达式
-				compile(contentBuilder, this.left, this.right, this.variable, this.context.content);
+				var content = this.context.content;
+
+				// 追加获取属性值代码
+				contentBuilder.appendString(
+					// 编译头部
+					compileHead(contentBuilder, this.left, this.variable) +
+					content.substring(0, content.length - 1) +
+					"("
+				);
+
+				// 追加属性值
+				this.right.extractTo(contentBuilder);
+				// 追加一系列结束小括号
+				contentBuilder.appendString(")))");
 				return;
 			}
 
@@ -77,59 +89,52 @@ this.SuperPropertyShorthandAssignmentExpression = function(extractTo, compile){
 	
 	return SuperPropertyShorthandAssignmentExpression;
 }(
-	BinaryExpression.prototype.extractTo,
-	// compile
-	function(contentBuilder, left, right, variable, content){
-		// 追加获取属性值代码
-		contentBuilder.appendString(
-			// 编译头部
-			compileHead(contentBuilder, left, variable) +
-			content.substring(0, content.length - 1) +
-			"("
-		);
-
-		// 追加属性值
-		right.extractTo(contentBuilder);
-		// 追加一系列结束小括号
-		contentBuilder.appendString(")))");
-	}
+	BinaryExpression.prototype.extractTo
 );
 
-this.SuperPropertyPrefixUnaryAssignmentExpression = function(extractTo){
+this.SuperPropertyUnaryAssignmentExpression = function(extractTo){
 	/**
 	 * 父类属性前置一元赋值表达式
 	 * @param {Context} context - 标签上下文
 	 */
-	function SuperPropertyPrefixUnaryAssignmentExpression(context){
+	function SuperPropertyUnaryAssignmentExpression(context){
 		UnaryExpression.call(this, context);
 	};
-	SuperPropertyPrefixUnaryAssignmentExpression = new Rexjs(SuperPropertyPrefixUnaryAssignmentExpression, UnaryExpression);
+	SuperPropertyUnaryAssignmentExpression = new Rexjs(SuperPropertyUnaryAssignmentExpression, UnaryExpression);
 	
-	SuperPropertyPrefixUnaryAssignmentExpression.props({
+	SuperPropertyUnaryAssignmentExpression.props({
 		/**
 		 * 提取表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
 		 */
 		extractTo: function(contentBuilder){
-			if(config.es6Base){
-				// 提取操作对象内容
-				this.operand.extractTo(contentBuilder);
-				// 提取一元操作符的内容
-				contentBuilder.appendContext(this.context);
+			// 如果需要编译
+			if(config.es6Base){debugger
+				// 追加获取属性值代码
+				contentBuilder.appendString(
+					// 编译头部
+					compileHead(contentBuilder, this.operand, this.variable) +
+					this.context.content[0] +
+					"1"
+				);
+
+				// 追加一系列结束小括号
+				contentBuilder.appendString("))");
 				return;
 			}
 
 			// 调用父类方法
 			extractTo.call(this, contentBuilder);
-		}
+		},
+		variable: ""
 	});
 	
-	return SuperPropertyPrefixUnaryAssignmentExpression;
+	return SuperPropertyUnaryAssignmentExpression;
 }(
 	UnaryExpression.prototype.extractTo
 );
 
-this.SuperPropertyPostfixUnaryAssignmentExpression = function(extractTo, compile){
+this.SuperPropertyPostfixUnaryAssignmentExpression = function(extractTo){
 	/**
 	 * 父类属性后置一元赋值表达式
 	 * @param {Context} context - 标签上下文
@@ -148,8 +153,20 @@ this.SuperPropertyPostfixUnaryAssignmentExpression = function(extractTo, compile
 		extractTo: function(contentBuilder){
 			// 如果需要编译
 			if(config.es6Base){
-				// 编译表达式
-				compile(contentBuilder, this.operand, this.nameVariable, this.valueVariable, this.context.content);
+				var valueVariable = this.valueVariable;
+
+				// 追加获取属性值代码
+				contentBuilder.appendString(
+					"(" + valueVariable + "=" +
+						// 编译头部
+						compileHead(contentBuilder, this.operand, this.nameVariable) +
+					")" +
+					this.context.content[0] +
+					"1"
+				);
+
+				// 追加一系列结束小括号
+				contentBuilder.appendString(")," + valueVariable + ")");
 				return;
 			}
 
@@ -162,20 +179,51 @@ this.SuperPropertyPostfixUnaryAssignmentExpression = function(extractTo, compile
 	
 	return SuperPropertyPostfixUnaryAssignmentExpression;
 }(
-	PostfixUnaryExpression.prototype.extractTo,
-	// compile
-	function(contentBuilder, operand, nameVariable, valueVariable, content){
-		// 追加获取属性值代码
-		contentBuilder.appendString(
-			"(" + valueVariable + "=" +
-			// 编译头部
-			compileHead(contentBuilder, operand, nameVariable) +
-			")" + content[0] + "1"
-		);
+	PostfixUnaryExpression.prototype.extractTo
+);
 
-		// 追加一系列结束小括号
-		contentBuilder.appendString(")," + valueVariable + ")");
-	}
+this.SuperPropertyUnaryAssignmentStatement = function(SuperPropertyUnaryAssignmentExpression, SuperDotAccessorExpression, SuperBracketAccessorExpression, out){
+	/**
+	 * 父类属性一元赋值语句
+	 * @param {Statements} statements - 该语句将要所处的语句块
+	 */
+	function SuperPropertyUnaryAssignmentStatement(statements){
+		UnaryAssignmentStatement.call(this, statements);
+	};
+	SuperPropertyUnaryAssignmentStatement = new Rexjs(SuperPropertyUnaryAssignmentStatement, UnaryAssignmentStatement);
+
+	SuperPropertyUnaryAssignmentStatement.props({
+		/**
+		 * 跳出该语句
+		 */
+		out: function(){
+			var expression = this.expression;
+
+			// 如果表达式父类属性访问器表达式
+			if(expression instanceof SuperDotAccessorExpression || expression instanceof SuperBracketAccessorExpression){
+				var target = this.target, superPropertyUnaryAssignmentExpression = new SuperPropertyUnaryAssignmentExpression(target.expression.context);
+
+				// 如果需要编译
+				if(config.es6Base){
+					// 生成并记录临时变量名
+					superPropertyUnaryAssignmentExpression.variable = this.statements.collections.generate();
+				}
+
+				// 设置 target 的表达式
+				target.expression = superPropertyUnaryAssignmentExpression;
+			}
+
+			// 调用父类方法
+			return out.call(this);
+		}
+	});
+
+	return SuperPropertyUnaryAssignmentStatement;
+}(
+	this.SuperPropertyUnaryAssignmentExpression,
+	this.SuperDotAccessorExpression,
+	this.SuperBracketAccessorExpression,
+	UnaryAssignmentStatement.prototype.out
 );
 
 getBoundPostfixExpression = function(SuperPropertyPostfixUnaryAssignmentExpression){
@@ -311,6 +359,7 @@ this.SuperPropertyPostfixDecrementTag = function(PostfixDecrementTag){
 	this.UnaryExpression,
 	this.PostfixUnaryExpression,
 	this.BinaryExpression,
+	this.UnaryAssignmentStatement,
 	ECMAScriptOrders.SUPER_PROPERTY_POSTFIX_UNARY_ASSIGNMENT,
 	this.BinaryExpression.prototype.extractTo,
 	// getBoundPostfixExpression

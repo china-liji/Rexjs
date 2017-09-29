@@ -212,6 +212,9 @@ var b = {
 	set x(value){ this.x_b = value; },
 	postfixIncrementSuper(){
 		return super.value++;
+	},
+	prefixDecrementSuper(){
+		return --super.value;
 	}
 }
 
@@ -246,15 +249,27 @@ if(b.x !== 4){
 }
 
 if(b.postfixIncrementSuper() !== 88){
-	throw "父类属性递增返回值错误";
+	throw "父类属性后置递增返回值错误";
 }
 
 if(b.value !== 89){
-	throw "非访问器形式的父类属性设置，结果应设置在子类上";
+	throw "非访问器形式的父类后置一元属性设置，结果应设置在子类上";
 }
 
 if(a.value !== 88){
-	throw "非访问器形式的父类属性设置，结果不应该置在父类上";
+	throw "非访问器形式的父类后置一元属性设置，结果不应该置在父类上";
+}
+
+if(b.prefixDecrementSuper() !== 87){
+	throw "父类属性前置递增返回值错误";
+}
+
+if(b.value !== 87){
+	throw "非访问器形式的父类前置一元属性设置，结果应设置在子类上";
+}
+
+if(a.value !== 88){
+	throw "非访问器形式的父类前置一元属性设置，结果不应该置在父类上";
 }
 
 if(d.getX.call(b) !== 52){

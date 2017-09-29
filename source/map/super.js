@@ -82,7 +82,7 @@ this.SuperStatement = function(){
 	return SuperStatement;
 }();
 
-this.SuperTag = function(LiteralTag, SuperExpression, SuperPropertyPrefixUnaryAssignmentExpression, SuperStatement, UnaryAssignmentStatement){
+this.SuperTag = function(LiteralTag, SuperExpression, SuperStatement, UnaryAssignmentStatement, SuperPropertyUnaryAssignmentStatement){
 	/**
 	 * super 关键字标签
 	 * @param {Number} _type - 标签类型
@@ -112,20 +112,20 @@ this.SuperTag = function(LiteralTag, SuperExpression, SuperPropertyPrefixUnaryAs
 		visitor: function(parser, context, statement, statements){
 			var closure = statements.closure;
 
+			// 如果是一元赋值语句
+			if(statement instanceof UnaryAssignmentStatement){
+				// 跳出语句：这里不能用 statement.out()，因为 statement.expression 为 null，会报错
+				statements.statement = statement.target;
+				// 设置当前的一元语句
+				statements.statement = statement = new SuperPropertyUnaryAssignmentStatement(statements);
+			}
+
 			// 如果存在闭包
 			if(closure){
 				var superExpression = new SuperExpression(context), targetStatements = closure.target, propertyStatement = targetStatements.statement.target.target;
 
 				// 如果需要编译
 				if(config.es6Base){
-					// 如果是一元赋值语句
-					if(statement instanceof UnaryAssignmentStatement){
-						var target = statement.target;
-
-						// 设置 target 表达式
-						target.expression = new SuperPropertyPrefixUnaryAssignmentExpression(target.expression.context);
-					}
-
 					// 记录拥有者变量名
 					superExpression.propertyOwner = propertyStatement.expression.requestVariableOf(
 						targetStatements,
@@ -152,9 +152,9 @@ this.SuperTag = function(LiteralTag, SuperExpression, SuperPropertyPrefixUnaryAs
 }(
 	this.LiteralTag,
 	this.SuperExpression,
-	this.SuperPropertyPrefixUnaryAssignmentExpression,
 	this.SuperStatement,
-	this.UnaryAssignmentStatement
+	this.UnaryAssignmentStatement,
+	this.SuperPropertyUnaryAssignmentStatement
 );
 
 }.call(
