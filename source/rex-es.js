@@ -1332,14 +1332,11 @@ this.RegExpTag = function(visitor){
 			主体分三部分：
 				1. 反斜杠 + 非换行符，如：\/
 				2. 中括号内容，又分两部分：
-					2.1 被转义的结束中括号，如：\]
-					2.2 非换行符
-				3. 除了 反斜杠（/）、斜杠（\）、起始中括号（[）、换行符 之外的其他字符
+					2.1 被转义的非换行符，如：\]
+					2.2 非换行符、转义符（/）、结束中括号（]）
+				3. 除了 转义符（/）、斜杠（\）、起始中括号（[）、换行符 之外的其他字符
 		*/
-		regexp : new RegExp(
-			/\/(?:\\[^\r\n\u2028\u2029]|\[(?:\\]|[^\]\r\n\u2028\u2029])*\]|[^/\\[\r\n\u2028\u2029]+)+\//.source +
-			"(?:" + IDENTIFIER_REGEXP_SOURCE + ")*"
-		),
+		regexp : /\/(?:\\[^\r\n\u2028\u2029]|\[(?:\\[^\r\n\u2028\u2029]|[^\\\]\r\n\u2028\u2029])*\]|[^/\\[\r\n\u2028\u2029])+\/[imguy]*/,
 		/**
 		 * 标签访问器
 		 * @param {SyntaxParser} parser - 语法解析器
@@ -20620,15 +20617,15 @@ this.SuperStatement = function(){
 	return SuperStatement;
 }();
 
-this.SuperTag = function(LiteralTag, SuperExpression, SuperStatement, UnaryAssignmentStatement, SuperPropertyUnaryAssignmentStatement){
+this.SuperTag = function(SuperExpression, SuperStatement, UnaryAssignmentStatement, SuperPropertyUnaryAssignmentStatement){
 	/**
 	 * super 关键字标签
 	 * @param {Number} _type - 标签类型
 	 */
 	function SuperTag(_type){
-		LiteralTag.call(this, _type);
+		SyntaxTag.call(this, _type);
 	};
-	SuperTag = new Rexjs(SuperTag, LiteralTag);
+	SuperTag = new Rexjs(SuperTag, SyntaxTag);
 
 	SuperTag.props({
 		$class: CLASS_EXPRESSION,
@@ -20688,7 +20685,6 @@ this.SuperTag = function(LiteralTag, SuperExpression, SuperStatement, UnaryAssig
 
 	return SuperTag;
 }(
-	this.LiteralTag,
 	this.SuperExpression,
 	this.SuperStatement,
 	this.UnaryAssignmentStatement,

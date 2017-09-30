@@ -82,15 +82,15 @@ this.SuperStatement = function(){
 	return SuperStatement;
 }();
 
-this.SuperTag = function(LiteralTag, SuperExpression, SuperStatement, UnaryAssignmentStatement, SuperPropertyUnaryAssignmentStatement){
+this.SuperTag = function(SuperExpression, SuperStatement, UnaryAssignmentStatement, SuperPropertyUnaryAssignmentStatement){
 	/**
 	 * super 关键字标签
 	 * @param {Number} _type - 标签类型
 	 */
 	function SuperTag(_type){
-		LiteralTag.call(this, _type);
+		SyntaxTag.call(this, _type);
 	};
-	SuperTag = new Rexjs(SuperTag, LiteralTag);
+	SuperTag = new Rexjs(SuperTag, SyntaxTag);
 
 	SuperTag.props({
 		$class: CLASS_EXPRESSION,
@@ -150,7 +150,6 @@ this.SuperTag = function(LiteralTag, SuperExpression, SuperStatement, UnaryAssig
 
 	return SuperTag;
 }(
-	this.LiteralTag,
 	this.SuperExpression,
 	this.SuperStatement,
 	this.UnaryAssignmentStatement,
