@@ -409,5 +409,5 @@ this.forEach(
 	Rexjs,
 	Array,
 	// VERSION
-	"1.2.2"
+	"1.2.3"
 );

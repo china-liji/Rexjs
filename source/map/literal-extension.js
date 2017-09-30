@@ -82,9 +82,20 @@ this.RegExpTag = function(visitor){
 		LiteralTag.call(this, _type);
 	};
 	RegExpTag = new Rexjs(RegExpTag, LiteralTag);
-	
+
 	RegExpTag.props({
-		regexp : /\/(?:\\[^\r\n\u2028\u2029]|[^/\\\r\n\u2028\u2029]+)+\/(?:\w|\$)*/,
+		/*
+			主体分三部分：
+				1. 反斜杠 + 非换行符，如：\/
+				2. 中括号内容，又分两部分：
+					2.1 被转义的结束中括号，如：\]
+					2.2 非换行符
+				3. 除了 反斜杠（/）、斜杠（\）、起始中括号（[）、换行符 之外的其他字符
+		*/
+		regexp : new RegExp(
+			/\/(?:\\[^\r\n\u2028\u2029]|\[(?:\\]|[^\]\r\n\u2028\u2029])*\]|[^/\\[\r\n\u2028\u2029]+)+\//.source +
+			"(?:" + IDENTIFIER_REGEXP_SOURCE + ")*"
+		),
 		/**
 		 * 标签访问器
 		 * @param {SyntaxParser} parser - 语法解析器

@@ -13,6 +13,7 @@ test.unit(
 		this.true("多个标识正则表达式2", "/./imguy");
 		this.true("复杂的表达式", "/^01234567890[0-9A-z]+?(?:)''$/imguy");
 		this.true("带反斜杠的正则表达式", "/123\\/abc\\\\\\/*?\\\\/");
+		this.true("中括号内带未转义的斜杠", "/(^|[-\u2014/(\[{\s])'[~!@#$%^&*()_+-=[';/.,]/g");
 
 		function callback1(parser, err){
 			return err.context.tag instanceof Rexjs.RegExpTag ? "" : "未解析到正则表达式";
@@ -20,7 +21,7 @@ test.unit(
 
 		function callback2(parser, err){
 			return err.context.content === err.file.source ? "" : "正则表达式匹配不正确";
-		}
+		};
 
 		this.false("带有错误标识的正则表达式", "/./G", callback1, callback2);
 		this.false("连续重复标识的正则表达式", "/./ii", callback1, callback2);
