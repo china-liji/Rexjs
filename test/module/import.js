@@ -1,9 +1,12 @@
+// 当前目录
 import * as Module from "./export.js"
 
-import ExportedClass from "./export.js"
+// 根目录
+import ExportedClass from "/test/module/export.js"
 
 import { a, b, x as c, MyClass as MC, A1, B1 } from "./export.js"
 
+// 当前目录
 import "export.js"
 
 import json from "a.json";

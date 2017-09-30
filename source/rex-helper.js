@@ -541,7 +541,12 @@ this.URL = function(toString, parse){
 			if(
 				parse(
 					this,
-					baseURL.origin + (baseURL.dirname + "/") + urlString
+					(
+						baseURL.origin +
+						// 如果是根目录路径，则忽略 dirname
+						(urlString[0] === "/" ? "" : baseURL.dirname + "/") +
+						urlString
+					)
 				)
 			){
 				return;
@@ -617,7 +622,7 @@ this.URL = function(toString, parse){
 		var result = urlString.match(URL_REGEXP);
 		
 		// 如果没有匹配结果
-		if(result === null){
+		if(!result){
 			return false;
 		}
 		
@@ -643,7 +648,7 @@ this.URL = function(toString, parse){
 
 				break;
 
-			case undefined:
+			case void 0:
 				return false;
 
 			default: {
