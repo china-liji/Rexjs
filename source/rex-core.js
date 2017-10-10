@@ -55,24 +55,29 @@ this.Rexjs = function(create, getProperties, setPrototypeOf){
 	// setPrototypeOf
 	setPrototypeOf || (
 		descriptor ?
+			// 兼容： 旧版 IE10
 			function(obj, prototype){
-				// 兼容 ： IE10
 				descriptor.set.call(obj, prototype);
 			} :
+			// 兼容： IE9、旧版 Android
 			function(obj, prototype){
-				// 兼容 ： IE9、Android
+				obj.$Rexjs_prototype = prototype;
+
 				do {
 					getOwnPropertyNames(
 						prototype
 					)
 					.forEach(function(name){
+						// 如果已经有该属性
 						if(obj.hasOwnProperty(name)){
 							return;
 						}
 
+						// 设置属性
 						obj[name] = prototype[name];
 					});
 
+					// 继续获取原型链
 					prototype = getPrototypeOf(prototype);
 				}
 				while(prototype);
@@ -89,8 +94,8 @@ this.value = function(Rexjs, definePrototype){
 	// definePrototype
 	function(rexjs){
 		/*
-			考虑到ES6初稿已经将 __proto__ 属性移除标准，所以在支持ES6的情况下，就不做处理；
-			再者，IE10及以下也没有 __proto__ 属性，也不用处理；
+			考虑到 ES6 初稿已经将 __proto__ 属性移除标准，所以在支持 ES6 的情况下，就不做处理；
+			再者，IE10 及以下也没有 __proto__ 属性，也不用处理；
 			最后，就算其他支持 __proto__ 属性的浏览器，不定义 __proto__ 也没关系，
 			通过 Object.getPrototypeOf 方法一样可以获取，只不过在控制台里看不到 __proto__ 属性而已。
 		*/
@@ -409,5 +414,5 @@ this.forEach(
 	Rexjs,
 	Array,
 	// VERSION
-	"1.2.3"
+	"1.2.4"
 );

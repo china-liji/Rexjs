@@ -278,7 +278,37 @@ this.Generator = function(Iterator){
 
 
 // 类相关
-!function(getPrototypeOf, getOwnPropertyDescriptor, hasOwnProperty){
+!function(getPrototypeOf, getOwnPropertyDescriptor, hasOwnProperty, getSuperOf){
+
+getSuperOf = function(setterSupported){
+	return (
+		setterSupported ?
+			getPrototypeOf :
+			function(obj){
+				switch(true){
+					// 如果是 Rexjs 实例
+					case obj instanceof Rexjs:
+						break;
+
+					// 如果自身拥有 $Rexjs_prototype 属性，说明是低版本浏览器的类构造函数，需要获取的是静态父类属性
+					case hasOwnProperty.call(obj, "$Rexjs_prototype"):
+						return obj.$Rexjs_prototype;
+				}
+
+				// 直接返回 getPrototypeOf 的结果
+				return getPrototypeOf(obj);
+			}
+	);
+}(
+	// setterSupported
+	!!(
+		Object.setPrototypeOf ||
+		getOwnPropertyDescriptor(
+			Object.prototype,
+			"__proto__"
+		)
+	)
+);
 
 this.ClassProperty = function(){
 	/**
@@ -423,7 +453,7 @@ this.Super = function(getPropertyDescriptor){
 }(
 	// getPropertyDescriptor
 	function(classPrototype, name){
-		var superPrototype = getPrototypeOf(classPrototype);
+		var superPrototype = getSuperOf(classPrototype);
 
 		// 如果父类原型链存在
 		while(superPrototype){
@@ -511,7 +541,9 @@ this.Class = function(ClassProperty, defineProperty){
 	this,
 	Object.getPrototypeOf,
 	Object.getOwnPropertyDescriptor,
-	Object.hasOwnProperty
+	Object.hasOwnProperty,
+	// getSuperOf
+	null
 );
 
 
