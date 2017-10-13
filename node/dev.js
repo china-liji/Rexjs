@@ -58,12 +58,12 @@ this.Server = function(DIR_NAME, http, testPath, readFile){
 				}
 			);
 
-			// 监听 729 端口
+			// 监听 9090 端口
 			server.listen(
-				"729",
+				"9090",
 				() => {
 					// 打印信息
-					console.log("服务器开启，端口：729");
+					console.log("服务器开启，端口：9090");
 				}
 			);
 		};
