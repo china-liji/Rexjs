@@ -101,6 +101,7 @@ this.ECMAScriptTags = function(DefaultTags, list){
 		this.ThrowTag,
 		this.TryTag,
 		this.TypeofTag,
+		this.UnsignedRightShiftTag,
 		this.VarTag,
 		this.VoidTag,
 		this.WhileTag,
