@@ -21,7 +21,7 @@ this.ExponentiationExpression = function(extractTo){
 			// 如果需要编译
 			if(config.es6Base){
 				// 追加算数方法
-				contentBuilder.appendString("Math.pow(");
+				contentBuilder.appendString("(Math.pow(");
 				// 提取左侧的算数底值
 				this.left.extractTo(contentBuilder);
 				// 追加参数分隔符
@@ -29,7 +29,7 @@ this.ExponentiationExpression = function(extractTo){
 				// 提取幂
 				this.right.extractTo(contentBuilder);
 				// 追加方法结束小括号
-				contentBuilder.appendString(")");
+				contentBuilder.appendString("))");
 				return;
 			}
 

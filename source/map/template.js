@@ -20,11 +20,11 @@ this.TemplateExpression = function(extractTo, compileItem){
 			// 如果需要编译
 			if(config.es6Base){
 				// 追加起始双引号
-				contentBuilder.appendString('"');
+				contentBuilder.appendString('("');
 				// 直接编译 inner
 				this.inner.forEach(compileItem, contentBuilder);
 				// 追加结束双引号
-				contentBuilder.appendString('"');
+				contentBuilder.appendString('")');
 				return;
 			}
 
