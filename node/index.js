@@ -95,7 +95,7 @@ this.DevSource = function(Source, File, FUNCTION_BODY_REGEXP_SOURCE){
 									.match(
 										/${FUNCTION_BODY_REGEXP_SOURCE}/
 									)[1] +
-									"\\n//# sourceURL=http://rexjs.org/${filename}"
+									"\\n//# sourceURL=http://rexjs/maps/${filename}"
 								);`
 							);
 							return;

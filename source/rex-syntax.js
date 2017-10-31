@@ -646,7 +646,7 @@ this.MappingBuilder = function(MappingPosition, Base64VLQ, JSON, appendContext, 
 				// 追加新行
 				this.newline();
 				// 追加 sourceURL
-				this.appendString("//# sourceURL=http://rexjs.org/" + this.file.filename);
+				this.appendString("//# sourceURL=http://rexjs/sources/" + this.file.filename);
 				// 追加新行
 				this.newline();
 				// 追加 mappingURL 头部
@@ -2123,12 +2123,12 @@ this.SyntaxParser = function(SyntaxRegExp, SyntaxError, Position, Context, Conte
 			this.tagsMap = tagsMap;
 			// 记录文件
 			this.file = file;
-			// 清空错误
+			// 清空错误信息
 			this.details = null;
 			// 初始化语句
 			this.statements = statements;
 			
-			// 执行表达式
+			// 执行正则
 			this.regexp.exec(
 				tags.regexp,
 				file.source,
@@ -2150,7 +2150,7 @@ this.SyntaxParser = function(SyntaxRegExp, SyntaxError, Position, Context, Conte
 					
 					// 如果标签异常，即不应该被捕获
 					if(tag.type.unexpected){
-						// 如果表达式存在，则进入异常捕获处理
+						// 进入异常捕获处理
 						context.tag = tag = toTryCatch(parser, context, tag, parser.statements);
 					}
 

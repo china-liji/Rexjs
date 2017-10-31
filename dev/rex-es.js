@@ -164,7 +164,7 @@ this.ECMAScriptOrders = ECMAScriptOrders = function(){
 									.match(
 										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
 									)[1] +
-									"\n//# sourceURL=http://rexjs.org/ecmaScript-helper.js"
+									"\n//# sourceURL=http://rexjs/maps/ecmaScript-helper.js"
 								);
 
 
@@ -353,7 +353,7 @@ this.ConditionalExpression = function(GenerableExpression, DEFAULT_INDEX, genera
 									.match(
 										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
 									)[1] +
-									"\n//# sourceURL=http://rexjs.org/common-expression.js"
+									"\n//# sourceURL=http://rexjs/maps/common-expression.js"
 								);
 
 
@@ -510,7 +510,7 @@ this.SingleStatement = function(){
 									.match(
 										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
 									)[1] +
-									"\n//# sourceURL=http://rexjs.org/ecmaScript-statement.js"
+									"\n//# sourceURL=http://rexjs/maps/ecmaScript-statement.js"
 								);
 
 
@@ -700,7 +700,7 @@ this.GlobalStatements = function(ECMAScriptStatements, ECMAScriptVariableCollect
 									.match(
 										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
 									)[1] +
-									"\n//# sourceURL=http://rexjs.org/ecmaScript-statements.js"
+									"\n//# sourceURL=http://rexjs/maps/ecmaScript-statements.js"
 								);
 
 
@@ -796,7 +796,7 @@ this.BraceBodyStatement = function(DefaultBraceBodyExpression){
 									.match(
 										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
 									)[1] +
-									"\n//# sourceURL=http://rexjs.org/brace-body.js"
+									"\n//# sourceURL=http://rexjs/maps/brace-body.js"
 								);
 
 
@@ -1138,7 +1138,7 @@ this.WithTag = function(){
 									.match(
 										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
 									)[1] +
-									"\n//# sourceURL=http://rexjs.org/basic-tag.js"
+									"\n//# sourceURL=http://rexjs/maps/basic-tag.js"
 								);
 
 
@@ -1242,7 +1242,7 @@ this.FileEndTag = function(FileEndExpression, GlobalStatements){
 									.match(
 										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
 									)[1] +
-									"\n//# sourceURL=http://rexjs.org/file-position.js"
+									"\n//# sourceURL=http://rexjs/maps/file-position.js"
 								);
 
 
@@ -1310,7 +1310,7 @@ this.LiteralTag = function(LiteralExpression){
 									.match(
 										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
 									)[1] +
-									"\n//# sourceURL=http://rexjs.org/literal-base.js"
+									"\n//# sourceURL=http://rexjs/maps/literal-base.js"
 								);
 
 
@@ -1518,7 +1518,7 @@ this.StringTag = function(){
 									.match(
 										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
 									)[1] +
-									"\n//# sourceURL=http://rexjs.org/literal-extension.js"
+									"\n//# sourceURL=http://rexjs/maps/literal-extension.js"
 								);
 
 
@@ -1610,7 +1610,7 @@ this.OctalNumberTag = function(MathematicalNumberTag){
 									.match(
 										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
 									)[1] +
-									"\n//# sourceURL=http://rexjs.org/mathematical-number.js"
+									"\n//# sourceURL=http://rexjs/maps/mathematical-number.js"
 								);
 
 
@@ -1785,7 +1785,7 @@ this.IdentifierTag = function(IdentifierExpression, RegExg, keywords, regexp){
 									.match(
 										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
 									)[1] +
-									"\n//# sourceURL=http://rexjs.org/identifier.js"
+									"\n//# sourceURL=http://rexjs/maps/identifier.js"
 								);
 
 
@@ -1888,7 +1888,7 @@ this.VariableDeclarationTag = function(VariableTag, SCOPE_CLOSURE, visitor){
 									.match(
 										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
 									)[1] +
-									"\n//# sourceURL=http://rexjs.org/variable.js"
+									"\n//# sourceURL=http://rexjs/maps/variable.js"
 								);
 
 
@@ -2004,7 +2004,7 @@ this.LastStatementEndTag = function(StatementEndTag){
 									.match(
 										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
 									)[1] +
-									"\n//# sourceURL=http://rexjs.org/semicolon.js"
+									"\n//# sourceURL=http://rexjs/maps/semicolon.js"
 								);
 
 
@@ -2124,7 +2124,7 @@ this.ExpressionBreakTag = function(){
 									.match(
 										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
 									)[1] +
-									"\n//# sourceURL=http://rexjs.org/line-terminator.js"
+									"\n//# sourceURL=http://rexjs/maps/line-terminator.js"
 								);
 
 
@@ -2291,7 +2291,7 @@ this.CloseMultiLineCommentTag = function(){
 									.match(
 										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
 									)[1] +
-									"\n//# sourceURL=http://rexjs.org/comment.js"
+									"\n//# sourceURL=http://rexjs/maps/comment.js"
 								);
 
 
@@ -2422,7 +2422,7 @@ this.PropertyNameTag = function(IdentifierTag, RegExp){
 									.match(
 										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
 									)[1] +
-									"\n//# sourceURL=http://rexjs.org/accessor-dot.js"
+									"\n//# sourceURL=http://rexjs/maps/accessor-dot.js"
 								);
 
 
@@ -2602,7 +2602,7 @@ closeBracketAccessorTag = new this.CloseBracketAccessorTag();
 									.match(
 										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
 									)[1] +
-									"\n//# sourceURL=http://rexjs.org/accessor-bracket.js"
+									"\n//# sourceURL=http://rexjs/maps/accessor-bracket.js"
 								);
 
 
@@ -2768,7 +2768,7 @@ commaSiblingTag = new this.CommaSiblingTag();
 									.match(
 										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
 									)[1] +
-									"\n//# sourceURL=http://rexjs.org/comma.js"
+									"\n//# sourceURL=http://rexjs/maps/comma.js"
 								);
 
 
@@ -2939,7 +2939,7 @@ this.UnaryKeywordTag = function(UnaryTag){
 									.match(
 										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
 									)[1] +
-									"\n//# sourceURL=http://rexjs.org/unary-base.js"
+									"\n//# sourceURL=http://rexjs/maps/unary-base.js"
 								);
 
 
@@ -3001,7 +3001,7 @@ this.ExecTag = function(ExecutableExpression, isSeparator){
 									.match(
 										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
 									)[1] +
-									"\n//# sourceURL=http://rexjs.org/unary-exec.js"
+									"\n//# sourceURL=http://rexjs/maps/unary-exec.js"
 								);
 
 
@@ -3239,7 +3239,7 @@ this.LogicalNOTTag = function(){
 									.match(
 										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
 									)[1] +
-									"\n//# sourceURL=http://rexjs.org/unary-non-assginment.js"
+									"\n//# sourceURL=http://rexjs/maps/unary-non-assginment.js"
 								);
 
 
@@ -3463,7 +3463,7 @@ this.PostfixUnaryAssignmentTag = function(UnaryAssignmentTag, PostfixUnaryExpres
 									.match(
 										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
 									)[1] +
-									"\n//# sourceURL=http://rexjs.org/unary-assginment.js"
+									"\n//# sourceURL=http://rexjs/maps/unary-assginment.js"
 								);
 
 
@@ -3622,7 +3622,7 @@ this.PostfixDecrementTag = function(){
 									.match(
 										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
 									)[1] +
-									"\n//# sourceURL=http://rexjs.org/unary-assginment-extension.js"
+									"\n//# sourceURL=http://rexjs/maps/unary-assginment-extension.js"
 								);
 
 
@@ -3813,7 +3813,7 @@ this.BinaryTag = function(ExpressionSeparatorTag, BinaryExpression, BinaryStatem
 									.match(
 										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
 									)[1] +
-									"\n//# sourceURL=http://rexjs.org/binary-base.js"
+									"\n//# sourceURL=http://rexjs/maps/binary-base.js"
 								);
 
 
@@ -3962,7 +3962,7 @@ this.BinaryKeywordTag = function(){
 									.match(
 										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
 									)[1] +
-									"\n//# sourceURL=http://rexjs.org/binary-extension.js"
+									"\n//# sourceURL=http://rexjs/maps/binary-extension.js"
 								);
 
 
@@ -4492,7 +4492,7 @@ this.RemainderTag = function(){
 									.match(
 										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
 									)[1] +
-									"\n//# sourceURL=http://rexjs.org/binary-all.js"
+									"\n//# sourceURL=http://rexjs/maps/binary-all.js"
 								);
 
 
@@ -4582,7 +4582,7 @@ this.ExponentiationTag = function(BinaryTag, ExponentiationExpression){
 									.match(
 										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
 									)[1] +
-									"\n//# sourceURL=http://rexjs.org/exponentiation.js"
+									"\n//# sourceURL=http://rexjs/maps/exponentiation.js"
 								);
 
 
@@ -4811,7 +4811,7 @@ colonTag = new this.ColonTag();
 									.match(
 										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
 									)[1] +
-									"\n//# sourceURL=http://rexjs.org/ternary.js"
+									"\n//# sourceURL=http://rexjs/maps/ternary.js"
 								);
 
 
@@ -5181,7 +5181,7 @@ closeCallTag = new this.CloseCallTag();
 									.match(
 										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
 									)[1] +
-									"\n//# sourceURL=http://rexjs.org/call.js"
+									"\n//# sourceURL=http://rexjs/maps/call.js"
 								);
 
 
@@ -5330,7 +5330,7 @@ this.SpreadTag = function(SpreadExpression, SpreadStatement, AccessorExpression,
 									.match(
 										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
 									)[1] +
-									"\n//# sourceURL=http://rexjs.org/spread.js"
+									"\n//# sourceURL=http://rexjs/maps/spread.js"
 								);
 
 
@@ -5679,7 +5679,7 @@ this.PropertyDestructuringDefaultItemExpression = function(DestructuringDefaultI
 									.match(
 										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
 									)[1] +
-									"\n//# sourceURL=http://rexjs.org/destructuring.js"
+									"\n//# sourceURL=http://rexjs/maps/destructuring.js"
 								);
 
 
@@ -5751,7 +5751,7 @@ this.DeclarationRestItemSeparatorTag = function(CommaTag){
 									.match(
 										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
 									)[1] +
-									"\n//# sourceURL=http://rexjs.org/declaration-rest-item.js"
+									"\n//# sourceURL=http://rexjs/maps/declaration-rest-item.js"
 								);
 
 
@@ -6263,7 +6263,7 @@ closeArrayTag = new this.CloseArrayTag();
 									.match(
 										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
 									)[1] +
-									"\n//# sourceURL=http://rexjs.org/array.js"
+									"\n//# sourceURL=http://rexjs/maps/array.js"
 								);
 
 
@@ -6349,7 +6349,7 @@ this.ArraySpreadTag = function(SpreadTag, ArraySpreadItemExpression){
 									.match(
 										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
 									)[1] +
-									"\n//# sourceURL=http://rexjs.org/array-spread-item.js"
+									"\n//# sourceURL=http://rexjs/maps/array-spread-item.js"
 								);
 
 
@@ -6660,7 +6660,7 @@ closeDeclarationArrayTag = new this.CloseDeclarationArrayTag();
 									.match(
 										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
 									)[1] +
-									"\n//# sourceURL=http://rexjs.org/declaration-array.js"
+									"\n//# sourceURL=http://rexjs/maps/declaration-array.js"
 								);
 
 
@@ -6761,7 +6761,7 @@ this.DeclarationArrayRestTag = function(ArraySpreadTag, ArrayDestructuringRestIt
 									.match(
 										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
 									)[1] +
-									"\n//# sourceURL=http://rexjs.org/declaration-array-rest-item.js"
+									"\n//# sourceURL=http://rexjs/maps/declaration-array-rest-item.js"
 								);
 
 
@@ -6853,7 +6853,7 @@ closeNestedDeclarationArrayItemTag = new this.CloseNestedDeclarationArrayItemTag
 									.match(
 										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
 									)[1] +
-									"\n//# sourceURL=http://rexjs.org/nested-declaration-array-item.js"
+									"\n//# sourceURL=http://rexjs/maps/nested-declaration-array-item.js"
 								);
 
 
@@ -7083,7 +7083,7 @@ closeBlockTag = new this.CloseBlockTag();
 									.match(
 										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
 									)[1] +
-									"\n//# sourceURL=http://rexjs.org/block.js"
+									"\n//# sourceURL=http://rexjs/maps/block.js"
 								);
 
 
@@ -7364,7 +7364,7 @@ this.FunctionNameTag = function(VariableDeclarationTag, FunctionDeclarationExpre
 									.match(
 										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
 									)[1] +
-									"\n//# sourceURL=http://rexjs.org/function.js"
+									"\n//# sourceURL=http://rexjs/maps/function.js"
 								);
 
 
@@ -7530,7 +7530,7 @@ this.FunctionVariableTag = function(visitor){
 									.match(
 										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
 									)[1] +
-									"\n//# sourceURL=http://rexjs.org/function-declaration.js"
+									"\n//# sourceURL=http://rexjs/maps/function-declaration.js"
 								);
 
 
@@ -7844,7 +7844,7 @@ closeArgumentsTag = new this.CloseArgumentsTag();
 									.match(
 										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
 									)[1] +
-									"\n//# sourceURL=http://rexjs.org/argument.js"
+									"\n//# sourceURL=http://rexjs/maps/argument.js"
 								);
 
 
@@ -7989,7 +7989,7 @@ this.ArgumentAssignmentTag = function(DefaultArgumentExpression, ArgumentAssignm
 									.match(
 										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
 									)[1] +
-									"\n//# sourceURL=http://rexjs.org/argument-default.js"
+									"\n//# sourceURL=http://rexjs/maps/argument-default.js"
 								);
 
 
@@ -8167,7 +8167,7 @@ this.RestArgumentSeparatorTag = function(ArgumentSeparatorTag){
 									.match(
 										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
 									)[1] +
-									"\n//# sourceURL=http://rexjs.org/argument-rest.js"
+									"\n//# sourceURL=http://rexjs/maps/argument-rest.js"
 								);
 
 
@@ -8475,7 +8475,7 @@ closeFunctionBodyTag = new this.CloseFunctionBodyTag();
 									.match(
 										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
 									)[1] +
-									"\n//# sourceURL=http://rexjs.org/function-body.js"
+									"\n//# sourceURL=http://rexjs/maps/function-body.js"
 								);
 
 
@@ -8633,7 +8633,7 @@ this.TargetTag = function(SCOPE_CLOSURE, SCOPE_LAZY, visitor){
 									.match(
 										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
 									)[1] +
-									"\n//# sourceURL=http://rexjs.org/target.js"
+									"\n//# sourceURL=http://rexjs/maps/target.js"
 								);
 
 
@@ -9151,7 +9151,7 @@ closeGroupingTag = new this.CloseGroupingTag();
 									.match(
 										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
 									)[1] +
-									"\n//# sourceURL=http://rexjs.org/grouping.js"
+									"\n//# sourceURL=http://rexjs/maps/grouping.js"
 								);
 
 
@@ -9537,7 +9537,7 @@ closeArrowFunctionBodyTag = new this.CloseArrowFunctionBodyTag();
 									.match(
 										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
 									)[1] +
-									"\n//# sourceURL=http://rexjs.org/arrow.js"
+									"\n//# sourceURL=http://rexjs/maps/arrow.js"
 								);
 
 
@@ -9997,7 +9997,7 @@ this.PropertyNameSeparatorTag = function(ColonTag, PropertyValueExpression, Prop
 									.match(
 										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
 									)[1] +
-									"\n//# sourceURL=http://rexjs.org/property.js"
+									"\n//# sourceURL=http://rexjs/maps/property.js"
 								);
 
 
@@ -10273,7 +10273,7 @@ this.OctalNumberMethodNameTag = function(OctalNumberPropertyNameTag){
 									.match(
 										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
 									)[1] +
-									"\n//# sourceURL=http://rexjs.org/property-iteral-name.js"
+									"\n//# sourceURL=http://rexjs/maps/property-iteral-name.js"
 								);
 
 
@@ -10563,7 +10563,7 @@ this.KeywordPropertyNameTag = function(WordPropertyNameTag, IdentifierPropertyNa
 									.match(
 										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
 									)[1] +
-									"\n//# sourceURL=http://rexjs.org/property-identifier-name.js"
+									"\n//# sourceURL=http://rexjs/maps/property-identifier-name.js"
 								);
 
 
@@ -10678,7 +10678,7 @@ this.PropertyInitializerTag = function(BasicAssignmentTag, PropertyInitializerEx
 									.match(
 										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
 									)[1] +
-									"\n//# sourceURL=http://rexjs.org/property-initializer.js"
+									"\n//# sourceURL=http://rexjs/maps/property-initializer.js"
 								);
 
 
@@ -10924,7 +10924,7 @@ closeComputedMethodNameTag = new this.CloseComputedMethodNameTag();
 									.match(
 										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
 									)[1] +
-									"\n//# sourceURL=http://rexjs.org/property-computed-name.js"
+									"\n//# sourceURL=http://rexjs/maps/property-computed-name.js"
 								);
 
 
@@ -11271,7 +11271,7 @@ closeShorthandMethodBodyTag = new this.CloseShorthandMethodBodyTag();
 									.match(
 										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
 									)[1] +
-									"\n//# sourceURL=http://rexjs.org/property-shorthand-method.js"
+									"\n//# sourceURL=http://rexjs/maps/property-shorthand-method.js"
 								);
 
 
@@ -11422,7 +11422,7 @@ this.SetTag = function(PropertyAccessorTag){
 									.match(
 										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
 									)[1] +
-									"\n//# sourceURL=http://rexjs.org/property-accessor.js"
+									"\n//# sourceURL=http://rexjs/maps/property-accessor.js"
 								);
 
 
@@ -11531,7 +11531,7 @@ this.PropertySpreadTag = function(SpreadTag, PropertySpreadExpression, SpreadSta
 									.match(
 										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
 									)[1] +
-									"\n//# sourceURL=http://rexjs.org/property-spread-item.js"
+									"\n//# sourceURL=http://rexjs/maps/property-spread-item.js"
 								);
 
 
@@ -12016,7 +12016,7 @@ closeObjectTag = new this.CloseObjectTag();
 									.match(
 										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
 									)[1] +
-									"\n//# sourceURL=http://rexjs.org/object.js"
+									"\n//# sourceURL=http://rexjs/maps/object.js"
 								);
 
 
@@ -12249,7 +12249,7 @@ closeDeclarationObjectTag = new this.CloseDeclarationObjectTag();
 									.match(
 										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
 									)[1] +
-									"\n//# sourceURL=http://rexjs.org/declaration-object.js"
+									"\n//# sourceURL=http://rexjs/maps/declaration-object.js"
 								);
 
 
@@ -12517,7 +12517,7 @@ closeComputedDeclarationPropertyNameTag = new this.CloseComputedDeclarationPrope
 									.match(
 										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
 									)[1] +
-									"\n//# sourceURL=http://rexjs.org/declaration-property-name.js"
+									"\n//# sourceURL=http://rexjs/maps/declaration-property-name.js"
 								);
 
 
@@ -12603,7 +12603,7 @@ this.DeclarationPropertyNameSeparatorTag = function(visitor){
 									.match(
 										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
 									)[1] +
-									"\n//# sourceURL=http://rexjs.org/declaration-property-name-separator.js"
+									"\n//# sourceURL=http://rexjs/maps/declaration-property-name-separator.js"
 								);
 
 
@@ -12876,7 +12876,7 @@ closeObjectDeclarationPropertyValueTag = new this.CloseObjectDeclarationProperty
 									.match(
 										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
 									)[1] +
-									"\n//# sourceURL=http://rexjs.org/declaration-property-value.js"
+									"\n//# sourceURL=http://rexjs/maps/declaration-property-value.js"
 								);
 
 
@@ -13007,7 +13007,7 @@ this.DeclarationPropertyRestTag = function(PropertySpreadTag, PropertyDestructur
 									.match(
 										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
 									)[1] +
-									"\n//# sourceURL=http://rexjs.org/declaration-property-rest-item.js"
+									"\n//# sourceURL=http://rexjs/maps/declaration-property-rest-item.js"
 								);
 
 
@@ -13099,7 +13099,7 @@ closeObjectDeclarationArrayItemTag = new this.CloseObjectDeclarationArrayItemTag
 									.match(
 										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
 									)[1] +
-									"\n//# sourceURL=http://rexjs.org/declaration-array-object-item.js"
+									"\n//# sourceURL=http://rexjs/maps/declaration-array-object-item.js"
 								);
 
 
@@ -13247,7 +13247,7 @@ this.LabelColonTag = function(ColonTag, LabelledExpression, LabelledStatement){
 									.match(
 										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
 									)[1] +
-									"\n//# sourceURL=http://rexjs.org/label.js"
+									"\n//# sourceURL=http://rexjs/maps/label.js"
 								);
 
 
@@ -13413,7 +13413,7 @@ this.TerminatedFlowTag = function(TerminatedFlowExpression, TerminatedFlowStatem
 									.match(
 										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
 									)[1] +
-									"\n//# sourceURL=http://rexjs.org/terminated-flow.js"
+									"\n//# sourceURL=http://rexjs/maps/terminated-flow.js"
 								);
 
 
@@ -13485,7 +13485,7 @@ this.ReturnTag = function(SCOPE_CLOSURE, visitor){
 									.match(
 										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
 									)[1] +
-									"\n//# sourceURL=http://rexjs.org/return.js"
+									"\n//# sourceURL=http://rexjs/maps/return.js"
 								);
 
 
@@ -13558,7 +13558,7 @@ this.ThrowContextLineTerminatorTag = function(IllegalLineTerminatorTag){
 									.match(
 										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
 									)[1] +
-									"\n//# sourceURL=http://rexjs.org/throw.js"
+									"\n//# sourceURL=http://rexjs/maps/throw.js"
 								);
 
 
@@ -13827,7 +13827,7 @@ this.LabelledIdentifierTag = function(LabelTag, withoutAnyFlow){
 									.match(
 										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
 									)[1] +
-									"\n//# sourceURL=http://rexjs.org/terminated-brach-flow.js"
+									"\n//# sourceURL=http://rexjs/maps/terminated-brach-flow.js"
 								);
 
 
@@ -13915,7 +13915,7 @@ this.ContinueTag = function(FLOW_CIRCULAR, checkLabelledStatement){
 									.match(
 										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
 									)[1] +
-									"\n//# sourceURL=http://rexjs.org/break-continue.js"
+									"\n//# sourceURL=http://rexjs/maps/break-continue.js"
 								);
 
 
@@ -14172,7 +14172,7 @@ varDeclarationSeparatorTag = new this.VarDeclarationSeparatorTag();
 									.match(
 										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
 									)[1] +
-									"\n//# sourceURL=http://rexjs.org/var.js"
+									"\n//# sourceURL=http://rexjs/maps/var.js"
 								);
 
 
@@ -14307,7 +14307,7 @@ letDeclarationSeparatorTag = new this.LetDeclarationSeparatorTag();
 									.match(
 										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
 									)[1] +
-									"\n//# sourceURL=http://rexjs.org/let.js"
+									"\n//# sourceURL=http://rexjs/maps/let.js"
 								);
 
 
@@ -14504,7 +14504,7 @@ constDeclarationSeparatorTag = new this.ConstDeclarationSeparatorTag();
 									.match(
 										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
 									)[1] +
-									"\n//# sourceURL=http://rexjs.org/const.js"
+									"\n//# sourceURL=http://rexjs/maps/const.js"
 								);
 
 
@@ -14856,7 +14856,7 @@ elseTag = new this.ElseTag();
 									.match(
 										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
 									)[1] +
-									"\n//# sourceURL=http://rexjs.org/if.js"
+									"\n//# sourceURL=http://rexjs/maps/if.js"
 								);
 
 
@@ -15070,7 +15070,7 @@ closeWhileConditionTag = new this.CloseWhileConditionTag();
 									.match(
 										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
 									)[1] +
-									"\n//# sourceURL=http://rexjs.org/while.js"
+									"\n//# sourceURL=http://rexjs/maps/while.js"
 								);
 
 
@@ -15364,7 +15364,7 @@ closeDoWhileConditionTag = new this.CloseDoWhileConditionTag();
 									.match(
 										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
 									)[1] +
-									"\n//# sourceURL=http://rexjs.org/do-while.js"
+									"\n//# sourceURL=http://rexjs/maps/do-while.js"
 								);
 
 
@@ -15622,7 +15622,7 @@ this.ForTag = function(ForExpression){
 									.match(
 										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
 									)[1] +
-									"\n//# sourceURL=http://rexjs.org/for.js"
+									"\n//# sourceURL=http://rexjs/maps/for.js"
 								);
 
 
@@ -15779,7 +15779,7 @@ this.ForOfTag = function(IteratorTag, hasVariable){
 									.match(
 										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
 									)[1] +
-									"\n//# sourceURL=http://rexjs.org/for-iterator.js"
+									"\n//# sourceURL=http://rexjs/maps/for-iterator.js"
 								);
 
 
@@ -16307,7 +16307,7 @@ forLogicConditionSeparatorTag = new this.ForLogicConditionSeparatorTag();
 									.match(
 										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
 									)[1] +
-									"\n//# sourceURL=http://rexjs.org/for-condition.js"
+									"\n//# sourceURL=http://rexjs/maps/for-condition.js"
 								);
 
 
@@ -16534,7 +16534,7 @@ this.TryFunctionTag = function(ExecTag, TryFunctionExpression, TryFunctionStatem
 									.match(
 										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
 									)[1] +
-									"\n//# sourceURL=http://rexjs.org/try-function.js"
+									"\n//# sourceURL=http://rexjs/maps/try-function.js"
 								);
 
 
@@ -17063,7 +17063,7 @@ finallyTag = new this.FinallyTag();
 									.match(
 										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
 									)[1] +
-									"\n//# sourceURL=http://rexjs.org/try-catch.js"
+									"\n//# sourceURL=http://rexjs/maps/try-catch.js"
 								);
 
 
@@ -17544,7 +17544,7 @@ closeSwitchBodyTag = new this.CloseSwitchBodyTag();
 									.match(
 										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
 									)[1] +
-									"\n//# sourceURL=http://rexjs.org/switch.js"
+									"\n//# sourceURL=http://rexjs/maps/switch.js"
 								);
 
 
@@ -17949,7 +17949,7 @@ caseValueSeparatorTag = new this.CaseValueSeparatorTag();
 									.match(
 										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
 									)[1] +
-									"\n//# sourceURL=http://rexjs.org/case.js"
+									"\n//# sourceURL=http://rexjs/maps/case.js"
 								);
 
 
@@ -18034,7 +18034,7 @@ this.YieldTag = function(visitor){
 									.match(
 										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
 									)[1] +
-									"\n//# sourceURL=http://rexjs.org/yield.js"
+									"\n//# sourceURL=http://rexjs/maps/yield.js"
 								);
 
 
@@ -18231,7 +18231,7 @@ closeTemplateTag = new this.CloseTemplateTag();
 									.match(
 										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
 									)[1] +
-									"\n//# sourceURL=http://rexjs.org/template.js"
+									"\n//# sourceURL=http://rexjs/maps/template.js"
 								);
 
 
@@ -18398,7 +18398,7 @@ this.TemplateQouteTag = function(TemplateUnicodeExpression, UNICODE){
 									.match(
 										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
 									)[1] +
-									"\n//# sourceURL=http://rexjs.org/template-content.js"
+									"\n//# sourceURL=http://rexjs/maps/template-content.js"
 								);
 
 
@@ -18595,7 +18595,7 @@ closePlaceHolderTag = new this.ClosePlaceHolderTag();
 									.match(
 										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
 									)[1] +
-									"\n//# sourceURL=http://rexjs.org/template-placeholder.js"
+									"\n//# sourceURL=http://rexjs/maps/template-placeholder.js"
 								);
 
 
@@ -18729,7 +18729,7 @@ this.OpenTemplateParameterTag = function(TemplateParameterExpression, visitor){
 									.match(
 										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
 									)[1] +
-									"\n//# sourceURL=http://rexjs.org/template-parameter.js"
+									"\n//# sourceURL=http://rexjs/maps/template-parameter.js"
 								);
 
 
@@ -18823,7 +18823,7 @@ this.StaticModifierTag = function(StaticTag, IdentifierPropertyNameExpression){
 									.match(
 										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
 									)[1] +
-									"\n//# sourceURL=http://rexjs.org/static.js"
+									"\n//# sourceURL=http://rexjs/maps/static.js"
 								);
 
 
@@ -18998,7 +18998,7 @@ this.ClassPropertyExpression = function(extractTo, requestVariableOf){
 									.match(
 										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
 									)[1] +
-									"\n//# sourceURL=http://rexjs.org/class-helper-expression.js"
+									"\n//# sourceURL=http://rexjs/maps/class-helper-expression.js"
 								);
 
 
@@ -19177,7 +19177,7 @@ this.ClassNameTag = function(VariableDeclarationTag){
 									.match(
 										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
 									)[1] +
-									"\n//# sourceURL=http://rexjs.org/class.js"
+									"\n//# sourceURL=http://rexjs/maps/class.js"
 								);
 
 
@@ -19340,7 +19340,7 @@ this.ClassVariableTag = function(visitor){
 									.match(
 										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
 									)[1] +
-									"\n//# sourceURL=http://rexjs.org/class-declaration.js"
+									"\n//# sourceURL=http://rexjs/maps/class-declaration.js"
 								);
 
 
@@ -19794,7 +19794,7 @@ closeConstructorBodyTag = new this.CloseConstructorBodyTag();
 									.match(
 										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
 									)[1] +
-									"\n//# sourceURL=http://rexjs.org/class-constructor.js"
+									"\n//# sourceURL=http://rexjs/maps/class-constructor.js"
 								);
 
 
@@ -19853,7 +19853,7 @@ this.SetDescriptorTag = function(SetTag){
 									.match(
 										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
 									)[1] +
-									"\n//# sourceURL=http://rexjs.org/class-accessor.js"
+									"\n//# sourceURL=http://rexjs/maps/class-accessor.js"
 								);
 
 
@@ -20358,7 +20358,7 @@ closeClassBodyTag = new this.CloseClassBodyTag();
 									.match(
 										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
 									)[1] +
-									"\n//# sourceURL=http://rexjs.org/class-body.js"
+									"\n//# sourceURL=http://rexjs/maps/class-body.js"
 								);
 
 
@@ -20497,7 +20497,7 @@ this.ExtendsTag = function(ExtendsExpression, ExtendsStatement, openClassBodyTag
 									.match(
 										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
 									)[1] +
-									"\n//# sourceURL=http://rexjs.org/class-extends.js"
+									"\n//# sourceURL=http://rexjs/maps/class-extends.js"
 								);
 
 
@@ -20786,7 +20786,7 @@ closeSuperBracketAccessorTag = new this.CloseSuperBracketAccessorTag();
 									.match(
 										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
 									)[1] +
-									"\n//# sourceURL=http://rexjs.org/super-property.js"
+									"\n//# sourceURL=http://rexjs/maps/super-property.js"
 								);
 
 
@@ -21186,7 +21186,7 @@ this.SuperPropertyPostfixDecrementTag = function(PostfixDecrementTag){
 									.match(
 										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
 									)[1] +
-									"\n//# sourceURL=http://rexjs.org/super-property-assignment.js"
+									"\n//# sourceURL=http://rexjs/maps/super-property-assignment.js"
 								);
 
 
@@ -21402,7 +21402,7 @@ this.OpenSuperMethodCallTag = function(SuperMethodCallExpression){
 									.match(
 										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
 									)[1] +
-									"\n//# sourceURL=http://rexjs.org/super-call.js"
+									"\n//# sourceURL=http://rexjs/maps/super-call.js"
 								);
 
 
@@ -21574,7 +21574,7 @@ this.SuperTag = function(SuperExpression, SuperStatement, UnaryAssignmentStateme
 									.match(
 										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
 									)[1] +
-									"\n//# sourceURL=http://rexjs.org/super.js"
+									"\n//# sourceURL=http://rexjs/maps/super.js"
 								);
 
 
@@ -21829,7 +21829,7 @@ this.ModuleNameTag = function(StringTag){
 									.match(
 										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
 									)[1] +
-									"\n//# sourceURL=http://rexjs.org/import.js"
+									"\n//# sourceURL=http://rexjs/maps/import.js"
 								);
 
 
@@ -22342,7 +22342,7 @@ closeMultipleMembersTag = new this.CloseMultipleMembersTag();
 									.match(
 										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
 									)[1] +
-									"\n//# sourceURL=http://rexjs.org/import-multiple.js"
+									"\n//# sourceURL=http://rexjs/maps/import-multiple.js"
 								);
 
 
@@ -22435,7 +22435,7 @@ this.DefaultMemberTag = function(MemberVariableTag, DefaultMemberExpression){
 									.match(
 										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
 									)[1] +
-									"\n//# sourceURL=http://rexjs.org/import-default.js"
+									"\n//# sourceURL=http://rexjs/maps/import-default.js"
 								);
 
 
@@ -22599,7 +22599,7 @@ this.ModuleVariableTag = function(ConstVariableTag){
 									.match(
 										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
 									)[1] +
-									"\n//# sourceURL=http://rexjs.org/import-all.js"
+									"\n//# sourceURL=http://rexjs/maps/import-all.js"
 								);
 
 
@@ -22806,7 +22806,7 @@ this.ExportTag = function(ModuleTag, ExportExpression, ExportStatement, fromTag)
 									.match(
 										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
 									)[1] +
-									"\n//# sourceURL=http://rexjs.org/export.js"
+									"\n//# sourceURL=http://rexjs/maps/export.js"
 								);
 
 
@@ -22939,7 +22939,7 @@ this.DefaultExportTag = function(DefaultTag, DefaultExportExpression, DefaultExp
 									.match(
 										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
 									)[1] +
-									"\n//# sourceURL=http://rexjs.org/export-default.js"
+									"\n//# sourceURL=http://rexjs/maps/export-default.js"
 								);
 
 
@@ -23084,7 +23084,7 @@ closeExportMultipleMembersTag = new this.CloseExportMultipleMembersTag();
 									.match(
 										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
 									)[1] +
-									"\n//# sourceURL=http://rexjs.org/export-multiple.js"
+									"\n//# sourceURL=http://rexjs/maps/export-multiple.js"
 								);
 
 
@@ -23175,7 +23175,7 @@ this.ExportAllMembersTag = function(AllMembersTag, ExportAllMembersExpression){
 									.match(
 										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
 									)[1] +
-									"\n//# sourceURL=http://rexjs.org/export-all.js"
+									"\n//# sourceURL=http://rexjs/maps/export-all.js"
 								);
 
 
@@ -23347,7 +23347,7 @@ this.DestructuringAssignmentTag = function(DestructuringAssignmentExpression, vi
 									.match(
 										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
 									)[1] +
-									"\n//# sourceURL=http://rexjs.org/destructuring-assginment.js"
+									"\n//# sourceURL=http://rexjs/maps/destructuring-assginment.js"
 								);
 
 
@@ -23387,7 +23387,7 @@ this.OnlyStatementEndTags = function(LastStatementEndTag, StatementBreakTag, Sta
 									.match(
 										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
 									)[1] +
-									"\n//# sourceURL=http://rexjs.org/tags-helper.js"
+									"\n//# sourceURL=http://rexjs/maps/tags-helper.js"
 								);
 
 
@@ -23513,7 +23513,7 @@ this.ECMAScriptTags = function(DefaultTags, list){
 									.match(
 										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
 									)[1] +
-									"\n//# sourceURL=http://rexjs.org/ecmaScript-tags.js"
+									"\n//# sourceURL=http://rexjs/maps/ecmaScript-tags.js"
 								);
 
 
@@ -23712,7 +23712,7 @@ this.IllegalTags = function(){
 									.match(
 										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
 									)[1] +
-									"\n//# sourceURL=http://rexjs.org/tags-base.js"
+									"\n//# sourceURL=http://rexjs/maps/tags-base.js"
 								);
 
 
@@ -25771,7 +25771,7 @@ this.WhileConditionTags = function(OpenWhileConditionTag){
 									.match(
 										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
 									)[1] +
-									"\n//# sourceURL=http://rexjs.org/tags-others.js"
+									"\n//# sourceURL=http://rexjs/maps/tags-others.js"
 								);
 
 
@@ -25964,7 +25964,7 @@ this.ECMAScriptParser = function(SourceBuilder, MappingBuilder, ECMAScriptTagsMa
 									.match(
 										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
 									)[1] +
-									"\n//# sourceURL=http://rexjs.org/ecmaScript-parser.js"
+									"\n//# sourceURL=http://rexjs/maps/ecmaScript-parser.js"
 								);
 
 
