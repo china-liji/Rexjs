@@ -720,10 +720,10 @@ this.SyntaxElement = function(){
 	
 	SyntaxElement.props({
 		/**
-		 * 提取表达式文本内容
+		 * 提取文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
 		 */
-		extractTo: function(contentBuilder){}
+		extractTo: function(){}
 	});
 	
 	return SyntaxElement;
@@ -766,29 +766,18 @@ this.SyntaxRegExp = function(RegExp, Infinity){
 			this.lastIndex = Infinity;
 		},
 		/**
-		 * 重新编辑表达式
-		 * @param {RegExp} regexp - 新的表达式
-		 */
-		compile: function(regexp){
-			this.originalRegExp = regexp;
-		},
-		/**
 		 * 执行正则表达式进行匹配
 		 * @param {RegExp} regexp - 初始化的表达式
 		 * @param {String} source - 需要匹配的源代码内容字符串
 		 * @param {Function} regexpCallback - 正则表达式匹配出来的回调函数
 		 */
 		exec: function(regexp, source, callback){
-			var result, content = "", diff = 0, index = -1, lastIndex = this.lastIndex;
+			var result, content = "", index = -1, lastIndex = this.lastIndex;
 
-			// 编译表达式
-			this.compile(regexp);
-			
 			// 初始化
 			this.lastIndex = 0;
 			
 			for(;;){
-				regexp = this.originalRegExp;
 				regexp.lastIndex = lastIndex = this.lastIndex;
 				result = regexp.exec(source);
 
@@ -798,10 +787,8 @@ this.SyntaxRegExp = function(RegExp, Infinity){
 					break;
 				}
 				
-				diff = result.index - lastIndex;
-				
-				// 存在中间未捕获的内容
-				if(diff === 0){
+				// 如果相等，说明中间没有其他字符
+				if(result.index === lastIndex){
 					content = result[0];
 					index = result.indexOf("", 1) - 1;
 				}
@@ -812,8 +799,7 @@ this.SyntaxRegExp = function(RegExp, Infinity){
 				}
 
 				// 进行回调
-				callback.call(this, content, index);
-
+				regexp = callback(content, index);
 				// 计算 lastIndex
 				this.lastIndex += content.length;
 			}
@@ -823,18 +809,16 @@ this.SyntaxRegExp = function(RegExp, Infinity){
 				return;
 			}
 			
-			// 剩余子字符串处理
-			content = source.substring(this.lastIndex);
-			index = -1;
-			
 			// 进行回调
-			callback.call(this, content, index);
+			callback(
+				source.substring(this.lastIndex),
+				-1
+			);
 
-			// 计算 lastIndex
-			this.lastIndex += content.length;
+			// 中断匹配
+			this.break();
 		},
-		lastIndex: 0,
-		originalRegExp: /(?:)/
+		lastIndex: 0
 	});
 
 	return SyntaxRegExp;
@@ -2125,7 +2109,7 @@ this.SyntaxParser = function(SyntaxRegExp, SyntaxError, Position, Context, Conte
 			this.file = file;
 			// 清空错误信息
 			this.details = null;
-			// 初始化语句
+			// 初始化语句块
 			this.statements = statements;
 			
 			// 执行正则
@@ -2154,20 +2138,16 @@ this.SyntaxParser = function(SyntaxRegExp, SyntaxError, Position, Context, Conte
 						context.tag = tag = toTryCatch(parser, context, tag, parser.statements);
 					}
 
-					// 获取语句块
+					// 获取语句块，以防在 toTryCatch 中被修改过
 					statements = parser.statements;
 					
 					// 访问标签
 					tag.visitor(parser, context, statements.statement, statements);
-					
-					// 编译正则
-					this.compile(
-						(
-							// 获取需要匹配的标签集合
-							tags = tag.require(tagsMap, tags, parser)
-						)
-						.regexp
-					);
+
+					// 获取下一步需要匹配的标签列表
+					tags = tag.require(tagsMap, tags, parser);
+					// 返回下一步需要匹配的正则
+					return tags.regexp;
 				}
 			);
 		},
@@ -2239,7 +2219,7 @@ this.SyntaxParser = function(SyntaxRegExp, SyntaxError, Position, Context, Conte
 
 					// 如果表达式可以结束
 					if((statements.statement.expression.state & STATE_STATEMENT_ENDABLE) === STATE_STATEMENT_ENDABLE){
-						// 创建新语句，这里不能直接用 statements，因为在上面可能当前语句块已经发生改变
+						// 创建新语句
 						statements.newStatement();
 						// 返回标签
 						return tag;
