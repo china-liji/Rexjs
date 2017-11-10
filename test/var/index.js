@@ -7,6 +7,7 @@ test.unit(
 		test.true("最简单的赋值 var 语句", "var a = 1");
 		test.true("多变量的 var 语句", "var a, b, c = 1, d, e = 2");
 		test.true("较复杂的 var 语句", "var a, b = 1 + 3 / 3 * (4 + 8) + ([] - 0), c = b += 100 + 1000, d");
+		test.true("变量名后带换行", "var a \n = \n 1;");
 		test.true("测试运算结果", source, true);
 
 		test.false(

@@ -37,36 +37,6 @@ this.ShorthandAssignmentTag = function(){
 	return ShorthandAssignmentTag;
 }();
 
-this.IllegalShorthandAssignmentTag = function(ShorthandAssignmentTag){
-	/**
-	 * 不合法的简写二元赋值运算符标签
-	 * @param {Number} _type - 标签类型
-	 */
-	function IllegalShorthandAssignmentTag(_type){
-		ShorthandAssignmentTag.call(this, _type);
-	};
-	IllegalShorthandAssignmentTag = new Rexjs(IllegalShorthandAssignmentTag, ShorthandAssignmentTag);
-
-	IllegalShorthandAssignmentTag.props({
-		order: ECMAScriptOrders.ILLEGAL_SHORTHAND_ASSIGNMENT,
-		/**
-		 * 标签访问器
-		 * @param {SyntaxParser} parser - 语法解析器
-		 * @param {Context} context - 标签上下文
-		 * @param {Statement} statement - 当前语句
-		 * @param {Statements} statements - 当前语句块
-		 */
-		visitor: function(parser, context){
-			// 报错
-			parser.error(context);
-		}
-	});
-
-	return IllegalShorthandAssignmentTag;
-}(
-	this.ShorthandAssignmentTag
-);
-
 this.LogicalORTag = function(){
 	/**
 	 * 逻辑运算符“或”标签

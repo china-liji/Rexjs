@@ -12,25 +12,7 @@ this.StaticTag = function(){
 	StaticTag = new Rexjs(StaticTag, SyntaxTag);
 
 	StaticTag.props({
-		regexp: /static/,
-		/**
-		 * 获取此标签接下来所需匹配的标签列表
-		 * @param {TagsMap} tagsMap - 标签集合映射
-		 */
-		require: function(tagsMap){
-			return tagsMap.expressionContextTags;
-		},
-		/**
-		 * 标签访问器
-		 * @param {SyntaxParser} parser - 语法解析器
-		 * @param {Context} context - 标签上下文
-		 * @param {Statement} statement - 当前语句
-		 * @param {Statements} statements - 当前语句块
-		 */
-		visitor: function(parser, context, statement, statements){
-			// 设置 close
-			statement.expression.body.close = context;
-		}
+		regexp: /static/
 	});
 
 	return StaticTag;

@@ -20,7 +20,8 @@
 		}
 
 		input:checked ~ span > .log {
-			display: none;
+			height: 0;
+			overflow: hidden;
 		}
 
 		q::before, q::after {
@@ -35,21 +36,21 @@
 			white-space: pre;
 		}
 
+		q:not(.group) {
+			counter-increment: all;
+		}
+
 		div > span::after {
 			padding: 0 1em;
 			position: fixed;
 			color: red;
 			right: 0;
 			top: 0;
-			content: "总错误数：" counter(error);
-		}
-
-		.log {
-			counter-increment: log;
+			content: "总测试数：" counter(all) " 总错误数：" counter(error);
 		}
 
 		.log::before {
-			content: counter(log)".";
+			content: counter(all)".";
 			margin-right: 2px;
 		}
 

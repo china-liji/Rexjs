@@ -78,9 +78,6 @@ this.VarStatement = function(){
 			this.out().list.add(this.expression);
 			// 结束 var 表达式的变量名范围
 			this.target.expression.range.end();
-
-			// 如果是逗号，返回指定的分隔符，否则返回 null
-			return context.content === "," ? this.bindingOf() : null;
 		},
 		/**
 		 * 尝试处理异常
@@ -188,6 +185,31 @@ this.ClosureVariableTag = function(){
 	
 	return ClosureVariableTag;
 }();
+
+this.VarDeclarationBreakTag = function(ExpressionBreakTag){
+	/**
+	 * var 语句变量声明换行符标签
+	 * @param {Number} _type - 标签类型
+	 */
+	function VarDeclarationBreakTag(_type){
+		ExpressionBreakTag.call(this, _type);
+	};
+	VarDeclarationBreakTag = new Rexjs(VarDeclarationBreakTag, ExpressionBreakTag);
+
+	VarDeclarationBreakTag.props({
+		/**
+		 * 获取此标签接下来所需匹配的标签列表
+		 * @param {TagsMap} tagsMap - 标签集合映射
+		 */
+		require: function(tagsMap){
+			return tagsMap.varDeclarationBreakContextTags;
+		}
+	});
+
+	return VarDeclarationBreakTag;
+}(
+	this.ExpressionBreakTag
+);
 
 this.VarDeclarationSeparatorTag = function(CommaTag, VarStatement){
 	/**

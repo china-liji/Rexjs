@@ -4007,36 +4007,6 @@ this.ShorthandAssignmentTag = function(){
 	return ShorthandAssignmentTag;
 }();
 
-this.IllegalShorthandAssignmentTag = function(ShorthandAssignmentTag){
-	/**
-	 * 不合法的简写二元赋值运算符标签
-	 * @param {Number} _type - 标签类型
-	 */
-	function IllegalShorthandAssignmentTag(_type){
-		ShorthandAssignmentTag.call(this, _type);
-	};
-	IllegalShorthandAssignmentTag = new Rexjs(IllegalShorthandAssignmentTag, ShorthandAssignmentTag);
-
-	IllegalShorthandAssignmentTag.props({
-		order: ECMAScriptOrders.ILLEGAL_SHORTHAND_ASSIGNMENT,
-		/**
-		 * 标签访问器
-		 * @param {SyntaxParser} parser - 语法解析器
-		 * @param {Context} context - 标签上下文
-		 * @param {Statement} statement - 当前语句
-		 * @param {Statements} statements - 当前语句块
-		 */
-		visitor: function(parser, context){
-			// 报错
-			parser.error(context);
-		}
-	});
-
-	return IllegalShorthandAssignmentTag;
-}(
-	this.ShorthandAssignmentTag
-);
-
 this.LogicalORTag = function(){
 	/**
 	 * 逻辑运算符“或”标签
@@ -14001,9 +13971,6 @@ this.VarStatement = function(){
 			this.out().list.add(this.expression);
 			// 结束 var 表达式的变量名范围
 			this.target.expression.range.end();
-
-			// 如果是逗号，返回指定的分隔符，否则返回 null
-			return context.content === "," ? this.bindingOf() : null;
 		},
 		/**
 		 * 尝试处理异常
@@ -14111,6 +14078,31 @@ this.ClosureVariableTag = function(){
 	
 	return ClosureVariableTag;
 }();
+
+this.VarDeclarationBreakTag = function(ExpressionBreakTag){
+	/**
+	 * var 语句变量声明换行符标签
+	 * @param {Number} _type - 标签类型
+	 */
+	function VarDeclarationBreakTag(_type){
+		ExpressionBreakTag.call(this, _type);
+	};
+	VarDeclarationBreakTag = new Rexjs(VarDeclarationBreakTag, ExpressionBreakTag);
+
+	VarDeclarationBreakTag.props({
+		/**
+		 * 获取此标签接下来所需匹配的标签列表
+		 * @param {TagsMap} tagsMap - 标签集合映射
+		 */
+		require: function(tagsMap){
+			return tagsMap.varDeclarationBreakContextTags;
+		}
+	});
+
+	return VarDeclarationBreakTag;
+}(
+	this.ExpressionBreakTag
+);
 
 this.VarDeclarationSeparatorTag = function(CommaTag, VarStatement){
 	/**
@@ -18749,25 +18741,7 @@ this.StaticTag = function(){
 	StaticTag = new Rexjs(StaticTag, SyntaxTag);
 
 	StaticTag.props({
-		regexp: /static/,
-		/**
-		 * 获取此标签接下来所需匹配的标签列表
-		 * @param {TagsMap} tagsMap - 标签集合映射
-		 */
-		require: function(tagsMap){
-			return tagsMap.expressionContextTags;
-		},
-		/**
-		 * 标签访问器
-		 * @param {SyntaxParser} parser - 语法解析器
-		 * @param {Context} context - 标签上下文
-		 * @param {Statement} statement - 当前语句
-		 * @param {Statements} statements - 当前语句块
-		 */
-		visitor: function(parser, context, statement, statements){
-			// 设置 close
-			statement.expression.body.close = context;
-		}
+		regexp: /static/
 	});
 
 	return StaticTag;
@@ -23924,7 +23898,7 @@ this.CloseCatchedExceptionTags = function(CloseCatchedExceptionTag){
 	this.CloseCatchedExceptionTag
 );
 
-this.ClosureVariableContextTags = function(BasicAssignmentTag, IllegalShorthandAssignmentTag){
+this.ClosureVariableContextTags = function(VarDeclarationBreakTag, BasicAssignmentTag, CommaTag){
 	/**
 	 * 闭包内变量上下文标签列表
 	 */
@@ -23932,7 +23906,7 @@ this.ClosureVariableContextTags = function(BasicAssignmentTag, IllegalShorthandA
 		StatementEndTags.call(this);
 
 		this.register(
-			new IllegalShorthandAssignmentTag()
+			new VarDeclarationBreakTag()
 		);
 	};
 	ClosureVariableContextTags = new Rexjs(ClosureVariableContextTags, StatementEndTags);
@@ -23948,15 +23922,21 @@ this.ClosureVariableContextTags = function(BasicAssignmentTag, IllegalShorthandA
 				// 设置为可匹配
 				tag.type = new TagType(TYPE_MATCHABLE);
 			}
+			// 如果是逗号标签
+			else if(tag instanceof CommaTag){
+				// 设置为可误解的
+				tag.type = new TagType(TYPE_MISTAKABLE);
+			}
 			
 			return false;
 		}
-	})
+	});
 	
 	return ClosureVariableContextTags;
 }(
+	this.VarDeclarationBreakTag,
 	this.BasicAssignmentTag,
-	this.IllegalShorthandAssignmentTag
+	this.CommaTag
 );
 
 this.VariableDeclarationTags = function(OpenDeclarationArrayTag, OpenDeclarationObjectTag){
@@ -25736,6 +25716,46 @@ this.VarContextTags = function(VariableDeclarationTags, ClosureVariableTag){
 }(
 	this.VariableDeclarationTags,
 	this.ClosureVariableTag
+);
+
+this.VarDeclarationBreakContextTags = function(ClosureVariableContextTags, SpecialLineTerminatorTag, filter){
+	/**
+	 * var 语句变量声明换行符上下文标签列表
+	 */
+	function VarDeclarationBreakContextTags(){
+		ClosureVariableContextTags.call(this);
+	};
+	VarDeclarationBreakContextTags = new Rexjs(VarDeclarationBreakContextTags, ClosureVariableContextTags);
+
+	VarDeclarationBreakContextTags.props({
+		/**
+		 * 标签过滤处理
+		 * @param {SyntaxTag} tag - 语法标签
+		 */
+		filter: function(tag){
+			// 如果是特殊的换行符
+			if(tag instanceof SpecialLineTerminatorTag){
+				// 过滤掉
+				return true;
+			}
+
+			// 如果是语句标签
+			if(tag.class.statementBegin){
+				// 设置类型
+				tag.type = new TagType(TYPE_MISTAKABLE);
+				return false;
+			}
+			
+			// 调用父类方法
+			return filter.call(this, tag);
+		}
+	});
+
+	return VarDeclarationBreakContextTags;
+}(
+	this.ClosureVariableContextTags,
+	this.SpecialLineTerminatorTag,
+	this.ClosureVariableContextTags.prototype.filter
 );
 
 this.WhileConditionTags = function(OpenWhileConditionTag){

@@ -862,7 +862,7 @@ this.TagData = function(){
 
 this.TagClass = function(CLASS_NONE, CLASS_STATEMENT, CLASS_STATEMENT_BEGIN, CLASS_STATEMENT_END, CLASS_EXPRESSION, CLASS_EXPRESSION_CONTEXT){
 	/**
-	 * 标签类别
+	 * 标签性质定位的类别
 	 * @param {Number} value - 标签类别
 	 */
 	function TagClass(value){
@@ -1033,7 +1033,7 @@ this.SyntaxTag = function(SyntaxElement, TagClass, TagType){
 		 * @param {Statement} statement - 当前语句
 		 * @param {Statements} statements - 当前语句块
 		 */
-		visitor: function(parser, context, statement, statements){}
+		visitor: function(){}
 	});
 
 	return SyntaxTag;

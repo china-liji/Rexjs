@@ -204,7 +204,7 @@ this.CloseCatchedExceptionTags = function(CloseCatchedExceptionTag){
 	this.CloseCatchedExceptionTag
 );
 
-this.ClosureVariableContextTags = function(BasicAssignmentTag, IllegalShorthandAssignmentTag){
+this.ClosureVariableContextTags = function(VarDeclarationBreakTag, BasicAssignmentTag, CommaTag){
 	/**
 	 * 闭包内变量上下文标签列表
 	 */
@@ -212,7 +212,7 @@ this.ClosureVariableContextTags = function(BasicAssignmentTag, IllegalShorthandA
 		StatementEndTags.call(this);
 
 		this.register(
-			new IllegalShorthandAssignmentTag()
+			new VarDeclarationBreakTag()
 		);
 	};
 	ClosureVariableContextTags = new Rexjs(ClosureVariableContextTags, StatementEndTags);
@@ -228,15 +228,21 @@ this.ClosureVariableContextTags = function(BasicAssignmentTag, IllegalShorthandA
 				// 设置为可匹配
 				tag.type = new TagType(TYPE_MATCHABLE);
 			}
+			// 如果是逗号标签
+			else if(tag instanceof CommaTag){
+				// 设置为可误解的
+				tag.type = new TagType(TYPE_MISTAKABLE);
+			}
 			
 			return false;
 		}
-	})
+	});
 	
 	return ClosureVariableContextTags;
 }(
+	this.VarDeclarationBreakTag,
 	this.BasicAssignmentTag,
-	this.IllegalShorthandAssignmentTag
+	this.CommaTag
 );
 
 this.VariableDeclarationTags = function(OpenDeclarationArrayTag, OpenDeclarationObjectTag){
@@ -2016,6 +2022,46 @@ this.VarContextTags = function(VariableDeclarationTags, ClosureVariableTag){
 }(
 	this.VariableDeclarationTags,
 	this.ClosureVariableTag
+);
+
+this.VarDeclarationBreakContextTags = function(ClosureVariableContextTags, SpecialLineTerminatorTag, filter){
+	/**
+	 * var 语句变量声明换行符上下文标签列表
+	 */
+	function VarDeclarationBreakContextTags(){
+		ClosureVariableContextTags.call(this);
+	};
+	VarDeclarationBreakContextTags = new Rexjs(VarDeclarationBreakContextTags, ClosureVariableContextTags);
+
+	VarDeclarationBreakContextTags.props({
+		/**
+		 * 标签过滤处理
+		 * @param {SyntaxTag} tag - 语法标签
+		 */
+		filter: function(tag){
+			// 如果是特殊的换行符
+			if(tag instanceof SpecialLineTerminatorTag){
+				// 过滤掉
+				return true;
+			}
+
+			// 如果是语句标签
+			if(tag.class.statementBegin){
+				// 设置类型
+				tag.type = new TagType(TYPE_MISTAKABLE);
+				return false;
+			}
+			
+			// 调用父类方法
+			return filter.call(this, tag);
+		}
+	});
+
+	return VarDeclarationBreakContextTags;
+}(
+	this.ClosureVariableContextTags,
+	this.SpecialLineTerminatorTag,
+	this.ClosureVariableContextTags.prototype.filter
 );
 
 this.WhileConditionTags = function(OpenWhileConditionTag){
