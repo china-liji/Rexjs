@@ -378,7 +378,7 @@ this.ContentBuilder = function(){
 	
 	ContentBuilder.props({
 		/**
-		 * 追加内容上下文，同时会更新 source map
+		 * 追加内容上下文
 		 * @param {Context} context - 标签内容上下文
 		 */
 		appendContext: function(context){
@@ -418,7 +418,7 @@ this.ContentBuilder = function(){
 
 this.SourceBuilder = function(ContentBuilder){
 	/**
-	 * 源码生成器
+	 * 源码生成器，用来生成 sourceURL
 	 * @param {File} file - 生成器相关文件
 	 */
 	function SourceBuilder(file){
@@ -529,7 +529,7 @@ this.Base64VLQ = function(base64, parseInt){
 
 this.MappingPosition = function(Position){
 	/**
-	 * 映射生成器中所记录的位置
+	 * 源码映射生成器中所记录的位置
 	 */
 	function MappingPosition(){
 		Position.call(this, 0, 0);
@@ -550,7 +550,7 @@ this.MappingPosition = function(Position){
 
 this.MappingBuilder = function(MappingPosition, Base64VLQ, JSON, appendContext, appendString, complete, merge, newline, btoa){
 	/**
-	 * 映射生成器
+	 * 源码映射生成器，用来生成 sourceMap
 	 * @param {File} file - 生成器相关文件
 	 */
 	function MappingBuilder(file){
@@ -566,7 +566,7 @@ this.MappingBuilder = function(MappingPosition, Base64VLQ, JSON, appendContext, 
 	
 	MappingBuilder.props({
 		/**
-		 * 追加内容上下文，同时会更新 source map
+		 * 追加内容上下文，同时会更新 sourceMap
 		 * @param {Context} context - 标签内容上下文
 		 */
 		appendContext: function(context){
@@ -671,7 +671,7 @@ this.MappingBuilder = function(MappingPosition, Base64VLQ, JSON, appendContext, 
 		},
 		mappings: "",
 		/**
-		 * 追加新行
+		 * 追加新行，同时会更新 sourceMap
 		 */
 		newline: function(){
 			var position = this.position;
@@ -877,12 +877,12 @@ this.TagClass = function(CLASS_NONE, CLASS_STATEMENT, CLASS_STATEMENT_BEGIN, CLA
 	TagClass = new Rexjs(TagClass, TagData);
 
 	TagClass.static({
-		// 无标签分类
-		CLASS_NONE: CLASS_NONE,
 		// 表达式标签类别
 		CLASS_EXPRESSION: CLASS_EXPRESSION,
 		// 表达式上下文标签类别
 		CLASS_EXPRESSION_CONTEXT: CLASS_EXPRESSION_CONTEXT,
+		// 无标签分类
+		CLASS_NONE: CLASS_NONE,
 		// 语句标签类别
 		CLASS_STATEMENT: CLASS_STATEMENT,
 		// 语句起始标签类别
@@ -915,9 +915,9 @@ this.TagClass = function(CLASS_NONE, CLASS_STATEMENT, CLASS_STATEMENT_BEGIN, CLA
 	parseInt(100000, 2)
 );
 
-this.TagType = function(TYPE_MATCHABLE, TYPE_UNEXPECTED, TYPE_MISTAKABLE, TYPE_ILLEGAL){
+this.TagType = function(TYPE_NONE, TYPE_MATCHABLE, TYPE_UNEXPECTED, TYPE_MISTAKABLE, TYPE_ILLEGAL){
 	/**
-	 * 标签类型
+	 * 标签正则捕获类型
 	 * @param {Number} value - 标签类型
 	 */
 	function TagType(value){
@@ -928,11 +928,13 @@ this.TagType = function(TYPE_MATCHABLE, TYPE_UNEXPECTED, TYPE_MISTAKABLE, TYPE_I
 		this.mistakable = (value & TYPE_MISTAKABLE) === TYPE_MISTAKABLE;
 		this.unexpected = (value & TYPE_UNEXPECTED) === TYPE_UNEXPECTED;
 	};
-	TagType = new Rexjs(TagType);
+	TagType = new Rexjs(TagType, TagData);
 
 	TagType.static({
 		// 非法标签类型
 		TYPE_ILLEGAL: TYPE_ILLEGAL,
+		// 无标签类型
+		TYPE_NONE: TYPE_NONE,
 		// 可匹配的标签类型
 		TYPE_MATCHABLE: TYPE_MATCHABLE,
 		// 可能会无解的标签类型
@@ -950,6 +952,8 @@ this.TagType = function(TYPE_MATCHABLE, TYPE_UNEXPECTED, TYPE_MISTAKABLE, TYPE_I
 
 	return TagType;
 }(
+	// TYPE_NONE
+	parseInt(0, 2),
 	// TYPE_MATCHABLE
 	parseInt(10, 2),
 	// TYPE_UNEXPECTED
@@ -1400,7 +1404,7 @@ this.SyntaxTagsMap = function(){
 // 语法解析相关
 !function(SyntaxElement, SyntaxTag, SyntaxConfig){
 
-this.Expression = function(config, parseInt){
+this.Expression = function(parseInt){
 	/**
 	 * 表达式
 	 * @param {Context} context - 语法标签上下文
@@ -1419,16 +1423,10 @@ this.Expression = function(config, parseInt){
 		STATE_EXPRESSION_END: parseInt(10, 2),
 		// 语句可结束状态
 		STATE_STATEMENT_ENDABLE: parseInt(110, 2),
-		// 语句结束状态，当进行语句连接时，应该在两语句之间加语句连接符（如分号等）
+		// 语句结束状态，当开始编译，进行语句连接时，应该在两语句之间加语句连接符，如分号等
 		STATE_STATEMENT_END: parseInt(1110, 2),
-		// 语句已结束状态，当进行语句连接时，不需要再加语句连接符（如分号等）
-		STATE_STATEMENT_ENDED: parseInt(11110, 2),
-		/**
-		 * 获取表达式编译配置
-		 */
-		get config(){
-			return config
-		}
+		// 语句已结束状态，当开始编译，进行语句连接时，不需要再加语句连接符，如分号等
+		STATE_STATEMENT_ENDED: parseInt(11110, 2)
 	});
 	
 	Expression.props({
@@ -1465,8 +1463,6 @@ this.Expression = function(config, parseInt){
 	
 	return Expression;
 }(
-	// config
-	new SyntaxConfig(),
 	parseInt
 );
 
@@ -1484,9 +1480,13 @@ this.Statement = function(){
 	Statement = new Rexjs(Statement, SyntaxElement);
 
 	Statement.static({
+		// 文档流主流
 		FLOW_MAIN: parseInt(10, 2),
+		// 文档流分支流
 		FLOW_BRANCH: parseInt(100, 2),
+		// 文档流线性分支流
 		FLOW_LINEAR: parseInt(1100, 2),
+		// 文档流循环分支流
 		FLOW_CIRCULAR: parseInt(10100, 2)
 	});
 	
@@ -1519,15 +1519,15 @@ this.Statement = function(){
 		 * 跳出该语句
 		 */
 		out: function(){
-			var target = this.target;
+			var target = this.target, expression = target.expression;
 
 			// 记录当前表达式的状态，这里不能用 "|="，因为该状态是覆盖操作
-			target.expression.state = this.expression.state;
+			expression.state = this.expression.state;
 			// 恢复语句
 			this.statements.statement = target;
 
 			// 返回目标语句的表达式
-			return target.expression;
+			return expression;
 		},
 		statements: null,
 		/**
@@ -2066,7 +2066,7 @@ this.SyntaxParser = function(SyntaxRegExp, SyntaxError, Position, Context, Conte
 	
 	SyntaxParser.props({
 		/**
-		 * 将解析后的语法生成字符串
+		 * 将解析后的语法生成字符串，并返回
 		 * @param {ContentBuilder} _contentBuilder - 内容生成器
 		 */
 		build: function(_contentBuilder){
@@ -2077,7 +2077,7 @@ this.SyntaxParser = function(SyntaxRegExp, SyntaxError, Position, Context, Conte
 		},
 		details: null,
 		/**
-		 * 报错
+		 * 抛出错误
 		 * @param {Context, Expression} info - 出错信息
 		 * @param {String} _description - 错误描述
 		 * @param {Boolean} _reference - 是否是引用错误
@@ -2095,7 +2095,7 @@ this.SyntaxParser = function(SyntaxRegExp, SyntaxError, Position, Context, Conte
 		},
 		file: null,
 		/**
-		 * 开始解析
+		 * 开始解析语法文件
 		 * @param {File} file - 文件信息
 		 * @param {SyntaxTagsMap} tagsMap - 标签列表映射
 		 * @param {Statements} statements - 初始化的语句块

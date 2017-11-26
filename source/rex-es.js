@@ -15707,7 +15707,7 @@ this.FunctionConvertorExpression = FunctionConvertorExpression = function(Access
 		// 追加 convert 方法的参数分隔符
 		contentBuilder.appendString(",");
 
-		// 如果是匹配组表达式，则说明是中括号（window["a"]）形式的访问器
+		// 如果是匹配组表达式，则说明是中括号 window["a"] 形式的访问器
 		if(property instanceof PartnerExpression){
 			// 将起始中括号改成小括号
 			contentBuilder.appendString("(");
@@ -15729,7 +15729,7 @@ this.FunctionConvertorExpression = FunctionConvertorExpression = function(Access
 
 this.TryFunctionStatement = function(UnaryStatement, setOperand){
 	/**
-	 * 一元语句
+	 * 尝试执行函数语句
 	 * @param {Statements} statements - 该语句将要所处的语句块
 	 */
 	function TryFunctionStatement(statements){
