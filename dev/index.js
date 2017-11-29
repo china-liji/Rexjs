@@ -1,6 +1,1 @@
-let
-a
-
-
-
-=       1
+a = window.b ?= c = d ?= e ?= f + 5

@@ -5,7 +5,6 @@ this.BinaryExpression = function(){
 	/**
 	 * 二元表达式
 	 * @param {Context} context - 语法标签上下文
-	 * @param {Expression} left - 该二元表达式左侧运算的表达式
 	 */
 	function BinaryExpression(context){
 		Expression.call(this, context);

@@ -1,11 +1,11 @@
 {
 	"name": "rexjs",
-	"version": "1.0.1",
+	"version": "1.2.8",
 	"description": "Rexjs - 是一款又快、又小、性价比极高的 JavaScript(ES6+) 语法的编译器！",
 	"main": "node/index.js",
 	"repository": {
 		"type": "git",
-		"url": "https://gitee.com/jQun/Rexjs"
+		"url": "https://github.com/china-liji/Rexjs"
 	},
 	"keywords": [
 		"rex",
@@ -15,7 +15,7 @@
 		"js",
 		"编译"
 	],
-	"homepage": "",
+	"homepage": "http://rexjs.org",
 	"author": {
 		"name": "李骥",
 		"email": "hello_zaizi@163.com"

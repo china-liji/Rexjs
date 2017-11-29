@@ -86,6 +86,7 @@ this.ExpressionContextTags = function(list){
 		this.OpenRestrictedCommentTag,
 		this.PostfixDecrementTag,
 		this.PostfixIncrementTag,
+		this.QuestionAssignmentTag,
 		this.SubtractionTag,
 		this.OpenTemplateParameterTag
 	]

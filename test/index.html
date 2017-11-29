@@ -46,7 +46,7 @@
 			color: red;
 			right: 0;
 			top: 0;
-			content: "总测试数：" counter(all) " 总错误数：" counter(error);
+			content: "总成功数：" counter(all) " 总错误数：" counter(error);
 		}
 
 		.log::before {
@@ -60,7 +60,7 @@
 
 		.error {
 			color: red;
-			counter-increment: error;
+			counter-increment: error !important;
 			padding-left: 1em;
 			text-indent: -1em;
 		}
@@ -176,6 +176,7 @@
 		<script src="module/index.js"></script>
 		<script src="number/index.js"></script>
 		<script src="object/index.js"></script>
+		<script src="question-assignment/index.js"></script>
 		<script src="regexp/index.js"></script>
 		<script src="return/index.js"></script>
 		<script src="semicolon/index.js"></script>

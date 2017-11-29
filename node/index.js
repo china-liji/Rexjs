@@ -170,6 +170,7 @@ module.exports = { DevSource: this.DevSource, Source: this.Source };
 		"binary-base.js",
 		"binary-extension.js",
 		"binary-all.js",
+		"question-assignment.js",
 		"exponentiation.js",
 		"ternary.js",
 		"call.js",
