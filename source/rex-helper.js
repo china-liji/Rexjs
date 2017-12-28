@@ -955,6 +955,8 @@ this.Module = function(
 		 * 执行编译后的代码
 		 */
 		eval: function(){
+			var count = 0, progress = 0, imports = this.imports;
+
 			// 判断状态
 			switch(this.status){
 				// 如果已经就绪
@@ -969,11 +971,24 @@ this.Module = function(
 					return false;
 			}
 
-			// 如果所有需要引用的依赖模块的代码没有执行完成
-			if(!this.imports.every(function(i){
+			// 遍历
+			imports.forEach(function(i){
 				// 判断是否已经执行完成
-				return (i.status & STATUS_COMPLETED) === STATUS_COMPLETED;
-			})){
+				if((i.status & STATUS_COMPLETED) === STATUS_COMPLETED){
+					count++;
+				}
+			});
+
+			// 计算进度
+			progress = count / imports.length;
+
+			// 如果所有需要引用的依赖模块的代码没有执行完成
+			if(progress < 1){
+				trigger(
+					this,
+					+progress.toFixed(2)
+				);
+
 				return false;
 			}
 
@@ -989,7 +1004,7 @@ this.Module = function(
 			exports = null;
 
 			// 触发依赖该模块的其他模块的执行方法
-			trigger(this);
+			trigger(this, 1);
 			return true;
 		},
 		/**
@@ -1000,7 +1015,7 @@ this.Module = function(
 			// 如果已经执行完成
 			if(this.status === STATUS_COMPLETED){
 				// 直接调用该监听器
-				listener(this);
+				listener(this, 1);
 				return;
 			}
 
@@ -1057,7 +1072,7 @@ this.Module = function(
 				this.status = STATUS_COMPLETED;
 
 				// 触发依赖该模块的其他模块的执行方法
-				trigger(this);
+				trigger(this, 1);
 				return;
 			}
 
@@ -1183,18 +1198,24 @@ this.Module = function(
 		request.send();
 	},
 	// trigger
-	function(mod){
+	function(mod, progress){
 		var listeners = mod.listeners;
 
-		mod.targets.forEach(function(target){
-			target.eval();
-		});
+		// 如果进度为 1，说明已经加载完成
+		if(progress === 1){
+			// 触发引用模块的执行
+			mod.targets.forEach(function(target){
+				target.eval();
+			});
 
+			// 清空监听器
+			listeners = listeners.splice(0);
+		}
+
+		// 执行监听器
 		listeners.forEach(function(listener){
-			listener(mod);
+			listener(mod, progress);
 		});
-
-		listeners.splice(0);
 	},
 	// appendCss
 	function(content, sourceURL){
