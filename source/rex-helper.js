@@ -1007,11 +1007,12 @@ this.Module = function(
 			trigger(this, 1);
 			return true;
 		},
+		imports: null,
 		/**
-		 * 执行监听器
+		 * 监听模块加载进度
 		 * @param {Function} listener - 需要添加的监听器
 		 */
-		evalListener: function(listener){
+		listen: function(listener){
 			// 如果已经执行完成
 			if(this.status === STATUS_COMPLETED){
 				// 直接调用该监听器
@@ -1022,7 +1023,6 @@ this.Module = function(
 			// 添加到等待列表中
 			this.listeners.push(listener);
 		},
-		imports: null,
 		listeners: null,
 		name: null,
 		origin: "",
