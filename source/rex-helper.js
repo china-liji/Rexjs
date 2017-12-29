@@ -1016,7 +1016,7 @@ this.Module = function(
 			// 如果已经执行完成
 			if(this.status === STATUS_COMPLETED){
 				// 直接调用该监听器
-				listener(this, 1);
+				listener.call(this, 1);
 				return;
 			}
 
@@ -1214,7 +1214,7 @@ this.Module = function(
 
 		// 执行监听器
 		listeners.forEach(function(listener){
-			listener(mod, progress);
+			listener.call(mod, progress);
 		});
 	},
 	// appendCss
