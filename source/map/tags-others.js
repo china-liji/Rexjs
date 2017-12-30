@@ -116,6 +116,26 @@ this.ClassContextTags = function(ClassNameTag, ExtendsTag, OpenClassBodyTag){
 	this.OpenClassBodyTag
 );
 
+this.ClassIdentifierPropertyNameContextTags = function(ClassPropertyInitializerTag, OpenShorthandMethodArgumentsTag){
+	/**
+	 * 类标识符属性名上下文标签列表
+	 */
+	function ClassIdentifierPropertyNameContextTags(){
+		IllegalTags.call(this);
+		
+		this.register(
+			new ClassPropertyInitializerTag(),
+			new OpenShorthandMethodArgumentsTag()
+		);
+	};
+	ClassIdentifierPropertyNameContextTags = new Rexjs(ClassIdentifierPropertyNameContextTags, IllegalTags);
+
+	return ClassIdentifierPropertyNameContextTags;
+}(
+	this.ClassPropertyInitializerTag,
+	this.OpenShorthandMethodArgumentsTag
+);
+
 this.ClassNameContextTags = function(ExtendsTag, OpenClassBodyTag){
 	/**
 	 * 类关键字上下文标签列表
@@ -134,6 +154,36 @@ this.ClassNameContextTags = function(ExtendsTag, OpenClassBodyTag){
 }(
 	this.ExtendsTag,
 	this.OpenClassBodyTag
+);
+
+this.ClassPropertyNameTags = function(list){
+	/**
+	 * 类属性名标签列表
+	 */
+	function ClassPropertyNameTags(){
+		IllegalTags.call(this);
+		
+		this.delegate(list);
+	};
+	ClassPropertyNameTags = new Rexjs(ClassPropertyNameTags, IllegalTags);
+
+	return ClassPropertyNameTags;
+}(
+	// list
+	[
+		this.CloseClassBodyTag,
+		this.ClassPropertyPlaceholderTag,
+		this.PropertyStarTag,
+		this.ConstructorTag,
+		this.GetDescriptorTag,
+		this.SetDescriptorTag,
+		this.ClassIdentifierPropertyNameTag,
+		this.ClassNumberPropertyNameTag,
+		this.ClassBinaryNumberPropertyNameTag,
+		this.ClassOctalNumberPropertyNameTag,
+		this.ClassStringPropertyNameTag,
+		this.OpenClassComputedPropertyNameTag
+	]
 );
 
 this.ClassVariableTags = function(ClassVariableTag){
@@ -1417,6 +1467,25 @@ this.IdentifierPropertyNameContextTags = function(PropertyNameContextTags, Prope
 	this.CloseObjectTag
 );
 
+this.OpenClassBodyContextTags = function(ClassPropertyNameTags, StaticModifierTag){
+	/**
+	 * 类主体起始上下文标签列表
+	 */
+	function OpenClassBodyContextTags(){
+		ClassPropertyNameTags.call(this);
+
+		this.register(
+			new StaticModifierTag()
+		);
+	};
+	OpenClassBodyContextTags = new Rexjs(OpenClassBodyContextTags, ClassPropertyNameTags);
+
+	return OpenClassBodyContextTags;
+}(
+	this.ClassPropertyNameTags,
+	this.StaticModifierTag
+);
+
 this.PropertyNameTags = function(list){
 	/**
 	 * 对象属性名称标签列表
@@ -1618,6 +1687,40 @@ this.ShorthandMethodNameTags = function(list){
 	]
 );
 
+this.AccessorDescriptorContextTags = function(ShorthandMethodNameTags, ConstructorTag, ClassPropertyInitializerTag, OpenShorthandMethodArgumentsTag, PropertyAccessorTag){
+	/**
+	 * 访问器描述符上下文签列表
+	 */
+	function AccessorDescriptorContextTags(){
+		ShorthandMethodNameTags.call(this);
+
+		this.register(
+			new ConstructorTag(),
+			new ClassPropertyInitializerTag(),
+			new OpenShorthandMethodArgumentsTag()
+		);
+	};
+	AccessorDescriptorContextTags = new Rexjs(AccessorDescriptorContextTags, ShorthandMethodNameTags);
+
+	AccessorDescriptorContextTags.props({
+		/**
+		 * 标签过滤处理
+		 * @param {SyntaxTag} tag - 语法标签
+		 */
+		filter: function(tag){
+			return tag instanceof PropertyAccessorTag;
+		}
+	});
+
+	return AccessorDescriptorContextTags;
+}(
+	this.ShorthandMethodNameTags,
+	this.ConstructorTag,
+	this.ClassPropertyInitializerTag,
+	this.OpenShorthandMethodArgumentsTag,
+	this.PropertyAccessorTag
+);
+
 this.PropertyAccessorContextTags = function(ShorthandMethodNameTags, OpenShorthandMethodArgumentsTag, PropertyNameSeparatorTag, PropertySeparatorTag){
 	/**
 	 * 属性访问器上下文标签列表
@@ -1641,86 +1744,7 @@ this.PropertyAccessorContextTags = function(ShorthandMethodNameTags, OpenShortha
 	this.PropertySeparatorTag
 );
 
-this.ClassPropertyNameTags = function(ShorthandMethodNameTags, list){
-	/**
-	 * 类属性名标签列表
-	 */
-	function ClassPropertyNameTags(){
-		ShorthandMethodNameTags.call(this);
-		
-		this.delegate(list);
-	};
-	ClassPropertyNameTags = new Rexjs(ClassPropertyNameTags, ShorthandMethodNameTags);
-
-	return ClassPropertyNameTags;
-}(
-	this.ShorthandMethodNameTags,
-	// list
-	[
-		this.ConstructorTag,
-		this.GetDescriptorTag,
-		this.SetDescriptorTag,
-		this.ClassPropertyPlaceholderTag,
-		this.PropertyStarTag
-	]
-);
-
-this.AccessorDescriptorContextTags = function(ClassPropertyNameTags, ClassPropertyPlaceholderTag, OpenShorthandMethodArgumentsTag, PropertyAccessorTag, PropertyStarTag){
-	/**
-	 * 访问器描述符上下文签列表
-	 */
-	function AccessorDescriptorContextTags(){
-		ClassPropertyNameTags.call(this);
-
-		this.register(
-			new OpenShorthandMethodArgumentsTag()
-		);
-	};
-	AccessorDescriptorContextTags = new Rexjs(AccessorDescriptorContextTags, ClassPropertyNameTags);
-
-	AccessorDescriptorContextTags.props({
-		/**
-		 * 标签过滤处理
-		 * @param {SyntaxTag} tag - 语法标签
-		 */
-		filter: function(tag){
-			return (
-				tag instanceof ClassPropertyPlaceholderTag ||
-				tag instanceof PropertyAccessorTag ||
-				tag instanceof PropertyStarTag
-			);
-		}
-	});
-
-	return AccessorDescriptorContextTags;
-}(
-	this.ClassPropertyNameTags,
-	this.ClassPropertyPlaceholderTag,
-	this.OpenShorthandMethodArgumentsTag,
-	this.PropertyAccessorTag,
-	this.PropertyStarTag
-);
-
-this.OpenClassBodyContextTags = function(ClassPropertyNameTags, StaticModifierTag){
-	/**
-	 * 类主体起始上下文标签列表
-	 */
-	function OpenClassBodyContextTags(){
-		ClassPropertyNameTags.call(this);
-
-		this.register(
-			new StaticModifierTag()
-		);
-	};
-	OpenClassBodyContextTags = new Rexjs(OpenClassBodyContextTags, ClassPropertyNameTags);
-
-	return OpenClassBodyContextTags;
-}(
-	this.ClassPropertyNameTags,
-	this.StaticModifierTag
-);
-
-this.StaticModifierContextTags = function(ClassPropertyNameTags, ConstructorTag, CloseObjectTag, ClassPropertyPlaceholderTag, OpenShorthandMethodArgumentsTag){
+this.StaticModifierContextTags = function(ClassPropertyNameTags, ConstructorTag, CloseObjectTag, ClassPropertyPlaceholderTag, ClassPropertyInitializerTag, OpenShorthandMethodArgumentsTag){
 	/**
 	 * return 上下文标签列表
 	 */
@@ -1728,6 +1752,7 @@ this.StaticModifierContextTags = function(ClassPropertyNameTags, ConstructorTag,
 		ClassPropertyNameTags.call(this);
 		
 		this.register(
+			new ClassPropertyInitializerTag(),
 			new OpenShorthandMethodArgumentsTag()
 		);
 	};
@@ -1739,24 +1764,14 @@ this.StaticModifierContextTags = function(ClassPropertyNameTags, ConstructorTag,
 		 * @param {SyntaxTag} tag - 语法标签
 		 */
 		filter: function(tag){
-			switch(true){
+			return (
 				// constructor 不能作为静态属性
-				case tag instanceof ConstructorTag:
-					break;
-
+				tag instanceof ConstructorTag ||
 				// 如果是结束大括号
-				case tag instanceof CloseObjectTag:
-					break;
-
+				tag instanceof CloseObjectTag ||
 				// 如果是分号
-				case tag instanceof ClassPropertyPlaceholderTag:
-					break;
-
-				default:
-					return false;
-			}
-
-			return true;
+				tag instanceof ClassPropertyPlaceholderTag
+			);
 		}
 	})
 	
@@ -1766,6 +1781,7 @@ this.StaticModifierContextTags = function(ClassPropertyNameTags, ConstructorTag,
 	this.ConstructorTag,
 	this.CloseObjectTag,
 	this.ClassPropertyPlaceholderTag,
+	this.ClassPropertyInitializerTag,
 	this.OpenShorthandMethodArgumentsTag
 );
 

@@ -19,7 +19,7 @@ this.ShorthandMethodExpression = function(FunctionExpression){
 	this.FunctionExpression
 );
 	
-this.ShorthandMethodValueExpression = function(PropertyValueExpression, CompiledExpression){
+this.ShorthandMethodValueExpression = function(PropertyValueExpression, CompiledExpression, complie){
 	/**
 	 * 简写方法值表达式
 	 */
@@ -30,24 +30,28 @@ this.ShorthandMethodValueExpression = function(PropertyValueExpression, Compiled
 
 	ShorthandMethodValueExpression.props({
 		/**
+		 * 以函数参数模式提取表达式文本内容
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 */
+		argumentTo: function(contentBuilder){
+			// 编译表达式
+			complie(this, contentBuilder, "");
+		},
+		/**
 		 * 以定义属性的模式提取表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
 		 */
 		defineTo: function(contentBuilder){
-			// 追加冒号
-			contentBuilder.appendString(":function");
-			// 直接以简写形式提取表达式文本内容
-			this.shortTo(contentBuilder);
+			// 编译表达式
+			complie(this, contentBuilder, ":");
 		},
 		/**
 		 * 提取并编译表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
 		 */
 		compileTo: function(contentBuilder){
-			// 追加 赋值等于号 和 函数头部
-			contentBuilder.appendString("=function");
-			// 直接以简写形式提取表达式文本内容
-			this.shortTo(contentBuilder);
+			// 编译表达式
+			complie(this, contentBuilder, "=");
 		},
 		/**
 		 * 提取表达式文本内容
@@ -77,7 +81,14 @@ this.ShorthandMethodValueExpression = function(PropertyValueExpression, Compiled
 	return ShorthandMethodValueExpression;
 }(
 	this.PropertyValueExpression,
-	Rexjs.CompiledExpression
+	Rexjs.CompiledExpression,
+	// complie
+	function(expression, contentBuilder, separator){
+		// 追加 赋值等于号 和 函数头部
+		contentBuilder.appendString(separator + "function");
+		// 直接以简写形式提取表达式文本内容
+		expression.shortTo(contentBuilder);
+	}
 );
 
 this.ShorthandMethodValueStatement = function(PropertyValueStatement, ShorthandMethodExpression){

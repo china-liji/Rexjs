@@ -236,6 +236,8 @@ module.exports = { DevSource: this.DevSource, Source: this.Source };
 		"class.js",
 		"class-declaration.js",
 		"class-constructor.js",
+		"class-property-name.js",
+		"class-property-initializer.js",
 		"class-accessor.js",
 		"class-body.js",
 		"class-extends.js",

@@ -1,6 +1,13 @@
-var h = 1, i = 2, bn = parseInt("1010", 2)
+var h = 0, i = 2, bn = parseInt("1010", 2)
 
 class A {
+	p1 = h = 1
+	2 = 2
+	0b11111 = 3 + 7 +
+	0b101
+	0o12345 = 4;
+	[5] = 5
+	"6" = 6
 	.1(){
 		return 0.1;
 	};;
@@ -67,6 +74,14 @@ class A {
 	static get get(){
 		return this[0b1010]
 	}
+
+	static p1 = 1
+	static 2 = 2
+	static 0b11111 = 3 + 7 +
+	0b101
+	static 0o12345 = 4;
+	static [5] = 5
+	static "6" = 6
 }
 
 var names = [
@@ -86,6 +101,12 @@ var names = [
 	parseInt(1010, 2),
 	parseInt(1010, 8),
 	parseInt(11, 2),
+	"p1",
+	"2",
+	"5",
+	"6",
+	parseInt(11111, 2),
+	parseInt(12345, 8),
 	"get8888",
 	"constructor"
 ]
@@ -102,7 +123,13 @@ var staticNames = [
 	"constructor",
 	parseInt(1010, 2).toString(),
 	parseInt(1010, 8).toString(),
-	"length"
+	"length",
+	"p1",
+	"2",
+	"5",
+	"6",
+	parseInt(11111, 2).toString(),
+	parseInt(12345, 8).toString()
 ];
 
 if(
@@ -117,6 +144,30 @@ if(
 }
 
 var a = new A()
+
+if(a.p1 !== 1){
+	throw "标识符属性赋值错误";
+}
+
+if(a[2] !== 2){
+	throw "数字属性赋值错误";
+}
+
+if(a[0b11111] != 15){
+	throw "二进制数字赋值错误"
+}
+
+if(a[parseInt("12345", 8)] != 4){
+	throw "八进制赋值错误";
+}
+
+if(a[5] != 5){
+	throw "字符串赋值错误"
+}
+
+if(a[6] != 6){
+	throw "计算式赋值错误"
+}
 
 if(
 	a["0.1"]() !== 0.1
@@ -170,6 +221,30 @@ if(
 	!A.prototype.hasOwnProperty(parseInt(11, 2))
 ){
 	throw "没有指定二进制属性"
+}
+
+if(A.p1 !== 1){
+	throw "静态标识符属性赋值错误";
+}
+
+if(A[2] !== 2){
+	throw "静态数字属性赋值错误";
+}
+
+if(A[0b11111] != 15){
+	throw "静态二进制数字赋值错误"
+}
+
+if(A[parseInt("12345", 8)] != 4){
+	throw "静态八进制赋值错误";
+}
+
+if(A[5] != 5){
+	throw "静态字符串赋值错误"
+}
+
+if(A[6] != 6){
+	throw "静态计算式赋值错误"
 }
 
 if(

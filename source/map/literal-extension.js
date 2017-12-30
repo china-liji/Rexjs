@@ -164,8 +164,6 @@ this.NumberTag = function(){
 	NumberTag = new Rexjs(NumberTag, LiteralTag);
 	
 	NumberTag.props({
-		// 防止与 DotTag 匹配冲突
-		order: ECMAScriptOrders.NUMBER,
 		regexp: /0[xX][0-9a-fA-F]+|0{2,}(?!\.)|(?:\d*\.\d+|\d+\.?)(?:e[+-]?\d+)?/,
 		throw: "number"
 	});

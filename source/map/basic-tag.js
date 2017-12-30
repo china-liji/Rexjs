@@ -134,7 +134,7 @@ this.DotTag = function(){
 	DotTag = new Rexjs(DotTag, SyntaxTag);
 	
 	DotTag.props({
-		regexp: /\./
+		regexp: /\.(?!\d)/
 	});
 	
 	return DotTag;

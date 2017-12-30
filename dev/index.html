@@ -17,7 +17,9 @@
 
 	<script>
 		new function(){
-			// Rexjs.ECMAScriptConfig.all(false);
+			var config = Rexjs.ECMAScriptParser.config;
+
+			// config.es6Base = config.rexjs = false;
 			return;
 			new Rexjs.Module("old/test/profile.js");
 		}()

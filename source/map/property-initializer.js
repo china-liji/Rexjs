@@ -75,6 +75,14 @@ this.PropertyInitializerTag = function(BasicAssignmentTag, PropertyInitializerEx
 
 	PropertyInitializerTag.props({
 		/**
+		 * 获取绑定的表达式，一般在子类使用父类逻辑，而不使用父类表达式的情况下使用
+		 * @param {Context} context - 相关的语法标签上下文
+		 * @param {Statement} statement - 当前语句
+		 */
+		getBoundExpression: function(context, statement){
+			return new PropertyInitializerExpression(context, statement.expression.name);
+		},
+		/**
 		 * 标签访问器
 		 * @param {SyntaxParser} parser - 语法解析器
 		 * @param {Context} context - 标签上下文
@@ -82,10 +90,8 @@ this.PropertyInitializerTag = function(BasicAssignmentTag, PropertyInitializerEx
 		 * @param {Statements} statements - 当前语句块
 		 */
 		visitor: function(parser, context, statement, statements){
-			var expression = statement.expression;
-
 			// 设置属性表达式的值
-			expression.value = new PropertyInitializerExpression(context, expression.name);
+			statement.expression.value = this.getBoundExpression(context, statement);
 			// 设置当前语句
 			statements.statement = new PropertyValueStatement(statements);
 		}

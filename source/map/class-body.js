@@ -43,7 +43,7 @@ this.ClassBodyExpression = function(ObjectExpression, extractTo, compileItem){
 	}
 );
 
-this.ClassPropertyStatement = function(PropertyStatement, ClassPropertyExpression, IdentifierTag, NumberTag, StringTag, insertConstructorIfNeed, getNumberTag){
+this.ClassPropertyStatement = function(PropertyStatement, ClassPropertyExpression, ClassPropertyInitializerExpression, IdentifierTag, NumberTag, StringTag, insertConstructorIfNeed, getNumberTag){
 	/**
 	 * 类属性语句
 	 * @param {Statements} statements - 该语句将要所处的语句块
@@ -114,7 +114,7 @@ this.ClassPropertyStatement = function(PropertyStatement, ClassPropertyExpressio
 				
 				// 如果是计算式起始中括号
 				case "[":
-					t = tag.openComputedPropertyName;
+					t = tag.openClassComputedPropertyName;
 					break;
 
 				// 其他
@@ -124,7 +124,7 @@ this.ClassPropertyStatement = function(PropertyStatement, ClassPropertyExpressio
 					switch(true){
 						// 如果标签是标识符标签
 						case contextTag instanceof IdentifierTag:
-							t = tag.identifierPropertyName;
+							t = tag.classIdentifierPropertyNameTag;
 							break;
 
 						// 如果是数字标签
@@ -135,12 +135,12 @@ this.ClassPropertyStatement = function(PropertyStatement, ClassPropertyExpressio
 
 						// 如果是字符串标签
 						case contextTag instanceof StringTag:
-							t = tag.stringPropertyName;
+							t = tag.classStringPropertyName;
 							break;
-
+						
 						// 如果是关键字标签
 						case IdentifierTag.keywords.indexOf(content) > -1:
-							t = tag.keywordPropertyName;
+							t = tag.classIdentifierPropertyNameTag;
 							break;
 
 						default:
@@ -153,7 +153,15 @@ this.ClassPropertyStatement = function(PropertyStatement, ClassPropertyExpressio
 
 			var statements = this.statements;
 
-			// 进入这里，说明没有分隔符，要再判断
+			// 如果两属性之间没有换行
+			if((propertyExpression.state & STATE_STATEMENT_ENDABLE) !== STATE_STATEMENT_ENDABLE){
+				// 如果上一个属性为属性赋值表达式
+				if(propertyExpression.value instanceof ClassPropertyInitializerExpression){
+					// 报错
+					parser.error(context);
+					return null;
+				}
+			}
 
 			// 设置当前语句
 			statements.statement = new ClassPropertyStatement(statements);
@@ -186,6 +194,7 @@ this.ClassPropertyStatement = function(PropertyStatement, ClassPropertyExpressio
 }(
 	this.PropertyStatement,
 	this.ClassPropertyExpression,
+	this.ClassPropertyInitializerExpression,
 	this.IdentifierTag,
 	this.NumberTag,
 	this.StringTag,
@@ -215,26 +224,25 @@ this.ClassPropertyStatement = function(PropertyStatement, ClassPropertyExpressio
 	function(tag, contextTag){
 		// 如果是二进制数字标签
 		if(contextTag instanceof BinaryNumberTag){
-			return tag.binaryNumberPropertyName;
+			return tag.classBinaryNumberPropertyName;
 		}
 
 		// 如果是八进制数字标签
 		if(contextTag instanceof OctalNumberTag){
-			return tag.octalNumberPropertyName;
+			return tag.classOctalNumberPropertyName;
 		}
 
 		// 返回 es5 数字标签
-		return tag.numberPropertyName;
+		return tag.classNumberPropertyName;
 	}
 );
 
 this.OpenClassBodyTag = function(
 	OpenObjectTag,
 	ClassBodyExpression, ClassPropertyStatement,
-	binaryNumberPropertyNameTag, constructorTag,
-	getDescriptorTag, identifierPropertyNameTag, numberPropertyNameTag,
-	octalNumberPropertyNameTag, openComputedPropertyNameTag,
-	setDescriptorTag, staticModifierTag, stringPropertyNameTag, keywordPropertyNameTag
+	classBinaryNumberPropertyNameTag, classIdentifierPropertyNameTag, classNumberPropertyNameTag,
+	classOctalNumberPropertyNameTag, classStringPropertyNameTag, openClassComputedPropertyNameTag,
+	constructorTag, getDescriptorTag, setDescriptorTag, staticModifierTag
 ){
 	/**
 	 * 起始函数主体标签
@@ -247,16 +255,40 @@ this.OpenClassBodyTag = function(
 
 	OpenClassBodyTag.props({
 		/**
-		 * 获取绑定的二进制数字标签，该标签一般是用于语句的 try、catch 的返回值
-		 */
-		get binaryNumberPropertyName(){
-			return binaryNumberPropertyNameTag;
-		},
-		/**
 		 * 获取绑定的类主体结束标签，该标签一般是用于语句的 try、catch 的返回值
 		 */
 		get binding(){
 			return closeClassBodyTag;
+		},
+		/**
+		 * 获取绑定的二进制数字标签，该标签一般是用于语句的 try、catch 的返回值
+		 */
+		get classBinaryNumberPropertyName(){
+			return classBinaryNumberPropertyNameTag;
+		},
+		/**
+		 * 获取绑定的标识符属性名标签，该标签一般是用于语句的 try、catch 的返回值
+		 */
+		get classIdentifierPropertyNameTag(){
+			return classIdentifierPropertyNameTag;
+		},
+		/**
+		 * 获取绑定的数字属性名标签，该标签一般是用于语句的 try、catch 的返回值
+		 */
+		get classNumberPropertyName(){
+			return classNumberPropertyNameTag;
+		},
+		/**
+		 * 获取绑定的八进制数字属性名标签，该标签一般是用于语句的 try、catch 的返回值
+		 */
+		get classOctalNumberPropertyName(){
+			return classOctalNumberPropertyNameTag;
+		},
+		/**
+		 * 获取绑定的字符串属性名标签，该标签一般是用于语句的 try、catch 的返回值
+		 */
+		get classStringPropertyName(){
+			return classStringPropertyNameTag;
 		},
 		/**
 		 * 获取绑定的构造函数标签，该标签一般是用于语句的 try、catch 的返回值
@@ -271,34 +303,10 @@ this.OpenClassBodyTag = function(
 			return getDescriptorTag;
 		},
 		/**
-		 * 获取绑定的标识符属性名标签，该标签一般是用于语句的 try、catch 的返回值
-		 */
-		get identifierPropertyName(){
-			return identifierPropertyNameTag;
-		},
-		/**
-		 * 获取绑定的关键字属性名标签，该标签一般是用于语句的 try、catch 的返回值
-		 */
-		get keywordPropertyName(){
-			return keywordPropertyNameTag;
-		},
-		/**
-		 * 获取绑定的数字属性名标签，该标签一般是用于语句的 try、catch 的返回值
-		 */
-		get numberPropertyName(){
-			return numberPropertyNameTag;
-		},
-		/**
-		 * 获取绑定的八进制数字属性名标签，该标签一般是用于语句的 try、catch 的返回值
-		 */
-		get octalNumberPropertyName(){
-			return octalNumberPropertyNameTag;
-		},
-		/**
 		 * 获取绑定的起始计算式名标签，该标签一般是用于语句的 try、catch 的返回值
 		 */
-		get openComputedPropertyName(){
-			return openComputedPropertyNameTag;
+		get openClassComputedPropertyName(){
+			return openClassComputedPropertyNameTag;
 		},
 		/**
 		 * 获取绑定的分隔符标签，该标签一般是用于语句的 try、catch 的返回值
@@ -317,12 +325,6 @@ this.OpenClassBodyTag = function(
 		 */
 		get staticModifier(){
 			return staticModifierTag;
-		},
-		/**
-		 * 获取绑定的字符串属性名标签，该标签一般是用于语句的 try、catch 的返回值
-		 */
-		get stringPropertyName(){
-			return stringPropertyNameTag
 		},
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
@@ -351,28 +353,26 @@ this.OpenClassBodyTag = function(
 	this.OpenObjectTag,
 	this.ClassBodyExpression,
 	this.ClassPropertyStatement,
-	// binaryNumberPropertyNameTag
-	new this.BinaryNumberPropertyNameTag(),
+	// classBinaryNumberPropertyNameTag
+	new this.ClassBinaryNumberPropertyNameTag(),
+	// classIdentifierPropertyNameTag
+	new this.ClassIdentifierPropertyNameTag(),
+	// classNumberPropertyNameTag
+	new this.ClassNumberPropertyNameTag(),
+	// classOctalNumberPropertyNameTag
+	new this.ClassOctalNumberPropertyNameTag(),
+	// classStringPropertyNameTag
+	new this.ClassStringPropertyNameTag(),
+	// openClassComputedPropertyNameTag
+	new this.OpenClassComputedPropertyNameTag(),
 	// constructorTag
 	new this.ConstructorTag(),
 	// getDescriptorTag
 	new this.GetDescriptorTag(),
-	// identifierPropertyNameTag
-	new this.IdentifierPropertyNameTag(),
-	// numberPropertyNameTag
-	new this.NumberPropertyNameTag(),
-	// octalNumberPropertyNameTag
-	new this.OctalNumberPropertyNameTag(),
-	// openComputedPropertyNameTag
-	new this.OpenComputedPropertyNameTag(),
 	// setDescriptorTag
 	new this.SetDescriptorTag(),
 	// staticModifierTag
-	new this.StaticModifierTag(),
-	// stringPropertyNameTag
-	new this.StringPropertyNameTag(),
-	// keywordPropertyNameTag
-	new this.KeywordPropertyNameTag()
+	new this.StaticModifierTag()
 );
 
 this.ClassPropertySeparatorTag = function(SemicolonTag, ClassPropertyStatement){

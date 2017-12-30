@@ -33,7 +33,7 @@ test.unit(
 				return err.context.tag instanceof Rexjs.NumberTag ? "" : "没有解析出两个连续的数字";
 			},
 			function(parser, err){
-				return err.context.content === "15" ? "" : "没有正确的分离数字";
+				return err.context.content === ".15" ? "" : "没有正确的分离数字";
 			}
 		);
 

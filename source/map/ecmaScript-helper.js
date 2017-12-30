@@ -72,7 +72,6 @@ this.ECMAScriptOrders = ECMAScriptOrders = function(){
 	ECMAScriptOrders = new Rexjs(ECMAScriptOrders);
 
 	ECMAScriptOrders.static({
-		NUMBER: 100,
 		OPEN_ARROW_FUNCTION_BODY: 100,
 		OPEN_BRACKET_ACCESSOR: 100,
 		OPEN_CALL: 100,
@@ -114,7 +113,7 @@ this.ECMAScriptOrders = ECMAScriptOrders = function(){
 		FUNCTION_VARIABLE: 302,
 		IDENTIFIER_PROPERTY_NAME: 302,
 		WORD_PROPERTY_NAME: 303,
-		STATIC_MODIFIER: 303,
+		STATIC_MODIFIER: 304,
 		COMMENT: 400,
 		OPEN_RESTRICTED_COMMENT: 401,
 		COMMENT_CONTENT: 402,
