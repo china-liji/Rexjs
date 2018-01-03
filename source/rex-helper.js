@@ -547,7 +547,13 @@ this.Class = function(ClassProperty, defineProperty){
 );
 
 
-!function(XMLHttpRequest, URL_REGEXP, document, encodeURI, parseInt, getBaseHref){
+!function(
+	ECMAScriptParser, XMLHttpRequest,
+	STATUS_NONE, STATUS_LOADING, STATUS_PARSING, STATUS_READY, STATUS_ENDED, STATUS_COMPLETED, STATUS_ERROR,
+	URL_REGEXP,
+	document,
+	encodeURI, trigger, getBaseHref
+){
 
 this.URL = function(toString, parse){
 	/**
@@ -790,13 +796,12 @@ this.ModuleName = function(URL, BASE_URI){
 );
 
 this.Module = function(
-	ModuleName, ECMAScriptParser, MappingBuilder, File,
-	STATUS_NONE, STATUS_LOADING, STATUS_PARSING, STATUS_READY, STATUS_COMPLETED,
+	ModuleName, MappingBuilder, File,
 	cache, name, exports,
-	create, defineProperty, parse, nativeEval, load, trigger, appendCss
+	create, defineProperty, parse, nativeEval, load, appendCss, listenDomReady
 ){
 	/**
-	 * 模块，todo: 需要兼容 node 环境
+	 * 模块
 	 * @param {String} name - 模块名称
 	 * @param {String} _code - 模块代码
 	 * @param {Boolean} _sync - 是否同步
@@ -836,7 +841,9 @@ this.Module = function(
 		STATUS_LOADING: STATUS_LOADING,
 		STATUS_PARSING: STATUS_PARSING,
 		STATUS_READY: STATUS_READY,
+		STATUS_ENDED: STATUS_ENDED,
 		STATUS_COMPLETED: STATUS_COMPLETED,
+		STATUS_ERROR: STATUS_ERROR,
 		/**
 		 * 获取模块缓存信息
 		 */
@@ -851,10 +858,15 @@ this.Module = function(
 		defaultOf: function(name, _baseURLstring){
 			return this.import(name, _baseURLstring).default;
 		},
-		export: function(propertyName, value){
+		/**
+		 * 输出模块成员
+		 * @param {String} name - 需要输出的模块成员名称
+		 * @param {*} value - 需要输出的模块成员值
+		 */
+		export: function(name, value){
 			defineProperty(
 				exports,
-				propertyName,
+				name,
 				{
 					get: function(){ return value },
 					configurable: false,
@@ -950,33 +962,45 @@ this.Module = function(
 	});
 
 	Module.props({
+		/**
+		 * 判断该模块是否已经加载并执行完成
+		 */
+		get completed(){
+			return (this.status & STATUS_COMPLETED) === STATUS_COMPLETED;
+		},
+		/**
+		 * 判断该模块是否已经加载结束
+		 */
+		get ended(){
+			return (this.status & STATUS_ENDED) === STATUS_ENDED;
+		},
+		/**
+		 * 判断该模块是否发生了错误
+		 */
+		get error(){
+			return (this.status & STATUS_ERROR) === STATUS_ERROR;
+		},
 		exports: null,
 		/**
 		 * 执行编译后的代码
 		 */
 		eval: function(){
-			var count = 0, progress = 0, imports = this.imports;
+			var count = 0, progress = 0, imports = this.imports, status = this.status;
 
-			// 判断状态
-			switch(this.status){
-				// 如果已经就绪
-				case STATUS_READY:
-					break;
-
-				// 如果已经执行完成过
-				case STATUS_COMPLETED:
-					return true;
-
-				default:
-					return false;
+			// 如果还没有就绪
+			if((this.status & STATUS_READY) !== STATUS_READY){
+				return false;
+			}
+			
+			// 如果已经执行完成
+			if(this.completed){
+				return true;
 			}
 
 			// 遍历
 			imports.forEach(function(i){
-				// 判断是否已经执行完成
-				if((i.status & STATUS_COMPLETED) === STATUS_COMPLETED){
-					count++;
-				}
+				// 如果已完成，总数加 1，否则加 0。ps：+true = 1, +false = 0
+				count += +i.completed;
 			});
 
 			// 计算进度
@@ -984,6 +1008,7 @@ this.Module = function(
 
 			// 如果所有需要引用的依赖模块的代码没有执行完成
 			if(progress < 1){
+				// 触发监听器
 				trigger(
 					this,
 					+progress.toFixed(2)
@@ -1004,7 +1029,7 @@ this.Module = function(
 			exports = null;
 
 			// 触发依赖该模块的其他模块的执行方法
-			trigger(this, 1);
+			trigger(this);
 			return true;
 		},
 		imports: null,
@@ -1013,8 +1038,8 @@ this.Module = function(
 		 * @param {Function} listener - 需要添加的监听器
 		 */
 		listen: function(listener){
-			// 如果已经执行完成
-			if(this.status === STATUS_COMPLETED){
+			// 如果已经结束
+			if(this.ended){
 				// 直接调用该监听器
 				listener.call(this, 1);
 				return;
@@ -1072,7 +1097,7 @@ this.Module = function(
 				this.status = STATUS_COMPLETED;
 
 				// 触发依赖该模块的其他模块的执行方法
-				trigger(this, 1);
+				trigger(this);
 				return;
 			}
 
@@ -1118,51 +1143,13 @@ this.Module = function(
 		targets: null
 	});
 
-	document.addEventListener(
-		"DOMContentLoaded",
-		function(){
-			var count = 0;
-
-			// 遍历元素
-			[].forEach.call(
-				document.querySelectorAll('script[type="text/rexjs"]'),
-				function(script){
-					// 如果存在 src 属性
-					if(script.hasAttribute("src")){
-						// 如果要生成 sourceMaps
-						if(script.hasAttribute("data-sourcemaps")){
-							// 开启 sourceMaps
-							ECMAScriptParser.sourceMaps = true;
-						}
-
-						// 初始化模块
-						new Module(script.src);
-						return;
-					}
-
-					// 初始化内联模块
-					new Module("inline-script-" + count++ +".js", script.textContent);
-				}
-			);
-		}
-	);
-
+	// 监听 dom 就绪事件
+	listenDomReady(Module);
 	return Module;
 }(
 	this.ModuleName,
-	Rexjs.ECMAScriptParser,
 	Rexjs.MappingBuilder,
 	Rexjs.File,
-	// STATUS_NONE
-	parseInt(0, 2),
-	// STATUS_LOADING
-	parseInt(10, 2),
-	// STATUS_PARSING
-	parseInt(100, 2),
-	// STATUS_READY
-	parseInt(1000, 2),
-	// STATUS_COMPLETED
-	parseInt(11000, 2),
 	// cache
 	{},
 	// name
@@ -1184,7 +1171,13 @@ this.Module = function(
 			function(){
 				// 如果存在错误
 				if(this.status !== 200){
-					throw '加载模块 "' + name + '" 错误，status：' + this.status + "。";
+					// 设置状态
+					mod.status = STATUS_ERROR;
+
+					// 提示错误信息
+					console.error('加载模块 "' + name + '" 错误，status：' + this.status + "。");
+					// 触发监听器
+					trigger(this);
 					return;
 				}
 				
@@ -1196,26 +1189,6 @@ this.Module = function(
 		request.open("get", href, !_sync);
 		// 发送请求
 		request.send();
-	},
-	// trigger
-	function(mod, progress){
-		var listeners = mod.listeners;
-
-		// 如果进度为 1，说明已经加载完成
-		if(progress === 1){
-			// 触发引用模块的执行
-			mod.targets.forEach(function(target){
-				target.eval();
-			});
-
-			// 清空监听器
-			listeners = listeners.splice(0);
-		}
-
-		// 执行监听器
-		listeners.forEach(function(listener){
-			listener.call(mod, progress);
-		});
 	},
 	// appendCss
 	function(content, sourceURL){
@@ -1237,20 +1210,89 @@ this.Module = function(
 		// 添加到文档头部
 		document.head.appendChild(style);
 		return style;
+	},
+	// listenDomReady
+	function(Module){
+		document.addEventListener(
+			"DOMContentLoaded",
+			function(){
+				var count = 0;
+
+				// 遍历元素
+				[].forEach.call(
+					document.querySelectorAll('script[type="text/rexjs"]'),
+					function(script){
+						// 如果存在 src 属性
+						if(script.hasAttribute("src")){
+							// 如果要生成 sourceMaps
+							if(script.hasAttribute("data-sourcemaps")){
+								// 开启 sourceMaps
+								ECMAScriptParser.sourceMaps = true;
+							}
+
+							// 初始化模块
+							new Module(script.src);
+							return;
+						}
+
+						// 初始化内联模块
+						new Module("inline-script-" + count++ +".js", script.textContent);
+					}
+				);
+			}
+		);
 	}
 );
 
 }.call(
 	this,
+	Rexjs.ECMAScriptParser,
 	XMLHttpRequest,
+	// STATUS_NONE
+	parseInt(0, 2),
+	// STATUS_LOADING
+	parseInt(10, 2),
+	// STATUS_PARSING
+	parseInt(100, 2),
+	// STATUS_READY
+	parseInt(1000, 2),
+	// STATUS_ENDED
+	parseInt(10000, 2),
+	// STATUS_COMPLETED
+	parseInt(111000, 2),
+	// STATUS_ERROR
+	parseInt(1010000, 2),
 	// URL_REGEXP
 	/^([^:/?#.]+:)?(?:\/\/(?:[^/?#]*@)?([\w\d\-\u0100-\uffff.%]*)(?::([0-9]+))?)?([^?#]+?(\.[^.?#\/]+)?)?(?:(\?[^#]*))?(?:(#.*))?$/,
 	document,
 	encodeURI,
-	parseInt,
+	// trigger
+	function(mod, _progress){
+		var listeners = mod.listeners;
+
+		// 如果没有提供 _progress 参数
+		if(typeof _progress !== "number"){
+			_progress = 1;
+		}
+
+		// 如果已经加载完成
+		if(mod.completed){
+			// 触发引用模块的执行
+			mod.targets.forEach(function(target){
+				target.eval();
+			});
+
+			// 清空监听器
+			listeners = listeners.splice(0);
+		}
+
+		// 执行监听器
+		listeners.forEach(function(listener){
+			listener.call(mod, _progress);
+		});
+	},
 	// getBaseHref
 	function(){
-		// BASE_URI todo: 需要兼容 node 环境
 		var baseElement = document.querySelector("base");
 
 		return (
