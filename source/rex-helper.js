@@ -1173,11 +1173,13 @@ this.Module = function(
 				if(this.status !== 200){
 					// 设置状态
 					mod.status = STATUS_ERROR;
+					// 设置错误响应文本
+					mod.result = mod.origin = this.responseText;
 
 					// 提示错误信息
 					console.error('加载模块 "' + name + '" 错误，status：' + this.status + "。");
 					// 触发监听器
-					trigger(this);
+					trigger(mod);
 					return;
 				}
 				
