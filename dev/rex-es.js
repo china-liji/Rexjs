@@ -9262,15 +9262,23 @@ this.ArrowFunctionExpression = function(){
 					因为箭头函数里的 this 与 arguments 都是指向外层的，箭头函数自己没有 arguments
 				*/
 
+				var args = this.arguments;
+
 				// 追加外层函数头部代码
 				contentBuilder.appendString("(function");
 				// 提取并编译函数参数
-				this.arguments.compileTo(contentBuilder, defaultArgumentBuilder);
+				args.compileTo(contentBuilder, defaultArgumentBuilder);
 				// 追加内层函数头部代码 与 默认参数
 				contentBuilder.appendString("{" + defaultArgumentBuilder.result + "return function()");
-				
-				// 清空默认参数，因为在上面已经被追加至生成器内
-				defaultArgumentBuilder.result = "";
+
+				/*
+					设置默认参数为“连接所有参数名后的字符串”
+					1. 因为默认参数在上面已经被追加至 contentBuilder 内
+					2. 由于两层函数，但实际运行是内层函数，而函数参数是设置在外层函数上，
+					所以运行时，设置 debugger，会无法获取参数信息，
+					所以要在内层函数上引用一次所有参数，以方便 debugger
+				*/
+				defaultArgumentBuilder.result = args.collection.toString("", ",", ";");
 
 				// 提取并编译函数主体
 				this.body.compileTo(contentBuilder, defaultArgumentBuilder);
