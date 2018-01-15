@@ -624,9 +624,16 @@ this.URL = function(toString, parse){
 		 * 获取路径名
 		 */
 		get pathname(){
-			var dirname = this.dirname;
-			
-			return dirname + (dirname[dirname.length - 1] === "/" ? "" : "/") + this.filename;
+			var filename = this.filename, dirname = this.dirname;
+
+			// 如果文件名存在
+			if(filename){
+				// 拼接目录名和文件名
+				return dirname + (dirname[dirname.length - 1] === "/" ? "" : "/") + filename;
+			}
+
+			// 直接返回目录名
+			return dirname;
 		},
 		port : "",
 		protocal : "",
@@ -664,14 +671,19 @@ this.URL = function(toString, parse){
 			return false;
 		}
 		
-		var pathname = result[4] || "", protocal = result[1], hostname = result[2] || "", port = result[3] || "";
+		var dirname = result[4] || "", protocal = result[1],
+		
+			hostname = result[2] || "", port = result[3] || "",
+			
+			filename = result[5] || "";
 		
 		url.protocal = protocal;
 		url.hostname = hostname;
 		url.port = port;
-		url.ext = result[5] || "";
-		url.search = result[6] || "";
-		url.hash = result[7] || "";
+		url.filename = filename;
+		url.ext = result[6] || "";
+		url.search = result[7] || "";
+		url.hash = result[8] || "";
 
 		// 判断协议
 		switch(protocal){
@@ -715,7 +727,7 @@ this.URL = function(toString, parse){
 				}
 				
 				// 重置 url 部分属性
-				pathname = urlString.substring(protocal.length, index);
+				dirname = urlString.substring(protocal.length, index - filename.length);
 				url.hostname = url.port = "";
 				url.search = decodeURI(url.search);
 				url.hash = decodeURI(url.hash);
@@ -724,10 +736,10 @@ this.URL = function(toString, parse){
 			}
 		}
 		
-		var pathnameArray = [], hasFilename = url.ext.length > 0;
+		var dirnameArray = [];
 		
 		// 分割路径
-		pathname
+		dirname
 			.split(
 				"/"
 			)
@@ -739,7 +751,7 @@ this.URL = function(toString, parse){
 					
 					// 如果是2点，说明是返回上一层目录，则去掉数组的最后一个
 					case ".." :
-						pathnameArray.splice(pathnameArray.length - 1);
+						dirnameArray.splice(dirnameArray.length - 1);
 						break;
 						
 					case "" :
@@ -747,13 +759,19 @@ this.URL = function(toString, parse){
 					
 					// 添加目录
 					default :
-						pathnameArray.push(name);
+						dirnameArray.push(name);
 						break;
 				}
 			});
 
-		url.dirname = "/" + (hasFilename ? pathnameArray.slice(0, pathnameArray.length - 1) : pathnameArray).join("/");
-		url.filename = hasFilename ? pathnameArray[pathnameArray.length - 1] : "";
+		// 如果 文件名不存在 而且 路径名最后是 "/"
+		if(!filename && dirname[dirname.length - 1] === "/"){
+			// 那么添加空字符串，方便下面的 dirname 在末尾加上 "/"
+			dirnameArray.push("");
+		}
+
+		// 设置 dirname
+		url.dirname = "/" + dirnameArray.join("/");
 		return true;
 	}
 );
@@ -771,13 +789,19 @@ this.ModuleName = function(URL, BASE_URI){
 			typeof _baseURLstring === "string" ? _baseURLstring : BASE_URI
 		);
 
-		// 如果文件名不存在
-		if(this.filename === ""){
-			// 设置文件名
-			this.filename = "index.js";
-			// 设置拓展名
-			this.ext = ".js";
+		// 如果文件名存在
+		if(this.filename !== ""){
+			return;
 		}
+
+		var pathname = this.pathname;
+
+		// 返回新的实例
+		return new ModuleName(
+			this.origin + pathname +
+			(pathname[pathname.length - 1] === "/" ? "index.js" : ".js") +
+			this.search + this.hash
+		);
 	};
 	ModuleName = new Rexjs(ModuleName, URL);
 
@@ -1265,7 +1289,7 @@ this.Module = function(
 	// STATUS_ERROR
 	parseInt(1010000, 2),
 	// URL_REGEXP
-	/^([^:/?#.]+:)?(?:\/\/(?:[^/?#]*@)?([\w\d\-\u0100-\uffff.%]*)(?::([0-9]+))?)?([^?#]+?(\.[^.?#\/]+)?)?(?:(\?[^#]*))?(?:(#.*))?$/,
+	/^([^:/?#.]+:)?(?:\/\/(?:[^/?#]*@)?([\w\d\-\u0100-\uffff.%]*)(?::([0-9]+))?)?(?:([^?#]+?)([^\/]+?(\.[^.?#\/]+))?)?(?:(\?[^#]*))?(?:(#.*))?$/,
 	document,
 	encodeURI,
 	// trigger
