@@ -953,16 +953,12 @@ this.Module = function(
 		 * @param {String} _baseURLstring - 基础地址
 		 */
 		import: function(name, _baseURLstring){
-			var mod = cache[
-				new ModuleName(name, _baseURLstring).href
-			];
-
-			// 如果两个模块互相引用
-			if(mod.imports.indexOf(this)){
-				throw "";
-			}
-
-			return mod.exports;
+			return (
+				cache[
+					new ModuleName(name, _baseURLstring).href
+				]
+				.exports
+			);
 		},
 		/**
 		 * 锁定模块名称，作为默认模块
@@ -1153,6 +1149,16 @@ this.Module = function(
 					// 如果是重复导入
 					if(imports.indexOf(mod) > -1){
 						return;
+					}
+
+					// 如果是两模块相互引用
+					if(mod.imports.indexOf(this) > - 1){
+						// 报错
+						throw (
+							"Module has been imported by each other " +
+							name.href + " " +
+							mod.name.href
+						);
 					}
 
 					// 添加需要导入的模块
