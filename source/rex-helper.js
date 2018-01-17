@@ -798,9 +798,7 @@ this.ModuleName = function(URL, BASE_URI){
 
 		// 返回新的实例
 		return new ModuleName(
-			this.origin + pathname +
-			(pathname[pathname.length - 1] === "/" ? "index.js" : ".js") +
-			this.search + this.hash
+			this.origin + pathname + "/index.js" + this.search + this.hash
 		);
 	};
 	ModuleName = new Rexjs(ModuleName, URL);
@@ -955,10 +953,16 @@ this.Module = function(
 		 * @param {String} _baseURLstring - 基础地址
 		 */
 		import: function(name, _baseURLstring){
-			return cache[
+			var mod = cache[
 				new ModuleName(name, _baseURLstring).href
-			]
-			.exports;
+			];
+
+			// 如果两个模块互相引用
+			if(mod.imports.indexOf(this)){
+				throw "";
+			}
+
+			return mod.exports;
 		},
 		/**
 		 * 锁定模块名称，作为默认模块
