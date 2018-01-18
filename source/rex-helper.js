@@ -548,14 +548,14 @@ this.Class = function(ClassProperty, defineProperty){
 
 
 !function(
-	ECMAScriptParser, XMLHttpRequest,
+	URL, ECMAScriptParser, XMLHttpRequest,
 	STATUS_NONE, STATUS_LOADING, STATUS_PARSING, STATUS_READY, STATUS_ENDED, STATUS_COMPLETED, STATUS_ERROR,
-	URL_REGEXP,
+	URL_REGEXP, CSS_URL_REGEXP,
 	document,
 	encodeURI, trigger, getBaseHref
 ){
 
-this.URL = function(toString, parse){
+this.URL = URL = function(toString, parse){
 	/**
 	 * 地址，需要兼容 node 环境
 	 * @param {String} urlString - 地址字符串
@@ -605,20 +605,38 @@ this.URL = function(toString, parse){
 		 * 获取主机地址
 		 */
 		get host(){
-			return this.hostname + (this.port ? ":" + this.port : "");
+			var hostname = this.hostname;
+
+			// 如果存在 hostname
+			if(hostname){
+				var port = this.port;
+
+				// 拼接 host
+				return hostname + (port ? ":" + port : "");
+			}
+
+			// 返回空字符串
+			return "";
 		},
 		hostname : "",
 		/**
 		 * 获取完整连接
 		 */
 		get href(){
-			return this.origin + this.pathname + this.search + this.hash;	
+			return this.protocal + (this.hostname ? "//" + this.host : "") + this.pathname + this.search + this.hash;	
 		},
 		/**
 		 * 获取域地址
 		 */
 		get origin(){
-			return this.protocal + "//" + this.host;	
+			// 如果 hostname 存在
+			if(this.hostname){
+				// 返回拼接结果
+				return this.protocal + "//" + this.host;
+			}
+
+			// 返回 null 字符串
+			return "null";
 		},
 		/**
 		 * 获取路径名
@@ -697,7 +715,7 @@ this.URL = function(toString, parse){
 				}
 
 				break;
-
+			
 			case void 0:
 				return false;
 
@@ -725,13 +743,25 @@ this.URL = function(toString, parse){
 						index = urlString.length;
 						break;
 				}
+
+				// 清空 host 与 port
+				url.hostname = url.port = "";
+
+				// 如果是 dataURL
+				if(protocal === "data:"){
+					// 直接设置 dirname
+					url.dirname = urlString.substring(protocal.length, index);
+					// 清空 filename 与 ext
+					url.filename = url.ext = "";
+					return true;
+				}
 				
 				// 重置 url 部分属性
 				dirname = urlString.substring(protocal.length, index - filename.length);
-				url.hostname = url.port = "";
+				// 解码 search
 				url.search = decodeURI(url.search);
+				// 解码 hash
 				url.hash = decodeURI(url.hash);
-
 				break;
 			}
 		}
@@ -776,7 +806,7 @@ this.URL = function(toString, parse){
 	}
 );
 
-this.ModuleName = function(URL, BASE_URI){
+this.ModuleName = function(BASE_URI){
 	/**
 	 * 模块名称
 	 * @param {String} value - 模块名称
@@ -809,8 +839,7 @@ this.ModuleName = function(URL, BASE_URI){
 
 	return ModuleName;
 }(
-	this.URL,
-	new this.URL(
+	new URL(
 		getBaseHref(),
 		location.href
 	)
@@ -1230,6 +1259,20 @@ this.Module = function(
 	function(content, sourceURL){
 		var style = document.createElement("style");
 		
+		// 替换相对路径为绝对路径
+		content = content.replace(
+			CSS_URL_REGEXP,
+			function(str, stringQoute, urlStart, urlQuote, url, urlEnd){
+				// 如果 url 不存在
+				if(!url){
+					return str;
+				}
+
+				// 返回 url
+				return urlStart + new URL(url, sourceURL).href + urlEnd;
+			}
+		);
+
 		// 设置 type
 		style.type = "text/css";
 		// 追加 sourceURL
@@ -1282,6 +1325,8 @@ this.Module = function(
 
 }.call(
 	this,
+	// URL
+	null,
 	Rexjs.ECMAScriptParser,
 	XMLHttpRequest,
 	// STATUS_NONE
@@ -1300,6 +1345,15 @@ this.Module = function(
 	parseInt(1010000, 2),
 	// URL_REGEXP
 	/^([^:/?#.]+:)?(?:\/\/(?:[^/?#]*@)?([\w\d\-\u0100-\uffff.%]*)(?::([0-9]+))?)?(?:([^?#]+?)([^\/]+?(\.[^.?#\/]+))?)?(?:(\?[^#]*))?(?:(#.*))?$/,
+	// CSS_URL_REGEXP
+	new RegExp(
+		[
+			/("|')(?:\\(?:[^\r]|\r\n?)|[^\\\r\n\u2028\u2029]+?)*\1/.source,
+			/(\burl\s*\(\s*(['"]?))(.*?)(\3\s*\))/.source
+		]
+		.join("|"),
+		"g"
+	),
 	document,
 	encodeURI,
 	// trigger
