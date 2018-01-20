@@ -1,6 +1,3 @@
-var a = (x = 1, y, ...text) => {
-	"use strict"
-	debugger
-}
+import styles, { compiler } from "./index.css";
 
-a();
+debugger

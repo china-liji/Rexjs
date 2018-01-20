@@ -547,15 +547,10 @@ this.Class = function(ClassProperty, defineProperty){
 );
 
 
-!function(
-	URL, ECMAScriptParser, XMLHttpRequest,
-	STATUS_NONE, STATUS_LOADING, STATUS_PARSING, STATUS_READY, STATUS_ENDED, STATUS_COMPLETED, STATUS_ERROR,
-	URL_REGEXP, CSS_URL_REGEXP,
-	document,
-	encodeURI, trigger, getBaseHref
-){
+// 模块辅助类
+!function(URL_REGEXP, document, encodeURI){
 
-this.URL = URL = function(toString, parse){
+this.URL = function(toString, parse){
 	/**
 	 * 地址，需要兼容 node 环境
 	 * @param {String} urlString - 地址字符串
@@ -806,6 +801,237 @@ this.URL = URL = function(toString, parse){
 	}
 );
 
+this.CSSSelectorMap = function(CSS_SELECTOR_REGEXP, SEPARATOR_REGEXP, postfix, hasOwnProperty){
+	/**
+	 * CSS 选择器映射表
+	 */
+	function CSSSelectorMap(){};
+	CSSSelectorMap = new Rexjs(CSSSelectorMap);
+
+	CSSSelectorMap.props({
+		/**
+		 * 解析选择器
+		 * @param {String} selectorText - 选择器文本
+		 */
+		parse: function(selectorText){
+			var cssSelectorMap = this;
+
+			// 返回替换后的字符串
+			return (
+				selectorText.replace(
+					CSS_SELECTOR_REGEXP,
+					function(str){
+						var key, selector = str.substring(1);
+
+						// 获取 key
+						key = selector.replace(
+							SEPARATOR_REGEXP,
+							function(s){
+								return s[1].toUpperCase();
+							}
+						);
+
+						// 如果没有该属性
+						if(!hasOwnProperty.call(cssSelectorMap, key)){
+							postfix++;
+							// 设置属性
+							cssSelectorMap[key] = selector + "-" + postfix.toString(16);
+						}
+
+						// 返回结果
+						return str[0] + cssSelectorMap[key];
+					}
+				)
+			);
+		}
+	});
+
+	return CSSSelectorMap;
+}(
+	// CSS_SELECTOR_REGEXP
+	/(?:#|\.)[^#.[+~*>:,\s]+/g,
+	// SEPARATOR_REGEXP
+	/(?:-|_)\w/g,
+	// postfix - 起始 256 ~ 512，目的是转成 16 进制后最少有 3 位数
+	Math.round(Math.random() * 256 + 256),
+	Object.prototype.hasOwnProperty
+);
+
+this.CSSCompiler = function(URL, CSSSelectorMap, CSSRule, CSS_URL_REGEXP, enableSelectorMap, parse, forEach, appendStyleTo){
+	/**
+	 * CSS 编译器
+	 * @param {String} cssText - 源文本
+	 * @param {String} sourceURL - 文件地址
+	 */
+	function CSSCompiler(cssText, sourceURL){
+		var cssSelectorMap = new CSSSelectorMap();
+
+		// 处理 css 源文本
+		cssText = this.compileURLs(cssText, sourceURL);
+
+		// 如果需要启用选择器映射
+		if(enableSelectorMap){
+			// 编译选择器
+			cssText = this.compileSelectors(
+				appendStyleTo(
+					cssText,
+					document.implementation.createHTMLDocument("").head
+				)
+				.sheet
+				.cssRules,
+				cssSelectorMap
+			);
+		}
+
+		// 追加 sourceURL
+		cssText += "\n/*# sourceURL=" + sourceURL + " */";
+
+		// 设置属性
+		this.selectorMap = cssSelectorMap;
+		this.result = cssText;
+		this.style = appendStyleTo(cssText, document.head);
+	};
+	CSSCompiler = new Rexjs(CSSCompiler);
+
+	CSSCompiler.static({
+		/**
+		 * 禁止使用选择器解析器
+		 */
+		disableSelectorMap: function(){
+			enableSelectorMap = false;
+		}
+	});
+
+	CSSCompiler.props({
+		/**
+		 * 编译 CSS 选择器
+		 * @param {CSSRuleList} cssRules - css 规则列表
+		 * @param {CSSSelectorMap} cssSelectorMap - css 选择器映射表
+		 */
+		compileSelectors: function(cssRules, cssSelectorMap){
+			var result = "";
+
+			// 遍历规则
+			forEach(
+				cssRules,
+				function(rule){
+					// 判断类型
+					switch(rule.type){
+						// 如果是 style 规则
+						case CSSRule.STYLE_RULE:
+							// 解析选择器
+							result += parse.call(cssSelectorMap, rule.selectorText) + "{" + rule.style.cssText + "}";
+							return;
+
+						// 如果是 @media 规则
+						case CSSRule.MEDIA_RULE:
+							result += "@media " + rule.conditionText;
+							break;
+
+						// 如果是 @keyframes 规则
+						case CSSRule.KEYFRAMES_RULE:
+							result += "@keyframes " + rule.name;
+							break;
+
+						// 如果是 @supports 规则
+						case CSSRule.SUPPORTS_RULE:
+							result += "@supports " + rule.conditionText;
+							break;
+
+						// 其他
+						default:
+							result += rule.cssText;
+							return;
+					}
+
+					// 追加起始大括号
+					result += "{";
+
+					// 继续编译子规则的选择器
+					this.compileSelectors(rule.cssRules, cssSelectorMap);
+					
+					// 追加结束大括号
+					result += "}";
+				},
+				this,
+				true
+			);
+
+			return result;
+		},
+		/**
+		 * 编译 URL，将地址转为绝对路径
+		 * @param {String} cssText - css 文本内容
+		 * @param {String} sourceURL - 当前 css 文件的文件地址
+		 */
+		compileURLs: function(cssText, sourceURL){
+			return cssText.replace(
+				CSS_URL_REGEXP,
+				function(str, urlStart, urlQuote, url, urlEnd){
+					// 如果 url 不存在
+					if(!url){
+						return str;
+					}
+
+					// 返回 url
+					return urlStart + new URL(url, sourceURL).href + urlEnd;
+				}
+			);
+		},
+		result: "",
+		selectorMap: null,
+		style: null
+	});
+
+	return CSSCompiler;
+}(
+	this.URL,
+	this.CSSSelectorMap,
+	CSSRule,
+	// CSS_URL_REGEXP
+	new RegExp(
+		[
+			// 注释正则
+			/\/\*[\s\S]*?\*\//.source,
+			// 字符串正则
+			/"(?:\\(?:[^\r]|\r\n?)|[^"\\\r\n\u2028\u2029]+)*"|'(?:\\(?:[^\r]|\r\n?)|[^'\\\r\n\u2028\u2029]+)*'/.source,
+			// 路径正则
+			/(\burl\s*\(\s*(['"]?))(.*?)(\2\s*\))/.source
+		]
+		.join("|"),
+		"g"
+	),
+	// enableSelectorMap
+	true,
+	this.CSSSelectorMap.prototype.parse,
+	Rexjs.forEach,
+	// appendStyleTo
+	function(cssText, parentElement){
+		var style = document.createElement("style");
+
+		style.type = "text/css";
+		style.textContent = cssText;
+
+		parentElement.appendChild(style);
+		return style;
+	}
+);
+
+}.call(
+	this,
+	// URL_REGEXP
+	/^([^:/?#.]+:)?(?:\/\/(?:[^/?#]*@)?([\w\d\-\u0100-\uffff.%]*)(?::([0-9]+))?)?(?:([^?#]+?)([^\/]+?(\.[^.?#\/]+))?)?(?:(\?[^#]*))?(?:(#.*))?$/,
+	document,
+	encodeURI
+);
+
+
+!function(
+	URL, ECMAScriptParser, XMLHttpRequest,
+	STATUS_NONE, STATUS_LOADING, STATUS_PARSING, STATUS_READY, STATUS_ENDED, STATUS_COMPLETED, STATUS_ERROR,
+	document, trigger
+){
+
 this.ModuleName = function(BASE_URI){
 	/**
 	 * 模块名称
@@ -840,16 +1066,24 @@ this.ModuleName = function(BASE_URI){
 	return ModuleName;
 }(
 	new URL(
-		getBaseHref(),
+		(
+			document.querySelector("base") ||
+			{
+				getAttribute: function(){
+					return "./";
+				}
+			}
+		)
+		.getAttribute("href"),
 		location.href
 	)
 	.href
 );
 
 this.Module = function(
-	ModuleName, MappingBuilder, File,
+	ModuleName, CSSCompiler, MappingBuilder, File,
 	cache, name, exports,
-	create, defineProperty, parse, nativeEval, load, appendCss, listenDomReady
+	create, defineProperty, parse, nativeEval, load, listenDomReady
 ){
 	/**
 	 * 模块
@@ -1118,32 +1352,34 @@ this.Module = function(
 			if(ext !== ".js"){
 				var result = content;
 
+				// 缓存输出
+				exports = this.exports;
+
 				// 判断拓展名
 				switch(ext){
 					// 如果是 css
 					case ".css":
-						// 添加 css
-						result = appendCss(content, name.href);
+						var cssCompiler = new CSSCompiler(content, name.href);
+
+						result = cssCompiler.selectorMap;
+
+						// 输出编译器
+						Module.export("compiler", cssCompiler);
 						break;
 					
 					// 如果是 json
 					case ".json":
-						// 解析 json
 						result = parse(content);
 						break;
 				}
 
-				// 定义默认输出
-				defineProperty(
-					this.exports,
-					"default",
-					{
-						get: function(){ return result },
-						configurable: false,
-						enumerable: true
-					}
-				);
-				
+				// 输出原始数据
+				Module.export("origin", content);
+				// 默认输出
+				Module.export("default", result);
+
+				// 清空缓存
+				exports = null;
 				// 设置模块解析结果
 				this.result = result;
 				// 设置状态为已完成
@@ -1211,6 +1447,7 @@ this.Module = function(
 	return Module;
 }(
 	this.ModuleName,
+	this.CSSCompiler,
 	Rexjs.MappingBuilder,
 	Rexjs.File,
 	// cache
@@ -1255,41 +1492,6 @@ this.Module = function(
 		// 发送请求
 		request.send();
 	},
-	// appendCss
-	function(content, sourceURL){
-		var style = document.createElement("style");
-		
-		// 替换相对路径为绝对路径
-		content = content.replace(
-			CSS_URL_REGEXP,
-			function(str, stringQoute, urlStart, urlQuote, url, urlEnd){
-				// 如果 url 不存在
-				if(!url){
-					return str;
-				}
-
-				// 返回 url
-				return urlStart + new URL(url, sourceURL).href + urlEnd;
-			}
-		);
-
-		// 设置 type
-		style.type = "text/css";
-		// 追加 sourceURL
-		content += "\n/*# sourceURL=" + sourceURL + " */";
-
-		// ie
-		if(style.styleSheet){
-			style.styleSheet.cssText = content;
-		}
-		else {
-			style.textContent = content;
-		}
-
-		// 添加到文档头部
-		document.head.appendChild(style);
-		return style;
-	},
 	// listenDomReady
 	function(Module){
 		document.addEventListener(
@@ -1325,8 +1527,7 @@ this.Module = function(
 
 }.call(
 	this,
-	// URL
-	null,
+	this.URL,
 	Rexjs.ECMAScriptParser,
 	XMLHttpRequest,
 	// STATUS_NONE
@@ -1343,19 +1544,7 @@ this.Module = function(
 	parseInt(111000, 2),
 	// STATUS_ERROR
 	parseInt(1010000, 2),
-	// URL_REGEXP
-	/^([^:/?#.]+:)?(?:\/\/(?:[^/?#]*@)?([\w\d\-\u0100-\uffff.%]*)(?::([0-9]+))?)?(?:([^?#]+?)([^\/]+?(\.[^.?#\/]+))?)?(?:(\?[^#]*))?(?:(#.*))?$/,
-	// CSS_URL_REGEXP
-	new RegExp(
-		[
-			/("|')(?:\\(?:[^\r]|\r\n?)|[^\\\r\n\u2028\u2029]+?)*\1/.source,
-			/(\burl\s*\(\s*(['"]?))(.*?)(\3\s*\))/.source
-		]
-		.join("|"),
-		"g"
-	),
 	document,
-	encodeURI,
 	// trigger
 	function(mod, _progress){
 		var listeners = mod.listeners;
@@ -1380,14 +1569,6 @@ this.Module = function(
 		listeners.forEach(function(listener){
 			listener.call(mod, _progress);
 		});
-	},
-	// getBaseHref
-	function(){
-		var baseElement = document.querySelector("base");
-
-		return (
-			baseElement && baseElement.getAttribute("href")
-		) || "./";
 	}
 );
 
