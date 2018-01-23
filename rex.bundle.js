@@ -493,7 +493,7 @@ this.forEach(
 	Rexjs,
 	Array,
 	// VERSION
-	"1.3.0"
+	"1.3.1"
 );
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
@@ -29031,12 +29031,32 @@ this.URL = function(toString, parse){
 	}
 );
 
-this.CSSSelectorMap = function(CSS_SELECTOR_REGEXP, SEPARATOR_REGEXP, postfix, getOwnPropertyNames, hasOwnProperty){
+this.CSSSelectorMap = function(CSS_SELECTOR_REGEXP, SEPARATOR_REGEXP, cache, postfix, getOwnPropertyNames, hasOwnProperty){
 	/**
 	 * CSS 选择器映射表
+	 * @param {String} namespaceURI - 映射表命名空间地址
 	 */
-	function CSSSelectorMap(){};
+	function CSSSelectorMap(namespaceURI){
+		// 创建一个新的映射表
+		cache[namespaceURI] = this;
+	};
 	CSSSelectorMap = new Rexjs(CSSSelectorMap);
+
+	CSSSelectorMap.static({
+		/**
+		 * 根据命名空间地址获取映射表，如果没有则创建一个并返回
+		 * @param {String} namespaceURI - 映射表命名空间地址
+		 */
+		getSelectorMapByNS: function(namespaceURI){
+			// 如果存在
+			if(hasOwnProperty.call(cache, namespaceURI)){
+				return cache[namespaceURI];
+			}
+
+			// 返回新建的映射表
+			return new CSSSelectorMap(namespaceURI);
+		}
+	});
 
 	CSSSelectorMap.props({
 		/**
@@ -29049,6 +29069,12 @@ this.CSSSelectorMap = function(CSS_SELECTOR_REGEXP, SEPARATOR_REGEXP, postfix, g
 			// 遍历列表
 			mapList.forEach(
 				function(map){
+					// 如果是同一个
+					if(map === cssSelectorMap){
+						// 不处理
+						return;
+					}
+
 					// 遍历属性名
 					getOwnPropertyNames(map).forEach(this, map);
 				},
@@ -29106,6 +29132,8 @@ this.CSSSelectorMap = function(CSS_SELECTOR_REGEXP, SEPARATOR_REGEXP, postfix, g
 	/(?:#|\.)[^#.[+~*>:,\s]+/g,
 	// SEPARATOR_REGEXP
 	/(?:-|_)\w/g,
+	// cache
+	{},
 	// postfix - 起始 2560 ~ 2816 16 进制后最少有 3 位数，且第一位应该为字母
 	Math.round(2560 + Math.random() * 256),
 	Object.getOwnPropertyNames,
@@ -29121,14 +29149,15 @@ this.CSSCompiler = function(URL, CSSSelectorMap, CSSRule, CSS_URL_REGEXP, enable
 	function CSSCompiler(cssText, sourceURL){
 		// 初始化引用
 		this.imports = [];
-		// 设置属性
-		this.selectorMap = new CSSSelectorMap();
 
 		// 处理 css 源文本
 		cssText = this.compileURLs(cssText, sourceURL);
 
 		// 如果需要启用选择器映射
 		if(enableSelectorMap){
+			// 设置属性
+			this.selectorMap = new CSSSelectorMap(sourceURL);
+
 			// 编译选择器
 			cssText = this.compileSelectors(
 				appendStyleTo(
@@ -29193,6 +29222,14 @@ this.CSSCompiler = function(URL, CSSSelectorMap, CSSRule, CSS_URL_REGEXP, enable
 						case CSSRule.IMPORT_RULE:
 							this.imports.push(rule.href);
 							return;
+
+						// 如果是 @namespace 规则
+						case CSSRule.NAMESPACE_RULE:
+							// 如果是选择器映射空间
+							if(rule.prefix === "selector-map"){
+								this.selectorMap = CSSSelectorMap.getSelectorMapByNS(rule.namespaceURI);
+								return;
+							}
 
 						// 其他
 						default:

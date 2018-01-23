@@ -1,0 +1,9 @@
+@namespace selector-map url("./index.css");
+
+.ui-loader-page {
+	color: #999;
+}
+
+#id {
+	color: 777;
+}
