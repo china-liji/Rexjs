@@ -20,6 +20,7 @@ this.Uglify = function(Source, Date, SOURCE_PATH, childProcess, fs, console){
 				`webpack ${files[0]} ${files[3]} ${PROJECT_PATH}/rex-browser-helper.min.js -p`,
 				`webpack ${files.slice(0, -1).join(" ")} ${PROJECT_PATH}/rex-api.min.js -p`,
 				`webpack ${files.join(" ")} ${PROJECT_PATH}/rex.min.js -p`,
+				`webpack ${files.join(" ")} ${PROJECT_PATH}/rex.bundle.js`
 			];
 			
 			execCmd = (cmd) => {

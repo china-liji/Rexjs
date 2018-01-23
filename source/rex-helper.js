@@ -801,7 +801,7 @@ this.URL = function(toString, parse){
 	}
 );
 
-this.CSSSelectorMap = function(CSS_SELECTOR_REGEXP, SEPARATOR_REGEXP, postfix, hasOwnProperty){
+this.CSSSelectorMap = function(CSS_SELECTOR_REGEXP, SEPARATOR_REGEXP, postfix, getOwnPropertyNames, hasOwnProperty){
 	/**
 	 * CSS 选择器映射表
 	 */
@@ -809,6 +809,30 @@ this.CSSSelectorMap = function(CSS_SELECTOR_REGEXP, SEPARATOR_REGEXP, postfix, h
 	CSSSelectorMap = new Rexjs(CSSSelectorMap);
 
 	CSSSelectorMap.props({
+		/**
+		 * 合并其他选择器映射表
+		 * @param {Array.<CSSSelectorMap>} mapList - 其他的选择器映射表
+		 */
+		merge: function(mapList){
+			var cssSelectorMap = this;
+
+			// 遍历列表
+			mapList.forEach(
+				function(map){
+					// 遍历属性名
+					getOwnPropertyNames(map).forEach(this, map);
+				},
+				function(key){
+					// 如果已经有该属性
+					if(hasOwnProperty.call(cssSelectorMap, key)){
+						return;
+					}
+
+					// 设置属性
+					cssSelectorMap[key] = this[key];
+				}
+			);
+		},
 		/**
 		 * 解析选择器
 		 * @param {String} selectorText - 选择器文本
@@ -852,19 +876,23 @@ this.CSSSelectorMap = function(CSS_SELECTOR_REGEXP, SEPARATOR_REGEXP, postfix, h
 	/(?:#|\.)[^#.[+~*>:,\s]+/g,
 	// SEPARATOR_REGEXP
 	/(?:-|_)\w/g,
-	// postfix - 起始 256 ~ 512，目的是转成 16 进制后最少有 3 位数
-	Math.round(Math.random() * 256 + 256),
+	// postfix - 起始 2560 ~ 2816 16 进制后最少有 3 位数，且第一位应该为字母
+	Math.round(2560 + Math.random() * 256),
+	Object.getOwnPropertyNames,
 	Object.prototype.hasOwnProperty
 );
 
-this.CSSCompiler = function(URL, CSSSelectorMap, CSSRule, CSS_URL_REGEXP, enableSelectorMap, parse, forEach, appendStyleTo){
+this.CSSCompiler = function(URL, CSSSelectorMap, CSSRule, CSS_URL_REGEXP, enableSelectorMap, parse, merge, forEach, appendStyleTo){
 	/**
 	 * CSS 编译器
 	 * @param {String} cssText - 源文本
 	 * @param {String} sourceURL - 文件地址
 	 */
 	function CSSCompiler(cssText, sourceURL){
-		var cssSelectorMap = new CSSSelectorMap();
+		// 初始化引用
+		this.imports = [];
+		// 设置属性
+		this.selectorMap = new CSSSelectorMap();
 
 		// 处理 css 源文本
 		cssText = this.compileURLs(cssText, sourceURL);
@@ -878,18 +906,12 @@ this.CSSCompiler = function(URL, CSSSelectorMap, CSSRule, CSS_URL_REGEXP, enable
 					document.implementation.createHTMLDocument("").head
 				)
 				.sheet
-				.cssRules,
-				cssSelectorMap
+				.cssRules
 			);
 		}
 
 		// 追加 sourceURL
-		cssText += "\n/*# sourceURL=" + sourceURL + " */";
-
-		// 设置属性
-		this.selectorMap = cssSelectorMap;
-		this.result = cssText;
-		this.style = appendStyleTo(cssText, document.head);
+		this.result = cssText + "\n/*# sourceURL=" + sourceURL + " */";
 	};
 	CSSCompiler = new Rexjs(CSSCompiler);
 
@@ -906,9 +928,8 @@ this.CSSCompiler = function(URL, CSSSelectorMap, CSSRule, CSS_URL_REGEXP, enable
 		/**
 		 * 编译 CSS 选择器
 		 * @param {CSSRuleList} cssRules - css 规则列表
-		 * @param {CSSSelectorMap} cssSelectorMap - css 选择器映射表
 		 */
-		compileSelectors: function(cssRules, cssSelectorMap){
+		compileSelectors: function(cssRules){
 			var result = "";
 
 			// 遍历规则
@@ -920,7 +941,7 @@ this.CSSCompiler = function(URL, CSSSelectorMap, CSSRule, CSS_URL_REGEXP, enable
 						// 如果是 style 规则
 						case CSSRule.STYLE_RULE:
 							// 解析选择器
-							result += parse.call(cssSelectorMap, rule.selectorText) + "{" + rule.style.cssText + "}";
+							result += parse.call(this.selectorMap, rule.selectorText) + "{" + rule.style.cssText + "}";
 							return;
 
 						// 如果是 @media 规则
@@ -938,6 +959,11 @@ this.CSSCompiler = function(URL, CSSSelectorMap, CSSRule, CSS_URL_REGEXP, enable
 							result += "@supports " + rule.conditionText;
 							break;
 
+						// 如果是 @import 规则
+						case CSSRule.IMPORT_RULE:
+							this.imports.push(rule.href);
+							return;
+
 						// 其他
 						default:
 							result += rule.cssText;
@@ -948,7 +974,7 @@ this.CSSCompiler = function(URL, CSSSelectorMap, CSSRule, CSS_URL_REGEXP, enable
 					result += "{";
 
 					// 继续编译子规则的选择器
-					this.compileSelectors(rule.cssRules, cssSelectorMap);
+					this.compileSelectors(rule.cssRules);
 					
 					// 追加结束大括号
 					result += "}";
@@ -978,6 +1004,17 @@ this.CSSCompiler = function(URL, CSSSelectorMap, CSSRule, CSS_URL_REGEXP, enable
 				}
 			);
 		},
+		/**
+		 * 完成编译，合并依赖模块的选择器映射表，并将样式添加到文档中
+		 */
+		done: function(selectorMapList){
+			// 合并选择器映射表
+			merge.call(this.selectorMap, selectorMapList);
+
+			// 添加到文档中
+			this.style = appendStyleTo(this.result, document.head);
+		},
+		imports: null,
 		result: "",
 		selectorMap: null,
 		style: null
@@ -1004,6 +1041,7 @@ this.CSSCompiler = function(URL, CSSSelectorMap, CSSRule, CSS_URL_REGEXP, enable
 	// enableSelectorMap
 	true,
 	this.CSSSelectorMap.prototype.parse,
+	this.CSSSelectorMap.prototype.merge,
 	Rexjs.forEach,
 	// appendStyleTo
 	function(cssText, parentElement){
@@ -1304,13 +1342,41 @@ this.Module = function(
 				return false;
 			}
 
+			var result = this.result;
+
 			// 设置状态为已完成
 			this.status = STATUS_COMPLETED;
 			// 缓存输出
 			exports = this.exports;
 
-			// 执行代码
-			nativeEval(this.result);
+			// 判断拓展名
+			switch(this.name.ext){
+				case ".js":
+					// 执行代码
+					nativeEval(result);
+					break;
+
+				case ".css":
+					// 样式编译完成
+					result.done(
+						// 遍历 imports
+						this.imports.map(function(mod){
+							// 返回依赖模块的选择器映射
+							return mod.result.selectorMap;
+						})
+					);
+
+					// 设置默认输出
+					Module.export("compiler", result);
+					// 设置默认输出
+					Module.export("default", result.selectorMap);
+					break;
+
+				default:
+					// 设置默认输出
+					Module.export("default", result);
+					break;
+			}
 
 			// 清空缓存
 			exports = null;
@@ -1344,95 +1410,82 @@ this.Module = function(
 		 * @param {Boolean} _sync - 是否同步
 		 */
 		ready: function(content, _sync){
-			var name = this.name, ext = name.ext;
+			var deps, result = content, name = this.name;
 
+			// 记录源内容
 			this.origin = content;
-
-			// 如果不是 js 文件
-			if(ext !== ".js"){
-				var result = content;
-
-				// 缓存输出
-				exports = this.exports;
-
-				// 判断拓展名
-				switch(ext){
-					// 如果是 css
-					case ".css":
-						var cssCompiler = new CSSCompiler(content, name.href);
-
-						result = cssCompiler.selectorMap;
-
-						// 输出编译器
-						Module.export("compiler", cssCompiler);
-						break;
-					
-					// 如果是 json
-					case ".json":
-						result = parse(content);
-						break;
-				}
-
-				// 输出原始数据
-				Module.export("origin", content);
-				// 默认输出
-				Module.export("default", result);
-
-				// 清空缓存
-				exports = null;
-				// 设置模块解析结果
-				this.result = result;
-				// 设置状态为已完成
-				this.status = STATUS_COMPLETED;
-
-				// 触发依赖该模块的其他模块的执行方法
-				trigger(this);
-				return;
-			}
-
-			var imports = this.imports, parser = new ECMAScriptParser();
-			
 			// 设置状态为解析中
 			this.status = STATUS_PARSING;
 
-			// 解析代码
-			parser.parse(
-				// 初始化文件
-				new File(name.href, content)
-			);
+			// 判断拓展名
+			switch(name.ext){
+				case ".js":
+					var parser = new ECMAScriptParser();
 			
+					// 解析代码
+					parser.parse(
+						// 初始化文件
+						new File(name.href, content)
+					);
+					
+					// 设置模块解析结果
+					result = parser.build();
+					// 获取依赖
+					deps = parser.deps;
+					break;
+
+				// 如果是 css
+				case ".css":
+					// 设置模块解析结果
+					result = new CSSCompiler(content, name.href);
+					// 获取依赖
+					deps = result.imports;
+					break;
+				
+				// 如果是 json
+				case ".json":
+					// 设置模块解析结果
+					result = parse(content);
+					break;
+			}
+
 			// 设置模块解析结果
-			this.result = parser.build();
+			this.result = result;
 			// 设置状态为已就绪
 			this.status = STATUS_READY;
 
-			// 遍历依赖
-			parser.deps.forEach(
-				function(dep){
-					var href = new ModuleName(dep, name.href).href, mod = cache.hasOwnProperty(href) ? cache[href] : new Module(href, null, _sync);
+			// 如果存在依赖模块
+			if(deps && deps.length > 0){
+				var imports = this.imports;
 
-					// 如果是重复导入
-					if(imports.indexOf(mod) > -1){
-						return;
-					}
+				// 遍历依赖
+				deps.forEach(
+					function(dep){
+						var href = new ModuleName(dep, name.href).href, mod = cache.hasOwnProperty(href) ? cache[href] : new Module(href, null, _sync);
 
-					// 如果是两模块相互引用
-					if(mod.imports.indexOf(this) > - 1){
-						// 报错
-						throw (
-							"Module has been imported by each other " +
-							name.href + " " +
-							mod.name.href
-						);
-					}
+						// 如果是重复导入
+						if(imports.indexOf(mod) > -1){
+							return;
+						}
 
-					// 添加需要导入的模块
-					imports.push(mod);
-					// 给导入模块添加目标模块
-					mod.targets.push(this);
-				},
-				this
-			);
+						// 如果是两模块相互引用
+						if(mod.imports.indexOf(this) > - 1){
+							// 报错
+							throw (
+								"Module has been imported by each other " +
+								name.href + " " +
+								mod.name.href
+							);
+						}
+
+						// 添加需要导入的模块
+						imports.push(mod);
+						// 给导入模块添加目标模块
+						mod.targets.push(this);
+					},
+					this
+				);
+			}
 
 			// 执行代码
 			this.eval();
