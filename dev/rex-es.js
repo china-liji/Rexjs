@@ -26321,7 +26321,16 @@ this.ECMAScriptParser = function(SourceBuilder, MappingBuilder, ECMAScriptTagsMa
 		build: function(_contentBuilder){
 			// 如果没有提供内容生成器
 			if(!_contentBuilder){
-				_contentBuilder = sourceMaps ? new MappingBuilder(this.file) : new SourceBuilder(this.file);
+				var file = this.file;
+
+				// 如果提供了文件名
+				if(file.filename){
+					_contentBuilder = sourceMaps ? new MappingBuilder(file) : new SourceBuilder(file);
+				}
+				// 如果没有提供文件名
+				else {
+					_contentBuilder = new ContentBuilder();
+				}
 			}
 			
 			// 追加闭包函数起始部分
