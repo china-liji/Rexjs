@@ -25291,22 +25291,23 @@ this.ECMAScriptParser = function(SourceBuilder, MappingBuilder, ECMAScriptTagsMa
 		 * @param {ContentBuilder} _contentBuilder - 内容生成器
 		 */
 		build: function(_contentBuilder){
-			// 如果没有提供内容生成器
-			if(!_contentBuilder){
-				var file = this.file;
+			var file = this.file, filename = file.filename;
 
+			_contentBuilder = _contentBuilder || (
 				// 如果提供了文件名
-				if(file.filename){
-					_contentBuilder = sourceMaps ? new MappingBuilder(file) : new SourceBuilder(file);
-				}
-				// 如果没有提供文件名
-				else {
-					_contentBuilder = new ContentBuilder();
-				}
-			}
-			
+				filename ?
+					(
+						sourceMaps ? new MappingBuilder(file) : new SourceBuilder(file)
+					) :
+					// 如果没有提供文件名
+					new ContentBuilder()
+			);
+
 			// 追加闭包函数起始部分
-			_contentBuilder.appendString('new Rexjs.Module("' + this.file.filename + '", function(Rexjs){');
+			_contentBuilder.appendString(
+				(filename ? 'new Rexjs.Module("' + this.file.filename + '",' : "!") + "function(Rexjs){"
+			);
+
 			// 创建新行
 			_contentBuilder.newline();
 			// 追加严格表达式字符串
@@ -25316,11 +25317,13 @@ this.ECMAScriptParser = function(SourceBuilder, MappingBuilder, ECMAScriptTagsMa
 
 			// 提取语法列表内容
 			this.statements.extractTo(_contentBuilder);
-			
+
 			// 创建新行
 			_contentBuilder.newline();
+			// 追加模块函数结束
+			_contentBuilder.appendString();
 			// 追加闭包函数结束部分
-			_contentBuilder.appendString("});");
+			_contentBuilder.appendString("}" + (filename ? ")" : "()") + ";");
 
 			return _contentBuilder.complete();
 		},

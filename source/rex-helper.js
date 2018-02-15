@@ -1157,7 +1157,7 @@ this.ModuleName = function(BASE_URI){
 
 this.Module = function(
 	ModuleName, CSSCompiler, MappingBuilder, File,
-	cache, name, exports, global,
+	cache, exports, global,
 	create, defineProperty, parse, nativeEval, request, listenDomReady
 ){
 	/**
@@ -1567,8 +1567,6 @@ this.Module = function(
 	Rexjs.File,
 	// cache
 	{},
-	// name
-	"",
 	// exports
 	null,
 	// global

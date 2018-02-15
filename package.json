@@ -1,10 +1,11 @@
 {
 	"name": "rexjs-api",
-	"version": "1.3.5",
+	"version": "1.3.8",
 	"description": "Rexjs - 是一款又快、又小、性价比极高的 JavaScript(ES6+) 语法的编译器！",
 	"scripts": {
 		"dev": "node node/dev.js",
-		"build": "node node/uglify.js"
+		"build": "node node/uglify.js",
+		"prepublish": "npm run build"
 	},
 	"main": "rex-api.min.js",
 	"repository": {
