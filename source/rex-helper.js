@@ -1157,13 +1157,13 @@ this.ModuleName = function(BASE_URI){
 
 this.Module = function(
 	ModuleName, CSSCompiler, MappingBuilder, File,
-	cache, name, exports,
-	create, defineProperty, parse, nativeEval, load, listenDomReady
+	cache, name, exports, global,
+	create, defineProperty, parse, nativeEval, request, listenDomReady
 ){
 	/**
 	 * 模块
 	 * @param {String} name - 模块名称
-	 * @param {String} _code - 模块代码
+	 * @param {String, Function} _code - 模块代码
 	 * @param {Boolean} _sync - 是否同步
 	 */
 	function Module(name, _code, _sync){
@@ -1171,8 +1171,16 @@ this.Module = function(
 
 		// 如果缓存里已经存在该模块
 		if(cache.hasOwnProperty(href)){
+			var mod = cache[href];
+
+			// 如果是函数而且没有结束（没有执行）
+			if(typeof _code === "function" && !this.ended){
+				// 加载当前模块
+				mod.load(_code);
+			}
+
 			// 返回该模块
-			return cache[href];
+			return mod;
 		}
 
 		this.exports = create(null);
@@ -1184,15 +1192,23 @@ this.Module = function(
 
 		cache[href] = this;
 
-		// 如果提供了代码
-		if(typeof _code === "string"){
-			// 代码就绪
-			this.ready(_code, _sync);
-			return;
+		// 判断代码类型
+		switch(typeof _code){
+			// 如果是字符串
+			case "string":
+				// 代码就绪
+				this.ready(_code, _sync);
+				return;
+
+			// 如果是函数
+			case "function":
+				// 加载当前模块
+				this.load(_code);
+				return;
 		}
 
 		// 加载代码
-		load(this, name, href, _sync);
+		request(this, name, href, _sync);
 	};
 	Module = new Rexjs(Module);
 
@@ -1299,12 +1315,6 @@ this.Module = function(
 			);
 		},
 		/**
-		 * 锁定模块名称，作为默认模块
-		 */
-		lock: function(n){
-			name = n;
-		},
-		/**
 		 * 获取模块成员
 		 * @param {String} memberName - 成员名称
 		 * @param {String} moduleName - 模块名称
@@ -1380,12 +1390,7 @@ this.Module = function(
 			}
 
 			var result = this.result;
-
-			// 设置状态为已完成
-			this.status = STATUS_COMPLETED;
-			// 缓存输出
-			exports = this.exports;
-
+			
 			// 判断拓展名
 			switch(this.name.ext){
 				case ".js":
@@ -1403,23 +1408,24 @@ this.Module = function(
 						})
 					);
 
-					// 设置默认输出
-					Module.export("compiler", result);
-					// 设置默认输出
-					Module.export("default", result.selectorMap);
+					// 加载模块
+					this.load(function(){
+						// 设置默认输出
+						Module.export("compiler", result);
+						// 设置默认输出
+						Module.export("default", result.selectorMap);
+					});
 					break;
 
 				default:
-					// 设置默认输出
-					Module.export("default", result);
+					// 加载模块
+					this.load(function(){
+						// 设置默认输出
+						Module.export("default", result);
+					});
 					break;
 			}
-
-			// 清空缓存
-			exports = null;
-
-			// 触发依赖该模块的其他模块的执行方法
-			trigger(this);
+			
 			return true;
 		},
 		imports: null,
@@ -1439,6 +1445,25 @@ this.Module = function(
 			this.listeners.push(listener);
 		},
 		listeners: null,
+		/**
+		 * 加载当前模块
+		 * @param {Function} loader - 模块加载函数
+		 */
+		load: function(loader){
+			// 缓存输出
+			exports = this.exports;
+
+			// 加载当前模块
+			loader.call(global, Rexjs);
+
+			// 清空缓存
+			exports = null;
+			// 设置状态为已完成
+			this.status = STATUS_COMPLETED;
+
+			// 触发依赖该模块的其他模块的执行方法
+			trigger(this);
+		},
 		name: null,
 		origin: "",
 		/**
@@ -1546,12 +1571,14 @@ this.Module = function(
 	"",
 	// exports
 	null,
+	// global
+	typeof global === "undefined" ? self : global,
 	Object.create,
 	Object.defineProperty,
 	JSON.parse,
 	// nativeEval
 	eval,	
-	// load
+	// request
 	function(mod, name, href, _sync){
 		var request = new XMLHttpRequest();
 

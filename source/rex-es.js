@@ -25306,7 +25306,7 @@ this.ECMAScriptParser = function(SourceBuilder, MappingBuilder, ECMAScriptTagsMa
 			}
 			
 			// 追加闭包函数起始部分
-			_contentBuilder.appendString("!function(Rexjs){");
+			_contentBuilder.appendString('new Rexjs.Module("' + this.file.filename + '", function(Rexjs){');
 			// 创建新行
 			_contentBuilder.newline();
 			// 追加严格表达式字符串
@@ -25320,7 +25320,7 @@ this.ECMAScriptParser = function(SourceBuilder, MappingBuilder, ECMAScriptTagsMa
 			// 创建新行
 			_contentBuilder.newline();
 			// 追加闭包函数结束部分
-			_contentBuilder.appendString("}.call(this, Rexjs);");
+			_contentBuilder.appendString("});");
 
 			return _contentBuilder.complete();
 		},
