@@ -520,7 +520,7 @@ this.forEach(
 	Rexjs,
 	Array,
 	// VERSION
-	"1.3.5"
+	"1.3.6"
 );
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
@@ -28814,7 +28814,7 @@ this.URL = function(toString, parse){
 				parse(
 					this,
 					(
-						baseURL.origin +
+						baseURL.protocal + "//" + baseURL.host +
 						// 如果是根目录路径，则忽略 dirname
 						(urlString[0] === "/" ? "" : baseURL.dirname + "/") +
 						urlString
