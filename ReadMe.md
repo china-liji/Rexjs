@@ -3,7 +3,7 @@
 ------
 
 #### 官方网站
-[http://rexjs.org](http://rexjs.org);
+[http://www.rexjs.org](http://www.rexjs.org)
 
 #### 下载、安装
 * NPM
