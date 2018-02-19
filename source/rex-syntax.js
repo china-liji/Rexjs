@@ -456,19 +456,49 @@ this.SourceBuilder = function(ContentBuilder){
 // 映射生成器相关
 !function(SourceBuilder){
 
-this.Base64VLQ = function(base64, parseInt){
+this.Base64 = function(chars, parseInt, btoa){
 	/**
-	 * base64 VLQ 编码
+	 * base64 相关处理类
 	 */
-	function Base64VLQ(){};
-	Base64VLQ = new Rexjs(Base64VLQ);
+	function Base64(){};
+	Base64 = new Rexjs(Base64);
 	
-	Base64VLQ.static({
+	Base64.static({
+		/**
+		 * 绑定编码 base64 的方法
+		 * @param {Function} method - 编码 base64 的方法
+		 * 
+		 */
+		bindBtoa: function(method){
+			btoa = method;
+		},
+		/**
+		 * 将字符串编码为 base64，返回是否支持编码
+		 * @param {String} string - 源字符串
+		 * @param {Function} callback - 回调函数
+		 * @param {*} _this - callback 所需绑定的 this
+		 * @returns {Boolean}
+		 */
+		btoa: function(string, callback, _this){
+			// 如果方法存在
+			if(typeof btoa === "function"){
+				// 执行回调
+				callback.call(
+					_this,
+					// 编码
+					btoa(string)
+				);
+
+				return true;
+			}
+
+			return false;
+		},
 		/**
 		 * 将指定数字进行 base64 VLQ 编码
 		 * @param {Number} num - 所需提供的数字
 		 */
-		encode: function(num){
+		vlq: function(num){
 			var binary, length, result = "";
 
 			// 如果数字小于 0
@@ -486,7 +516,7 @@ this.Base64VLQ = function(base64, parseInt){
 			// 字符串从后往前逆序循环，当长度大于 5 时
 			while(length > 5){
 				// 拼接结果
-				result += base64[
+				result += chars[
 					// 转化为十进制
 					parseInt(
 						// 截取字符串，每段前面加 1，表示一个数字（num）的连续编码中
@@ -500,7 +530,7 @@ this.Base64VLQ = function(base64, parseInt){
 			}
 			
 			// 拼接结果
-			result += base64[
+			result += chars[
 				// 转化为十进制
 				parseInt(
 					/*
@@ -520,11 +550,13 @@ this.Base64VLQ = function(base64, parseInt){
 		}
 	});
 	
-	return Base64VLQ;
+	return Base64;
 }(
-	// base64
+	// chars
 	"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/".split(""),
-	parseInt
+	parseInt,
+	// btoa
+	typeof btoa === "undefined" ? null : btoa
 );
 
 this.MappingPosition = function(Position){
@@ -548,7 +580,7 @@ this.MappingPosition = function(Position){
 	this.Position
 );
 
-this.MappingBuilder = function(MappingPosition, Base64VLQ, JSON, appendContext, appendString, complete, merge, newline, btoa){
+this.MappingBuilder = function(MappingPosition, Base64, JSON, appendContext, appendString, complete, merge, newline){
 	/**
 	 * 源码映射生成器，用来生成 sourceMap
 	 * @param {File} file - 生成器相关文件
@@ -561,7 +593,15 @@ this.MappingBuilder = function(MappingPosition, Base64VLQ, JSON, appendContext, 
 	MappingBuilder = new Rexjs(MappingBuilder, SourceBuilder);
 	
 	MappingBuilder.static({
-		supported: !!btoa
+		/**
+		 * 判断是否支持 sourceMaps
+		 */
+		get supported(){
+			return Base64.btoa(
+				"",
+				function(){}
+			);
+		}
 	});
 	
 	MappingBuilder.props({
@@ -582,10 +622,10 @@ this.MappingBuilder = function(MappingPosition, Base64VLQ, JSON, appendContext, 
 
 			// 追加映射当前信息
 			this.appendMappings(
-				Base64VLQ.encode(builderPosition.generatedColumnDiff) +
+				Base64.vlq(builderPosition.generatedColumnDiff) +
 				"A" +
-				Base64VLQ.encode(line - builderPosition.line) +
-				Base64VLQ.encode(column - builderPosition.column)
+				Base64.vlq(line - builderPosition.line) +
+				Base64.vlq(column - builderPosition.column)
 			);
 			
 			// 先要清空一次列的差值
@@ -597,7 +637,7 @@ this.MappingBuilder = function(MappingPosition, Base64VLQ, JSON, appendContext, 
 			// 获取刚刚上下文所产生的生成列偏移值
 			diff = builderPosition.generatedColumnDiff;
 			// 获取对应 vlq 编码
-			diffVLQ = Base64VLQ.encode(diff);
+			diffVLQ = Base64.vlq(diff);
 
 			/*
 				将映射点向右移动等同于 生成列偏移值 的量，并指向原来的位置，
@@ -641,28 +681,27 @@ this.MappingBuilder = function(MappingPosition, Base64VLQ, JSON, appendContext, 
 		 * 完成生成，返回结果
 		 */
 		complete: function(){
-			// 如果 btoa 存在，则添加 mappingURL，否则不支持 btao 的环境，应该也不会支持 source map
-			if(btoa){
-				// 追加新行
-				this.newline();
-				// 追加 sourceURL
-				this.appendString("//# sourceURL=http://rexjs/sources/" + this.file.filename);
-				// 追加新行
-				this.newline();
-				// 追加 mappingURL 头部
-				this.appendString("//# sourceMappingURL=data:application/json;base64,");
-				
-				// 追加 mappingURL 主体
-				this.appendString(
-					btoa(
-						JSON.stringify({
-							sources: [ this.file.filename ],
-							names: [],
-							mappings: this.mappings
-						})
-					)
-				);
-
+			// 如果支持解析 base64
+			if(Base64.btoa(
+				JSON.stringify({
+					sources: [ this.file.filename ],
+					names: [],
+					mappings: this.mappings
+				}),
+				function(result){
+					// 追加新行
+					this.newline();
+					// 追加 sourceURL
+					this.appendString("//# sourceURL=http://rexjs/sources/" + this.file.filename);
+					// 追加新行
+					this.newline();
+					// 追加 mappingURL 头部
+					this.appendString("//# sourceMappingURL=data:application/json;base64,");
+					// 追加 mappings
+					this.appendString(result);
+				},
+				this
+			)){
 				return this.result;
 			}
 
@@ -692,14 +731,13 @@ this.MappingBuilder = function(MappingPosition, Base64VLQ, JSON, appendContext, 
 	return MappingBuilder;
 }(
 	this.MappingPosition,
-	this.Base64VLQ,
+	this.Base64,
 	JSON,
 	SourceBuilder.prototype.appendContext,
 	SourceBuilder.prototype.appendString,
 	SourceBuilder.prototype.complete,
 	SourceBuilder.prototype.merge,
-	SourceBuilder.prototype.newline,
-	typeof btoa === "undefined" ? null : btoa
+	SourceBuilder.prototype.newline
 );
 
 }.call(
