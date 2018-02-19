@@ -2,6 +2,9 @@
 
 ------
 
+#### 官方网站
+[http://rexjs.org](http://rexjs.org);
+
 #### 下载、安装
 * NPM
 ```
@@ -97,9 +100,6 @@ es5Code = parser.build();
 <script src="./file.js" type="text/rexjs" data-sourcemaps></script>
 ```
 支持`Chrome`、`Firefox`、`Safari`、`IE9+`等现代浏览器。
-
-#### 纯中国制造：
-此解析器未引用任何第三方**插件**及**类库**，属于完全独立、创新的一款 ```JavaScript``` 语法编译器，它是 100% **纯中国制造**！
 
 -----
 
