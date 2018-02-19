@@ -2,8 +2,9 @@
 
 ------
 
-#### 官方网站
-[http://www.rexjs.org](http://www.rexjs.org)
+#### 官方链接
+* [官网](http://www.rexjs.org)
+* [Git](https://github.com/china-liji/Rexjs)
 
 #### 下载、安装
 * NPM

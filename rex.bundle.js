@@ -520,7 +520,7 @@ this.forEach(
 	Rexjs,
 	Array,
 	// VERSION
-	"1.4.2"
+	"1.4.3"
 );
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
