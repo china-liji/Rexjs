@@ -1,6 +1,6 @@
 {
 	"name": "rexjs-api",
-	"version": "1.4.3",
+	"version": "1.4.5",
 	"description": "Rexjs - 是一款又快、又小、性价比极高的 JavaScript(ES6+) 语法的编译器！",
 	"scripts": {
 		"dev": "node node/dev.js",

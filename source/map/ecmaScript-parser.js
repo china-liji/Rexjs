@@ -141,14 +141,12 @@ this.ECMAScriptParser = function(SourceBuilder, MappingBuilder, ECMAScriptTagsMa
 			// 提取语法列表内容
 			this.statements.extractTo(_contentBuilder);
 
-			// 完成生成
-			_contentBuilder.complete();
 			// 创建新行
 			_contentBuilder.newline();
 			// 追加闭包函数结束部分
 			_contentBuilder.appendString("}" + (filename ? ")" : ".call(this, Rexjs)") + ";");
 
-			return _contentBuilder.result;
+			return _contentBuilder.complete();
 		},
 		defaultExported: false,
 		deps: null,
