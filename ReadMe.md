@@ -28,6 +28,9 @@ git clone https://github.com/china-liji/Rexjs.git
 
 > [浏览器端辅助文件](http://rexjs.org/rex-browser-helper.min.js)
 
+#### Rexjs API 于 Webpack 打包中应用：
+详细参考：[Rexjs-loader](https://github.com/china-liji/Rexjs-loader)
+
 #### Rexjs API 应用：
 - `JavaScript` 代码
 ```js
