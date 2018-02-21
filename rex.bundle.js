@@ -29391,7 +29391,7 @@ this.ModuleName = function(BASE_URI){
 		URL.call(
 			this,
 			value,
-			typeof _baseURLstring === "string" ? new URL(_baseURLstring).href : BASE_URI
+			typeof _baseURLstring === "string" ? new URL(_baseURLstring, BASE_URI).href : BASE_URI
 		);
 
 		// 如果文件名存在
