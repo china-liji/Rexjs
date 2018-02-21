@@ -244,7 +244,7 @@ Rexjs.static.call(Rexjs.prototype, this);
 
 
 // 基本方法和属性的定义
-new function(Rexjs, Array, VERSION){
+new function(Rexjs, Array){
 "use strict";
 
 this.except = function(){
@@ -393,8 +393,6 @@ this.toString = function(){
 	};
 }();
 
-this.version = VERSION;
-
 this.forEach(
 	this,
 	function(property, name, self){
@@ -412,7 +410,5 @@ this.forEach(
 
 }(
 	Rexjs,
-	Array,
-	// VERSION
-	"1.4.5"
+	Array
 );
