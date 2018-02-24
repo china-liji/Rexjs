@@ -801,6 +801,90 @@ this.URL = function(toString, parse){
 	}
 );
 
+this.HTMLCompiler = function(URL, FORMAT_REGEXP, UNFORMAT_REGEXP, createdBody, attrs, forEach){
+	/**
+	 * HTML 编译器
+	 * @param {String} cssText - 源文本
+	 * @param {String} sourceURL - 文件地址
+	 */
+	function HTMLCompiler(html, sourceURL){
+		// 格式化 html 并赋值给 body 元素
+		createdBody.innerHTML = html.replace(FORMAT_REGEXP, '<script rexjs-html-compiler $1></script>');
+
+		// 遍历拥有属性的元素
+		forEach(
+			createdBody.querySelectorAll("[" + attrs.join("], [") + "]"),
+			function(element){
+				// 遍历属性
+				attrs.forEach(function(attr){
+					// 如果元素没有该属性
+					if(!element.hasAttribute(attr)){
+						return;
+					}
+
+					// 设置属性
+					element.setAttribute(
+						attr,
+						// 格式化路径
+						new URL(
+							element.getAttribute(attr),
+							sourceURL
+						)
+						.href
+					);
+				});
+			},
+			null,
+			true
+		);
+
+		// 去格式化并设置结果
+		this.result = createdBody.innerHTML.replace(UNFORMAT_REGEXP, function(str, escape, format){
+			// 如果是被 innerHTML 转移的符号
+			if(escape){
+				// 设置 body 的 innerHTML，起到反转义
+				createdBody.innerHTML = escape;
+				// 获取 textContent，获取未转义的字符
+				return createdBody.textContent;
+			}
+
+			// 返回去转义的结果
+			return "&" + format + ";";
+		});
+
+		// 清空 innerHTML
+		createdBody.innerHTML = "";
+	};
+	HTMLCompiler = new Rexjs(HTMLCompiler);
+
+	HTMLCompiler.static({
+		/**
+		 * 添加链接性质的属性，此后该属性的值将会根据当期文件路径来修改
+		 * @param {String} attr - 链接性质的属性
+		 */
+		addURLAttr: function(attr){
+			attrs.push(attr);
+		}
+	});
+
+	HTMLCompiler.props({
+		result: ""
+	});
+
+	return HTMLCompiler;
+}(
+	this.URL,
+	// FORMAT_REGEXP
+	/\&(\w+);/g,
+	// UNFORMAT_REGEXP
+	/(&\w+;)|<script\s+rexjs-html-compiler(?:\s*=\s*"")?\s+(\w+)(?:\s*=\s*"")?\s*><\/script>/g,
+	// createdBody
+	document.implementation.createHTMLDocument("").body,
+	// attrs
+	["src", "href"],
+	Rexjs.forEach
+);
+
 this.CSSSelectorMap = function(CSS_SELECTOR_REGEXP, SEPARATOR_REGEXP, cache, postfix, getOwnPropertyNames, hasOwnProperty){
 	/**
 	 * CSS 选择器映射表
@@ -1156,7 +1240,7 @@ this.ModuleName = function(BASE_URI){
 );
 
 this.Module = function(
-	ModuleName, CSSCompiler, MappingBuilder, File,
+	ModuleName, HTMLCompiler, CSSCompiler, MappingBuilder, File,
 	cache, exports, global,
 	create, defineProperty, parse, nativeEval, request, listenDomReady
 ){
@@ -1419,6 +1503,17 @@ this.Module = function(
 					});
 					break;
 
+				// 如果是 html
+				case ".html":
+					// 加载模块
+					this.load(function(){
+						// 设置默认输出
+						Module.export("compiler", result);
+						// 设置默认输出
+						Module.export("default", result.result);
+					});
+					break;
+
 				default:
 					// 加载模块
 					this.load(function(){
@@ -1506,6 +1601,11 @@ this.Module = function(
 					deps = result.imports;
 					break;
 				
+				// 如果是 html
+				case ".html":
+					result = new HTMLCompiler(content, name.href);
+					break;
+				
 				// 如果是 json
 				case ".json":
 					// 设置模块解析结果
@@ -1564,6 +1664,7 @@ this.Module = function(
 	return Module;
 }(
 	this.ModuleName,
+	this.HTMLCompiler,
 	this.CSSCompiler,
 	Rexjs.MappingBuilder,
 	Rexjs.File,
