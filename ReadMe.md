@@ -21,12 +21,12 @@ git clone https://github.com/china-liji/Rexjs.git
 > [https://github.com/china-liji/Rexjs/archive/master.zip](https://github.com/china-liji/Rexjs/archive/master.zip)
 
 * Web 版源代码
-> 直引用文件：[https://github.com/china-liji/Rexjs/blob/master/rex.min.js](https://github.com/china-liji/Rexjs/blob/master/rex.min.js)
+> [直引用文件](https://github.com/china-liji/Rexjs/blob/master/rex.min.js)
 
 * API 版
-> API 文件：[https://github.com/china-liji/Rexjs/blob/master/rex-api.min.js](https://github.com/china-liji/Rexjs/blob/master/rex-api.min.js)
+> [API 文件](https://github.com/china-liji/Rexjs/blob/master/rex-api.min.js)
 
-> 浏览器端辅助文件：[https://github.com/china-liji/Rexjs/blob/master/rex-browser-helper.min.js](https://github.com/china-liji/Rexjs/blob/master/rex-browser-helper.min.js)
+> [浏览器端辅助文件](https://github.com/china-liji/Rexjs/blob/master/rex-browser-helper.min.js)
 
 -----
 
