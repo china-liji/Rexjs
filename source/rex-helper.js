@@ -1093,10 +1093,8 @@ this.CSSCompiler = function(URL, CSSSelectorMap, CSSRule, CSS_URL_REGEXP, enable
 
 					// 追加起始大括号
 					result += "{";
-
 					// 继续编译子规则的选择器
-					this.compileSelectors(rule.cssRules);
-					
+					result += this.compileSelectors(rule.cssRules);
 					// 追加结束大括号
 					result += "}";
 				},
