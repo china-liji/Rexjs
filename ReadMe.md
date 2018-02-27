@@ -21,15 +21,38 @@ git clone https://github.com/china-liji/Rexjs.git
 > [https://github.com/china-liji/Rexjs/archive/master.zip](https://github.com/china-liji/Rexjs/archive/master.zip)
 
 * Web 版源代码
-> [直引用文件](http://rexjs.org/rex.min.js)
+> 直引用文件：[https://github.com/china-liji/Rexjs/blob/master/rex.min.js](https://github.com/china-liji/Rexjs/blob/master/rex.min.js)
 
 * API 版
-> [API 文件](http://rexjs.org/rex-api.min.js)
+> API 文件：[https://github.com/china-liji/Rexjs/blob/master/rex-api.min.js](https://github.com/china-liji/Rexjs/blob/master/rex-api.min.js)
 
-> [浏览器端辅助文件](http://rexjs.org/rex-browser-helper.min.js)
+> 浏览器端辅助文件：[https://github.com/china-liji/Rexjs/blob/master/rex-browser-helper.min.js](https://github.com/china-liji/Rexjs/blob/master/rex-browser-helper.min.js)
 
-#### Rexjs API 于 Webpack 打包中应用：
+-----
+
+#### Webpack 打包中应用：
 详细参考：[Rexjs-loader](https://github.com/china-liji/Rexjs-loader)
+
+#### 浏览器应用：
+```html
+<!-- 引用 rexjs -->
+<script src="http://www.rexjs.org/rex.min.js"></script>
+
+<!-- 使用 type 定义模块 -->
+<script type="text/rexjs">
+	import "./file.js";
+
+	export default class {};
+</script>
+
+<!--
+	当然，一旦指定 src，则根据其路径来加载指定入口模块文件，
+	而且，一旦提供 data-sourcemaps 属性时，不管值是什么，都将启用“源代码映射”功能。
+	友情提示：源代码映射是要耗性能的，如果代码量大，发布上线的版本时，应该关闭该功能。
+-->
+<script src="./file.js" type="text/rexjs" data-sourcemaps></script>
+```
+支持`Chrome`、`Firefox`、`Safari`、`IE9+`等现代浏览器。
 
 #### Rexjs API 应用：
 - `JavaScript` 代码
@@ -83,27 +106,6 @@ es5Code = parser.build();
 -->
 <script src="./rex-browser-helper.min.js"></script>
 ```
-
-#### 浏览器应用：
-```html
-<!-- 引用 rexjs -->
-<script src="http://www.rexjs.org/rex.min.js"></script>
-
-<!-- 使用 type 定义模块 -->
-<script type="text/rexjs">
-	import "./file.js";
-
-	export default class {};
-</script>
-
-<!--
-	当然，一旦指定 src，则根据其路径来加载指定入口模块文件，
-	而且，一旦提供 data-sourcemaps 属性时，不管值是什么，都将启用“源代码映射”功能。
-	友情提示：源代码映射是要耗性能的，如果代码量大，发布上线的版本时，应该关闭该功能。
--->
-<script src="./file.js" type="text/rexjs" data-sourcemaps></script>
-```
-支持`Chrome`、`Firefox`、`Safari`、`IE9+`等现代浏览器。
 
 -----
 
