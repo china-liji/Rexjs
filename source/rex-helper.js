@@ -1239,7 +1239,7 @@ this.ModuleName = function(BASE_URI){
 
 this.Module = function(
 	ModuleName, HTMLCompiler, CSSCompiler, MappingBuilder, File,
-	cache, exports, global,
+	cache, exports, stack, global,
 	create, defineProperty, parse, nativeEval, request, listenDomReady
 ){
 	/**
@@ -1307,6 +1307,12 @@ this.Module = function(
 		 */
 		get cache(){
 			return cache;
+		},
+		/**
+		 * 获取当前模块的堆栈情况
+		 */
+		get stack(){
+			return stack;
 		},
 		/**
 		 * 获取指定模块的默认输出
@@ -1547,12 +1553,16 @@ this.Module = function(
 		load: function(loader){
 			// 缓存输出
 			exports = this.exports;
-
+			
+			// 添加到堆栈中
+			stack.push(this);
 			// 加载当前模块
 			loader.call(global, Rexjs);
+			// 去掉当前模块
+			stack.pop();
 
-			// 清空缓存
-			exports = null;
+			// 还原缓存
+			exports = stack.length ? stack[stack.length - 1].exports : null;
 			// 设置状态为已完成
 			this.status = STATUS_COMPLETED;
 
@@ -1670,6 +1680,8 @@ this.Module = function(
 	{},
 	// exports
 	null,
+	// stack
+	[],
 	// global
 	typeof global === "undefined" ? self : global,
 	Object.create,
