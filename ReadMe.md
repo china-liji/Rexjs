@@ -60,7 +60,7 @@ git clone https://github.com/china-liji/Rexjs.git
 // 引入 rex api 文件
 
 // Nodejs
-let Rexjs = require("./rex-api.min.js");
+let Rexjs = require("rexjs-api");
 
 // Web Worker
 importScripts("./rex-api.min.js");
