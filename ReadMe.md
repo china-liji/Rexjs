@@ -17,26 +17,18 @@ npm install rexjs-api
 git clone https://github.com/china-liji/Rexjs.git
 ```
 
-* Zip
-> [https://github.com/china-liji/Rexjs/archive/master.zip](https://github.com/china-liji/Rexjs/archive/master.zip)
+* [Zip](https://github.com/china-liji/Rexjs/archive/master.zip)
 
-* Web 版源代码
-> [直引用文件](https://github.com/china-liji/Rexjs/blob/master/rex.min.js)
+* [Web 版源代码](https://github.com/china-liji/Rexjs/blob/master/dist/rex.min.js)
 
-* API 版
-> [API 文件](https://github.com/china-liji/Rexjs/blob/master/rex-api.min.js)
-
-> [浏览器端辅助文件](https://github.com/china-liji/Rexjs/blob/master/rex-browser-helper.min.js)
+* [浏览器端辅助文件](https://github.com/china-liji/Rexjs/blob/master/dist/rex-browser-helper.min.js)
 
 -----
 
-#### Webpack 打包中应用：
-详细参考：[Rexjs-loader](https://github.com/china-liji/Rexjs-loader)
-
-#### 浏览器应用：
+#### 浏览器中运行 ES6：
 ```html
 <!-- 引用 rexjs -->
-<script src="http://www.rexjs.org/rex.min.js"></script>
+<script src="./dist/rex.min.js"></script>
 
 <!-- 使用 type 定义模块 -->
 <script type="text/rexjs">
@@ -54,8 +46,34 @@ git clone https://github.com/china-liji/Rexjs.git
 ```
 支持`Chrome`、`Firefox`、`Safari`、`IE9+`等现代浏览器。
 
+#### Nodejs 中运行 ES6（import、export等）：
+* `./ext.js`
+```js
+import path from "path";
+
+export default function(filename){
+	return path.parse(filename).ext;
+};
+```
+
+* `./index.js`
+```js
+import ext from "./ext.js";
+
+// 输出 ".js"
+ext(__filename);
+```
+
+* 命令行工具
+```
+rexjs ./index.js
+```
+
+#### Webpack 打包中应用：
+详细参考：[Rexjs-loader](https://github.com/china-liji/Rexjs-loader)
+
 #### Rexjs API 应用：
-- `JavaScript` 代码
+* `JavaScript` 代码
 ```js
 // 引入 rex api 文件
 
@@ -63,10 +81,10 @@ git clone https://github.com/china-liji/Rexjs.git
 let Rexjs = require("rexjs-api");
 
 // Web Worker
-importScripts("./rex-api.min.js");
+importScripts("./dist/rex.min.js");
 let Rexjs = self.Rexjs;
 
-// 浏览器：先引用文件 <script src="./rex-api.min.js"></script>
+// 浏览器：先引用文件 <script src="./dist/rex.min.js"></script>
 let Rexjs = window.Rexjs;
 
 
@@ -98,13 +116,13 @@ parser.parse(
 es5Code = parser.build();
 ```
 
-- `HTML` 代码
+* `HTML` 代码
 ```html
 <!--
 	该文件是编译后代码所需依赖的 API，
 	所以，该文件内容必须在编译输出之前引用 或 在编译内容之前打包进项目。
 -->
-<script src="./rex-browser-helper.min.js"></script>
+<script src="./dist/rex-browser-helper.min.js"></script>
 ```
 
 -----

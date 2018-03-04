@@ -160,7 +160,10 @@ this.SimpleTest = function(ECMAScriptParser, XMLHttpRequest, Error, INNER_CONTEN
 	// INNER_CONTENT_REGEXP
 	/\{([\s\S]*)\}\s*$/,
 	// file
-	new File("test.js", ""),
+	new File(
+		new Rexjs.URL("test.js"),
+		""
+	),
 	console,
 	Rexjs.toArray,
 	eval,

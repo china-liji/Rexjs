@@ -1,98 +1,6 @@
-// 基于 Rexjs 的拓展类
+// 基于 Rexjs 语法相关
 new function(Rexjs, forEach){
 "use strict";
-
-// 列表相关
-!function(){
-
-this.List = function(Array, Object, toArray){
-	/**
-	 * 对列表进行管理、操作的类
-	 */
-	function List(_rest){};
-	List = new Rexjs(List);
-
-	List.props({
-		/**
-		 * 合并另外一个数组，并返回合并后的新数组
-		 * @param {Array} list - 另一个集合
-		 */
-		concat: function(array){
-			return toArray(
-					this
-				)
-				.concat(
-					toArray(array)
-				);
-		},
-		/**
-		 * 清空整个集合
-		 */
-		clear: function(){
-			this.splice(0);
-		},
-		/**
-		 * 在原列表上，合并另一个集合
-		 * @param {List, Array} list - 另一个集合
-		 */
-		combine: function(list){
-			this.push.apply(this, list);
-		},
-		/**
-		 * 对列表进行去重
-		 */
-		distinct: function(){
-			this.splice(
-					0
-				)
-				.forEach(
-					function(item){
-						if(this.indexOf(item) > -1){
-							return;
-						}
-
-						this.push(item);
-					},
-					this
-				);
-		},
-		length: 0
-	});
-
-	Object
-		.getOwnPropertyNames(
-			Array.prototype
-		)
-		.forEach(
-			function(name){
-				if(List.prototype.hasOwnProperty(name)){
-					return;
-				}
-
-				if(name === "toString"){
-					return;
-				}
-
-				var props = {};
-
-				props[name] = this[name];
-
-				List.props(props);
-			},
-			Array.prototype
-		);
-
-	return List;
-}(
-	Array,
-	Object,
-	Rexjs.toArray
-);
-
-}.call(
-	this
-);
-
 
 // 变量名集合相关
 !function(){
@@ -288,18 +196,18 @@ this.VariableCollections = function(PREFIX){
 this.File = function(){
 	/**
 	 * 文件信息
-	 * @param {String} filename - 文件名
+	 * @param {Url} url - 文件路径
 	 * @param {String} source - 源文件内容
 	 */
-	function File(filename, source){
-		this.filename = filename;
+	function File(url, source){
+		this.url = url;
 		this.source = source;
 	};
 	File = new Rexjs(File);
 	
 	File.props({
-		filename: "",
-		source: ""
+		source: "",
+		url: null
 	});
 	
 	return File;
@@ -436,7 +344,7 @@ this.SourceBuilder = function(ContentBuilder){
 			// 追加新行
 			this.newline();
 			// 追加 sourceURL
-			this.appendString("//# sourceURL=" + this.file.filename);
+			this.appendString("//# sourceURL=" + this.file.url.href);
 
 			return this.result;
 		},
@@ -580,7 +488,7 @@ this.MappingPosition = function(Position){
 	this.Position
 );
 
-this.MappingBuilder = function(MappingPosition, Base64, JSON, appendContext, appendString, complete, merge, newline){
+this.MappingBuilder = function(URL, MappingPosition, Base64, JSON, appendContext, appendString, complete, merge, newline){
 	/**
 	 * 源码映射生成器，用来生成 sourceMap
 	 * @param {File} file - 生成器相关文件
@@ -681,10 +589,13 @@ this.MappingBuilder = function(MappingPosition, Base64, JSON, appendContext, app
 		 * 完成生成，返回结果
 		 */
 		complete: function(){
+			var url = this.file.url;
+
 			// 如果支持解析 base64
 			if(Base64.btoa(
 				JSON.stringify({
-					sources: [ this.file.filename ],
+					version: 3,
+					sources: [ url.href ],
 					names: [],
 					mappings: this.mappings
 				}),
@@ -692,7 +603,7 @@ this.MappingBuilder = function(MappingPosition, Base64, JSON, appendContext, app
 					// 追加新行
 					this.newline();
 					// 追加 sourceURL
-					this.appendString("//# sourceURL=http://rexjs/sources/" + this.file.filename);
+					this.appendString("//# sourceURL=" + new URL("http://sourceURL" + url.pathname).href);
 					// 追加新行
 					this.newline();
 					// 追加 mappingURL 头部
@@ -730,6 +641,7 @@ this.MappingBuilder = function(MappingPosition, Base64, JSON, appendContext, app
 	
 	return MappingBuilder;
 }(
+	Rexjs.URL,
 	this.MappingPosition,
 	this.Base64,
 	JSON,
@@ -767,7 +679,7 @@ this.SyntaxElement = function(){
 	return SyntaxElement;
 }();
 
-this.SyntaxConfig = function(forEach){
+this.SyntaxConfig = function(){
 	/**
 	 * 语法配置，用于管理是否编译指定表达式
 	 * @param {String} name - 配置名称
@@ -785,9 +697,7 @@ this.SyntaxConfig = function(forEach){
 	SyntaxConfig = new Rexjs(SyntaxConfig);
 
 	return SyntaxConfig;
-}(
-	Rexjs.forEach
-);
+}();
 
 this.SyntaxRegExp = function(RegExp, Infinity){
 	/**
@@ -1286,7 +1196,7 @@ this.SyntaxTags = function(List, getSortedValue, distinct){
 
 	return SyntaxTags;
 }(
-	this.List,
+	Rexjs.List,
 	// getSortedValue
 	function(copy, tag1, tag2, property, value, _bothNot){
 		var type1 = tag1.type, type2 = tag2.type;
@@ -2038,7 +1948,7 @@ this.SyntaxError = function(MappingBuilder, e, contextOf){
 		get message(){
 			var position = this.context.position;
 
-			return (this.reference ? "Reference" : "Syntax") + "Error: " + this.description + " @ " + this.file.filename + ":" + (position.line + 1) + ":" + (position.column + 1);
+			return (this.reference ? "Reference" : "Syntax") + "Error: " + this.description + " @ " + this.file.url.href + ":" + (position.line + 1) + ":" + (position.column + 1);
 		},
 		file: null,
 		reference: false,

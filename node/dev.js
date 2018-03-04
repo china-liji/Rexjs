@@ -76,7 +76,7 @@ this.Server = function(DIR_NAME, http, testPath, readFile){
 	(path) => {
 		return (
 			/^\/(?:dev|test|source|extension|old)(?:\/|$)/.test(path.dir) &&
-			/^(?:\.js|\.css|\.html|\.json|\.txt|\.xml)$/.test(path.ext)
+			/^(?:\.js|\.css|\.html|\.json|\.txt|\.xml|\.md)$/.test(path.ext)
 		);
 	},
 	// readFile
@@ -109,7 +109,8 @@ new this.Server();
 		".html": "text/html",
 		".css": "text/css",
 		".json": "application/json",
-		".xml": "text/xml"
+		".xml": "text/xml",
+		".md": "text/plain"
 	},
 	// success
 	(serverResponse, content, contentType) => {

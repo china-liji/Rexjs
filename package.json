@@ -1,13 +1,19 @@
 {
 	"name": "rexjs-api",
-	"version": "1.5.6",
+	"version": "1.6.11",
 	"description": "Rexjs - 是一款又快、又小、性价比极高的 JavaScript(ES6+) 语法的编译器！",
 	"scripts": {
-		"start": "node node/dev.js",
-		"build": "node node/uglify.js",
-		"prepublish": "npm run build"
+		"start": "node ./node/dev.js",
+		"build": "node ./node/uglify.js",
+		"pretest-node": "npm run build",
+		"test-node": "node ./bin/rex-node.js ./bin/test/a.js",
+		"prepublish": "npm run test-node"
 	},
-	"main": "rex-api.min.js",
+	"main": "./dist/rex-api.bundle.js",
+	"bin": {
+		"rexjs": "./bin/rex-node.js",
+		"rexjs-api": "./bin/rex-node.js"
+	},
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/china-liji/Rexjs"
@@ -27,6 +33,6 @@
 		"email": "hello_zaizi@163.com"
 	},
 	"dependencies": {
-		"webpack": "^3.7.1"
+		"uglify-js": "^3.3.12"
 	}
 }

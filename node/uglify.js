@@ -1,73 +1,55 @@
 new function(PROJECT_PATH){
 
-this.Uglify = function(Source, Date, SOURCE_PATH, childProcess, fs, console){
+this.Uglify = function(Source, Date, SOURCE_PATH, CHARSET, uglifyJs, fs, console, getConfig){
 	return class Uglify {
 		constructor(){
-			var files, cmds, execCmd;
+			var files, result, path = `${PROJECT_PATH}/dist`;
 
-			console.log(
-				new Date().toLocaleString()
-			);
-
-			files = [
-				`${SOURCE_PATH}/rex-core.js`,
-				`${SOURCE_PATH}/rex-syntax.js`,
-				`${SOURCE_PATH}/rex-es.js`,
-				`${SOURCE_PATH}/rex-helper.js`
-			];
-
-			cmds = [
-				`webpack ${files[0]} ${files[3]} ${PROJECT_PATH}/rex-browser-helper.min.js -p`,
-				`webpack ${files.slice(0, -1).join(" ")} ${PROJECT_PATH}/rex-api.min.js -p`,
-				`webpack ${files.join(" ")} ${PROJECT_PATH}/rex.min.js -p`,
-				`webpack ${files.join(" ")} ${PROJECT_PATH}/rex.bundle.js`
-			];
-			
-			execCmd = (cmd) => {
-				console.log(
-					cmd.split(PROJECT_PATH).join("")
-				);
-
-				childProcess.exec(
-					cmd,
-					(err) => {
-						// 如果有错
-						if(err){
-							throw `压缩、合并文件失败：${err}...`;
-							return;
-						}
-
-						// 去掉已经执行的第一条命令
-						cmds.shift();
-						
-						// 如果还有命令没有执行
-						if(cmds.length > 0){
-							// 再取第一条执行
-							execCmd(cmds[0]);
-							return;
-						}
-
-						console.log("rex-api.min.js: module.exports = Rexjs");
-
-						// 生成文件
-						fs.appendFile(
-							`${PROJECT_PATH}/rex-api.min.js`,
-							`\n(typeof exports==="object"&&typeof module==="object"?module:{}).exports=Rexjs;`,
-							"utf8",
-							(err) => {
-								if(err){
-									throw "api 文件追加 node 模块输出失败...";
-								}
-							}
-						);
-					}
-				);
-			};
+			console.log(`正在合并 maps 文件至：${SOURCE_PATH}/rex-es.js`)
 
 			// 先生成 rex-es.js 文件
 			new Source().generate();
-			// 开始执行命令
-			execCmd(cmds[0]);
+
+			files = [
+				fs.readFileSync(`${SOURCE_PATH}/rex-core.js`, CHARSET),
+				fs.readFileSync(`${SOURCE_PATH}/rex-basic.js`, CHARSET),
+				fs.readFileSync(`${SOURCE_PATH}/rex-syntax.js`, CHARSET),
+				fs.readFileSync(`${SOURCE_PATH}/rex-es.js`, CHARSET),
+				fs.readFileSync(`${SOURCE_PATH}/rex-helper.js`, CHARSET),
+				fs.readFileSync(`${SOURCE_PATH}/rex-browser.js`, CHARSET)
+			];
+
+			[
+				getConfig("rex", files),
+				getConfig("rex-api", files.slice(0, -1)),
+				getConfig("rex-browser-helper", [files[0], files[1], files[4], files[5]], true)
+			]
+			.forEach(function(config){
+				var { dirname, filename } = config, fullname = `${dirname}/${filename}`,
+
+					code = config.files.join("\n"), result = uglifyJs.minify(code);
+
+				console.log(`正在写入文件：${fullname}.*.js`);
+
+				try {
+					// 判断目录是否存在
+					fs.statSync(dirname);
+				}
+				catch(e){
+					fs.mkdirSync(dirname);
+				}
+
+				// 如果有错误
+				if(result.error){
+					// 抛出错误
+					throw result.error;
+				}
+
+				// 写入非压缩文件
+				fs.writeFileSync(fullname + ".bundle.js", code, CHARSET);
+				// 写入压缩文件
+				fs.writeFileSync(fullname + ".min.js", result.code, CHARSET);
+			});
 		};
 	};
 }(
@@ -75,11 +57,22 @@ this.Uglify = function(Source, Date, SOURCE_PATH, childProcess, fs, console){
 	Date,
 	// SOURCE_PATH
 	`${PROJECT_PATH}/source`,
-	// childProcess
-	require("child_process"),
+	// CHARSET
+	"utf8",
+	// uglifyJs
+	require("uglify-js"),
 	// fs
 	require("fs"),
-	console
+	console,
+	// getConfig
+	function(filename, files, minimize = false){
+		return {
+			dirname: `${PROJECT_PATH}/dist`,
+			filename,
+			files,
+			minimize
+		};
+	}
 );
 
 new this.Uglify();

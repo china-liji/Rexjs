@@ -1,8 +1,8 @@
 ﻿// Rexjs 的实现
-new function(Object, global, descriptor, defineProperty, getPrototypeOf, setPrototypeOf, getOwnPropertyNames){
+new function(Object, global, module, descriptor, defineProperty, getPrototypeOf, setPrototypeOf, getOwnPropertyNames){
 "use strict";
 
-this.Rexjs = function(create, getProperties, setPrototypeOf){
+this.Rexjs = module.exports = function(create, getProperties, setPrototypeOf){
 	/**
 	 * 创建一个继承至指定父类的子类
 	 * @param {Function} constructor - 构造函数
@@ -121,7 +121,9 @@ defineProperty(global, "Rexjs", this);
 }(
 	Object,
 	// global
-	typeof global === "undefined" ? self : global,
+	Function("return this")(),
+	// module
+	typeof exports === "object" && typeof module === "object" ? module : {},
 	// descriptor
 	Object.getOwnPropertyDescriptor(
 		Object.prototype,
@@ -246,27 +248,6 @@ Rexjs.static.call(Rexjs.prototype, this);
 // 基本方法和属性的定义
 new function(Rexjs, Array){
 "use strict";
-
-this.except = function(){
-	/**
-	 * 返回一个不包含所有指定属性名称的对象
-	 * @param {Object} obj - 需要排除属性的对象
-	 * @param {Array} props - 需要排除的属性名称数组
-	 */
-	return function except(obj, props){
-		var result = {};
-
-		for(var name in obj){
-			if(props.indexOf(name) > -1){
-				continue;
-			}
-
-			result[name] = obj[name];
-		}
-
-		return result;
-	};
-}();
 
 this.every = function(){
 	/**

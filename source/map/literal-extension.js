@@ -164,7 +164,7 @@ this.NumberTag = function(){
 	NumberTag = new Rexjs(NumberTag, LiteralTag);
 	
 	NumberTag.props({
-		regexp: /0[xX][0-9a-fA-F]+|0{2,}(?!\.)|(?:\d*\.\d+|\d+\.?)(?:e[+-]?\d+)?/,
+		regexp: /0[xX][0-9a-fA-F]+|0{2,}(?!\.)|(?:\d*\.\d+|\d+\.?)(?:[eE][+-]?\d+)?/,
 		throw: "number"
 	});
 	

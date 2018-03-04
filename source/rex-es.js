@@ -1407,7 +1407,7 @@ this.NumberTag = function(){
 	NumberTag = new Rexjs(NumberTag, LiteralTag);
 	
 	NumberTag.props({
-		regexp: /0[xX][0-9a-fA-F]+|0{2,}(?!\.)|(?:\d*\.\d+|\d+\.?)(?:e[+-]?\d+)?/,
+		regexp: /0[xX][0-9a-fA-F]+|0{2,}(?!\.)|(?:\d*\.\d+|\d+\.?)(?:[eE][+-]?\d+)?/,
 		throw: "number"
 	});
 	
@@ -21070,7 +21070,7 @@ this.ImportExpression = function(compileMember){
 				if(this.from){
 					// 追加模块名称
 					anotherBuilder.appendString(
-						this.name.content + ',"' + this.file.filename + '"'
+						this.name.content + ',"' + this.file.url.href + '"'
 					);
 				}
 
@@ -22085,7 +22085,7 @@ this.ExportExpression = function(compile){
 		// 如果有 from
 		if(from){
 			// 追加模块名称
-			anotherBuilder.appendString(name.content + ',"' + file.filename + '"');
+			anotherBuilder.appendString(name.content + ',"' + file.url.href + '"');
 		}
 
 		// 先编译成员
@@ -25289,23 +25289,24 @@ this.ECMAScriptParser = function(SourceBuilder, MappingBuilder, ECMAScriptTagsMa
 		/**
 		 * 将解析后的语法生成字符串
 		 * @param {ContentBuilder} _contentBuilder - 内容生成器
+		 * @param {Boolean} _withoutModule - 不采用模块形式的入口
 		 */
-		build: function(_contentBuilder){
-			var file = this.file, filename = file.filename;
+		build: function(_contentBuilder, _withoutModule){
+			var file = this.file, url = file.url;
 
 			_contentBuilder = _contentBuilder || (
-				// 如果提供了文件名
-				filename ?
+				// 如果提供了文件路径
+				url.href ?
 					(
 						sourceMaps ? new MappingBuilder(file) : new SourceBuilder(file)
 					) :
-					// 如果没有提供文件名
+					// 如果没有提供文件路径
 					new ContentBuilder()
 			);
 
 			// 追加闭包函数起始部分
 			_contentBuilder.appendString(
-				(filename ? 'new Rexjs.Module("' + this.file.filename + '",' : "!") + "function(Rexjs){"
+				(_withoutModule ? "!" : 'new Rexjs.Module("' + url.href + '",') + "function(Rexjs){"
 			);
 
 			// 创建新行
@@ -25321,7 +25322,7 @@ this.ECMAScriptParser = function(SourceBuilder, MappingBuilder, ECMAScriptTagsMa
 			// 创建新行
 			_contentBuilder.newline();
 			// 追加闭包函数结束部分
-			_contentBuilder.appendString("}" + (filename ? ")" : ".call(this, Rexjs)") + ";");
+			_contentBuilder.appendString("}" + (_withoutModule ? ".call(this, Rexjs)" : ")") + ";");
 
 			return _contentBuilder.complete();
 		},

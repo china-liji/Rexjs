@@ -112,23 +112,24 @@ this.ECMAScriptParser = function(SourceBuilder, MappingBuilder, ECMAScriptTagsMa
 		/**
 		 * 将解析后的语法生成字符串
 		 * @param {ContentBuilder} _contentBuilder - 内容生成器
+		 * @param {Boolean} _withoutModule - 不采用模块形式的入口
 		 */
-		build: function(_contentBuilder){
-			var file = this.file, filename = file.filename;
+		build: function(_contentBuilder, _withoutModule){
+			var file = this.file, url = file.url;
 
 			_contentBuilder = _contentBuilder || (
-				// 如果提供了文件名
-				filename ?
+				// 如果提供了文件路径
+				url.href ?
 					(
 						sourceMaps ? new MappingBuilder(file) : new SourceBuilder(file)
 					) :
-					// 如果没有提供文件名
+					// 如果没有提供文件路径
 					new ContentBuilder()
 			);
 
 			// 追加闭包函数起始部分
 			_contentBuilder.appendString(
-				(filename ? 'new Rexjs.Module("' + this.file.filename + '",' : "!") + "function(Rexjs){"
+				(_withoutModule ? "!" : 'new Rexjs.Module("' + url.href + '",') + "function(Rexjs){"
 			);
 
 			// 创建新行
@@ -144,7 +145,7 @@ this.ECMAScriptParser = function(SourceBuilder, MappingBuilder, ECMAScriptTagsMa
 			// 创建新行
 			_contentBuilder.newline();
 			// 追加闭包函数结束部分
-			_contentBuilder.appendString("}" + (filename ? ")" : ".call(this, Rexjs)") + ";");
+			_contentBuilder.appendString("}" + (_withoutModule ? ".call(this, Rexjs)" : ")") + ";");
 
 			return _contentBuilder.complete();
 		},

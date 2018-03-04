@@ -15,6 +15,22 @@
 			"request": "launch",
 			"name": "dev",
 			"program": "${workspaceRoot}/node/dev.js"
+		},
+		{
+			"type": "node",
+			"request": "launch",
+			"name": "bin",
+			"sourceMaps": true,
+			"program": "${workspaceRoot}/bin/rex-node.js",
+			"args": [
+				"./bin/test/a.js"
+			]
+		},
+		{
+			"type": "node",
+			"request": "launch",
+			"name": "uglify",
+			"program": "${workspaceRoot}/node/uglify.js"
 		}
 	]
 }

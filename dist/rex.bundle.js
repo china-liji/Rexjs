@@ -1,114 +1,8 @@
-/******/ (function(modules) { // webpackBootstrap
-/******/ 	// The module cache
-/******/ 	var installedModules = {};
-/******/
-/******/ 	// The require function
-/******/ 	function __webpack_require__(moduleId) {
-/******/
-/******/ 		// Check if module is in cache
-/******/ 		if(installedModules[moduleId]) {
-/******/ 			return installedModules[moduleId].exports;
-/******/ 		}
-/******/ 		// Create a new module (and put it into the cache)
-/******/ 		var module = installedModules[moduleId] = {
-/******/ 			i: moduleId,
-/******/ 			l: false,
-/******/ 			exports: {}
-/******/ 		};
-/******/
-/******/ 		// Execute the module function
-/******/ 		modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
-/******/
-/******/ 		// Flag the module as loaded
-/******/ 		module.l = true;
-/******/
-/******/ 		// Return the exports of the module
-/******/ 		return module.exports;
-/******/ 	}
-/******/
-/******/
-/******/ 	// expose the modules object (__webpack_modules__)
-/******/ 	__webpack_require__.m = modules;
-/******/
-/******/ 	// expose the module cache
-/******/ 	__webpack_require__.c = installedModules;
-/******/
-/******/ 	// define getter function for harmony exports
-/******/ 	__webpack_require__.d = function(exports, name, getter) {
-/******/ 		if(!__webpack_require__.o(exports, name)) {
-/******/ 			Object.defineProperty(exports, name, {
-/******/ 				configurable: false,
-/******/ 				enumerable: true,
-/******/ 				get: getter
-/******/ 			});
-/******/ 		}
-/******/ 	};
-/******/
-/******/ 	// getDefaultExport function for compatibility with non-harmony modules
-/******/ 	__webpack_require__.n = function(module) {
-/******/ 		var getter = module && module.__esModule ?
-/******/ 			function getDefault() { return module['default']; } :
-/******/ 			function getModuleExports() { return module; };
-/******/ 		__webpack_require__.d(getter, 'a', getter);
-/******/ 		return getter;
-/******/ 	};
-/******/
-/******/ 	// Object.prototype.hasOwnProperty.call
-/******/ 	__webpack_require__.o = function(object, property) { return Object.prototype.hasOwnProperty.call(object, property); };
-/******/
-/******/ 	// __webpack_public_path__
-/******/ 	__webpack_require__.p = "";
-/******/
-/******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 1);
-/******/ })
-/************************************************************************/
-/******/ ([
-/* 0 */
-/***/ (function(module, exports) {
-
-var g;
-
-// This works in non-strict mode
-g = (function() {
-	return this;
-})();
-
-try {
-	// This works if eval is allowed (see CSP)
-	g = g || Function("return this")() || (1,eval)("this");
-} catch(e) {
-	// This works if the window reference is available
-	if(typeof window === "object")
-		g = window;
-}
-
-// g can still be undefined, but nothing to do about it...
-// We return undefined, instead of nothing here, so it's
-// easier to handle this case. if(!global) { ...}
-
-module.exports = g;
-
-
-/***/ }),
-/* 1 */
-/***/ (function(module, exports, __webpack_require__) {
-
-__webpack_require__(2);
-__webpack_require__(3);
-__webpack_require__(4);
-module.exports = __webpack_require__(5);
-
-
-/***/ }),
-/* 2 */
-/***/ (function(module, exports, __webpack_require__) {
-
-/* WEBPACK VAR INJECTION */(function(global) {﻿// Rexjs 的实现
-new function(Object, global, descriptor, defineProperty, getPrototypeOf, setPrototypeOf, getOwnPropertyNames){
+﻿// Rexjs 的实现
+new function(Object, global, module, descriptor, defineProperty, getPrototypeOf, setPrototypeOf, getOwnPropertyNames){
 "use strict";
 
-this.Rexjs = function(create, getProperties, setPrototypeOf){
+this.Rexjs = module.exports = function(create, getProperties, setPrototypeOf){
 	/**
 	 * 创建一个继承至指定父类的子类
 	 * @param {Function} constructor - 构造函数
@@ -227,7 +121,9 @@ defineProperty(global, "Rexjs", this);
 }(
 	Object,
 	// global
-	typeof global === "undefined" ? self : global,
+	Function("return this")(),
+	// module
+	typeof exports === "object" && typeof module === "object" ? module : {},
 	// descriptor
 	Object.getOwnPropertyDescriptor(
 		Object.prototype,
@@ -352,27 +248,6 @@ Rexjs.static.call(Rexjs.prototype, this);
 // 基本方法和属性的定义
 new function(Rexjs, Array){
 "use strict";
-
-this.except = function(){
-	/**
-	 * 返回一个不包含所有指定属性名称的对象
-	 * @param {Object} obj - 需要排除属性的对象
-	 * @param {Array} props - 需要排除的属性名称数组
-	 */
-	return function except(obj, props){
-		var result = {};
-
-		for(var name in obj){
-			if(props.indexOf(name) > -1){
-				continue;
-			}
-
-			result[name] = obj[name];
-		}
-
-		return result;
-	};
-}();
 
 this.every = function(){
 	/**
@@ -518,18 +393,8 @@ this.forEach(
 	Rexjs,
 	Array
 );
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
-
-/***/ }),
-/* 3 */
-/***/ (function(module, exports) {
-
-// 基于 Rexjs 的拓展类
-new function(Rexjs, forEach){
-"use strict";
-
-// 列表相关
-!function(){
+// 基础依赖类
+new function(Rexjs, URL_REGEXP, DIR_SEPARATOR_REGEXP, encodeURI, getUrlInfo){
 
 this.List = function(Array, Object, toArray){
 	/**
@@ -615,10 +480,289 @@ this.List = function(Array, Object, toArray){
 	Rexjs.toArray
 );
 
-}.call(
-	this
+this.URL = function(toString, parse){
+	/**
+	 * 地址
+	 * @param {String} urlString - 地址字符串
+	 * @param {String} _baseURLstring - 基准地址
+	 */
+	function URL(urlString, _baseURLstring){
+		// 如果提供的是 null 或 undefined
+		if(urlString == null){
+			return;
+		}
+
+		// 转化为字符串
+		urlString = toString(urlString);
+
+		// 如果解析后存在 protocal 或者 没有提供基础路径
+		if(parse(this, urlString) || !_baseURLstring){
+			return;
+		}
+
+		var baseURL = new URL(_baseURLstring);
+
+		parse(
+			this,
+			(
+				baseURL.origin +
+				// 如果是根目录路径，则忽略 dirname
+				(urlString[0] === "/" ? "" : baseURL.dirname + "/") +
+				urlString
+			)
+		);
+	};
+	URL = new Rexjs(URL);
+
+	URL.props({
+		ext: "",
+		dirname : "",
+		filename: "",
+		hash : "",
+		/**
+		 * 获取主机地址
+		 */
+		get host(){
+			var hostname = this.hostname;
+
+			// 如果存在 hostname
+			if(hostname){
+				var port = this.port;
+
+				// 拼接 host
+				return hostname + (port ? ":" + port : "");
+			}
+
+			// 返回空字符串
+			return "";
+		},
+		hostname : "",
+		/**
+		 * 获取完整连接
+		 */
+		get href(){
+			var protocal = this.protocal;
+
+			return (
+				(
+					protocal ?
+						protocal + (
+							this.host ?
+								"//" + (this.username ? this.username + "@" : "") + this.host :
+								"/"
+						) :
+						""
+				) +
+				this.pathname + this.search + this.hash
+			);
+		},
+		/**
+		 * 获取域地址
+		 */
+		get origin(){
+			var host = this.host;
+
+			// 如果 host 存在
+			if(host){
+				return this.protocal + "//" + host;
+			}
+
+			return "";
+		},
+		/**
+		 * 获取路径名
+		 */
+		get pathname(){
+			var filename = this.filename, dirname = this.dirname;
+
+			// 如果文件名存在
+			if(filename){
+				// 拼接目录名和文件名
+				return dirname + (dirname[dirname.length - 1] === "/" ? "" : "/") + filename;
+			}
+
+			// 直接返回目录名
+			return dirname;
+		},
+		port : "",
+		protocal : "",
+		search : "",
+		/**
+		 * 转化为字符串
+		 */
+		toString : function(){
+			return this.href;
+		},
+		username: ""
+	});
+
+	return URL;
+}(
+	// toString
+	function(urlString){
+		// 如果不是字符串
+		if(typeof urlString !== "string"){
+			// 如果是 undefined 或者 null，则为空字符串，否则为 toString 的返回值
+			urlString = urlString == null ? "" : urlString.toString();
+		}
+		
+		// 返回转码后的字符串
+		return encodeURI(
+			urlString.trim()
+		);
+	},
+	// parse
+	function(url, urlString){
+		// 匹配地址
+		var result = urlString.match(URL_REGEXP);
+		
+		// 如果没有匹配结果
+		if(!result){
+			// 报错
+			throw "Invalid URL: " + urlString;
+		}
+		
+		var dirnameArray = [],
+
+			protocal = getUrlInfo(result, 1),
+
+			username = getUrlInfo(result, 2),
+
+			hostname = getUrlInfo(result, 3),
+
+			port = getUrlInfo(result, 4),
+
+			dirname = getUrlInfo(result, 5),
+
+			filename = getUrlInfo(result, 6);
+
+		url.protocal = protocal;
+		url.hostname = hostname;
+		url.username = username;
+		url.port = port;
+		url.filename = filename;
+		url.ext = getUrlInfo(result, 7);
+		url.search = getUrlInfo(result, 8);
+		url.hash = getUrlInfo(result, 9);
+
+		// 判断协议
+		switch(protocal){
+			// 如果是 http
+			case "http:":
+			// 如果是 https
+			case "https:":
+				// 如果主机名不存在
+				if(!url.hostname){
+					return false;
+				}
+
+				break;
+			
+			// 如果没有 protocal
+			case "":
+				break;
+
+			default: {
+				var index;
+		
+				// 还原链接字符串
+				urlString = decodeURI(urlString);
+				
+				switch(true){
+					// 如果存在 search
+					case url.search.length > 0 :
+						// 设置 index
+						index = urlString.indexOf("?");
+						break;
+					
+					// 如果存在 hash
+					case url.hash.length > 0 :
+						// 设置 index
+						index = urlString.indexOf("#");
+						break;
+
+					default :
+						// 设置 index
+						index = urlString.length;
+						break;
+				}
+
+				// 清空 host 与 port
+				url.hostname = url.port = "";
+
+				// 如果是 dataURL
+				if(protocal === "data:"){
+					// 直接设置 dirname
+					url.dirname = urlString.substring(protocal.length, index);
+					// 清空 filename 与 ext
+					url.filename = url.ext = "";
+					return true;
+				}
+				
+				// 重置 url 部分属性
+				dirname = urlString.substring(protocal.length, index - filename.length);
+				// 解码 search
+				url.search = decodeURI(url.search);
+				// 解码 hash
+				url.hash = decodeURI(url.hash);
+				break;
+			}
+		}
+		
+		// 分割路径
+		dirname
+			.split(
+				DIR_SEPARATOR_REGEXP
+			)
+			.forEach(function(name){
+				switch(name){
+					// 如果是1点，说明是保持当前层目录，不需要做任何处理
+					case "." :
+						break;
+					
+					// 如果是2点，说明是返回上一层目录，则去掉数组的最后一个
+					case ".." :
+						dirnameArray.splice(dirnameArray.length - 1);
+						break;
+						
+					case "" :
+						break;
+					
+					// 添加目录
+					default :
+						dirnameArray.push(name);
+						break;
+				}
+			});
+
+		// 如果 文件名不存在 而且 路径名最后是 "/"
+		if(!filename && dirname[dirname.length - 1] === "/"){
+			// 那么添加空字符串，方便下面的 dirname 在末尾加上 "/"
+			dirnameArray.push("");
+		}
+
+		// 设置 dirname
+		url.dirname = "/" + dirnameArray.join("/");
+		return protocal.length > 0;
+	}
 );
 
+Rexjs.static(this);
+}(
+	Rexjs,
+	// URL_REGEXP
+	/^(?:([^:/?#.]+:)(?:\/+(?:([^/?#]*)@)?([\w\d\-\u0100-\uffff.%]*)(?::([0-9]+))?)?)?(?:([^?#]+?)([^\/]+?(\.[^.?#\/]+))?)?(?:(\?[^#]*))?(?:(#.*))?$/,
+	// DIR_SEPARATOR_REGEXP
+	/\/|\\/g,
+	encodeURI,
+	// getUrlInfo
+	function(result, index){
+		return result[index] || "";
+	}
+);
+// 基于 Rexjs 语法相关
+new function(Rexjs, forEach){
+"use strict";
 
 // 变量名集合相关
 !function(){
@@ -814,18 +958,18 @@ this.VariableCollections = function(PREFIX){
 this.File = function(){
 	/**
 	 * 文件信息
-	 * @param {String} filename - 文件名
+	 * @param {Url} url - 文件路径
 	 * @param {String} source - 源文件内容
 	 */
-	function File(filename, source){
-		this.filename = filename;
+	function File(url, source){
+		this.url = url;
 		this.source = source;
 	};
 	File = new Rexjs(File);
 	
 	File.props({
-		filename: "",
-		source: ""
+		source: "",
+		url: null
 	});
 	
 	return File;
@@ -962,7 +1106,7 @@ this.SourceBuilder = function(ContentBuilder){
 			// 追加新行
 			this.newline();
 			// 追加 sourceURL
-			this.appendString("//# sourceURL=" + this.file.filename);
+			this.appendString("//# sourceURL=" + this.file.url.href);
 
 			return this.result;
 		},
@@ -1106,7 +1250,7 @@ this.MappingPosition = function(Position){
 	this.Position
 );
 
-this.MappingBuilder = function(MappingPosition, Base64, JSON, appendContext, appendString, complete, merge, newline){
+this.MappingBuilder = function(URL, MappingPosition, Base64, JSON, appendContext, appendString, complete, merge, newline){
 	/**
 	 * 源码映射生成器，用来生成 sourceMap
 	 * @param {File} file - 生成器相关文件
@@ -1207,10 +1351,13 @@ this.MappingBuilder = function(MappingPosition, Base64, JSON, appendContext, app
 		 * 完成生成，返回结果
 		 */
 		complete: function(){
+			var url = this.file.url;
+
 			// 如果支持解析 base64
 			if(Base64.btoa(
 				JSON.stringify({
-					sources: [ this.file.filename ],
+					version: 3,
+					sources: [ url.href ],
 					names: [],
 					mappings: this.mappings
 				}),
@@ -1218,7 +1365,7 @@ this.MappingBuilder = function(MappingPosition, Base64, JSON, appendContext, app
 					// 追加新行
 					this.newline();
 					// 追加 sourceURL
-					this.appendString("//# sourceURL=http://rexjs/sources/" + this.file.filename);
+					this.appendString("//# sourceURL=" + new URL("http://sourceURL" + url.pathname).href);
 					// 追加新行
 					this.newline();
 					// 追加 mappingURL 头部
@@ -1256,6 +1403,7 @@ this.MappingBuilder = function(MappingPosition, Base64, JSON, appendContext, app
 	
 	return MappingBuilder;
 }(
+	Rexjs.URL,
 	this.MappingPosition,
 	this.Base64,
 	JSON,
@@ -1293,7 +1441,7 @@ this.SyntaxElement = function(){
 	return SyntaxElement;
 }();
 
-this.SyntaxConfig = function(forEach){
+this.SyntaxConfig = function(){
 	/**
 	 * 语法配置，用于管理是否编译指定表达式
 	 * @param {String} name - 配置名称
@@ -1311,9 +1459,7 @@ this.SyntaxConfig = function(forEach){
 	SyntaxConfig = new Rexjs(SyntaxConfig);
 
 	return SyntaxConfig;
-}(
-	Rexjs.forEach
-);
+}();
 
 this.SyntaxRegExp = function(RegExp, Infinity){
 	/**
@@ -1812,7 +1958,7 @@ this.SyntaxTags = function(List, getSortedValue, distinct){
 
 	return SyntaxTags;
 }(
-	this.List,
+	Rexjs.List,
 	// getSortedValue
 	function(copy, tag1, tag2, property, value, _bothNot){
 		var type1 = tag1.type, type2 = tag2.type;
@@ -2564,7 +2710,7 @@ this.SyntaxError = function(MappingBuilder, e, contextOf){
 		get message(){
 			var position = this.context.position;
 
-			return (this.reference ? "Reference" : "Syntax") + "Error: " + this.description + " @ " + this.file.filename + ":" + (position.line + 1) + ":" + (position.column + 1);
+			return (this.reference ? "Reference" : "Syntax") + "Error: " + this.description + " @ " + this.file.url.href + ":" + (position.line + 1) + ":" + (position.column + 1);
 		},
 		file: null,
 		reference: false,
@@ -2844,12 +2990,7 @@ Rexjs.static(this);
 	Rexjs,
 	Rexjs.forEach
 );
-
-/***/ }),
-/* 4 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var require;new function(
+new function(
 	Rexjs,
 	// 内容提取相关
 	ContentBuilder,
@@ -4258,7 +4399,7 @@ this.NumberTag = function(){
 	NumberTag = new Rexjs(NumberTag, LiteralTag);
 	
 	NumberTag.props({
-		regexp: /0[xX][0-9a-fA-F]+|0{2,}(?!\.)|(?:\d*\.\d+|\d+\.?)(?:e[+-]?\d+)?/,
+		regexp: /0[xX][0-9a-fA-F]+|0{2,}(?!\.)|(?:\d*\.\d+|\d+\.?)(?:[eE][+-]?\d+)?/,
 		throw: "number"
 	});
 	
@@ -23921,7 +24062,7 @@ this.ImportExpression = function(compileMember){
 				if(this.from){
 					// 追加模块名称
 					anotherBuilder.appendString(
-						this.name.content + ',"' + this.file.filename + '"'
+						this.name.content + ',"' + this.file.url.href + '"'
 					);
 				}
 
@@ -24936,7 +25077,7 @@ this.ExportExpression = function(compile){
 		// 如果有 from
 		if(from){
 			// 追加模块名称
-			anotherBuilder.appendString(name.content + ',"' + file.filename + '"');
+			anotherBuilder.appendString(name.content + ',"' + file.url.href + '"');
 		}
 
 		// 先编译成员
@@ -28140,23 +28281,24 @@ this.ECMAScriptParser = function(SourceBuilder, MappingBuilder, ECMAScriptTagsMa
 		/**
 		 * 将解析后的语法生成字符串
 		 * @param {ContentBuilder} _contentBuilder - 内容生成器
+		 * @param {Boolean} _withoutModule - 不采用模块形式的入口
 		 */
-		build: function(_contentBuilder){
-			var file = this.file, filename = file.filename;
+		build: function(_contentBuilder, _withoutModule){
+			var file = this.file, url = file.url;
 
 			_contentBuilder = _contentBuilder || (
-				// 如果提供了文件名
-				filename ?
+				// 如果提供了文件路径
+				url.href ?
 					(
 						sourceMaps ? new MappingBuilder(file) : new SourceBuilder(file)
 					) :
-					// 如果没有提供文件名
+					// 如果没有提供文件路径
 					new ContentBuilder()
 			);
 
 			// 追加闭包函数起始部分
 			_contentBuilder.appendString(
-				(filename ? 'new Rexjs.Module("' + this.file.filename + '",' : "!") + "function(Rexjs){"
+				(_withoutModule ? "!" : 'new Rexjs.Module("' + url.href + '",') + "function(Rexjs){"
 			);
 
 			// 创建新行
@@ -28172,7 +28314,7 @@ this.ECMAScriptParser = function(SourceBuilder, MappingBuilder, ECMAScriptTagsMa
 			// 创建新行
 			_contentBuilder.newline();
 			// 追加闭包函数结束部分
-			_contentBuilder.appendString("}" + (filename ? ")" : ".call(this, Rexjs)") + ";");
+			_contentBuilder.appendString("}" + (_withoutModule ? ".call(this, Rexjs)" : ")") + ";");
 
 			return _contentBuilder.complete();
 		},
@@ -28267,12 +28409,7 @@ Rexjs.static(this);
 		context.setStatementOf(statements);
 	}
 );
-
-/***/ }),
-/* 5 */
-/***/ (function(module, exports, __webpack_require__) {
-
-/* WEBPACK VAR INJECTION */(function(global) {new function(Rexjs){
+new function(Rexjs, URL, Module, global){
 
 // 迭代器相关
 !function(){
@@ -28821,283 +28958,905 @@ this.Class = function(ClassProperty, defineProperty){
 );
 
 
-// 模块辅助类
-!function(URL_REGEXP, document, encodeURI){
+// 其他非模块相关
+!function(){
 
-this.URL = function(toString, parse){
+this.Function = function(bind, empty){
 	/**
-	 * 地址，需要兼容 node 环境
-	 * @param {String} urlString - 地址字符串
-	 * @param {String} _baseURLstring - 基准地址
+	 * 函数
 	 */
-	function URL(urlString, _baseURLstring){
-		// 转化为字符串
-		var urlObj;
-		
-		// 转化为字符串
-		urlString = toString(urlString);
-		
-		// 如果解析 URL 成功，说明是个完整的 URL，则不需要继续关联 _baseURLstring
-		if(parse(this, urlString)){
-			return;
-		}
+	function Function(){};
+	Function = new Rexjs(Function);
 
-		if(_baseURLstring){
-			var baseURL = new URL(_baseURLstring);
-
-			if(
-				parse(
-					this,
-					(
-						baseURL.protocal + "//" + baseURL.host +
-						// 如果是根目录路径，则忽略 dirname
-						(urlString[0] === "/" ? "" : baseURL.dirname + "/") +
-						urlString
-					)
-				)
-			){
-				return;
-			}
-		}
-
-		// 报错
-		throw "Invalid URL: " + urlString;
-	};
-	URL = new Rexjs(URL);
-
-	URL.props({
-		ext: "",
-		dirname : "",
-		filename: "",
-		hash : "",
+	Function.static({
 		/**
-		 * 获取主机地址
+		 * 强制转换为函数
+		 * @param {*} object - 函数属性所处的对象
+		 * @param {String} propertyName - 函数属性所处对象内的名称
 		 */
-		get host(){
-			var hostname = this.hostname;
-
-			// 如果存在 hostname
-			if(hostname){
-				var port = this.port;
-
-				// 拼接 host
-				return hostname + (port ? ":" + port : "");
+		convert: function(object, propertyName){
+			// 如果只有 1 个参数
+			if(arguments.length === 1){
+				// 如果是函数则返回，否则返回 empty 函数
+				return typeof object === "function" ? object : empty;
 			}
 
-			// 返回空字符串
-			return "";
-		},
-		hostname : "",
-		/**
-		 * 获取完整连接
-		 */
-		get href(){
-			return this.protocal + (this.hostname ? "//" + this.host : "") + this.pathname + this.search + this.hash;	
-		},
-		/**
-		 * 获取域地址
-		 */
-		get origin(){
-			// 如果 hostname 存在
-			if(this.hostname){
-				// 返回拼接结果
-				return this.protocal + "//" + this.host;
+			// 获取函数
+			var func = object[propertyName];
+
+			// 如果不是函数
+			if(typeof func !== "function"){
+				// 返回 empty
+				return empty;
 			}
 
-			// 返回 null 字符串
-			return "null";
-		},
-		/**
-		 * 获取路径名
-		 */
-		get pathname(){
-			var filename = this.filename, dirname = this.dirname;
-
-			// 如果文件名存在
-			if(filename){
-				// 拼接目录名和文件名
-				return dirname + (dirname[dirname.length - 1] === "/" ? "" : "/") + filename;
-			}
-
-			// 直接返回目录名
-			return dirname;
-		},
-		port : "",
-		protocal : "",
-		search : "",
-		/**
-		 * 转化为字符串
-		 */
-		toString : function(){
-			return this.href;
+			// 返回绑定了 object 的新函数
+			return bind.call(func, object);
 		}
 	});
 
-	return URL;
+	return Function;
 }(
-	// toString
-	function(urlString){
-		// 如果不是字符串
-		if(typeof urlString !== "string"){
-			// 如果是 undefined 或者 null，则为空字符串，否则为 toString 的返回值
-			urlString = urlString == null ? "" : urlString.toString();
-		}
-		
-		// 返回转码后的字符串
-		return encodeURI(
-			urlString.trim()
-		);
-	},
-	// parse
-	function(url, urlString){
-		// 匹配地址
-		var result = urlString.match(URL_REGEXP);
-		
-		// 如果没有匹配结果
-		if(!result){
-			return false;
-		}
-		
-		var dirname = result[4] || "", protocal = result[1],
-		
-			hostname = result[2] || "", port = result[3] || "",
-			
-			filename = result[5] || "";
-		
-		url.protocal = protocal;
-		url.hostname = hostname;
-		url.port = port;
-		url.filename = filename;
-		url.ext = result[6] || "";
-		url.search = result[7] || "";
-		url.hash = result[8] || "";
+	Function.bind,
+	// empty
+	function(){}
+);
 
-		// 判断协议
-		switch(protocal){
-			// 如果是 http
-			case "http:":
-			// 如果是 https
-			case "https:":
-				// 如果主机名不存在
-				if(!url.hostname){
-					return false;
-				}
+this.Object = function(){
+	/**
+	 * 对象
+	 */
+	function Object(){};
+	Object = new Rexjs(Object);
 
-				break;
-			
-			case void 0:
-				return false;
+	Object.static({
+		/**
+		 * 获取对象可枚举的属性的属性名集合
+		 * @param {*} object - 需要获取属性名的对象
+		 */
+		getEnumerablePropertyNames: function(object){
+			var names = [];
 
-			default: {
-				var index;
-		
-				// 还原链接字符串
-				urlString = decodeURI(urlString);
-				
-				switch(true){
-					// 如果存在 search
-					case url.search.length > 0 :
-						// 设置 index
-						index = urlString.indexOf("?");
-						break;
-					
-					// 如果存在 hash
-					case url.hash.length > 0 :
-						// 设置 index
-						index = urlString.indexOf("#");
-						break;
-
-					default :
-						// 设置 index
-						index = urlString.length;
-						break;
-				}
-
-				// 清空 host 与 port
-				url.hostname = url.port = "";
-
-				// 如果是 dataURL
-				if(protocal === "data:"){
-					// 直接设置 dirname
-					url.dirname = urlString.substring(protocal.length, index);
-					// 清空 filename 与 ext
-					url.filename = url.ext = "";
-					return true;
-				}
-				
-				// 重置 url 部分属性
-				dirname = urlString.substring(protocal.length, index - filename.length);
-				// 解码 search
-				url.search = decodeURI(url.search);
-				// 解码 hash
-				url.hash = decodeURI(url.hash);
-				break;
+			// 遍历对象
+			for(var name in object){
+				// 添加属性名
+				names.push(name);
 			}
+
+			return names;
 		}
-		
-		var dirnameArray = [];
-		
-		// 分割路径
-		dirname
-			.split(
-				"/"
-			)
-			.forEach(function(name){
-				switch(name){
-					// 如果是1点，说明是保持当前层目录，不需要做任何处理
-					case "." :
-						break;
-					
-					// 如果是2点，说明是返回上一层目录，则去掉数组的最后一个
-					case ".." :
-						dirnameArray.splice(dirnameArray.length - 1);
-						break;
-						
-					case "" :
-						break;
-					
-					// 添加目录
-					default :
-						dirnameArray.push(name);
-						break;
+	});
+
+	return Object;
+}();
+
+this.ObjectDestructuringTarget = function(getOwnPropertyNames, getOwnPropertyDescriptor){
+	/**
+	 * 解构目标
+	 * @param {Object} origin - 源解构对象
+	 */
+	function ObjectDestructuringTarget(origin){
+		this.destructed = [];
+		this.origin = origin;
+	};
+	ObjectDestructuringTarget = new Rexjs(ObjectDestructuringTarget);
+
+	ObjectDestructuringTarget.props({
+		destructed: null,
+		/**
+		 * 获取解构对象指定名称的属性
+		 * @param {String} name - 解构属性名称
+		 */
+		get: function(name){
+			// 记录名称
+			this.destructed.push(name);
+
+			// 返回值
+			return this.origin[name];
+		},
+		origin: null,
+		/**
+		 * 获取没有记录过的其他属性
+		 */
+		get rest(){
+			var rest = {}, origin = this.origin;
+
+			// 获取源对象的所有自身属性并遍历
+			getOwnPropertyNames(origin).forEach(
+				function(name){
+					// 如果已经被解构过
+					if(this.indexOf(name) > -1){
+						return;
+					}
+
+					// 如果是可以枚举的
+					if(getOwnPropertyDescriptor(origin, name).enumerable){
+						// 设置属性
+						rest[name] = origin[name];
+					}
+				},
+				this.destructed
+			);
+
+			return rest;
+		}
+	});
+
+	return ObjectDestructuringTarget;
+}(
+	Object.getOwnPropertyNames,
+	Object.getOwnPropertyDescriptor
+);
+
+this.SpreadItem = function(forEach, push){
+	/**
+	 * 拓展项
+	 * @param {*} value - 拓展项的值
+	 */
+	function SpreadItem(value){
+		this.value = value;
+	};
+	SpreadItem = new Rexjs(SpreadItem);
+
+	SpreadItem.static({
+		/**
+		 * 给对象赋值，即将另一个对象合并
+		 * @param {Object} object - 需要赋值的对象
+		 * @param {Object} target - 被赋值或合并的对象
+		 */
+		assign: function(object, target){
+			// 遍历
+			forEach(
+				target,
+				function(value, name){
+					// 赋值
+					object[name] = value;
 				}
+			);
+
+			return object;
+		},
+		/**
+		 * 合并所有数组拓展项
+		 */
+		combine: function(_args){
+			var array = [];
+
+			// 遍历参数
+			forEach(
+				arguments,
+				function(item){
+					// 如果是 SpreadItem 类的实例
+					if(item instanceof SpreadItem){
+						// 添加多项
+						push.apply(array, item.value);
+						return;
+					}
+
+					// 添加单项
+					array.push(item);
+				},
+				null,
+				true
+			);
+
+			return array;
+		},
+		/**
+		 * 通过一个拓展项列表合并所有拓展项
+		 * @param {Array} list - 拓展项列表
+		 */
+		combineBy: function(list){
+			return this.combine.apply(this, list);
+		}
+	});
+
+	SpreadItem.props({
+		value: null
+	});
+
+	return SpreadItem;
+}(
+	Rexjs.forEach,
+	Array.prototype.push
+);
+
+this.SwitchCondition = function(){
+	/**
+	 * switch 条件
+	 * @param {*} value - 条件值
+	 */
+	function SwitchCondition(value){
+		this.value = value;
+	};
+	SwitchCondition = new Rexjs(SwitchCondition);
+
+	SwitchCondition.props({
+		/**
+		 * 检测所提供的值是否与条件值一致
+		 * @param {*} value - 所需检测的值
+		 */
+		case: function(value){
+			switch(true){
+				// 如果已经匹配到值
+				case this.matched:
+					break;
+
+				// 如果值一致
+				case this.value === value:
+					this.matched = true;
+					break;
+
+				default:
+					return false;
+			}
+
+			return true;
+		},
+		/**
+		 * 判断是否还能进入 default 表达式
+		 */
+		default: function(){
+			// 如果已经有匹配到值，则不允许再进入 default
+			if(this.matched){
+				return false;
+			}
+
+			this.matched = true;
+			return true;
+		},
+		matched: false,
+		value: null
+	});
+
+	return SwitchCondition;
+}();
+
+}.call(
+	this
+);
+
+
+// 模块编译器相关
+!function(){
+
+this.ModuleCompiler = function(){
+	/**
+	 * 模块编译器
+	 */
+	function ModuleCompiler(){};
+	ModuleCompiler = new Rexjs(ModuleCompiler);
+
+	ModuleCompiler.props({
+		/**
+		 * 编译模块
+		 * @param {Module} module - 编译的模块
+		 */
+		compile: function(module){
+			this.deps = [];
+			this.result = module.origin;
+		},
+		deps: null,
+		/**
+		 * 执行模块编译结果
+		 * @param {Module} module - 编译的模块
+		 */
+		exec: function(module){
+			var compiler = this;
+
+			// 加载模块
+			module.load(function(){
+				// 设置默认输出
+				Module.export("default", compiler.result);
+			});
+		},
+		result: null
+	});
+
+	return ModuleCompiler;
+}();
+
+this.JavaScriptCompiler = function(ModuleCompiler, ECMAScriptParser, File, nativeEval){
+	/**
+	 * JavaScript 模块编译器
+	 */
+	function JavaScriptCompiler(){
+		ModuleCompiler.call(this);
+	};
+	JavaScriptCompiler = new Rexjs(JavaScriptCompiler, ModuleCompiler);
+
+	JavaScriptCompiler.props({
+		/**
+		 * 编译模块
+		 * @param {Module} module - 编译的模块
+		 */
+		compile: function(module){
+			// 初始化解析器
+			var parser = new ECMAScriptParser();
+			
+			// 解析代码
+			parser.parse(
+				// 初始化文件
+				new File(module.name, module.origin)
+			);
+			
+			// 设置模块解析结果
+			this.result = parser.build();
+			// 设置依赖
+			this.deps = parser.deps;
+		},
+		/**
+		 * 执行模块编译结果
+		 * @param {Module} module - 编译的模块
+		 */
+		exec: function(module){
+			nativeEval(this.result);
+		}
+	});
+
+	return JavaScriptCompiler;
+}(
+	this.ModuleCompiler,
+	Rexjs.ECMAScriptParser,
+	Rexjs.File,
+	// nativeEval
+	eval
+);
+
+this.JSONCompiler = function(ModuleCompiler, parse){
+	/**
+	 * json 模块编译器
+	 */
+	function JSONCompiler(){
+		ModuleCompiler.call(this);
+	};
+	JSONCompiler = new Rexjs(JSONCompiler, ModuleCompiler);
+
+	JSONCompiler.props({
+		/**
+		 * 编译模块
+		 * @param {Module} module - 编译的模块
+		 */
+		compile: function(module){
+			// 设置模块解析结果
+			this.result = parse(module.origin);
+			// 设置依赖
+			this.deps = [];
+		}
+	});
+
+	return JSONCompiler;
+}(
+	this.ModuleCompiler,
+	JSON.parse
+);
+
+}.call(
+	this
+);
+
+
+// 模块相关
+!function(STATUS_NONE, STATUS_LOADING, STATUS_COMPILING, STATUS_READY, STATUS_ENDED, STATUS_COMPLETED, STATUS_ERROR, moduleReady, trigger){
+
+this.Module = Module = function(ModuleCompiler, cache, stack, create, defineProperty, readFile){
+	/**
+	 * 模块
+	 * @param {String} name - 模块名称
+	 * @param {String, Function} _code - 模块代码
+	 * @param {Boolean} _sync - 是否同步
+	 */
+	function Module(name, _code, _sync){
+		var moduleName = moduleReady.parseName(name), href = moduleName.href;
+
+		// 如果缓存里已经存在该模块
+		if(cache.hasOwnProperty(href)){
+			var module = cache[href];
+
+			// 如果是函数而且没有结束（没有执行）
+			if(typeof _code === "function" && !this.ended){
+				// 加载当前模块
+				module.load(_code);
+			}
+
+			// 返回该模块
+			return module;
+		}
+
+		this.exports = create(null);
+		this.imports = [];
+		this.listeners = [];
+		this.name = moduleName;
+		this.status = STATUS_LOADING;
+		this.targets = [];
+
+		cache[href] = this;
+
+		// 判断代码类型
+		switch(typeof _code){
+			// 如果是字符串
+			case "string":
+				// 代码就绪
+				this.ready(_code, _sync);
+				return;
+
+			// 如果是函数
+			case "function":
+				// 加载当前模块
+				this.load(_code);
+				return;
+		}
+
+		// 加载代码
+		readFile(this, _sync);
+	};
+	Module = new Rexjs(Module);
+
+	Module.static({
+		STATUS_NONE: STATUS_NONE,
+		STATUS_LOADING: STATUS_LOADING,
+		STATUS_COMPILING: STATUS_COMPILING,
+		STATUS_READY: STATUS_READY,
+		STATUS_ENDED: STATUS_ENDED,
+		STATUS_COMPLETED: STATUS_COMPLETED,
+		STATUS_ERROR: STATUS_ERROR,
+		/**
+		 * 获取模块缓存信息
+		 */
+		get cache(){
+			return cache;
+		},
+		/**
+		 * 获取指定模块的默认输出
+		 * @param {String} name - 模块名称
+		 * @param {String} _baseUrlString - 基础地址
+		 */
+		defaultOf: function(name, _baseUrlString){
+			return this.import(name, _baseUrlString).default;
+		},
+		/**
+		 * 输出模块成员
+		 * @param {String} name - 需要输出的模块成员名称
+		 * @param {*} value - 需要输出的模块成员值
+		 * @param {Module} _module - 需要输出到的指定模块
+		 */
+		export: function(name, value, _module){
+			defineProperty(
+				(_module || stack[stack.length - 1]).exports,
+				name,
+				{
+					get: function(){ return value },
+					configurable: false,
+					enumerable: true
+				}
+			);
+		},
+		/**
+		 * 输出模块成员
+		 * @param {Object} exports - 需要输出的模块成员
+		 * @param {String} _name - 可指定的输入来源模块的名称
+		 * @param {String} _baseUrlString - 输入来源模块的基础地址
+		 */
+		exportAs: function(exports, _name, _baseUrlString){
+			// 如果名称不存在
+			if(!_name){
+				// 遍历模块成员
+				for(var propertyName in exports){
+					// 输出成员
+					this.export(propertyName, exports[propertyName]);
+				}
+
+				return;
+			}
+
+			// 获取来源模块的所有输出项
+			var allExports = this.import(_name, _baseUrlString);
+
+			// 遍历模块成员
+			for(var propertyName in exports){
+				// 输出成员
+				this.export(
+					propertyName,
+					allExports[
+						exports[propertyName]
+					]
+				);
+			}
+		},
+		/**
+		 * 根据来源模块来输出成员
+		 * @param {String} name - 输入来源模块的名称
+		 * @param {String} _baseUrlString - 输入来源模块的基础地址
+		 */
+		exportFrom: function(name, _baseUrlString){
+			var exports = this.import(name, _baseUrlString);
+
+			// 遍历模块成员
+			for(var propertyName in exports){
+				// 如果是默认输出
+				if(propertyName === "default"){
+					continue;
+				}
+
+				// 输出成员
+				this.export(propertyName, exports[propertyName]);
+			}
+		},
+		/**
+		 * 导入模块
+		 * @param {String} name - 模块名称
+		 * @param {String} _baseUrlString - 基础地址
+		 */
+		import: function(name, _baseUrlString){
+			return (
+				cache[
+					moduleReady.parseName(name, _baseUrlString).href
+				]
+				.exports
+			);
+		},
+		/**
+		 * 获取模块成员
+		 * @param {String} memberName - 成员名称
+		 * @param {String} moduleName - 模块名称
+		 * @param {String} _baseUrlString - 基础地址
+		 */
+		memberOf: function(memberName, moduleName, _baseUrlString){
+			return this.import(moduleName, _baseUrlString)[memberName];
+		},
+		/**
+		 * 获取模块
+		 * @param {String} name - 模块名称
+		 * @param {String} _baseUrlString - 基础地址
+		 */
+		moduleOf: function(name, _baseUrlString){
+			return this.import(name, _baseUrlString);
+		},
+		/**
+		 * 获取当前模块的堆栈情况
+		 */
+		get stack(){
+			return stack;
+		}
+	});
+
+	Module.props({
+		compiler: null,
+		/**
+		 * 判断该模块是否已经加载并执行完成
+		 */
+		get completed(){
+			return (this.status & STATUS_COMPLETED) === STATUS_COMPLETED;
+		},
+		/**
+		 * 判断该模块是否已经加载结束
+		 */
+		get ended(){
+			return (this.status & STATUS_ENDED) === STATUS_ENDED;
+		},
+		/**
+		 * 判断该模块是否发生了错误
+		 */
+		get error(){
+			return (this.status & STATUS_ERROR) === STATUS_ERROR;
+		},
+		exports: null,
+		/**
+		 * 执行编译后的代码
+		 */
+		eval: function(){
+			var count = 0, progress = 0, imports = this.imports, status = this.status;
+
+			// 如果还没有就绪
+			if((this.status & STATUS_READY) !== STATUS_READY){
+				return false;
+			}
+			
+			// 如果已经执行完成
+			if(this.completed){
+				return true;
+			}
+
+			// 遍历
+			imports.forEach(function(i){
+				// 如果已完成，总数加 1，否则加 0。ps：+true = 1, +false = 0
+				count += +i.completed;
 			});
 
-		// 如果 文件名不存在 而且 路径名最后是 "/"
-		if(!filename && dirname[dirname.length - 1] === "/"){
-			// 那么添加空字符串，方便下面的 dirname 在末尾加上 "/"
-			dirnameArray.push("");
-		}
+			// 计算进度
+			progress = count / imports.length;
 
-		// 设置 dirname
-		url.dirname = "/" + dirnameArray.join("/");
-		return true;
+			// 如果所有需要引用的依赖模块的代码没有执行完成
+			if(progress < 1){
+				// 触发监听器
+				trigger(
+					this,
+					+progress.toFixed(2)
+				);
+
+				return false;
+			}
+
+			// 编译完成
+			this.compiler.exec(this);
+			return true;
+		},
+		imports: null,
+		/**
+		 * 监听模块加载进度
+		 * @param {Function} listener - 需要添加的监听器
+		 */
+		listen: function(listener){
+			// 如果已经结束
+			if(this.ended){
+				// 直接调用该监听器
+				listener.call(this, 1);
+				return;
+			}
+
+			// 添加到等待列表中
+			this.listeners.push(listener);
+		},
+		listeners: null,
+		/**
+		 * 加载当前模块
+		 * @param {Function} loader - 模块加载函数
+		 */
+		load: function(loader){
+			// 如果已经加载完成
+			if(this.completed){
+				return;
+			}
+
+			// 添加到堆栈中
+			stack.push(this);
+			// 加载当前模块
+			loader.call(global, Rexjs);
+			// 去掉当前模块
+			stack.pop();
+
+			// 设置状态为已完成
+			this.status = STATUS_COMPLETED;
+
+			// 触发依赖该模块的其他模块的执行方法
+			trigger(this);
+		},
+		name: null,
+		origin: "",
+		/**
+		 * 代码准备就绪处理函数
+		 * @param {String} content - 代码内容
+		 * @param {Boolean} _sync - 是否同步
+		 */
+		ready: function(content, _sync){
+			var compiler, name = this.name, imports = this.imports;
+
+			// 记录源内容
+			this.origin = content;
+			// 设置状态为编译中
+			this.status = STATUS_COMPILING;
+			// 设置编译器
+			this.compiler = compiler = new (moduleReady.compilers[name.ext] || ModuleCompiler)();
+
+			// 执行编译
+			compiler.compile(this);
+			
+			// 设置状态为已就绪
+			this.status = STATUS_READY;
+
+			// 遍历依赖
+			compiler.deps.forEach(
+				function(dep){
+					var href = moduleReady.parseName(dep, name.href).href, module = cache.hasOwnProperty(href) ? cache[href] : new Module(href, null, _sync);
+
+					// 如果是重复导入
+					if(imports.indexOf(module) > -1){
+						return;
+					}
+
+					// 如果是两模块相互引用
+					if(module.imports.indexOf(this) > - 1){
+						// 报错
+						throw (
+							"Module has been imported by each other " +
+							name.href + " " +
+							module.name.href
+						);
+					}
+
+					// 添加需要导入的模块
+					imports.push(module);
+					// 给导入模块添加目标模块
+					module.targets.push(this);
+				},
+				this
+			);
+
+			// 执行代码
+			this.eval();
+		},
+		status: STATUS_NONE,
+		targets: null
+	});
+
+	return Module;
+}(
+	this.ModuleCompiler,
+	// cache
+	{},
+	// stack
+	[],
+	Object.create,
+	Object.defineProperty,
+	// readFile
+	function(module, _sync){
+		moduleReady.readFile(
+			module.name,
+			function(content){
+				module.ready(content, _sync);
+			},
+			function(error){
+				// 设置状态
+				module.status = STATUS_ERROR;
+				// 设置错误响应文本
+				module.origin = error;
+
+				// 提示错误信息
+				console.error('加载模块 "' + module.name.href + '" 错误：' + error + "。");
+				// 触发监听器
+				trigger(module);
+			},
+			_sync
+		);
 	}
 );
 
-this.HTMLCompiler = function(URL, URL_PREFIX_REGEXP){
+this.ModuleReady = function(JavaScriptCompiler, JSONCompiler, throwError){
+	/**
+	 * 模块系统准备就绪
+	 */
+	function ModuleReady(){
+		this.compilers = {
+			".js": JavaScriptCompiler,
+			".json": JSONCompiler
+		};
+
+		moduleReady = this;
+	};
+	ModuleReady = new Rexjs(ModuleReady);
+
+	ModuleReady.props({
+		compilers: null,
+		/**
+		 * 解析模块名称
+		 */
+		parseName: function(){
+			throwError("parseName");
+		},
+		/**
+		 * 读取文件内容
+		 */
+		readFile: function(){
+			throwError("readFile");
+		}
+	});
+
+	return ModuleReady;
+}(
+	this.JavaScriptCompiler,
+	this.JSONCompiler,
+	// throwError
+	function(method){
+		throw "应该在创建 ModuleReady 的子类时，重新定义该方法：" + method;
+	}
+);
+
+new this.ModuleReady();
+
+}.call(
+	this,
+	// STATUS_NONE
+	parseInt(0, 2),
+	// STATUS_LOADING
+	parseInt(10, 2),
+	// STATUS_COMPILING
+	parseInt(100, 2),
+	// STATUS_READY
+	parseInt(1000, 2),
+	// STATUS_ENDED
+	parseInt(10000, 2),
+	// STATUS_COMPLETED
+	parseInt(111000, 2),
+	// STATUS_ERROR
+	parseInt(1010000, 2),
+	// moduleReady
+	null,
+	// trigger
+	function(module, _progress){
+		var listeners = module.listeners;
+
+		// 如果没有提供 _progress 参数
+		if(typeof _progress !== "number"){
+			_progress = 1;
+		}
+
+		// 如果已经加载完成
+		if(module.completed){
+			// 触发引用模块的执行
+			module.targets.forEach(function(target){
+				target.eval();
+			});
+
+			// 清空监听器
+			listeners = listeners.splice(0);
+		}
+
+		// 执行监听器
+		listeners.forEach(function(listener){
+			listener.call(module, _progress);
+		});
+	}
+);
+
+Rexjs.static(this);
+}(
+	Rexjs,
+	Rexjs.URL,
+	// Module
+	null,
+	// global
+	Function("return this")()
+);
+new function(Rexjs, Module, document, forEach){
+
+// 浏览器环境中的模块编译器相关
+!function(ModuleCompiler){
+
+this.HTMLCompiler = function(URL_PREFIX_REGEXP){
 	/**
 	 * HTML 编译器
-	 * @param {String} cssText - 源文本
-	 * @param {String} sourceURL - 文件地址
 	 */
-	function HTMLCompiler(html, sourceURL){
-		var url = new URL(sourceURL);
-
-		this.result = html.replace(
-			URL_PREFIX_REGEXP,
-			url.origin + url.dirname + "/"
-		);
+	function HTMLCompiler(){
+		ModuleCompiler.call(this);
 	};
-	HTMLCompiler = new Rexjs(HTMLCompiler);
+	HTMLCompiler = new Rexjs(HTMLCompiler, ModuleCompiler);
 
 	HTMLCompiler.props({
-		result: ""
+		/**
+		 * 编译模块
+		 * @param {Module} module - 编译的模块
+		 */
+		compile: function(module){
+			var url = new URL(module.name.href);
+
+			// 设置依赖
+			this.deps = [];
+
+			// 设置结果
+			this.result = module.origin.replace(
+				URL_PREFIX_REGEXP,
+				url.origin + url.dirname + "/"
+			);
+		},
+		/**
+		 * 执行模块编译结果
+		 * @param {Module} module - 编译的模块
+		 */
+		exec: function(module){
+			var compiler = this;
+
+			// 加载模块
+			module.load(function(){
+				// 设置默认输出
+				Module.export("compiler", compiler);
+				// 设置默认输出
+				Module.export("default", compiler.result);
+			});
+		}
 	});
 
 	return HTMLCompiler;
 }(
-	this.URL,
 	// URL_PREFIX_REGEXP
 	/to:\/\/|~\//ig
 );
@@ -29211,39 +29970,16 @@ this.CSSSelectorMap = function(CSS_SELECTOR_REGEXP, SEPARATOR_REGEXP, cache, pos
 	Object.prototype.hasOwnProperty
 );
 
-this.CSSCompiler = function(URL, CSSSelectorMap, CSSRule, CSS_URL_REGEXP, enableSelectorMap, parse, merge, forEach, appendStyleTo){
+this.CSSCompiler = function(CSSSelectorMap, CSSRule, CSS_URL_REGEXP, enableSelectorMap, parse, merge, appendStyleTo){
 	/**
 	 * CSS 编译器
 	 * @param {String} cssText - 源文本
 	 * @param {String} sourceURL - 文件地址
 	 */
 	function CSSCompiler(cssText, sourceURL){
-		// 初始化引用
-		this.imports = [];
-
-		// 处理 css 源文本
-		cssText = this.compileURLs(cssText, sourceURL);
-
-		// 如果需要启用选择器映射
-		if(enableSelectorMap){
-			// 设置属性
-			this.selectorMap = new CSSSelectorMap(sourceURL);
-
-			// 编译选择器
-			cssText = this.compileSelectors(
-				appendStyleTo(
-					cssText,
-					document.implementation.createHTMLDocument("").head
-				)
-				.sheet
-				.cssRules
-			);
-		}
-
-		// 追加 sourceURL
-		this.result = cssText + "\n/*# sourceURL=" + sourceURL + " */";
+		ModuleCompiler.call(this);
 	};
-	CSSCompiler = new Rexjs(CSSCompiler);
+	CSSCompiler = new Rexjs(CSSCompiler, ModuleCompiler);
 
 	CSSCompiler.static({
 		/**
@@ -29255,6 +29991,38 @@ this.CSSCompiler = function(URL, CSSSelectorMap, CSSRule, CSS_URL_REGEXP, enable
 	});
 
 	CSSCompiler.props({
+		/**
+		 * 编译模块
+		 * @param {Module} module - 编译的模块
+		 */
+		compile: function(module){
+			var sourceURL = module.name.href;
+			
+			// 初始化引用
+			this.deps = [];
+
+			// 处理 css 源文本
+			cssText = this.compileURLs(module.origin, sourceURL);
+
+			// 如果需要启用选择器映射
+			if(enableSelectorMap){
+				// 设置属性
+				this.selectorMap = new CSSSelectorMap(sourceURL);
+
+				// 编译选择器
+				cssText = this.compileSelectors(
+					appendStyleTo(
+						cssText,
+						document.implementation.createHTMLDocument("").head
+					)
+					.sheet
+					.cssRules
+				);
+			}
+
+			// 追加 sourceURL
+			this.result = cssText + "\n/*# sourceURL=" + sourceURL + " */";
+		},
 		/**
 		 * 编译 CSS 选择器
 		 * @param {CSSRuleList} cssRules - css 规则列表
@@ -29291,7 +30059,7 @@ this.CSSCompiler = function(URL, CSSSelectorMap, CSSRule, CSS_URL_REGEXP, enable
 
 						// 如果是 @import 规则
 						case CSSRule.IMPORT_RULE:
-							this.imports.push(rule.href);
+							this.deps.push(rule.href);
 							return;
 
 						// 如果是 @namespace 规则
@@ -29341,24 +30109,38 @@ this.CSSCompiler = function(URL, CSSSelectorMap, CSSRule, CSS_URL_REGEXP, enable
 			);
 		},
 		/**
-		 * 完成编译，合并依赖模块的选择器映射表，并将样式添加到文档中
+		 * 执行模块编译结果
+		 * @param {Module} module - 编译的模块
 		 */
-		done: function(selectorMapList){
+		exec: function(module){
+			var compiler = this, selectorMap = this.selectorMap;
+
 			// 合并选择器映射表
-			merge.call(this.selectorMap, selectorMapList);
+			merge.call(
+				selectorMap,
+				module.imports.map(function(mod){
+					// 返回依赖模块的选择器映射
+					return mod.compiler.selectorMap;
+				})
+			);
 
 			// 添加到文档中
 			this.style = appendStyleTo(this.result, document.head);
+
+			// 加载模块
+			module.load(function(){
+				// 设置默认输出
+				Module.export("compiler", compiler);
+				// 设置默认输出
+				Module.export("default", selectorMap);
+			});
 		},
-		imports: null,
-		result: "",
 		selectorMap: null,
 		style: null
 	});
 
 	return CSSCompiler;
 }(
-	this.URL,
 	this.CSSSelectorMap,
 	CSSRule,
 	// CSS_URL_REGEXP
@@ -29378,7 +30160,6 @@ this.CSSCompiler = function(URL, CSSSelectorMap, CSSRule, CSS_URL_REGEXP, enable
 	true,
 	this.CSSSelectorMap.prototype.parse,
 	this.CSSSelectorMap.prototype.merge,
-	Rexjs.forEach,
 	// appendStyleTo
 	function(cssText, parentElement){
 		var style = document.createElement("style");
@@ -29393,894 +30174,131 @@ this.CSSCompiler = function(URL, CSSSelectorMap, CSSRule, CSS_URL_REGEXP, enable
 
 }.call(
 	this,
-	// URL_REGEXP
-	/^([^:/?#.]+:)?(?:\/\/(?:[^/?#]*@)?([\w\d\-\u0100-\uffff.%]*)(?::([0-9]+))?)?(?:([^?#]+?)([^\/]+?(\.[^.?#\/]+))?)?(?:(\?[^#]*))?(?:(#.*))?$/,
-	document,
-	encodeURI
+	Rexjs.ModuleCompiler
 );
 
 
-!function(
-	URL, ECMAScriptParser, XMLHttpRequest,
-	STATUS_NONE, STATUS_LOADING, STATUS_PARSING, STATUS_READY, STATUS_ENDED, STATUS_COMPLETED, STATUS_ERROR,
-	document, trigger
-){
+// 模块于 浏览器环境 与 node 环境兼容相关
+!function(ModuleReady, ECMAScriptParser, URL, baseElement){
 
-this.ModuleName = function(BASE_URI){
+this.BrowserReady = function(HTMLCompiler, CSSCompiler, XMLHttpRequest, BASE_URL, domContentLoaded){
 	/**
-	 * 模块名称
-	 * @param {String} value - 模块名称
-	 * @param {String} _baseURLstring - 基础地址
+	 * 浏览器模块系统准备就绪
 	 */
-	function ModuleName(value, _baseURLstring){
-		URL.call(
-			this,
-			value,
-			typeof _baseURLstring === "string" ? new URL(_baseURLstring, BASE_URI).href : BASE_URI
-		);
+	function BrowserReady(){
+		var compilers;
 
-		// 如果文件名存在
-		if(this.filename !== ""){
-			return;
-		}
+		ModuleReady.call(this);
 
-		var pathname = this.pathname;
+		compilers = this.compilers;
+		compilers[".html"] = HTMLCompiler;
+		compilers[".css"] = CSSCompiler;
 
-		// 返回新的实例
-		return new ModuleName(
-			this.origin + pathname + "/index.js" + this.search + this.hash
-		);
+		// 监听 DOMContentLoaded
+		document.addEventListener("DOMContentLoaded", domContentLoaded);
 	};
-	ModuleName = new Rexjs(ModuleName, URL);
+	BrowserReady = new Rexjs(BrowserReady, ModuleReady);
 
-	ModuleName.props({
-		value: ""
-	});
-
-	return ModuleName;
-}(
-	new URL(
-		(
-			document.querySelector("base") ||
-			{
-				getAttribute: function(){
-					return "./";
-				}
-			}
-		)
-		.getAttribute("href"),
-		location.href
-	)
-	.href
-);
-
-this.Module = function(
-	ModuleName, HTMLCompiler, CSSCompiler, MappingBuilder, File,
-	cache, exports, stack, global,
-	create, defineProperty, parse, nativeEval, request, listenDomReady
-){
-	/**
-	 * 模块
-	 * @param {String} name - 模块名称
-	 * @param {String, Function} _code - 模块代码
-	 * @param {Boolean} _sync - 是否同步
-	 */
-	function Module(name, _code, _sync){
-		var moduleName = new ModuleName(name), href = moduleName.href;
-
-		// 如果缓存里已经存在该模块
-		if(cache.hasOwnProperty(href)){
-			var mod = cache[href];
-
-			// 如果是函数而且没有结束（没有执行）
-			if(typeof _code === "function" && !this.ended){
-				// 加载当前模块
-				mod.load(_code);
-			}
-
-			// 返回该模块
-			return mod;
-		}
-
-		this.exports = create(null);
-		this.imports = [];
-		this.listeners = [];
-		this.name = moduleName;
-		this.status = STATUS_LOADING;
-		this.targets = [];
-
-		cache[href] = this;
-
-		// 判断代码类型
-		switch(typeof _code){
-			// 如果是字符串
-			case "string":
-				// 代码就绪
-				this.ready(_code, _sync);
-				return;
-
-			// 如果是函数
-			case "function":
-				// 加载当前模块
-				this.load(_code);
-				return;
-		}
-
-		// 加载代码
-		request(this, name, href, _sync);
-	};
-	Module = new Rexjs(Module);
-
-	Module.static({
-		STATUS_NONE: STATUS_NONE,
-		STATUS_LOADING: STATUS_LOADING,
-		STATUS_PARSING: STATUS_PARSING,
-		STATUS_READY: STATUS_READY,
-		STATUS_ENDED: STATUS_ENDED,
-		STATUS_COMPLETED: STATUS_COMPLETED,
-		STATUS_ERROR: STATUS_ERROR,
+	BrowserReady.props({
 		/**
-		 * 获取模块缓存信息
-		 */
-		get cache(){
-			return cache;
-		},
-		/**
-		 * 获取当前模块的堆栈情况
-		 */
-		get stack(){
-			return stack;
-		},
-		/**
-		 * 获取指定模块的默认输出
-		 * @param {String} name - 模块名称
-		 * @param {String} _baseURLstring - 基础地址
-		 */
-		defaultOf: function(name, _baseURLstring){
-			return this.import(name, _baseURLstring).default;
-		},
-		/**
-		 * 输出模块成员
-		 * @param {String} name - 需要输出的模块成员名称
-		 * @param {*} value - 需要输出的模块成员值
-		 */
-		export: function(name, value){
-			defineProperty(
-				exports,
-				name,
-				{
-					get: function(){ return value },
-					configurable: false,
-					enumerable: true
-				}
-			);
-		},
-		/**
-		 * 输出模块成员
-		 * @param {Object} exports - 需要输出的模块成员
-		 * @param {String} _name - 可指定的输入来源模块的名称
-		 * @param {String} _baseURLstring - 输入来源模块的基础地址
-		 */
-		exportAs: function(exports, _name, _baseURLstring){
-			// 如果名称不存在
-			if(!_name){
-				// 遍历模块成员
-				for(var propertyName in exports){
-					// 输出成员
-					this.export(propertyName, exports[propertyName]);
-				}
-
-				return;
-			}
-
-			// 获取来源模块的所有输出项
-			var allExports = this.import(_name, _baseURLstring);
-
-			// 遍历模块成员
-			for(var propertyName in exports){
-				// 输出成员
-				this.export(
-					propertyName,
-					allExports[
-						exports[propertyName]
-					]
-				);
-			}
-		},
-		/**
-		 * 根据来源模块来输出成员
-		 * @param {String} name - 输入来源模块的名称
-		 * @param {String} _baseURLstring - 输入来源模块的基础地址
-		 */
-		exportFrom: function(name, _baseURLstring){
-			var exports = this.import(name, _baseURLstring);
-
-			// 遍历模块成员
-			for(var propertyName in exports){
-				// 如果是默认输出
-				if(propertyName === "default"){
-					continue;
-				}
-
-				// 输出成员
-				this.export(propertyName, exports[propertyName]);
-			}
-		},
-		/**
-		 * 导入模块
-		 * @param {String} name - 模块名称
-		 * @param {String} _baseURLstring - 基础地址
-		 */
-		import: function(name, _baseURLstring){
-			return (
-				cache[
-					new ModuleName(name, _baseURLstring).href
-				]
-				.exports
-			);
-		},
-		/**
-		 * 获取模块成员
-		 * @param {String} memberName - 成员名称
+		 * 解析模块名称
 		 * @param {String} moduleName - 模块名称
-		 * @param {String} _baseURLstring - 基础地址
+		 * @param {String} _baseUrlString - 基础地址
 		 */
-		memberOf: function(memberName, moduleName, _baseURLstring){
-			return this.import(moduleName, _baseURLstring)[memberName];
+		parseName: function(moduleName, _baseUrlString){
+			var url = new URL(
+				moduleName,
+				_baseUrlString ? new URL(_baseUrlString, BASE_URL).href : BASE_URL
+			);
+
+			// 如果文件名不存在
+			if(url.filename === ""){
+				url.ext = ".js";
+				url.filename = "index.js";
+			}
+
+			return url;
 		},
 		/**
-		 * 获取模块
-		 * @param {String} name - 模块名称
-		 * @param {String} _baseURLstring - 基础地址
+		 * 读取文件内容
+		 * @param {ModuleName} moduleName - 文件路径
+		 * @param {Function} success - 成功回调
+		 * @param {Function} fail - 失败回调
+		 * @param {Boolean} _sync - 是否为同步
 		 */
-		moduleOf: function(name, _baseURLstring){
-			return this.import(name, _baseURLstring);
+		readFile: function(moduleName, success, fail, _sync){
+			var request = new XMLHttpRequest();
+
+			// 监听 onload 事件
+			request.addEventListener(
+				"load",
+				function(){
+					(this.status === 200 ? success : fail)(this.responseText);
+				}
+			);
+			
+			// 打开请求，采用异步 get 方式
+			request.open("get", moduleName.href, !_sync);
+			// 发送请求
+			request.send();
 		}
 	});
 
-	Module.props({
-		/**
-		 * 判断该模块是否已经加载并执行完成
-		 */
-		get completed(){
-			return (this.status & STATUS_COMPLETED) === STATUS_COMPLETED;
-		},
-		/**
-		 * 判断该模块是否已经加载结束
-		 */
-		get ended(){
-			return (this.status & STATUS_ENDED) === STATUS_ENDED;
-		},
-		/**
-		 * 判断该模块是否发生了错误
-		 */
-		get error(){
-			return (this.status & STATUS_ERROR) === STATUS_ERROR;
-		},
-		exports: null,
-		/**
-		 * 执行编译后的代码
-		 */
-		eval: function(){
-			var count = 0, progress = 0, imports = this.imports, status = this.status;
-
-			// 如果还没有就绪
-			if((this.status & STATUS_READY) !== STATUS_READY){
-				return false;
-			}
-			
-			// 如果已经执行完成
-			if(this.completed){
-				return true;
-			}
-
-			// 遍历
-			imports.forEach(function(i){
-				// 如果已完成，总数加 1，否则加 0。ps：+true = 1, +false = 0
-				count += +i.completed;
-			});
-
-			// 计算进度
-			progress = count / imports.length;
-
-			// 如果所有需要引用的依赖模块的代码没有执行完成
-			if(progress < 1){
-				// 触发监听器
-				trigger(
-					this,
-					+progress.toFixed(2)
-				);
-
-				return false;
-			}
-
-			var result = this.result;
-			
-			// 判断拓展名
-			switch(this.name.ext){
-				// 如果是 js
-				case ".js":
-					// 执行代码
-					nativeEval(result);
-					break;
-
-				// 如果是 css
-				case ".css":
-					// 样式编译完成
-					result.done(
-						// 遍历 imports
-						this.imports.map(function(mod){
-							// 返回依赖模块的选择器映射
-							return mod.result.selectorMap;
-						})
-					);
-
-					// 加载模块
-					this.load(function(){
-						// 设置默认输出
-						Module.export("compiler", result);
-						// 设置默认输出
-						Module.export("default", result.selectorMap);
-					});
-					break;
-
-				// 如果是 html
-				case ".html":
-					// 加载模块
-					this.load(function(){
-						// 设置默认输出
-						Module.export("compiler", result);
-						// 设置默认输出
-						Module.export("default", result.result);
-					});
-					break;
-
-				default:
-					// 加载模块
-					this.load(function(){
-						// 设置默认输出
-						Module.export("default", result);
-					});
-					break;
-			}
-			
-			return true;
-		},
-		imports: null,
-		/**
-		 * 监听模块加载进度
-		 * @param {Function} listener - 需要添加的监听器
-		 */
-		listen: function(listener){
-			// 如果已经结束
-			if(this.ended){
-				// 直接调用该监听器
-				listener.call(this, 1);
-				return;
-			}
-
-			// 添加到等待列表中
-			this.listeners.push(listener);
-		},
-		listeners: null,
-		/**
-		 * 加载当前模块
-		 * @param {Function} loader - 模块加载函数
-		 */
-		load: function(loader){
-			// 缓存输出
-			exports = this.exports;
-			
-			// 添加到堆栈中
-			stack.push(this);
-			// 加载当前模块
-			loader.call(global, Rexjs);
-			// 去掉当前模块
-			stack.pop();
-
-			// 还原缓存
-			exports = stack.length ? stack[stack.length - 1].exports : null;
-			// 设置状态为已完成
-			this.status = STATUS_COMPLETED;
-
-			// 触发依赖该模块的其他模块的执行方法
-			trigger(this);
-		},
-		name: null,
-		origin: "",
-		/**
-		 * 代码准备就绪处理函数
-		 * @param {String} content - 代码内容
-		 * @param {Boolean} _sync - 是否同步
-		 */
-		ready: function(content, _sync){
-			var deps, result = content, name = this.name;
-
-			// 记录源内容
-			this.origin = content;
-			// 设置状态为解析中
-			this.status = STATUS_PARSING;
-
-			// 判断拓展名
-			switch(name.ext){
-				case ".js":
-					var parser = new ECMAScriptParser();
-			
-					// 解析代码
-					parser.parse(
-						// 初始化文件
-						new File(name.href, content)
-					);
-					
-					// 设置模块解析结果
-					result = parser.build();
-					// 获取依赖
-					deps = parser.deps;
-					break;
-
-				// 如果是 css
-				case ".css":
-					// 设置模块解析结果
-					result = new CSSCompiler(content, name.href);
-					// 获取依赖
-					deps = result.imports;
-					break;
-				
-				// 如果是 html
-				case ".html":
-					result = new HTMLCompiler(content, name.href);
-					break;
-				
-				// 如果是 json
-				case ".json":
-					// 设置模块解析结果
-					result = parse(content);
-					break;
-			}
-
-			// 设置模块解析结果
-			this.result = result;
-			// 设置状态为已就绪
-			this.status = STATUS_READY;
-
-			// 如果存在依赖模块
-			if(deps && deps.length > 0){
-				var imports = this.imports;
-
-				// 遍历依赖
-				deps.forEach(
-					function(dep){
-						var href = new ModuleName(dep, name.href).href, mod = cache.hasOwnProperty(href) ? cache[href] : new Module(href, null, _sync);
-
-						// 如果是重复导入
-						if(imports.indexOf(mod) > -1){
-							return;
-						}
-
-						// 如果是两模块相互引用
-						if(mod.imports.indexOf(this) > - 1){
-							// 报错
-							throw (
-								"Module has been imported by each other " +
-								name.href + " " +
-								mod.name.href
-							);
-						}
-
-						// 添加需要导入的模块
-						imports.push(mod);
-						// 给导入模块添加目标模块
-						mod.targets.push(this);
-					},
-					this
-				);
-			}
-
-			// 执行代码
-			this.eval();
-		},
-		result: "",
-		status: STATUS_NONE,
-		targets: null
-	});
-
-	// 监听 dom 就绪事件
-	listenDomReady(Module);
-	return Module;
+	return BrowserReady;
 }(
-	this.ModuleName,
 	this.HTMLCompiler,
 	this.CSSCompiler,
-	Rexjs.MappingBuilder,
-	Rexjs.File,
-	// cache
-	{},
-	// exports
-	null,
-	// stack
-	[],
-	// global
-	typeof global === "undefined" ? self : global,
-	Object.create,
-	Object.defineProperty,
-	JSON.parse,
-	// nativeEval
-	eval,	
-	// request
-	function(mod, name, href, _sync){
-		var request = new XMLHttpRequest();
+	XMLHttpRequest,
+	// BASE_URL
+	new URL(
+		baseElement ? baseElement.getAttribute("href") : "./",
+		location.href
+	)
+	.href,
+	// domContentLoaded
+	function(){
+		var count = 0;
 
-		// 监听 onload 事件
-		request.addEventListener(
-			"load",
-			function(){
-				// 如果存在错误
-				if(this.status !== 200){
-					// 设置状态
-					mod.status = STATUS_ERROR;
-					// 设置错误响应文本
-					mod.result = mod.origin = this.responseText;
+		// 遍历元素
+		forEach(
+			document.querySelectorAll('script[type="text/rexjs"]'),
+			function(script){
+				// 如果存在 src 属性
+				if(script.hasAttribute("src")){
+					// 如果要生成 sourceMaps
+					if(script.hasAttribute("data-sourcemaps")){
+						// 开启 sourceMaps
+						ECMAScriptParser.sourceMaps = true;
+					}
 
-					// 提示错误信息
-					console.error('加载模块 "' + name + '" 错误，status：' + this.status + "。");
-					// 触发监听器
-					trigger(mod);
+					// 初始化模块
+					new Module(script.src);
 					return;
 				}
-				
-				mod.ready(this.responseText, _sync);
-			}
-		);
-		
-		// 打开请求，采用异步get方式
-		request.open("get", href, !_sync);
-		// 发送请求
-		request.send();
-	},
-	// listenDomReady
-	function(Module){
-		document.addEventListener(
-			"DOMContentLoaded",
-			function(){
-				var count = 0;
 
-				// 遍历元素
-				[].forEach.call(
-					document.querySelectorAll('script[type="text/rexjs"]'),
-					function(script){
-						// 如果存在 src 属性
-						if(script.hasAttribute("src")){
-							// 如果要生成 sourceMaps
-							if(script.hasAttribute("data-sourcemaps")){
-								// 开启 sourceMaps
-								ECMAScriptParser.sourceMaps = true;
-							}
-
-							// 初始化模块
-							new Module(script.src);
-							return;
-						}
-
-						// 初始化内联模块
-						new Module("inline-script-" + count++ +".js", script.textContent);
-					}
-				);
-			}
+				// 初始化内联模块
+				new Module("inline-script-" + count++ +".js", script.textContent);
+			},
+			null,
+			true
 		);
 	}
 );
 
 }.call(
 	this,
-	this.URL,
+	Rexjs.ModuleReady,
 	Rexjs.ECMAScriptParser,
-	XMLHttpRequest,
-	// STATUS_NONE
-	parseInt(0, 2),
-	// STATUS_LOADING
-	parseInt(10, 2),
-	// STATUS_PARSING
-	parseInt(100, 2),
-	// STATUS_READY
-	parseInt(1000, 2),
-	// STATUS_ENDED
-	parseInt(10000, 2),
-	// STATUS_COMPLETED
-	parseInt(111000, 2),
-	// STATUS_ERROR
-	parseInt(1010000, 2),
-	document,
-	// trigger
-	function(mod, _progress){
-		var listeners = mod.listeners;
-
-		// 如果没有提供 _progress 参数
-		if(typeof _progress !== "number"){
-			_progress = 1;
-		}
-
-		// 如果已经加载完成
-		if(mod.completed){
-			// 触发引用模块的执行
-			mod.targets.forEach(function(target){
-				target.eval();
-			});
-
-			// 清空监听器
-			listeners = listeners.splice(0);
-		}
-
-		// 执行监听器
-		listeners.forEach(function(listener){
-			listener.call(mod, _progress);
-		});
-	}
+	Rexjs.URL,
+	// baseElement
+	document.querySelector("base")
 );
 
-
-// 其他
-!function(){
-
-this.SwitchCondition = function(){
-	/**
-	 * switch 条件
-	 * @param {*} value - 条件值
-	 */
-	function SwitchCondition(value){
-		this.value = value;
-	};
-	SwitchCondition = new Rexjs(SwitchCondition);
-
-	SwitchCondition.props({
-		/**
-		 * 检测所提供的值是否与条件值一致
-		 * @param {*} value - 所需检测的值
-		 */
-		case: function(value){
-			switch(true){
-				// 如果已经匹配到值
-				case this.matched:
-					break;
-
-				// 如果值一致
-				case this.value === value:
-					this.matched = true;
-					break;
-
-				default:
-					return false;
-			}
-
-			return true;
-		},
-		/**
-		 * 判断是否还能进入 default 表达式
-		 */
-		default: function(){
-			// 如果已经有匹配到值，则不允许再进入 default
-			if(this.matched){
-				return false;
-			}
-
-			this.matched = true;
-			return true;
-		},
-		matched: false,
-		value: null
-	});
-
-	return SwitchCondition;
-}();
-
-this.Object = function(){
-	/**
-	 * 对象
-	 */
-	function Object(){};
-	Object = new Rexjs(Object);
-
-	Object.static({
-		/**
-		 * 获取对象可枚举的属性的属性名集合
-		 * @param {*} object - 需要获取属性名的对象
-		 */
-		getEnumerablePropertyNames: function(object){
-			var names = [];
-
-			// 遍历对象
-			for(var name in object){
-				// 添加属性名
-				names.push(name);
-			}
-
-			return names;
-		}
-	});
-
-	return Object;
-}();
-
-this.Function = function(bind, empty){
-	/**
-	 * 函数
-	 */
-	function Function(){};
-	Function = new Rexjs(Function);
-
-	Function.static({
-		/**
-		 * 强制转换为函数
-		 * @param {*} object - 函数属性所处的对象
-		 * @param {String} propertyName - 函数属性所处对象内的名称
-		 */
-		convert: function(object, propertyName){
-			// 如果只有 1 个参数
-			if(arguments.length === 1){
-				// 如果是函数则返回，否则返回 empty 函数
-				return typeof object === "function" ? object : empty;
-			}
-
-			// 获取函数
-			var func = object[propertyName];
-
-			// 如果不是函数
-			if(typeof func !== "function"){
-				// 返回 empty
-				return empty;
-			}
-
-			// 返回绑定了 object 的新函数
-			return bind.call(func, object);
-		}
-	});
-
-	return Function;
-}(
-	Function.bind,
-	// empty
-	function(){}
-);
-
-this.SpreadItem = function(forEach, push){
-	/**
-	 * 拓展项
-	 * @param {*} value - 拓展项的值
-	 */
-	function SpreadItem(value){
-		this.value = value;
-	};
-	SpreadItem = new Rexjs(SpreadItem);
-
-	SpreadItem.static({
-		/**
-		 * 给对象赋值，即将另一个对象合并
-		 * @param {Object} object - 需要赋值的对象
-		 * @param {Object} target - 被赋值或合并的对象
-		 */
-		assign: function(object, target){
-			// 遍历
-			forEach(
-				target,
-				function(value, name){
-					// 赋值
-					object[name] = value;
-				}
-			);
-
-			return object;
-		},
-		/**
-		 * 合并所有数组拓展项
-		 */
-		combine: function(_args){
-			var array = [];
-
-			// 遍历参数
-			forEach(
-				arguments,
-				function(item){
-					// 如果是 SpreadItem 类的实例
-					if(item instanceof SpreadItem){
-						// 添加多项
-						push.apply(array, item.value);
-						return;
-					}
-
-					// 添加单项
-					array.push(item);
-				},
-				null,
-				true
-			);
-
-			return array;
-		},
-		/**
-		 * 通过一个拓展项列表合并所有拓展项
-		 * @param {Array} list - 拓展项列表
-		 */
-		combineBy: function(list){
-			return this.combine.apply(this, list);
-		}
-	});
-
-	SpreadItem.props({
-		value: null
-	});
-
-	return SpreadItem;
-}(
-	Rexjs.forEach,
-	Array.prototype.push
-);
-
-this.ObjectDestructuringTarget = function(getOwnPropertyNames, getOwnPropertyDescriptor){
-	/**
-	 * 解构目标
-	 * @param {Object} origin - 源解构对象
-	 */
-	function ObjectDestructuringTarget(origin){
-		this.destructed = [];
-		this.origin = origin;
-	};
-	ObjectDestructuringTarget = new Rexjs(ObjectDestructuringTarget);
-
-	ObjectDestructuringTarget.props({
-		destructed: null,
-		/**
-		 * 获取解构对象指定名称的属性
-		 * @param {String} name - 解构属性名称
-		 */
-		get: function(name){
-			// 记录名称
-			this.destructed.push(name);
-
-			// 返回值
-			return this.origin[name];
-		},
-		origin: null,
-		/**
-		 * 获取没有记录过的其他属性
-		 */
-		get rest(){
-			var rest = {}, origin = this.origin;
-
-			// 获取源对象的所有自身属性并遍历
-			getOwnPropertyNames(origin).forEach(
-				function(name){
-					// 如果已经被解构过
-					if(this.indexOf(name) > -1){
-						return;
-					}
-
-					// 如果是可以枚举的
-					if(getOwnPropertyDescriptor(origin, name).enumerable){
-						// 设置属性
-						rest[name] = origin[name];
-					}
-				},
-				this.destructed
-			);
-
-			return rest;
-		}
-	});
-
-	return ObjectDestructuringTarget;
-}(
-	Object.getOwnPropertyNames,
-	Object.getOwnPropertyDescriptor
-);
-
-}.call(
-	this
-);
-
+new this.BrowserReady();
 Rexjs.static(this);
 }(
-	Rexjs
+	Rexjs,
+	Rexjs.Module,
+	document,
+	Rexjs.forEach
 );
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
-
-/***/ })
-/******/ ]);
