@@ -1,8 +1,10 @@
-﻿// Rexjs 的实现
-new function(Object, global, module, descriptor, defineProperty, getPrototypeOf, setPrototypeOf, getOwnPropertyNames){
+﻿!function(Rexjs, Object, MODULE_CODE_STRING, defineProperty, getPrototypeOf){
+
+// Rexjs 的实现
+new function(global, module, descriptor, setPrototypeOf, getOwnPropertyNames){
 "use strict";
 
-this.Rexjs = module.exports = function(create, getProperties, setPrototypeOf){
+this.Rexjs = Rexjs = module.exports = function(create, getProperties, setPrototypeOf){
 	/**
 	 * 创建一个继承至指定父类的子类
 	 * @param {Function} constructor - 构造函数
@@ -85,12 +87,11 @@ this.Rexjs = module.exports = function(create, getProperties, setPrototypeOf){
 	)
 );
 
-this.value = function(Rexjs, definePrototype){
+this.value = function(definePrototype){
 	return definePrototype(
 		new Rexjs(Rexjs, null)
 	);
 }(
-	this.Rexjs,
 	// definePrototype
 	function(rexjs){
 		/*
@@ -119,24 +120,21 @@ this.value = function(Rexjs, definePrototype){
 // 定义全局变量
 defineProperty(global, "Rexjs", this);
 }(
-	Object,
 	// global
 	Function("return this")(),
 	// module
-	typeof exports === "object" && typeof module === "object" ? module : {},
+	eval(MODULE_CODE_STRING),
 	// descriptor
 	Object.getOwnPropertyDescriptor(
 		Object.prototype,
 		"__proto__"
 	),
-	Object.defineProperty,
-	Object.getPrototypeOf,
 	Object.setPrototypeOf,
 	Object.getOwnPropertyNames
 );
 
 // 静态属性
-new function(Object, Function, __proto__){
+new function(Function, __proto__){
 "use strict";
 
 this.apply = Function.apply;
@@ -144,7 +142,7 @@ this.bind = Function.bind;
 this.call = Function.call;
 this.hasOwnProperty = Object.prototype.hasOwnProperty;
 
-this.static = function(getOwnPropertyDescriptor, defineProperty){
+this.static = function(getOwnPropertyDescriptor){
 	/**
 	 * 将一个或多个静态属性添加到该类，并/或修改现有属性的特性
 	 * @param {Object} props - 包含一个或多个属性的键值对
@@ -159,8 +157,7 @@ this.static = function(getOwnPropertyDescriptor, defineProperty){
 		}
 	};
 }(
-	Object.getOwnPropertyDescriptor,
-	Object.defineProperty
+	Object.getOwnPropertyDescriptor
 );
 
 this.props = function(staticMethod){
@@ -191,15 +188,14 @@ this.toString = function(){
 this.static.call(__proto__, this);
 
 }(
-	Object,
 	Function,
 	// __proto__
-	Object.getPrototypeOf(Rexjs)
+	getPrototypeOf(Rexjs)
 );
 
 
 // 原型链属性的定义
-new function(Rexjs, Object, objectPrototype){
+new function(objectPrototype){
 "use strict";
 
 this.hasOwnProperty = objectPrototype.hasOwnProperty;
@@ -238,16 +234,16 @@ this.valueOf = function(){
 Rexjs.static.call(Rexjs.prototype, this);
 
 }(
-	Rexjs,
-	Object,
 	// objectPrototype
 	Object.prototype
 );
 
 
 // 基本方法和属性的定义
-new function(Rexjs, Array){
+new function(Array){
 "use strict";
+
+this.MODULE_CODE_STRING = MODULE_CODE_STRING;
 
 this.every = function(){
 	/**
@@ -390,8 +386,18 @@ this.forEach(
 );
 
 }(
-	Rexjs,
 	Array
+);
+
+}.call(
+	this,
+	// Rexjs
+	null,
+	Object,
+	// MODULE_CODE_STRING
+	'typeof exports === "object" && typeof module === "object" ? module : {}',
+	Object.defineProperty,
+	Object.getPrototypeOf
 );
 // 基础依赖类
 new function(Rexjs, URL_REGEXP, DIR_SEPARATOR_REGEXP, encodeURI, getUrlInfo){
