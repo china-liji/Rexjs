@@ -1314,6 +1314,15 @@ this.ModuleReady = function(JavaScriptCompiler, JSONCompiler, throwError){
 	};
 	ModuleReady = new Rexjs(ModuleReady);
 
+	ModuleReady.static({
+		/**
+		 * 获取当前模块系统准备就绪实例
+		 */
+		get current(){
+			return moduleReady;
+		}
+	});
+
 	ModuleReady.props({
 		compilers: null,
 		/**
