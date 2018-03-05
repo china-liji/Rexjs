@@ -4,8 +4,6 @@
 
 #### [中文](https://github.com/china-liji/Rexjs/doc/read-me/chinese.md)
 
-------
-
 #### Link
 * [Homepage](http://www.rexjs.org)
 * [GitHub](https://github.com/china-liji/Rexjs)
