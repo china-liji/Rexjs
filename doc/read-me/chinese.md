@@ -1,16 +1,16 @@
-### Rexjs is a faster and smaller `JavaScript(ES6+)` compiler!
+### Rexjs - 是一款又快、又小、性价比极高的 `JavaScript(ES6+)` 语法的编译器！
 
 ------
 
-#### [中文](https://github.com/china-liji/Rexjs/doc/read-me/chinese.md)
+#### [English](https://github.com/china-liji/Rexjs/)
 
 ------
 
-#### Link
-* [Homepage](http://www.rexjs.org)
+#### 相关链接
+* [官网](http://www.rexjs.org)
 * [GitHub](https://github.com/china-liji/Rexjs)
 
-#### Install
+#### 安装
 * NPM
 ```
 npm install rexjs-api
@@ -25,13 +25,13 @@ git clone https://github.com/china-liji/Rexjs.git
 
 -----
 
-#### Usage
+#### 使用
 
 > Web
 ```html
 <script src="./dist/rex.min.js"></script>
 
-<!-- Set the "type" attribute to define a module -->
+<!-- 使用 type 属性定义模块 -->
 <script type="text/rexjs">
 	import "./file.js";
 
@@ -39,12 +39,12 @@ git clone https://github.com/china-liji/Rexjs.git
 </script>
 
 <!--
-	Also, set the "src" attribute to reference a module,
-	and add the "data-sourcemaps" attribute to enable sourcemaps.
+	当然，一旦指定 src，则根据其路径来加载指定入口模块文件，
+	而且，一旦提供 data-sourcemaps 属性时，不管值是什么，都将启用“源代码映射”功能。
 -->
 <script src="./file.js" type="text/rexjs" data-sourcemaps></script>
 ```
-Cross browser: `Chrome`、`Firefox`、`Safari`、`IE9+`.
+支持`Chrome`、`Firefox`、`Safari`、`IE9+`等现代浏览器。
 
 > Nodejs
 
@@ -61,24 +61,24 @@ export default function(filename){
 ```js
 import ext from "./ext.js";
 
-// Output ".js"
+// 输出 ".js"
 ext(__filename);
 ```
 
-* Command Line
+* 命令行
 ```
 rexjs ./index.js
 ```
 
 > Webpack Loader
 
-Reference:[Rexjs-loader](https://github.com/china-liji/Rexjs-loader)
+详细参考：[Rexjs-loader](https://github.com/china-liji/Rexjs-loader)
 
 > Rexjs API
 
 * JavaScript
 ```js
-// import "rexjs-api" module
+// 引入 rexjs-api 文件
 
 // Nodejs
 let Rexjs = require("rexjs-api");
@@ -91,32 +91,32 @@ let Rexjs = self.Rexjs;
 let Rexjs = window.Rexjs;
 
 
-// Initialize parser
+// 初始化解析器，以便多次使用
 let es5Code = "", parser = new Rexjs.ECMAScriptParser();
 
-// Parse module from a file
+// 开始解析文件语法
 parser.parse(
-	// Init file
+	// 初始化文件
 	new Rexjs.File(
-		// filename
+		// 文件名
 		"./filename.js",
-		// Source
+		// 源码
 		"class Car {}"
 	)
 );
 
-// Returning the generated code
+// 获取编译后的代码
 es5Code = parser.build();
 ```
 
 * HTML
 ```html
 
-<!-- This file provides generated code API, so reference it before run generated code in your browser. -->
+<!-- Rexjs-api 编译后的代码，在浏览器端运行时所依赖的文件 -->
 <script src="./dist/rex-browser-helper.min.js"></script>
 ```
 
 -----
 
-#### License
+#### 开源许可
 MIT

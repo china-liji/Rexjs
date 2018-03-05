@@ -29,6 +29,15 @@
 		{
 			"type": "node",
 			"request": "launch",
+			"name": "read me",
+			"program": "${workspaceFolder}/bin/rex-node.js",
+			"args": [
+				"./node/read-me.js"
+			]
+		},
+		{
+			"type": "node",
+			"request": "launch",
 			"name": "uglify",
 			"program": "${workspaceRoot}/node/uglify.js"
 		}
