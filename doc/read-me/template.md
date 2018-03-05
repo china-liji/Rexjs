@@ -4,8 +4,6 @@
 
 #### [{{lang}}]({{GIT_HUB}}/{{langPath}})
 
-------
-
 #### {{link}}
 * [{{homepage}}](http://www.rexjs.org)
 * [GitHub]({{GIT_HUB}})

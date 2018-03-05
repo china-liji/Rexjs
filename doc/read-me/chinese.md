@@ -4,8 +4,6 @@
 
 #### [English](https://github.com/china-liji/Rexjs/)
 
-------
-
 #### 相关链接
 * [官网](http://www.rexjs.org)
 * [GitHub](https://github.com/china-liji/Rexjs)
