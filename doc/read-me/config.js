@@ -27,23 +27,23 @@ this.Config = function(Lang, BROWSER_SUPPORT){
 
 		static crossBrowser = new Lang(
 			`支持${BROWSER_SUPPORT}等现代浏览器。`,
-			`Cross browser: ${BROWSER_SUPPORT}.`
+			`cross browser: ${BROWSER_SUPPORT}.`
 		);
 
 		static filename = new Lang("文件名", "filename");
 
 		static helper = new Lang(
 			"Rexjs-api 编译后的代码，在浏览器端运行时所依赖的文件",
-			"This file provides generated code API, so reference it before run generated code in your browser."
+			"this file provides generated code API, so reference it before run generated code in your browser."
 		);
 
 		static homepage = new Lang("官网", "Homepage");
 		
 		static importApi = new Lang("引入 rexjs-api 文件", `import "rexjs-api" module`);
 
-		static initParser = new Lang("初始化解析器，以便多次使用", "Initialize parser");
+		static initParser = new Lang("初始化解析器，以便多次使用", "initialize parser");
 
-		static initFile = new Lang("初始化文件", "Init file");
+		static initFile = new Lang("初始化文件", "init file");
 
 		static install = new Lang("安装", "Install");
 
@@ -57,13 +57,13 @@ this.Config = function(Lang, BROWSER_SUPPORT){
 
 		static madeInChina = new Lang("Made In China", "");
 
-		static output = new Lang("输出", "Output");
+		static output = new Lang("输出", "output");
 
-		static parse = new Lang("开始解析文件语法", "Parse module from a file");
+		static parse = new Lang("开始解析文件语法", "parse module from a file");
 
-		static reference = new Lang("详细参考：", "Reference:");
+		static reference = new Lang("详细参考：", "reference:");
 
-		static result = new Lang("获取编译后的代码", "Returning the generated code");
+		static result = new Lang("获取编译后的代码", "returning the generated code");
 
 		static slogan = new Lang(
 			"Rexjs - 是一款又快、又小、性价比极高的 `JavaScript(ES6+)` 语法的编译器！",
@@ -74,12 +74,12 @@ this.Config = function(Lang, BROWSER_SUPPORT){
 
 		static scriptTypeAttribute = new Lang(
 			"使用 type 属性定义模块",
-			`Set the "type" attribute to define a module`
+			`set the "type" attribute to define a module`
 		);
 
 		static scriptSrcAttribute = new Lang(
 			"当然，一旦指定 src，则根据其路径来加载指定入口模块文件，",
-			`Also, set the "src" attribute to reference a module,`
+			`also, set the "src" attribute to reference a module,`
 		);
 
 		static scriptSourcemapsAttribute = new Lang(

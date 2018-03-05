@@ -70,7 +70,7 @@ rexjs ./index.js
 
 > Webpack Loader
 
-详细参考：[Rexjs-loader](https://github.com/china-liji/Rexjs-loader)
+详细参考： [Rexjs-loader](https://github.com/china-liji/Rexjs-loader)
 
 > Rexjs API
 

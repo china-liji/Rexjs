@@ -29,7 +29,7 @@ git clone https://github.com/china-liji/Rexjs.git
 ```html
 <script src="./dist/rex.min.js"></script>
 
-<!-- Set the "type" attribute to define a module -->
+<!-- set the "type" attribute to define a module -->
 <script type="text/rexjs">
 	import "./file.js";
 
@@ -37,12 +37,12 @@ git clone https://github.com/china-liji/Rexjs.git
 </script>
 
 <!--
-	Also, set the "src" attribute to reference a module,
+	also, set the "src" attribute to reference a module,
 	and add the "data-sourcemaps" attribute to enable sourcemaps.
 -->
 <script src="./file.js" type="text/rexjs" data-sourcemaps></script>
 ```
-Cross browser: `Chrome`、`Firefox`、`Safari`、`IE9+`.
+cross browser: `Chrome`、`Firefox`、`Safari`、`IE9+`.
 
 > Nodejs
 
@@ -59,7 +59,7 @@ export default function(filename){
 ```js
 import ext from "./ext.js";
 
-// Output ".js"
+// output ".js"
 ext(__filename);
 ```
 
@@ -70,7 +70,7 @@ rexjs ./index.js
 
 > Webpack Loader
 
-Reference:[Rexjs-loader](https://github.com/china-liji/Rexjs-loader)
+reference: [Rexjs-loader](https://github.com/china-liji/Rexjs-loader)
 
 > Rexjs API
 
@@ -89,12 +89,12 @@ let Rexjs = self.Rexjs;
 let Rexjs = window.Rexjs;
 
 
-// Initialize parser
+// initialize parser
 let es5Code = "", parser = new Rexjs.ECMAScriptParser();
 
-// Parse module from a file
+// parse module from a file
 parser.parse(
-	// Init file
+	// init file
 	new Rexjs.File(
 		// filename
 		"./filename.js",
@@ -103,14 +103,14 @@ parser.parse(
 	)
 );
 
-// Returning the generated code
+// returning the generated code
 es5Code = parser.build();
 ```
 
 * HTML
 ```html
 
-<!-- This file provides generated code API, so reference it before run generated code in your browser. -->
+<!-- this file provides generated code API, so reference it before run generated code in your browser. -->
 <script src="./dist/rex-browser-helper.min.js"></script>
 ```
 

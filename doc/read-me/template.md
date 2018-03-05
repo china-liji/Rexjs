@@ -70,7 +70,7 @@ rexjs ./index.js
 
 > Webpack Loader
 
-{{reference}}[Rexjs-loader]({{GIT_HUB}}-loader)
+{{reference}} [Rexjs-loader]({{GIT_HUB}}-loader)
 
 > Rexjs API
 
