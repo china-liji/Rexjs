@@ -108,9 +108,8 @@ es5Code = parser.build();
 ```
 
 * HTML
+this file provides generated code API, so reference it before run generated code in your browser.
 ```html
-
-<!-- this file provides generated code API, so reference it before run generated code in your browser. -->
 <script src="./dist/rex-browser-helper.min.js"></script>
 ```
 
