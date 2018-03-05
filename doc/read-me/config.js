@@ -34,10 +34,12 @@ this.Config = function(Lang, BROWSER_SUPPORT){
 
 		static helper = new Lang(
 			"Rexjs-api 编译后的代码，在浏览器端运行时所依赖的文件",
-			"this file provides generated code API, so reference it before run generated code in your browser."
+			"This file provides generated code API, so reference it before run generated code in your browser."
 		);
 
 		static homepage = new Lang("官网", "Homepage");
+
+		static htmlTemplate = new Lang("HTML 数据绑定模板", "Data binding HTML template");
 		
 		static importApi = new Lang("引入 rexjs-api 文件", `import "rexjs-api" module`);
 
@@ -51,11 +53,11 @@ this.Config = function(Lang, BROWSER_SUPPORT){
 
 		static langPath = new Lang("", "blob/master/doc/read-me/chinese.md");
 		
-		static license = new Lang("开源许可", "License");
-
 		static link = new Lang("相关链接", "Link");
 
 		static madeInChina = new Lang("Made In China", "");
+
+		static otherPackages = new Lang("拓展包", "Other Packages");
 
 		static output = new Lang("输出", "output");
 

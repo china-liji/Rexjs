@@ -27,7 +27,11 @@ import fs from "fs";
 				return value[property];
 			}
 
-			return value;
+			if(typeof value === "string"){
+				return value;
+			}
+
+			throw `不支持该模板：key - ${key}，value - ${value}`;
 		}
 	);
 

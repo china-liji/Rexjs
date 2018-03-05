@@ -68,10 +68,6 @@ ext(__filename);
 rexjs ./index.js
 ```
 
-> Webpack Loader
-
-{{reference}} [Rexjs-loader]({{GIT_HUB}}-loader)
-
 > Rexjs API
 
 * JavaScript
@@ -116,5 +112,8 @@ es5Code = parser.build();
 
 -----
 
-#### {{license}}
-MIT
+#### {{otherPackages}}
+
+* Webpack Loader - [Rexjs-loader]({{GIT_HUB}}-loader)
+
+* {{htmlTemplate}} - [Rexjs-template]({{GIT_HUB}}-template)

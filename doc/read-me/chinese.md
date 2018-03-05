@@ -68,10 +68,6 @@ ext(__filename);
 rexjs ./index.js
 ```
 
-> Webpack Loader
-
-详细参考： [Rexjs-loader](https://github.com/china-liji/Rexjs-loader)
-
 > Rexjs API
 
 * JavaScript
@@ -116,5 +112,8 @@ Rexjs-api 编译后的代码，在浏览器端运行时所依赖的文件
 
 -----
 
-#### 开源许可
-MIT
+#### 拓展包
+
+* Webpack Loader - [Rexjs-loader](https://github.com/china-liji/Rexjs-loader)
+
+* HTML 数据绑定模板 - [Rexjs-template](https://github.com/china-liji/Rexjs-template)

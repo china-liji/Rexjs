@@ -68,10 +68,6 @@ ext(__filename);
 rexjs ./index.js
 ```
 
-> Webpack Loader
-
-reference: [Rexjs-loader](https://github.com/china-liji/Rexjs-loader)
-
 > Rexjs API
 
 * JavaScript
@@ -109,12 +105,15 @@ es5Code = parser.build();
 
 * HTML
 
-this file provides generated code API, so reference it before run generated code in your browser.
+This file provides generated code API, so reference it before run generated code in your browser.
 ```html
 <script src="./dist/rex-browser-helper.min.js"></script>
 ```
 
 -----
 
-#### License
-MIT
+#### Other Packages
+
+* Webpack Loader - [Rexjs-loader](https://github.com/china-liji/Rexjs-loader)
+
+* Data binding HTML template - [Rexjs-template](https://github.com/china-liji/Rexjs-template)
