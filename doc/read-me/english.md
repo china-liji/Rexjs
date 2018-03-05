@@ -114,6 +114,6 @@ This file provides generated code API, so reference it before run generated code
 
 #### Other Packages
 
-* Webpack Loader - [Rexjs-loader](https://github.com/china-liji/Rexjs-loader)
+* [Rexjs-loader](https://github.com/china-liji/Rexjs-loader) - Webpack Loader.
 
-* Data binding HTML template - [Rexjs-template](https://github.com/china-liji/Rexjs-template)
+* [Rexjs-template](https://github.com/china-liji/Rexjs-template) - A data binding HTML template compiler.

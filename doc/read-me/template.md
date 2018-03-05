@@ -114,6 +114,6 @@ es5Code = parser.build();
 
 #### {{otherPackages}}
 
-* Webpack Loader - [Rexjs-loader]({{GIT_HUB}}-loader)
+* [Rexjs-loader]({{GIT_HUB}}-loader) - {{webpackLoader}}
 
-* {{htmlTemplate}} - [Rexjs-template]({{GIT_HUB}}-template)
+* [Rexjs-template]({{GIT_HUB}}-template) - {{htmlTemplate}}

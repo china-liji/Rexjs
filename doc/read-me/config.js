@@ -39,7 +39,7 @@ this.Config = function(Lang, BROWSER_SUPPORT){
 
 		static homepage = new Lang("官网", "Homepage");
 
-		static htmlTemplate = new Lang("HTML 数据绑定模板", "Data binding HTML template");
+		static htmlTemplate = new Lang("HTML 数据绑定模板。", "A data binding HTML template compiler.");
 		
 		static importApi = new Lang("引入 rexjs-api 文件", `import "rexjs-api" module`);
 
@@ -91,7 +91,7 @@ this.Config = function(Lang, BROWSER_SUPPORT){
 
 		static usage = new Lang("使用", "Usage");
 
-		static webpackUsage = new Lang("Webpack 打包中应用", "");
+		static webpackLoader = new Lang("Webpack Loader。", "Webpack Loader.");
 	};
 }(
 	this.Lang,

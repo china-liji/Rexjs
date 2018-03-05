@@ -114,6 +114,6 @@ Rexjs-api 编译后的代码，在浏览器端运行时所依赖的文件
 
 #### 拓展包
 
-* Webpack Loader - [Rexjs-loader](https://github.com/china-liji/Rexjs-loader)
+* [Rexjs-loader](https://github.com/china-liji/Rexjs-loader) - Webpack Loader。
 
-* HTML 数据绑定模板 - [Rexjs-template](https://github.com/china-liji/Rexjs-template)
+* [Rexjs-template](https://github.com/china-liji/Rexjs-template) - HTML 数据绑定模板。
