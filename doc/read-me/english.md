@@ -98,7 +98,7 @@ parser.parse(
 	new Rexjs.File(
 		// filename
 		"./filename.js",
-		// Source
+		// source
 		"class Car {}"
 	)
 );

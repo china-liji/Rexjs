@@ -70,7 +70,7 @@ this.Config = function(Lang, BROWSER_SUPPORT){
 			"Rexjs is a faster and smaller `JavaScript(ES6+)` compiler!"
 		);
 
-		static source = new Lang("源码", "Source");
+		static source = new Lang("源码", "source");
 
 		static scriptTypeAttribute = new Lang(
 			"使用 type 属性定义模块",
