@@ -2,7 +2,7 @@
 
 ------
 
-#### [中文](https://github.com/china-liji/Rexjs/doc/read-me/chinese.md)
+#### [中文](https://github.com/china-liji/Rexjs/blob/master/doc/read-me/chinese.md)
 
 #### Link
 * [Homepage](http://www.rexjs.org)

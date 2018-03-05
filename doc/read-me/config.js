@@ -49,7 +49,7 @@ this.Config = function(Lang, BROWSER_SUPPORT){
 
 		static lang = new Lang("English", "中文");
 
-		static langPath = new Lang("", "doc/read-me/chinese.md");
+		static langPath = new Lang("", "blob/master/doc/read-me/chinese.md");
 		
 		static license = new Lang("开源许可", "License");
 
