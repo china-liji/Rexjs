@@ -108,6 +108,7 @@ es5Code = parser.build();
 ```
 
 * HTML
+
 {{helper}}
 ```html
 <script src="{{DIST_DIR}}/rex-browser-helper.min.js"></script>

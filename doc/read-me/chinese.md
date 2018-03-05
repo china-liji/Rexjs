@@ -108,6 +108,7 @@ es5Code = parser.build();
 ```
 
 * HTML
+
 Rexjs-api 编译后的代码，在浏览器端运行时所依赖的文件
 ```html
 <script src="./dist/rex-browser-helper.min.js"></script>
