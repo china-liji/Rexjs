@@ -23,9 +23,16 @@ git clone {{GIT_HUB}}.git
 
 -----
 
+#### {{f&s}}
+![]({{FASTER_IMAGE_URL}})
+
+`{{DIST_DIR}}/rex.min.js({{REXJS_VERSION}})` {{smallerDesc}}
+
+-----
+
 #### {{usage}}
 
-> Web
+> **Web**
 ```html
 <script src="{{DIST_DIR}}/rex.min.js"></script>
 
@@ -44,7 +51,7 @@ git clone {{GIT_HUB}}.git
 ```
 {{crossBrowser}}
 
-> Nodejs
+> **Nodejs**
 
 * ./ext.js
 ```js
@@ -68,7 +75,7 @@ ext(__filename);
 rexjs ./index.js
 ```
 
-> Rexjs API
+> **Rexjs API**
 
 * JavaScript
 ```js
@@ -78,7 +85,7 @@ rexjs ./index.js
 let Rexjs = require("rexjs-api");
 
 // Web Worker
-importScripts("{{DIST_DIR}}/rex.min.js");
+importScripts("{{DIST_DIR}}/rexjs-api.min.js");
 let Rexjs = self.Rexjs;
 
 // Web: <script src="{{DIST_DIR}}/rex.min.js"></script>
@@ -117,3 +124,7 @@ es5Code = parser.build();
 * [Rexjs-loader]({{GIT_HUB}}-loader) - {{webpackLoader}}
 
 * [Rexjs-template]({{GIT_HUB}}-template) - {{htmlTemplate}}
+
+-----
+
+{{thanks}}

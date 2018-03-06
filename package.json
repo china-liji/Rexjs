@@ -1,6 +1,6 @@
 {
 	"name": "rexjs-api",
-	"version": "1.6.26",
+	"version": "1.6.27",
 	"description": "Rexjs is a faster and smaller JavaScript(ES6+) compiler!",
 	"scripts": {
 		"start": "node ./node/dev.js",
@@ -8,6 +8,7 @@
 		"read-me": "node ./bin/rex-node.js ./node/read-me.js",
 		"pretest-node": "npm run build",
 		"test-node": "node ./bin/rex-node.js ./bin/test/a.js",
+		"posttest-node": "npm run read-me",
 		"prepublish": "npm run test-node"
 	},
 	"main": "./dist/rex-api.bundle.js",
