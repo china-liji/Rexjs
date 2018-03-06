@@ -11,7 +11,7 @@
 #### {{install}}
 * NPM
 ```
-npm install rexjs-api
+npm install {{PACKAGE_NAME}}
 ```
 
 * Git
@@ -19,14 +19,22 @@ npm install rexjs-api
 git clone {{GIT_HUB}}.git
 ```
 
-* [Zip]({{GIT_HUB}}/archive/master.zip)
+* {{download}}
+
+[Zip]({{GIT_HUB}}/archive/master.zip)
+
+[{{FILENAME_REXJS}}]({{GIT_HUB_USER_CONTENT}}/{{DIST_DIR}}/{{FILENAME_REXJS}}) - {{REXJS_FILE_SIZE}}
+
+[{{FILENAME_REXJS_API}}]({{GIT_HUB_USER_CONTENT}}/{{DIST_DIR}}/{{FILENAME_REXJS_API}}) - {{REXJS_API_SIZE}}
+
+[{{FILENAME_REXJS_HELPER}}]({{GIT_HUB_USER_CONTENT}}/{{DIST_DIR}}/{{FILENAME_REXJS_HELPER}}) - {{REXJS_HELPER_SIZE}}
 
 -----
 
 #### {{f&s}}
-![]({{FASTER_IMAGE_URL}})
+![]({{GIT_HUB_USER_CONTENT}}/doc/image/compare.jpg)
 
-`{{DIST_DIR}}/rex.min.js({{REXJS_VERSION}})` {{smallerDesc}}
+`{{DIST_DIR}}/{{FILENAME_REXJS}}`[{{REXJS_VERSION}}] {{smallerDesc}}
 
 -----
 
@@ -34,11 +42,11 @@ git clone {{GIT_HUB}}.git
 
 > **Web**
 ```html
-<script src="{{DIST_DIR}}/rex.min.js"></script>
+<script src="{{DIST_DIR}}/{{FILENAME_REXJS}}"></script>
 
 <!-- {{scriptTypeAttribute}} -->
 <script type="text/rexjs">
-	import "./file.js";
+	import "./module.js";
 
 	export default class {};
 </script>
@@ -47,7 +55,7 @@ git clone {{GIT_HUB}}.git
 	{{scriptSrcAttribute}}
 	{{scriptSourcemapsAttribute}}
 -->
-<script src="./file.js" type="text/rexjs" data-sourcemaps></script>
+<script src="./module.js" type="text/rexjs" data-sourcemaps></script>
 ```
 {{crossBrowser}}
 
@@ -82,13 +90,13 @@ rexjs ./index.js
 // {{importApi}}
 
 // Nodejs
-let Rexjs = require("rexjs-api");
+let Rexjs = require("{{PACKAGE_NAME}}");
 
 // Web Worker
-importScripts("{{DIST_DIR}}/rexjs-api.min.js");
+importScripts("{{DIST_DIR}}/{{FILENAME_REXJS_API}}");
 let Rexjs = self.Rexjs;
 
-// Web: <script src="{{DIST_DIR}}/rex.min.js"></script>
+// Web: <script src="{{DIST_DIR}}/{{FILENAME_REXJS}}"></script>
 let Rexjs = window.Rexjs;
 
 
@@ -114,7 +122,7 @@ es5Code = parser.build();
 
 {{helper}}
 ```html
-<script src="{{DIST_DIR}}/rex-browser-helper.min.js"></script>
+<script src="{{DIST_DIR}}/{{FILENAME_REXJS_HELPER}}"></script>
 ```
 
 -----

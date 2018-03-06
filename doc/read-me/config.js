@@ -2,7 +2,7 @@ import fs from "fs";
 import path from "path";
 import packageJson from "../../package.json";
 
-export let { Lang, Config } = new function(getRexjsSize){
+export let { Lang, Config } = new function(getDistFileSize){
 
 this.Lang = function(){
 	return class Lang {
@@ -21,13 +21,29 @@ this.Lang = function(){
 	};
 }();
 
-this.Config = function(Lang, BROWSER_SUPPORT, REXJS_FILE_SIZE, getImageURL){
+this.Config = function(Lang, BROWSER_SUPPORT, GIT_HUB_USER_CONTENT, REXJS_FILE_SIZE, getImageURL){
 	return class Config {
 		static DIST_DIR = "./dist";
 
 		static FASTER_IMAGE_URL = getImageURL("../image/compare.jpg");
 
 		static GIT_HUB = "https://github.com/china-liji/Rexjs";
+
+		static GIT_HUB_USER_CONTENT = GIT_HUB_USER_CONTENT;
+
+		static FILENAME_REXJS = "rex.min.js";
+
+		static FILENAME_REXJS_API = "rex-api.min.js";
+
+		static FILENAME_REXJS_HELPER = "rex-browser-helper.min.js";
+
+		static PACKAGE_NAME = packageJson.name;
+
+		static REXJS_API_SIZE = getDistFileSize("rex-api.min.js");
+
+		static REXJS_FILE_SIZE = REXJS_FILE_SIZE;
+
+		static REXJS_HELPER_SIZE = getDistFileSize("rex-browser-helper.min.js");
 
 		static REXJS_VERSION = packageJson.version;
 
@@ -37,6 +53,8 @@ this.Config = function(Lang, BROWSER_SUPPORT, REXJS_FILE_SIZE, getImageURL){
 			`支持${BROWSER_SUPPORT}等现代浏览器。`,
 			`cross browser: ${BROWSER_SUPPORT}.`
 		);
+
+		static download = new Lang("下载", "Download");
 
 		static "f&s" = new Lang("更小且更快", "Faster and Smaller");
 
@@ -111,8 +129,10 @@ this.Config = function(Lang, BROWSER_SUPPORT, REXJS_FILE_SIZE, getImageURL){
 	this.Lang,
 	// BROWSER_SUPPORT
 	"`Chrome`、`Firefox`、`Safari`、`IE9+`",
+	// GIT_HUB_USER_CONTENT
+	"https://raw.githubusercontent.com/china-liji/Rexjs/master",
 	// REXJS_FILE_SIZE
-	getRexjsSize(),
+	getDistFileSize("rex.min.js"),
 	// getImageURL
 	(filepath, type = "jpeg") => {
 		return `data:image/${type};base64,${
@@ -125,13 +145,16 @@ this.Config = function(Lang, BROWSER_SUPPORT, REXJS_FILE_SIZE, getImageURL){
 );
 
 }(
-	// getRexjsSize
-	() => {
-		var filename = path.resolve(__dirname, "../../dist/rex.min.js");
-
+	// getDistFileSize
+	(filename) => {
 		return (
 			Math.round(
-				fs.statSync(filename).size / 1024
+				(
+					fs.statSync(
+						path.resolve(__dirname, `../../dist/${filename}`)
+					)
+				)
+				.size / 1024
 			) +
 			"KB"
 		);
