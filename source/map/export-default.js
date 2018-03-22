@@ -7,11 +7,11 @@ this.DefaultExportExpression = function(ExportExpression){
 	 * @param {Context} context - 标签上下文
 	 */
 	function DefaultExportExpression(context){
-		ExportExpression.call(this, context, null);
+		ExportExpression.call(this, context, NULL);
 	};
 	DefaultExportExpression = new Rexjs(DefaultExportExpression, ExportExpression);
 
-	DefaultExportExpression.props({
+	DefaultExportExpression.$({
 		/**
 		 * 提取表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
@@ -53,7 +53,7 @@ this.DefaultExportStatement = function(){
 	};
 	DefaultExportStatement = new Rexjs(DefaultExportStatement, ECMAScriptStatement);
 
-	DefaultExportStatement.props({
+	DefaultExportStatement.$({
 		/**
 		 * 捕获处理异常
 		 * @param {SyntaxParser} parser - 语法解析器
@@ -78,7 +78,7 @@ this.DefaultExportTag = function(DefaultTag, DefaultExportExpression, DefaultExp
 	};
 	DefaultExportTag = new Rexjs(DefaultExportTag, DefaultTag);
 
-	DefaultExportTag.props({
+	DefaultExportTag.$({
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射

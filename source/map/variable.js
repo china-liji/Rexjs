@@ -11,7 +11,7 @@ this.VariableTag = function(IdentifierTag){
 	};
 	VariableTag = new Rexjs(VariableTag, IdentifierTag);
 
-	VariableTag.props({
+	VariableTag.$({
 		order: ECMAScriptOrders.VARIABLE
 	});
 	
@@ -30,7 +30,7 @@ this.VariableDeclarationTag = function(VariableTag, SCOPE_CLOSURE, visitor){
 	};
 	VariableDeclarationTag = new Rexjs(VariableDeclarationTag, VariableTag);
 
-	VariableDeclarationTag.props({
+	VariableDeclarationTag.$({
 		/**
 		 * 判断该变量名是否还能被定义
 		 * @param {SyntaxParser} parser - 语法解析器
@@ -63,7 +63,7 @@ this.VariableDeclarationTag = function(VariableTag, SCOPE_CLOSURE, visitor){
 		 */
 		nextStatementsOf: function(statements){
 			// 如果当前语句块是闭包，那么返回 null（因为不同闭包内，可以多次声明同一变量），否则返回 target
-			return (statements.scope & SCOPE_CLOSURE) === SCOPE_CLOSURE ? null : statements.target;
+			return (statements.scope & SCOPE_CLOSURE) === SCOPE_CLOSURE ? NULL : statements.target;
 		},
 		/**
 		 * 标签访问器

@@ -11,7 +11,7 @@ this.DeleteTag = function(){
 	};
 	DeleteTag = new Rexjs(DeleteTag, UnaryKeywordTag);
 	
-	DeleteTag.props({
+	DeleteTag.$({
 		regexp: /delete/
 	});
 	
@@ -28,7 +28,7 @@ this.NewTag = function(ExecTag){
 	};
 	NewTag = new Rexjs(NewTag, ExecTag);
 	
-	NewTag.props({
+	NewTag.$({
 		regexp: /new/,
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
@@ -54,7 +54,7 @@ this.TypeofTag = function(){
 	};
 	TypeofTag = new Rexjs(TypeofTag, UnaryKeywordTag);
 	
-	TypeofTag.props({
+	TypeofTag.$({
 		regexp: /typeof/
 	});
 	
@@ -71,7 +71,7 @@ this.VoidTag = function(){
 	};
 	VoidTag = new Rexjs(VoidTag, UnaryKeywordTag);
 	
-	VoidTag.props({
+	VoidTag.$({
 		regexp: /void/
 	});
 	
@@ -88,7 +88,7 @@ this.PlusTag = function(){
 	};
 	PlusTag = new Rexjs(PlusTag, UnaryTag);
 	
-	PlusTag.props({
+	PlusTag.$({
 		regexp: /\+/,
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
@@ -112,7 +112,7 @@ this.PlusSiblingTag = function(PlusTag){
 	};
 	PlusSiblingTag = new Rexjs(PlusSiblingTag, PlusTag);
 	
-	PlusSiblingTag.props({
+	PlusSiblingTag.$({
 		/**
 		 * 提取文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
@@ -142,7 +142,7 @@ this.NegationTag = function(){
 	};
 	NegationTag = new Rexjs(NegationTag, UnaryTag);
 	
-	NegationTag.props({
+	NegationTag.$({
 		regexp: /-/,
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
@@ -166,7 +166,7 @@ this.NegationSiblingTag = function(NegationTag){
 	};
 	NegationSiblingTag = new Rexjs(NegationSiblingTag, NegationTag);
 	
-	NegationSiblingTag.props({
+	NegationSiblingTag.$({
 		/**
 		 * 提取文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
@@ -196,7 +196,7 @@ this.BitwiseNOTTag = function(){
 	};
 	BitwiseNOTTag = new Rexjs(BitwiseNOTTag, UnaryTag);
 	
-	BitwiseNOTTag.props({
+	BitwiseNOTTag.$({
 		regexp: /~/
 	});
 	
@@ -213,7 +213,7 @@ this.LogicalNOTTag = function(){
 	};
 	LogicalNOTTag = new Rexjs(LogicalNOTTag, UnaryTag);
 	
-	LogicalNOTTag.props({
+	LogicalNOTTag.$({
 		regexp: /!/
 	});
 	

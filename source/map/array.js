@@ -11,7 +11,7 @@ this.ArrayDestructuringExpression = function(){
 	};
 	ArrayDestructuringExpression = new Rexjs(ArrayDestructuringExpression, DestructuringExpression);
 
-	ArrayDestructuringExpression.props({
+	ArrayDestructuringExpression.$({
 		/**
 		 * 提取并编译表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
@@ -36,7 +36,7 @@ this.ArrayDestructuringItemExpression = function(){
 	};
 	ArrayDestructuringItemExpression = new Rexjs(ArrayDestructuringItemExpression, DestructuringItemExpression);
 
-	ArrayDestructuringItemExpression.props({
+	ArrayDestructuringItemExpression.$({
 		/**
 		 * 提取并编译表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
@@ -65,7 +65,7 @@ this.ArrayDestructuringRestItemExpression = function(){
 	};
 	ArrayDestructuringRestItemExpression = new Rexjs(ArrayDestructuringRestItemExpression, DestructuringItemExpression);
 
-	ArrayDestructuringRestItemExpression.props({
+	ArrayDestructuringRestItemExpression.$({
 		/**
 		 * 提取并编译表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
@@ -95,7 +95,7 @@ this.ArrayExpression = function(ArrayDestructuringExpression, ArrayDestructuring
 	};
 	ArrayExpression = new Rexjs(ArrayExpression, DestructibleExpression);
 
-	ArrayExpression.props({
+	ArrayExpression.$({
 		/**
 		 * 将数组每一项转换为解构项表达式
 		 * @param {SyntaxParser} parser - 语法解析器
@@ -258,7 +258,7 @@ this.ArrayExpression = function(ArrayDestructuringExpression, ArrayDestructuring
 	function(parser, expression, _errorName){
 		parser.error(
 			expression.context,
-			_errorName ? ECMAScriptErrors[_errorName] : null
+			_errorName ? ECMAScriptErrors[_errorName] : NULL
 		);
 	}
 );
@@ -273,7 +273,7 @@ this.ArrayStatement = function(){
 	};
 	ArrayStatement = new Rexjs(ArrayStatement, ECMAScriptStatement);
 
-	ArrayStatement.props({
+	ArrayStatement.$({
 		/**
 		 * 捕获处理异常
 		 * @param {SyntaxParser} parser - 语法解析器
@@ -307,7 +307,7 @@ this.ArrayStatement = function(){
 		try: function(parser, context){
 			// 如果不是逗号
 			if(context.content !== ","){
-				return null;
+				return NULL;
 			}
 
 			// 跳出语句并添加表达式
@@ -330,7 +330,7 @@ this.OpenArrayTag = function(OpenBracketTag, ArrayExpression, ArrayStatement){
 	};
 	OpenArrayTag = new Rexjs(OpenArrayTag, OpenBracketTag);
 	
-	OpenArrayTag.props({
+	OpenArrayTag.$({
 		$class: CLASS_EXPRESSION,
 		/**
 		 * 获取绑定的标签，该标签一般是用于语句的 try、catch 的返回值
@@ -392,7 +392,7 @@ this.ArrayItemSeparatorTag = function(CommaTag, ArrayStatement){
 	};
 	ArrayItemSeparatorTag = new Rexjs(ArrayItemSeparatorTag, CommaTag);
 	
-	ArrayItemSeparatorTag.props({
+	ArrayItemSeparatorTag.$({
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
@@ -413,7 +413,7 @@ this.ArrayItemSeparatorTag = function(CommaTag, ArrayStatement){
 				statements.statement = new ArrayStatement(statements)
 			)
 			// 设置语句表达式为空表达式，目的是与默认表达式区分，因为空数组是默认表达式，可以使用 set 来过滤，而其他空项不应该被过滤，所以使用空表达式
-			.expression = new EmptyExpression(null);
+			.expression = new EmptyExpression(NULL);
 		}
 	});
 	
@@ -433,7 +433,7 @@ this.CloseArrayTag = function(CloseBracketTag){
 	};
 	CloseArrayTag = new Rexjs(CloseArrayTag, CloseBracketTag);
 	
-	CloseArrayTag.props({
+	CloseArrayTag.$({
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
@@ -473,9 +473,9 @@ closeArrayTag = new this.CloseArrayTag();
 	this.BinaryExpression,
 	this.BasicAssignmentTag,
 	// closeArrayTag
-	null,
+	NULL,
 	// arrayItemSeparatorTag
-	null,
+	NULL,
 	// destructItem
 	function(expression, contentBuilder, anotherBuilder, index){
 		// 如果是空表达式

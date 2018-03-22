@@ -29,8 +29,8 @@ this.Rexjs = Rexjs = module.exports = function(create, getProperties, setPrototy
 
 			// 默认
 			default:
-				__proto__ = create(null, properties);
-				prototype = null;
+				__proto__ = create(_SuperClass, properties);
+				prototype = _SuperClass;
 				break;
 		}
 
@@ -142,14 +142,14 @@ this.bind = Function.bind;
 this.call = Function.call;
 this.hasOwnProperty = Object.prototype.hasOwnProperty;
 
-this.static = function(getOwnPropertyDescriptor){
+this.$$ = function(getOwnPropertyDescriptor){
 	/**
 	 * 将一个或多个静态属性添加到该类，并/或修改现有属性的特性
-	 * @param {Object} props - 包含一个或多个属性的键值对
+	 * @param {Object} staticProps - 包含一个或多个属性的键值对
 	 */
-	return function(props){
-		for(var name in props){
-			var descriptor = getOwnPropertyDescriptor(props, name);
+	return function(staticProps){
+		for(var name in staticProps){
+			var descriptor = getOwnPropertyDescriptor(staticProps, name);
 
 			descriptor.enumerable = false;
 
@@ -160,16 +160,16 @@ this.static = function(getOwnPropertyDescriptor){
 	Object.getOwnPropertyDescriptor
 );
 
-this.props = function(staticMethod){
+this.$ = function($$){
 	/**
 	 * 将一个或多个属性添加到该类，并/或修改现有属性的特性
 	 * @param {Object} props - 包含一个或多个属性的键值对
 	 */
 	return function(props){
-		staticMethod.call(this.prototype, props);
+		$$.call(this.prototype, props);
 	};
 }(
-	this.static
+	this.$$
 );
 
 this.toString = function(){
@@ -185,7 +185,7 @@ this.toString = function(){
 	);
 }();
 
-this.static.call(__proto__, this);
+this.$$.call(__proto__, this);
 
 }(
 	Function,
@@ -231,7 +231,7 @@ this.valueOf = function(){
 	};
 }();
 
-Rexjs.static.call(Rexjs.prototype, this);
+Rexjs.$$.call(Rexjs.prototype, this);
 
 }(
 	// objectPrototype

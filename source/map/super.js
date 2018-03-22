@@ -11,7 +11,7 @@ this.SuperExpression = function(LiteralExpression){
 	};
 	SuperExpression = new Rexjs(SuperExpression, LiteralExpression);
 	
-	SuperExpression.props({
+	SuperExpression.$({
 		/**
 		 * 提取表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
@@ -45,7 +45,7 @@ this.SuperStatement = function(){
 	};
 	SuperStatement = new Rexjs(SuperStatement, ECMAScriptStatement);
 
-	SuperStatement.props({
+	SuperStatement.$({
 		/**
 		 * 捕获处理异常
 		 * @param {SyntaxParser} parser - 语法解析器
@@ -92,7 +92,7 @@ this.SuperTag = function(SuperExpression, SuperStatement, UnaryAssignmentStateme
 	};
 	SuperTag = new Rexjs(SuperTag, SyntaxTag);
 
-	SuperTag.props({
+	SuperTag.$({
 		$class: CLASS_EXPRESSION,
 		regexp: /super/,
 		/**

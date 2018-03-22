@@ -11,9 +11,9 @@ this.FunctionExpression = function(appendRange, appendHoisting, compileBody){
 	};
 	FunctionExpression = new Rexjs(FunctionExpression, Expression);
 
-	FunctionExpression.props({
-		arguments: null,
-		body: null,
+	FunctionExpression.$({
+		arguments: NULL,
+		body: NULL,
 		/**
 		 * 获取当前索引字符串
 		 */
@@ -71,8 +71,8 @@ this.FunctionExpression = function(appendRange, appendHoisting, compileBody){
 			// 提取函数主体
 			this.body.extractTo(contentBuilder, defaultArgumentBuilder);
 		},
-		head: null,
-		hoistings: null,
+		head: NULL,
+		hoistings: NULL,
 		index: 0,
 		name: new DefaultExpression(),
 		/**
@@ -82,8 +82,8 @@ this.FunctionExpression = function(appendRange, appendHoisting, compileBody){
 		nextIndex: function(contentBuilder){
 			return ++this.index;
 		},
-		ranges: null,
-		star: null,
+		ranges: NULL,
+		star: NULL,
 		/**
 		 * 转化为生成器
 		 * @param {Context} star - 生成器星号上下文
@@ -128,7 +128,7 @@ this.FunctionExpression = function(appendRange, appendHoisting, compileBody){
 		contentBuilder.appendString(
 			"default:" +
 			currentIndexString +
-			"=NaN;return void 0;}}},this,arguments);return new Rexjs.Generator(" +
+			"=0/0;return;}}},this,arguments);return new Rexjs.Generator(" +
 			variable +
 			");}"
 		);
@@ -145,7 +145,7 @@ this.FunctionTag = function(FunctionExpression){
 	};
 	FunctionTag = new Rexjs(FunctionTag, SyntaxTag);
 
-	FunctionTag.props({
+	FunctionTag.$({
 		$class: CLASS_EXPRESSION,
 		regexp: /function/,
 		/**
@@ -187,7 +187,7 @@ this.StarTag = function(){
 	};
 	StarTag = new Rexjs(StarTag, SyntaxTag);
 
-	StarTag.props({
+	StarTag.$({
 		regexp: /\*/,
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
@@ -222,7 +222,7 @@ this.FunctionNameTag = function(VariableDeclarationTag, FunctionDeclarationExpre
 	};
 	FunctionNameTag = new Rexjs(FunctionNameTag, VariableDeclarationTag);
 
-	FunctionNameTag.props({
+	FunctionNameTag.$({
 		/**
 		 * 提取文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器

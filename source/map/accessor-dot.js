@@ -14,7 +14,7 @@ this.AccessorExpression = function(AssignableExpression){
 	};
 	AccessorExpression = new Rexjs(AccessorExpression, AssignableExpression);
 	
-	AccessorExpression.props({
+	AccessorExpression.$({
 		/**
 		 * 提取表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
@@ -28,8 +28,8 @@ this.AccessorExpression = function(AssignableExpression){
 			// 追加属性
 			contentBuilder.appendContext(this.property);
 		},
-		object: null,
-		property: null
+		object: NULL,
+		property: NULL
 	});
 	
 	return AccessorExpression;
@@ -47,7 +47,7 @@ this.DotAccessorTag = function(DotTag, AccessorExpression){
 	};
 	DotAccessorTag = new Rexjs(DotAccessorTag, DotTag);
 	
-	DotAccessorTag.props({
+	DotAccessorTag.$({
 		$class: CLASS_EXPRESSION_CONTEXT,
 		/**
 		 * 获取绑定的表达式，一般在子类使用父类逻辑，而不使用父类表达式的情况下使用
@@ -95,7 +95,7 @@ this.PropertyNameTag = function(IdentifierTag, RegExp){
 	};
 	PropertyNameTag = new Rexjs(PropertyNameTag, IdentifierTag);
 	
-	PropertyNameTag.props({
+	PropertyNameTag.$({
 		regexp: new RegExp(IDENTIFIER_REGEXP_SOURCE),
 		/**
 		 * 标签访问器

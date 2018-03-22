@@ -11,7 +11,7 @@ this.AsTag = function(AsExpression){
 	};
 	AsTag = new Rexjs(AsTag, SyntaxTag);
 
-	AsTag.props({
+	AsTag.$({
 		regexp: /as/
 	});
 
@@ -30,7 +30,7 @@ this.CloseBraceTag = function(){
 	};
 	CloseBraceTag = new Rexjs(CloseBraceTag, SyntaxTag);
 
-	CloseBraceTag.props({
+	CloseBraceTag.$({
 		regexp: /\}/
 	});
 	
@@ -47,7 +47,7 @@ this.CloseBracketTag = function(){
 	};
 	CloseBracketTag = new Rexjs(CloseBracketTag, SyntaxTag);
 
-	CloseBracketTag.props({
+	CloseBracketTag.$({
 		regexp: /\]/
 	});
 	
@@ -64,7 +64,7 @@ this.CloseParenTag = function(){
 	};
 	CloseParenTag = new Rexjs(CloseParenTag, SyntaxTag);
 
-	CloseParenTag.props({
+	CloseParenTag.$({
 		regexp: /\)/
 	});
 	
@@ -80,7 +80,7 @@ this.CommentTag = function(){
 	};
 	CommentTag = new Rexjs(CommentTag, SyntaxTag);
 
-	CommentTag.props({
+	CommentTag.$({
 		$type: TYPE_MATCHABLE,
 		order: ECMAScriptOrders.COMMENT
 	});
@@ -98,7 +98,7 @@ this.DebuggerTag = function(){
 	};
 	DebuggerTag = new Rexjs(DebuggerTag, SyntaxTag);
 	
-	DebuggerTag.props({
+	DebuggerTag.$({
 		$class: CLASS_STATEMENT_BEGIN,
 		regexp: /debugger/,
 		/**
@@ -133,7 +133,7 @@ this.DotTag = function(){
 	};
 	DotTag = new Rexjs(DotTag, SyntaxTag);
 	
-	DotTag.props({
+	DotTag.$({
 		regexp: /\.(?!\d)/
 	});
 	
@@ -150,7 +150,7 @@ this.ExpressionSeparatorTag = function(){
 	};
 	ExpressionSeparatorTag = new Rexjs(ExpressionSeparatorTag, SyntaxTag);
 
-	ExpressionSeparatorTag.props({
+	ExpressionSeparatorTag.$({
 		$class: CLASS_EXPRESSION_CONTEXT,
 		$type: TYPE_MISTAKABLE
 	});
@@ -168,7 +168,7 @@ this.ModuleTag = function(FLOW_MAIN){
 	};
 	ModuleTag = new Rexjs(ModuleTag, SyntaxTag);
 
-	ModuleTag.props({
+	ModuleTag.$({
 		$class: CLASS_STATEMENT_BEGIN,
 		/**
 		 * 收集该表达式所产生的变量名
@@ -220,7 +220,7 @@ this.OpenBraceTag = function(){
 	};
 	OpenBraceTag = new Rexjs(OpenBraceTag, SyntaxTag);
 
-	OpenBraceTag.props({
+	OpenBraceTag.$({
 		regexp: /\{/
 	});
 	
@@ -237,7 +237,7 @@ this.OpenBracketTag = function(){
 	};
 	OpenBracketTag = new Rexjs(OpenBracketTag, SyntaxTag);
 
-	OpenBracketTag.props({
+	OpenBracketTag.$({
 		regexp: /\[/
 	});
 	
@@ -254,7 +254,7 @@ this.OpenParenTag = function(){
 	};
 	OpenParenTag = new Rexjs(OpenParenTag, SyntaxTag);
 
-	OpenParenTag.props({
+	OpenParenTag.$({
 		regexp: /\(/
 	});
 	
@@ -271,7 +271,7 @@ this.SemicolonTag = function(){
 	};
 	SemicolonTag = new Rexjs(SemicolonTag, SyntaxTag);
 	
-	SemicolonTag.props({
+	SemicolonTag.$({
 		regexp: /;/
 	});
 	
@@ -287,7 +287,7 @@ this.SpecialLineTerminatorTag = function(LineTerminatorTag){
 	};
 	SpecialLineTerminatorTag = new Rexjs(SpecialLineTerminatorTag, LineTerminatorTag);
 	
-	SpecialLineTerminatorTag.props({
+	SpecialLineTerminatorTag.$({
 		order: ECMAScriptOrders.SPECIAL_LINE_TERMINATOR
 	});
 	
@@ -306,7 +306,7 @@ this.WithTag = function(){
 	};
 	WithTag = new Rexjs(WithTag, SyntaxTag);
 	
-	WithTag.props({
+	WithTag.$({
 		$class: CLASS_STATEMENT_BEGIN,
 		regexp: /with/,
 		/**

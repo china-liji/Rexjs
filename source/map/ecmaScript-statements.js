@@ -17,10 +17,10 @@ this.ECMAScriptVariableCollections = function(VariableCollections, VariableColle
 	};
 	ECMAScriptVariableCollections = new Rexjs(ECMAScriptVariableCollections, VariableCollections);
 
-	ECMAScriptVariableCollections.props({
-		blacklist: null,
-		const: null,
-		declaration: null,
+	ECMAScriptVariableCollections.$({
+		blacklist: NULL,
+		const: NULL,
+		declaration: NULL,
 		/**
 		 * 生成一个临时变量名，并记搜集到 rex 变量名集合中
 		 */
@@ -58,7 +58,7 @@ this.ECMAScriptVariableCollections = function(VariableCollections, VariableColle
 		initRex: function(){
 			this.rex = new VariableCollection();
 		},
-		rex: null
+		rex: NULL
 	});
 
 	return ECMAScriptVariableCollections;
@@ -81,9 +81,9 @@ this.ECMAScriptStatements = function(ECMAScriptStatement, extractTo){
 	};
 	ECMAScriptStatements = new Rexjs(ECMAScriptStatements, Statements);
 
-	ECMAScriptStatements.props({
-		closure: null,
-		collections: null,
+	ECMAScriptStatements.$({
+		closure: NULL,
+		collections: NULL,
 		/**
 		 * 获取当前上下文中的生成器
 		 */
@@ -91,7 +91,7 @@ this.ECMAScriptStatements = function(ECMAScriptStatement, extractTo){
 			var closure = this.closure;
 
 			// 如果闭包存在，则返回 contextGenerator
-			return closure ? closure.contextGenerator : null;
+			return closure ? closure.contextGenerator : NULL;
 		},
 		/**
 		 * 获取当前上下文中需要编译的生成器
@@ -100,7 +100,7 @@ this.ECMAScriptStatements = function(ECMAScriptStatement, extractTo){
 			var closure = this.closure;
 
 			// 如果闭包存在，则返回 contextGeneratorIfNeedCompile
-			return closure ? closure.contextGeneratorIfNeedCompile : null;
+			return closure ? closure.contextGeneratorIfNeedCompile : NULL;
 		},
 		/**
 		 * 声明变量名
@@ -127,6 +127,12 @@ this.ECMAScriptStatements = function(ECMAScriptStatement, extractTo){
 		 */
 		initStatement: function(){
 			return new ECMAScriptStatement(this);
+		},
+		/**
+		 * 获取当前上下文中严格意义上的生成器
+		 */
+		get strictContextGenerator(){
+			return this.contextGenerator;
 		}
 	});
 
@@ -143,7 +149,7 @@ this.GlobalStatements = function(ECMAScriptStatements, ECMAScriptVariableCollect
 	function GlobalStatements(){
 		ECMAScriptStatements.call(
 			this,
-			null,
+			NULL,
 			new ECMAScriptVariableCollections(
 				new VariableIndex()
 			)
@@ -151,18 +157,18 @@ this.GlobalStatements = function(ECMAScriptStatements, ECMAScriptVariableCollect
 	};
 	GlobalStatements = new Rexjs(GlobalStatements, ECMAScriptStatements);
 
-	GlobalStatements.props({
+	GlobalStatements.$({
 		/**
 		 * 获取当前上下文中的生成器
 		 */
 		get contextGenerator(){
-			return null;
+			return NULL;
 		},
 		/**
 		 * 获取当前上下文中需要编译的生成器
 		 */
 		get contextGeneratorIfNeedCompile(){
-			return null;
+			return NULL;
 		}
 	});
 

@@ -11,11 +11,11 @@ this.ImportExpression = function(compileMember){
 		Expression.call(this, context);
 
 		this.file = file;
-		this.members = new ListExpression(null, ",");
+		this.members = new ListExpression(NULL, ",");
 	};
 	ImportExpression = new Rexjs(ImportExpression, Expression);
 
-	ImportExpression.props({
+	ImportExpression.$({
 		clean: true,
 		/**
 		 * 提取表达式文本内容
@@ -70,10 +70,10 @@ this.ImportExpression = function(compileMember){
 			// 提取模块名称
 			contentBuilder.appendContext(this.name);
 		},
-		file: null,
-		from: null,
-		members: null,
-		name: null
+		file: NULL,
+		from: NULL,
+		members: NULL,
+		name: NULL
 	});
 
 	return ImportExpression;
@@ -94,7 +94,7 @@ this.ImportTag = function(ModuleTag, ImportExpression){
 	};
 	ImportTag = new Rexjs(ImportTag, ModuleTag);
 
-	ImportTag.props({
+	ImportTag.$({
 		/**
 		 * 获取绑定的表达式，一般在子类使用父类逻辑，而不使用父类表达式的情况下使用
 		 * @param {Context} context - 相关的语法标签上下文
@@ -135,7 +135,7 @@ this.MemberSeparatorTag = function(CommaTag){
 	};
 	MemberSeparatorTag = new Rexjs(MemberSeparatorTag, CommaTag);
 
-	MemberSeparatorTag.props({
+	MemberSeparatorTag.$({
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
@@ -168,7 +168,7 @@ this.FromTag = function(){
 	};
 	FromTag = new Rexjs(FromTag, SyntaxTag);
 
-	FromTag.props({
+	FromTag.$({
 		regexp: /from/,
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
@@ -203,7 +203,7 @@ this.ModuleNameTag = function(StringTag){
 	};
 	ModuleNameTag = new Rexjs(ModuleNameTag, StringTag);
 
-	ModuleNameTag.props({
+	ModuleNameTag.$({
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射

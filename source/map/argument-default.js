@@ -11,8 +11,8 @@ this.DefaultArgumentExpression = function(ArgumentExpression){
 	};
 	DefaultArgumentExpression = new Rexjs(DefaultArgumentExpression, ArgumentExpression);
 
-	DefaultArgumentExpression.props({
-		assignment: null,
+	DefaultArgumentExpression.$({
+		assignment: NULL,
 		/**
 		 * 提取表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
@@ -58,7 +58,7 @@ this.ArgumentAssignmentStatement = function(){
 	};
 	ArgumentAssignmentStatement = new Rexjs(ArgumentAssignmentStatement, ECMAScriptStatement);
 
-	ArgumentAssignmentStatement.props({
+	ArgumentAssignmentStatement.$({
 		/**
 		 * 捕获处理异常
 		 * @param {SyntaxParser} parser - 语法解析器
@@ -95,7 +95,7 @@ this.ArgumentAssignmentTag = function(DefaultArgumentExpression, ArgumentAssignm
 	};
 	ArgumentAssignmentTag = new Rexjs(ArgumentAssignmentTag, BasicAssignmentTag);
 
-	ArgumentAssignmentTag.props({
+	ArgumentAssignmentTag.$({
 		/**
 		 * 标签访问器
 		 * @param {SyntaxParser} parser - 语法解析器

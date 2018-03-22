@@ -11,8 +11,8 @@ this.TernaryExpression = function(){
 	};
 	TernaryExpression = new Rexjs(TernaryExpression, Expression);
 
-	TernaryExpression.props({
-		condition: null,
+	TernaryExpression.$({
+		condition: NULL,
 		/**
 		 * 提取表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
@@ -29,8 +29,8 @@ this.TernaryExpression = function(){
 			// 提取否定条件表达式
 			this.negative.extractTo(contentBuilder);
 		},
-		negative: null,
-		positive: null
+		negative: NULL,
+		positive: NULL
 	});
 
 	return TernaryExpression;
@@ -46,7 +46,7 @@ this.PositiveStatement = function(){
 	};
 	PositiveStatement = new Rexjs(PositiveStatement, ECMAScriptStatement);
 
-	PositiveStatement.props({
+	PositiveStatement.$({
 		/**
 		 * 捕获处理异常
 		 * @param {SyntaxParser} parser - 语法解析器
@@ -57,7 +57,7 @@ this.PositiveStatement = function(){
 			if(context.content !== ":"){
 				// 报错
 				parser.error(context);
-				return null;
+				return NULL;
 			}
 
 			// 跳出语句并设置 positive
@@ -91,7 +91,7 @@ this.NegativeStatement = function(){
 	};
 	NegativeStatement = new Rexjs(NegativeStatement, ECMAScriptStatement);
 
-	NegativeStatement.props({
+	NegativeStatement.$({
 		/**
 		 * 捕获处理异常
 		 * @param {SyntaxParser} parser - 语法解析器
@@ -128,7 +128,7 @@ this.QuestionTag = function(ExpressionSeparatorTag, TernaryExpression, PositiveS
 	};
 	QuestionTag = new Rexjs(QuestionTag, ExpressionSeparatorTag);
 
-	QuestionTag.props({
+	QuestionTag.$({
 		/**
 		 * 获取绑定的标签，该标签一般是用于语句的 try、catch 的返回值
 		 */
@@ -180,7 +180,7 @@ this.ColonTag = function(NegativeStatement){
 	};
 	ColonTag = new Rexjs(ColonTag, SyntaxTag);
 
-	ColonTag.props({
+	ColonTag.$({
 		regexp: /:/,
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
@@ -214,5 +214,5 @@ colonTag = new this.ColonTag();
 }.call(
 	this,
 	// colonTag
-	null
+	NULL
 );

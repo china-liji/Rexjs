@@ -11,7 +11,7 @@ this.ObjectDestructuringExpression = function(){
 	};
 	ObjectDestructuringExpression = new Rexjs(ObjectDestructuringExpression, DestructuringExpression);
 
-	ObjectDestructuringExpression.props({
+	ObjectDestructuringExpression.$({
 		/**
 		 * 提取并编译表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
@@ -36,7 +36,7 @@ this.ObjectDestructuringItemExpression = function(DestructuringItemExpression){
 	};
 	ObjectDestructuringItemExpression = new Rexjs(ObjectDestructuringItemExpression, DestructuringItemExpression);
 
-	ObjectDestructuringItemExpression.props({
+	ObjectDestructuringItemExpression.$({
 		/**
 		 * 提取并编译表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
@@ -79,7 +79,7 @@ this.ObjectExpression = function(
 	};
 	ObjectExpression = new Rexjs(ObjectExpression, DestructibleExpression);
 
-	ObjectExpression.props({
+	ObjectExpression.$({
 		/**
 		 * 将对象每一项转换为解构项表达式
 		 * @param {SyntaxParser} parser - 语法解析器
@@ -309,7 +309,7 @@ this.ObjectExpression = function(
 	function(parser, expression, _errorName){
 		parser.error(
 			expression.context,
-			_errorName ? ECMAScriptErrors[_errorName] : null
+			_errorName ? ECMAScriptErrors[_errorName] : NULL
 		);
 	}
 );
@@ -324,7 +324,7 @@ this.OpenObjectTag = function(OpenBraceTag, ObjectExpression, PropertyStatement)
 	};
 	OpenObjectTag = new Rexjs(OpenObjectTag, OpenBraceTag);
 
-	OpenObjectTag.props({
+	OpenObjectTag.$({
 		$class: CLASS_EXPRESSION,
 		/**
 		 * 获取绑定的标签，该标签一般是用于语句的 try、catch 的返回值
@@ -386,7 +386,7 @@ this.PropertySeparatorTag = function(CommaTag, PropertyStatement){
 	};
 	PropertySeparatorTag = new Rexjs(PropertySeparatorTag, CommaTag);
 
-	PropertySeparatorTag.props({
+	PropertySeparatorTag.$({
 		/**
 		 * 获取绑定的语句，一般在子类使用父类逻辑，而不使用父类语句的情况下使用
 		 * @param {Statements} statements - 该语句将要所处的语句块
@@ -430,7 +430,7 @@ this.CloseObjectTag = function(CloseBraceTag){
 	};
 	CloseObjectTag = new Rexjs(CloseObjectTag, CloseBraceTag);
 
-	CloseObjectTag.props({
+	CloseObjectTag.$({
 		$type: TYPE_UNEXPECTED,
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
@@ -464,9 +464,9 @@ closeObjectTag = new this.CloseObjectTag();
 	this,
 	this.DestructuringExpression,
 	// propertySeparatorTag
-	null,
+	NULL,
 	// closeObjectTag
-	null,
+	NULL,
 	// destructItem
 	function(expression, contentBuilder, anotherBuilder){
 		expression.compileTo(contentBuilder, anotherBuilder);

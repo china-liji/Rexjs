@@ -11,7 +11,7 @@ this.DeclarationArrayRestItemTag = function(DeclarationArrayItemTag, IdentifierE
 	};
 	DeclarationArrayRestItemTag = new Rexjs(DeclarationArrayRestItemTag, DeclarationArrayItemTag);
 
-	DeclarationArrayRestItemTag.props({
+	DeclarationArrayRestItemTag.$({
 		/**
 		 * 获取该标签所处的数组语句
 		 * @param {Statement} statement - 当前语句
@@ -51,7 +51,7 @@ this.DeclarationArrayRestTag = function(ArraySpreadTag, ArrayDestructuringRestIt
 	};
 	DeclarationArrayRestTag = new Rexjs(DeclarationArrayRestTag, ArraySpreadTag);
 	
-	DeclarationArrayRestTag.props({
+	DeclarationArrayRestTag.$({
 		/**
 		 * 获取绑定的表达式，一般在子类使用父类逻辑，而不使用父类表达式的情况下使用
 		 * @param {Context} context - 相关的语法标签上下文

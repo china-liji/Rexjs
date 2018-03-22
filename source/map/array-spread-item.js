@@ -11,7 +11,7 @@ this.ArraySpreadItemExpression = function(SpreadExpression){
 	};
 	ArraySpreadItemExpression = new Rexjs(ArraySpreadItemExpression, SpreadExpression);
 
-	ArraySpreadItemExpression.props({
+	ArraySpreadItemExpression.$({
 		/**
 		 * 提取表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
@@ -50,7 +50,7 @@ this.ArraySpreadTag = function(SpreadTag, ArraySpreadItemExpression){
 	};
 	ArraySpreadTag = new Rexjs(ArraySpreadTag, SpreadTag);
 	
-	ArraySpreadTag.props({
+	ArraySpreadTag.$({
 		/**
 		 * 获取绑定的表达式，一般在子类使用父类逻辑，而不使用父类表达式的情况下使用
 		 * @param {Context} context - 相关的语法标签上下文

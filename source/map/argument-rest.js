@@ -14,8 +14,8 @@ this.RestArgumentExpression = function(ArgumentExpression){
 	};
 	RestArgumentExpression = new Rexjs(RestArgumentExpression, ArgumentExpression);
 
-	RestArgumentExpression.props({
-		name: null,
+	RestArgumentExpression.$({
+		name: NULL,
 		/**
 		 * 提取表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
@@ -55,7 +55,7 @@ this.RestTag = function(SpreadTag, RestArgumentExpression){
 	};
 	RestTag = new Rexjs(RestTag, SpreadTag);
 
-	RestTag.props({
+	RestTag.$({
 		/**
 		 * 获取绑定的表达式，一般在子类使用父类逻辑，而不使用父类表达式的情况下使用
 		 * @param {Context} context - 相关的语法标签上下文
@@ -103,7 +103,7 @@ this.RestArgumentNameTag = function(ArgumentNameTag){
 	};
 	RestArgumentNameTag = new Rexjs(RestArgumentNameTag, ArgumentNameTag);
 
-	RestArgumentNameTag.props({
+	RestArgumentNameTag.$({
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
@@ -142,7 +142,7 @@ this.RestArgumentSeparatorTag = function(ArgumentSeparatorTag){
 	};
 	RestArgumentSeparatorTag = new Rexjs(RestArgumentSeparatorTag, ArgumentSeparatorTag);
 
-	RestArgumentSeparatorTag.props({
+	RestArgumentSeparatorTag.$({
 		$type: TYPE_MATCHABLE,
 		/**
 		 * 标签访问器

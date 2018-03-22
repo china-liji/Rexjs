@@ -1,5 +1,5 @@
 // 基于 Rexjs 语法相关
-new function(Rexjs, forEach){
+new function(Rexjs, NULL, forEach){
 "use strict";
 
 // 变量名集合相关
@@ -12,7 +12,7 @@ this.VariableIndex = function(){
 	function VariableIndex(){};
 	VariableIndex = new Rexjs(VariableIndex);
 
-	VariableIndex.props({
+	VariableIndex.$({
 		/**
 		 * 值加 1
 		 */
@@ -37,8 +37,8 @@ this.CollectionRange = function(){
 	};
 	CollectionRange = new Rexjs(CollectionRange);
 
-	CollectionRange.props({
-		collection: null,
+	CollectionRange.$({
+		collection: NULL,
 		/**
 		 * 记录结束点（范围包括该点）
 		 */
@@ -79,7 +79,7 @@ this.VariableCollection = function(CollectionRange){
 	function VariableCollection(){};
 	VariableCollection = new Rexjs(VariableCollection);
 
-	VariableCollection.props({
+	VariableCollection.$({
 		/**
 		 * 搜集变量名
 		 * @param {String} variable - 变量名
@@ -150,7 +150,7 @@ this.VariableCollections = function(PREFIX){
 	};
 	VariableCollections = new Rexjs(VariableCollections);
 
-	VariableCollections.static({
+	VariableCollections.$$({
 		/**
 		 * 获取临时变量名前缀
 		 */
@@ -166,7 +166,7 @@ this.VariableCollections = function(PREFIX){
 		}
 	});
 
-	VariableCollections.props({
+	VariableCollections.$({
 		index: 0,
 		/**
 		 * 提供一个变量名
@@ -205,9 +205,9 @@ this.File = function(){
 	};
 	File = new Rexjs(File);
 	
-	File.props({
+	File.$({
 		source: "",
-		url: null
+		url: NULL
 	});
 	
 	return File;
@@ -225,7 +225,7 @@ this.Position = function(){
 	};
 	Position = new Rexjs(Position);
 	
-	Position.props({
+	Position.$({
 		column: 0,
 		line: 0
 	});
@@ -247,7 +247,7 @@ this.Context = function(){
 	};
 	Context = new Rexjs(Context);
 	
-	Context.props({
+	Context.$({
 		content: "",
 		position: 0,
 		/**
@@ -271,7 +271,7 @@ this.Context = function(){
 		setStatementsOf: function(parser){
 			return parser.statements = this.tag.getBoundStatements(parser.statements);
 		},
-		tag: null
+		tag: NULL
 	});
 	
 	return Context;
@@ -284,7 +284,7 @@ this.ContentBuilder = function(){
 	function ContentBuilder(){};
 	ContentBuilder = new Rexjs(ContentBuilder);
 	
-	ContentBuilder.props({
+	ContentBuilder.$({
 		/**
 		 * 追加内容上下文
 		 * @param {Context} context - 标签内容上下文
@@ -336,7 +336,7 @@ this.SourceBuilder = function(ContentBuilder){
 	};
 	SourceBuilder = new Rexjs(SourceBuilder, ContentBuilder);
 	
-	SourceBuilder.props({
+	SourceBuilder.$({
 		/**
 		 * 完成生成，返回结果
 		 */
@@ -348,7 +348,7 @@ this.SourceBuilder = function(ContentBuilder){
 
 			return this.result;
 		},
-		file: null
+		file: NULL
 	});
 	
 	return SourceBuilder;
@@ -371,7 +371,7 @@ this.Base64 = function(chars, parseInt, btoa){
 	function Base64(){};
 	Base64 = new Rexjs(Base64);
 	
-	Base64.static({
+	Base64.$$({
 		/**
 		 * 绑定编码 base64 的方法
 		 * @param {Function} method - 编码 base64 的方法
@@ -464,7 +464,7 @@ this.Base64 = function(chars, parseInt, btoa){
 	"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/".split(""),
 	parseInt,
 	// btoa
-	typeof btoa === "undefined" ? null : btoa
+	typeof btoa === "undefined" ? NULL : btoa
 );
 
 this.MappingPosition = function(Position){
@@ -476,7 +476,7 @@ this.MappingPosition = function(Position){
 	};
 	MappingPosition = new Rexjs(MappingPosition, Position);
 	
-	MappingPosition.props({
+	MappingPosition.$({
 		generatedLineOffset: 0,
 		generatedLineDiff: 0,
 		generatedColumnOffset: 0,
@@ -500,7 +500,7 @@ this.MappingBuilder = function(URL, MappingPosition, Base64, JSON, appendContext
 	};
 	MappingBuilder = new Rexjs(MappingBuilder, SourceBuilder);
 	
-	MappingBuilder.static({
+	MappingBuilder.$$({
 		/**
 		 * 判断是否支持 sourceMaps
 		 */
@@ -512,7 +512,7 @@ this.MappingBuilder = function(URL, MappingPosition, Base64, JSON, appendContext
 		}
 	});
 	
-	MappingBuilder.props({
+	MappingBuilder.$({
 		/**
 		 * 追加内容上下文，同时会更新 sourceMap
 		 * @param {Context} context - 标签内容上下文
@@ -636,7 +636,7 @@ this.MappingBuilder = function(URL, MappingPosition, Base64, JSON, appendContext
 			// 清空差值
 			position.generatedLineDiff = position.generatedColumnDiff = 0;
 		},
-		position: null
+		position: NULL
 	});
 	
 	return MappingBuilder;
@@ -668,7 +668,7 @@ this.SyntaxElement = function(){
 	function SyntaxElement(){};
 	SyntaxElement = new Rexjs(SyntaxElement);
 	
-	SyntaxElement.props({
+	SyntaxElement.$({
 		/**
 		 * 提取文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
@@ -706,7 +706,7 @@ this.SyntaxRegExp = function(RegExp, Infinity){
 	function SyntaxRegExp(){};
 	SyntaxRegExp = new Rexjs(SyntaxRegExp);
 
-	SyntaxRegExp.props({
+	SyntaxRegExp.$({
 		/**
 		 * 中断正则表达式的匹配
 		 */
@@ -730,7 +730,7 @@ this.SyntaxRegExp = function(RegExp, Infinity){
 				result = regexp.exec(source);
 
 				// 如果没匹配到结果
-				if(result === null){
+				if(result === NULL){
 					// 跳出循环
 					break;
 				}
@@ -793,8 +793,8 @@ this.TagData = function(){
 	};
 	TagData = new Rexjs(TagData);
 
-	TagData.props({
-		value: null
+	TagData.$({
+		value: NULL
 	});
 
 	return TagData;
@@ -824,7 +824,7 @@ this.TagClass = function(CLASS_NONE, CLASS_STATEMENT, CLASS_STATEMENT_BEGIN, CLA
 	};
 	TagClass = new Rexjs(TagClass, TagData);
 
-	TagClass.static({
+	TagClass.$$({
 		// 表达式标签类别
 		CLASS_EXPRESSION: CLASS_EXPRESSION,
 		// 表达式上下文标签类别
@@ -839,7 +839,7 @@ this.TagClass = function(CLASS_NONE, CLASS_STATEMENT, CLASS_STATEMENT_BEGIN, CLA
 		CLASS_STATEMENT_END: CLASS_STATEMENT_END
 	});
 
-	TagClass.props({
+	TagClass.$({
 		expression: false,
 		expressionContext: false,
 		statement: false,
@@ -878,7 +878,7 @@ this.TagType = function(TYPE_NONE, TYPE_MATCHABLE, TYPE_UNEXPECTED, TYPE_MISTAKA
 	};
 	TagType = new Rexjs(TagType, TagData);
 
-	TagType.static({
+	TagType.$$({
 		// 非法标签类型
 		TYPE_ILLEGAL: TYPE_ILLEGAL,
 		// 无标签类型
@@ -891,7 +891,7 @@ this.TagType = function(TYPE_NONE, TYPE_MATCHABLE, TYPE_UNEXPECTED, TYPE_MISTAKA
 		TYPE_UNEXPECTED: TYPE_UNEXPECTED
 	});
 
-	TagType.props({
+	TagType.$({
 		illegal: false,
 		matchable: false,
 		mistakable: false,
@@ -925,16 +925,16 @@ this.SyntaxTag = function(SyntaxElement, TagClass, TagType){
 	};
 	SyntaxTag = new Rexjs(SyntaxTag, SyntaxElement);
 
-	SyntaxTag.props({
+	SyntaxTag.$({
 		$class: TagClass.CLASS_NONE,
 		$type: TagType.TYPE_MATCHABLE,
 		/**
 		 * 获取绑定的标签，该标签列表一般是用于语句的 try、catch 的返回值
 		 */
 		get binding(){
-			return null;
+			return NULL;
 		},
-		class: null,
+		class: NULL,
 		/**
 		 * 提取文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
@@ -950,24 +950,24 @@ this.SyntaxTag = function(SyntaxElement, TagClass, TagType){
 		 * @param {Statement} statement - 当前语句
 		 */
 		getBoundExpression: function(){
-			return null;
+			return NULL;
 		},
 		/**
 		 * 获取绑定的语句，一般在子类使用父类逻辑，而不使用父类语句的情况下使用
 		 * @param {Statements} statements - 该语句将要所处的语句块
 		 */
 		getBoundStatement: function(){
-			return null;
+			return NULL;
 		},
 		/**
 		 * 获取绑定的语句块，一般在子类使用父类逻辑，而不使用父类语句块的情况下使用
 		 * @param {Statements} statements - 该语句将要所处的语句块
 		 */
 		getBoundStatements: function(){
-			return null;
+			return NULL;
 		},
 		order: 0,
-		regexp: null,
+		regexp: NULL,
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
@@ -977,7 +977,7 @@ this.SyntaxTag = function(SyntaxElement, TagClass, TagType){
 			return currentTags;
 		},
 		throw: "token",
-		type: null,
+		type: NULL,
 		/**
 		 * 标签访问器
 		 * @param {SyntaxParser} parser - 语法解析器
@@ -1015,7 +1015,7 @@ this.FilePositionTag = function(CLASS_STATEMENT_BEGIN){
 	};
 	FilePositionTag = new Rexjs(FilePositionTag, SyntaxTag);
 
-	FilePositionTag.props({
+	FilePositionTag.$({
 		$class: CLASS_STATEMENT_BEGIN
 	});
 	
@@ -1033,7 +1033,7 @@ this.IllegalTag = function(TYPE_ILLEGAL){
 	};
 	IllegalTag = new Rexjs(IllegalTag, SyntaxTag);
 	
-	IllegalTag.props({
+	IllegalTag.$({
 		$type: TYPE_ILLEGAL,
 		throw: "token ILLEGAL"
 	});
@@ -1052,7 +1052,7 @@ this.WhitespaceTag = function(){
 	};
 	WhitespaceTag = new Rexjs(WhitespaceTag, SyntaxTag);
 	
-	WhitespaceTag.props({
+	WhitespaceTag.$({
 		regexp: /[^\S\r\n\u2028\u2029]+/
 	});
 	
@@ -1068,14 +1068,14 @@ this.LineTerminatorTag = function(WhitespaceTag){
 	};
 	LineTerminatorTag = new Rexjs(LineTerminatorTag, WhitespaceTag);
 	
-	LineTerminatorTag.static({
+	LineTerminatorTag.$$({
 		CARRIAGE_RETURN: "\r",
 		LINE_SEPARATOR: "\u2028",
 		LINEFEED: "\n",
 		PARAGRAPH_SEPARATOR: "\u2029"
 	});
 
-	LineTerminatorTag.props({
+	LineTerminatorTag.$({
 		regexp: /\r\n?|\n|\u2028|\u2029/,
 		/**
 		 * 标签访问器
@@ -1115,7 +1115,7 @@ this.SyntaxTags = function(List, getSortedValue, distinct){
 	};
 	SyntaxTags = new Rexjs(SyntaxTags, List);
 
-	SyntaxTags.props({
+	SyntaxTags.$({
 		/**
 		 * 将一系列标签类托管给当前标签列表来实例化，并进行注册
 		 * @param {Array} list - 一系列标签类
@@ -1256,7 +1256,7 @@ this.SyntaxTags = function(List, getSortedValue, distinct){
 					var regexp = tag.regexp;
 					
 					// 如果没有提供正则，则说明不需要匹配，作为未捕获的标签
-					if(regexp === null){
+					if(regexp === NULL){
 						tags[-1] = tag;
 						return;
 					}
@@ -1318,7 +1318,7 @@ this.SyntaxTagsMap = function(){
 	function SyntaxTagsMap(){};
 	SyntaxTagsMap = new Rexjs(SyntaxTagsMap);
 	
-	SyntaxTagsMap.props({
+	SyntaxTagsMap.$({
 		/**
 		 * 映射标签列表
 		 * @param {String} name - 标签唯一名称
@@ -1364,7 +1364,7 @@ this.Expression = function(parseInt){
 	};
 	Expression = new Rexjs(Expression, SyntaxElement);
 	
-	Expression.static({
+	Expression.$$({
 		// 无状态
 		STATE_NONE: parseInt(0, 2),
 		// 表达式结束状态
@@ -1377,7 +1377,7 @@ this.Expression = function(parseInt){
 		STATE_STATEMENT_ENDED: parseInt(11110, 2)
 	});
 	
-	Expression.props({
+	Expression.$({
 		/**
 		 * 提取并编译表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
@@ -1386,7 +1386,7 @@ this.Expression = function(parseInt){
 		compileTo: function(contentBuilder, _anotherBuilder){
 			this.extractTo(contentBuilder, _anotherBuilder);
 		},
-		context: null,
+		context: NULL,
 		/**
 		 * 获取是否为默认表达式
 		 */
@@ -1427,7 +1427,7 @@ this.Statement = function(){
 	};
 	Statement = new Rexjs(Statement, SyntaxElement);
 
-	Statement.static({
+	Statement.$$({
 		// 文档流主流
 		FLOW_MAIN: parseInt(10, 2),
 		// 文档流分支流
@@ -1438,7 +1438,7 @@ this.Statement = function(){
 		FLOW_CIRCULAR: parseInt(10100, 2)
 	});
 	
-	Statement.props({
+	Statement.$({
 		/**
 		 * 获取该语句 try、catch 方法所需返回的默认绑定标签
 		 */
@@ -1451,9 +1451,9 @@ this.Statement = function(){
 		 * @param {Context} context - 语法标签上下文
 		 */
 		catch: function(parser, context){
-			return null;
+			return NULL;
 		},
-		expression: null,
+		expression: NULL,
 		/**
 		 * 提取文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
@@ -1477,21 +1477,21 @@ this.Statement = function(){
 			// 返回目标语句的表达式
 			return expression;
 		},
-		statements: null,
+		statements: NULL,
 		/**
 		 * 获取该语句 try、catch 方法中所需使用到的标签，一般是指向实例化该语句的标签
 		 */
 		tagOf: function(){
 			return this.target.expression.context.tag;
 		},
-		target: null,
+		target: NULL,
 		/**
 		 * 尝试处理异常
 		 * @param {SyntaxParser} parser - 语法解析器
 		 * @param {Context} context - 语法标签上下文
 		 */
 		try: function(parser, context){
-			return null;
+			return NULL;
 		}
 	});
 	
@@ -1514,7 +1514,7 @@ this.Statements = function(Statement, STATE_STATEMENT_ENDED, parseInt){
 	};
 	Statements = new Rexjs(Statements, SyntaxElement);
 
-	Statements.static({
+	Statements.$$({
 		// 全局作用域
 		SCOPE_GLOBAL: parseInt(10, 2),
 		// 块级作用域
@@ -1525,13 +1525,13 @@ this.Statements = function(Statement, STATE_STATEMENT_ENDED, parseInt){
 		SCOPE_LAZY: parseInt(11000, 2)
 	});
 	
-	Statements.props({
+	Statements.$({
 		/**
 		 * 清空语句块
 		 */
 		clear: function(){
 			// 清空当前语句
-			this.statement = null;
+			this.statement = NULL;
 			
 			// 清空列表
 			this.splice(0);
@@ -1573,14 +1573,14 @@ this.Statements = function(Statement, STATE_STATEMENT_ENDED, parseInt){
 		 */
 		newStatement: function(){
 			// 先清空当前语句
-			this.statement = null;
+			this.statement = NULL;
 			return this.statement = this[this.length++] = this.initStatement();
 		},
 		reference: "this",
 		scope: Statements.SCOPE_GLOBAL,
 		splice: Array.prototype.splice,
-		statement: null,
-		target: null
+		statement: NULL,
+		target: NULL
 	});
 	
 	return Statements;
@@ -1607,13 +1607,13 @@ this.CompiledExpression = function(){
 	 * @param {String} value - 已编译过的代码字符串
 	 */
 	function CompiledExpression(value){
-		Expression.call(this, null);
+		Expression.call(this, NULL);
 
 		this.value = value;
 	};
 	CompiledExpression = new Rexjs(CompiledExpression, Expression);
 	
-	CompiledExpression.props({
+	CompiledExpression.$({
 		/**
 		 * 提取文本内容，空函数，不做任何处理
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
@@ -1637,7 +1637,7 @@ this.EmptyExpression = function(){
 	};
 	EmptyExpression = new Rexjs(EmptyExpression, Expression);
 	
-	EmptyExpression.props({
+	EmptyExpression.$({
 		/**
 		 * 获取是否为空表达式
 		 */
@@ -1659,11 +1659,11 @@ this.DefaultExpression = function(EmptyExpression, STATE_NONE){
 	 * 默认空表达式，一般用于语句的默认表达式
 	 */
 	function DefaultExpression(){
-		EmptyExpression.call(this, null);
+		EmptyExpression.call(this, NULL);
 	};
 	DefaultExpression = new Rexjs(DefaultExpression, EmptyExpression);
 
-	DefaultExpression.props({
+	DefaultExpression.$({
 		/**
 		 * 获取是否为默认表达式
 		 */
@@ -1702,7 +1702,7 @@ this.ListExpression = function(extractItem){
 	};
 	ListExpression = new Rexjs(ListExpression, Expression);
 	
-	ListExpression.props({
+	ListExpression.$({
 		/**
 		 * 添加表达式
 		 * @param {Expression} expression - 需要添加的表达式
@@ -1760,7 +1760,7 @@ this.ListExpression = function(extractItem){
 			}
 		},
 		join: "",
-		latest: null,
+		latest: NULL,
 		length: 0,
 		min: 0,
 		/**
@@ -1800,8 +1800,8 @@ this.LeftHandSideExpression = function(){
 	};
 	LeftHandSideExpression = new Rexjs(LeftHandSideExpression, Expression);
 
-	LeftHandSideExpression.props({
-		left: null,
+	LeftHandSideExpression.$({
+		left: NULL,
 		/**
 		 * 提取文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
@@ -1829,8 +1829,8 @@ this.PartnerExpression = function(){
 	};
 	PartnerExpression = new Rexjs(PartnerExpression, Expression);
 	
-	PartnerExpression.props({
-		close: null,
+	PartnerExpression.$({
+		close: NULL,
 		/**
 		 * 提取文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
@@ -1844,8 +1844,8 @@ this.PartnerExpression = function(){
 			// 追加结束标签内容
 			contentBuilder.appendContext(this.close);
 		},
-		inner: null,
-		open: null
+		inner: NULL,
+		open: NULL
 	});
 	
 	return PartnerExpression;
@@ -1861,7 +1861,7 @@ this.FilePositionExpression = function(EmptyExpression){
 	};
 	FilePositionExpression = new Rexjs(FilePositionExpression, EmptyExpression);
 	
-	FilePositionExpression.props({
+	FilePositionExpression.$({
 		state: EmptyExpression.STATE_STATEMENT_ENDED
 	});
 	
@@ -1939,8 +1939,8 @@ this.SyntaxError = function(MappingBuilder, e, contextOf){
 	};
 	SyntaxError = new Rexjs(SyntaxError);
 	
-	SyntaxError.props({
-		context: null,
+	SyntaxError.$({
+		context: NULL,
 		description: "",
 		/**
 		 * 获悉错误消息
@@ -1950,7 +1950,7 @@ this.SyntaxError = function(MappingBuilder, e, contextOf){
 
 			return (this.reference ? "Reference" : "Syntax") + "Error: " + this.description + " @ " + this.file.url.href + ":" + (position.line + 1) + ":" + (position.column + 1);
 		},
-		file: null,
+		file: NULL,
 		reference: false,
 		/**
 		 * 转字符串
@@ -2012,7 +2012,7 @@ this.SyntaxParser = function(SyntaxRegExp, SyntaxError, Position, Context, Conte
 	};
 	SyntaxParser = new Rexjs(SyntaxParser);
 	
-	SyntaxParser.props({
+	SyntaxParser.$({
 		/**
 		 * 将解析后的语法生成字符串，并返回
 		 * @param {ContentBuilder} _contentBuilder - 内容生成器
@@ -2023,7 +2023,7 @@ this.SyntaxParser = function(SyntaxRegExp, SyntaxError, Position, Context, Conte
 			this.statements.extractTo(contentBuilder);
 			return contentBuilder.complete();
 		},
-		details: null,
+		details: NULL,
 		/**
 		 * 抛出错误
 		 * @param {Context, Expression} info - 出错信息
@@ -2041,7 +2041,7 @@ this.SyntaxParser = function(SyntaxRegExp, SyntaxError, Position, Context, Conte
 			// 报错
 			throw error.message;
 		},
-		file: null,
+		file: NULL,
 		/**
 		 * 开始解析语法文件
 		 * @param {File} file - 文件信息
@@ -2056,7 +2056,7 @@ this.SyntaxParser = function(SyntaxRegExp, SyntaxError, Position, Context, Conte
 			// 记录文件
 			this.file = file;
 			// 清空错误信息
-			this.details = null;
+			this.details = NULL;
 			// 初始化语句块
 			this.statements = statements;
 			
@@ -2099,10 +2099,10 @@ this.SyntaxParser = function(SyntaxRegExp, SyntaxError, Position, Context, Conte
 				}
 			);
 		},
-		position: null,
-		regexp: null,
-		statements: null,
-		tagsMap: null
+		position: NULL,
+		regexp: NULL,
+		statements: NULL,
+		tagsMap: NULL
 	});
 	
 	return SyntaxParser;
@@ -2211,7 +2211,7 @@ this.SyntaxParser = function(SyntaxRegExp, SyntaxError, Position, Context, Conte
 
 		// 报错
 		parser.error(context);
-		return null;
+		return NULL;
 	}
 );
 
@@ -2223,8 +2223,11 @@ this.SyntaxParser = function(SyntaxRegExp, SyntaxError, Position, Context, Conte
 	this.Expression.STATE_STATEMENT_ENDABLE
 );
 
-Rexjs.static(this);
+Rexjs.$$(this);
+
 }(
 	Rexjs,
+	// NULL
+	null,
 	Rexjs.forEach
 );

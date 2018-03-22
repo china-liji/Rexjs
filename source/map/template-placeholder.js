@@ -11,7 +11,7 @@ this.PlaceHolderExpression = function(){
 	};
 	PlaceHolderExpression = new Rexjs(PlaceHolderExpression, PartnerExpression);
 
-	PlaceHolderExpression.props({
+	PlaceHolderExpression.$({
 		/**
 		 * 提取并编译表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
@@ -61,7 +61,7 @@ this.PlaceHolderStatement = function(){
 	};
 	PlaceHolderStatement = new Rexjs(PlaceHolderStatement, ECMAScriptStatement);
 
-	PlaceHolderStatement.props({
+	PlaceHolderStatement.$({
 		/**
 		 * 捕获处理异常
 		 * @param {SyntaxParser} parser - 语法解析器
@@ -72,7 +72,7 @@ this.PlaceHolderStatement = function(){
 			if(context.content !== "}"){
 				// 报错
 				parser.error(context, ECMAScriptErrors.TEMPLATE);
-				return null;
+				return NULL;
 			}
 
 			// 跳出语句并设置最近表达式的 inner
@@ -101,7 +101,7 @@ this.OpenPlaceHolderTag = function(OpenBraceTag, PlaceHolderExpression, PlaceHol
 	};
 	OpenPlaceHolderTag = new Rexjs(OpenPlaceHolderTag, OpenBraceTag);
 
-	OpenPlaceHolderTag.props({
+	OpenPlaceHolderTag.$({
 		/**
 		 * 获取绑定的标签，该标签一般是用于语句的 try、catch 的返回值
 		 */
@@ -152,7 +152,7 @@ this.ClosePlaceHolderTag = function(CloseBraceTag){
 	};
 	ClosePlaceHolderTag = new Rexjs(ClosePlaceHolderTag, CloseBraceTag);
 
-	ClosePlaceHolderTag.props({
+	ClosePlaceHolderTag.$({
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
@@ -182,5 +182,5 @@ closePlaceHolderTag = new this.ClosePlaceHolderTag();
 }.call(
 	this,
 	// closePlaceHolderTag
-	null
+	NULL
 );

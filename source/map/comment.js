@@ -11,7 +11,7 @@ this.SingleLineCommentTag = function(){
 	};
 	SingleLineCommentTag = new Rexjs(SingleLineCommentTag, CommentTag);
 	
-	SingleLineCommentTag.props({
+	SingleLineCommentTag.$({
 		regexp: /\/\/.*/
 	});
 	
@@ -28,7 +28,7 @@ this.OpenMultiLineCommentTag = function(){
 	};
 	OpenMultiLineCommentTag = new Rexjs(OpenMultiLineCommentTag, CommentTag);
 	
-	OpenMultiLineCommentTag.props({
+	OpenMultiLineCommentTag.$({
 		regexp: /\/\*/,
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
@@ -54,7 +54,7 @@ this.OpenRestrictedCommentTag = function(OpenMultiLineCommentTag){
 	};
 	OpenRestrictedCommentTag = new Rexjs(OpenRestrictedCommentTag, OpenMultiLineCommentTag);
 
-	OpenRestrictedCommentTag.props({
+	OpenRestrictedCommentTag.$({
 		order: ECMAScriptOrders.OPEN_RESTRICTED_COMMENT,
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
@@ -81,7 +81,7 @@ this.CommentBreakTag = function(ExpressionBreakTag){
 	};
 	CommentBreakTag = new Rexjs(CommentBreakTag, ExpressionBreakTag);
 	
-	CommentBreakTag.props({
+	CommentBreakTag.$({
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
@@ -108,7 +108,7 @@ this.CommentContentTag = function(){
 	};
 	CommentContentTag = new Rexjs(CommentContentTag, CommentTag);
 	
-	CommentContentTag.props({
+	CommentContentTag.$({
 		// 防止与单行注释标签或多行注释起始标签冲突
 		order: ECMAScriptOrders.COMMENT_CONTENT,
 		regexp: /(?:[^*\r\n\u2028\u2029]|\*(?!\/))+/,
@@ -134,7 +134,7 @@ this.CloseMultiLineCommentTag = function(){
 	};
 	CloseMultiLineCommentTag = new Rexjs(CloseMultiLineCommentTag, CommentTag);
 	
-	CloseMultiLineCommentTag.props({
+	CloseMultiLineCommentTag.$({
 		regexp: /\*\//,
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
@@ -152,5 +152,5 @@ this.CloseMultiLineCommentTag = function(){
 	this,
 	this.CommentTag,
 	// tags
-	null
+	NULL
 );

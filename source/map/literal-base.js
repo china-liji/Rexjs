@@ -24,7 +24,7 @@ this.LiteralTag = function(LiteralExpression){
 	};
 	LiteralTag = new Rexjs(LiteralTag, SyntaxTag);
 	
-	LiteralTag.props({
+	LiteralTag.$({
 		$class: CLASS_EXPRESSION,
 		/**
 		 * 获取此标签接下来所需匹配的标签列表

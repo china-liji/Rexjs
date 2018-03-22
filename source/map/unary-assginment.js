@@ -14,7 +14,7 @@ this.PostfixUnaryExpression = function(UnaryExpression){
 	};
 	PostfixUnaryExpression = new Rexjs(PostfixUnaryExpression, UnaryExpression);
 	
-	PostfixUnaryExpression.props({
+	PostfixUnaryExpression.$({
 		/**
 		 * 提取表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
@@ -42,7 +42,7 @@ this.UnaryAssignmentStatement = function(UnaryStatement, error){
 	};
 	UnaryAssignmentStatement = new Rexjs(UnaryAssignmentStatement, UnaryStatement);
 	
-	UnaryAssignmentStatement.props({
+	UnaryAssignmentStatement.$({
 		/**
 		 * 捕获处理异常
 		 * @param {SyntaxParser} parser - 语法解析器
@@ -108,7 +108,7 @@ this.UnaryAssignmentTag = function(UnaryTag, UnaryExpression, UnaryAssignmentSta
 	};
 	UnaryAssignmentTag = new Rexjs(UnaryAssignmentTag, UnaryTag);
 
-	UnaryAssignmentTag.props({
+	UnaryAssignmentTag.$({
 		/**
 		 * 获取绑定的语句，一般在子类使用父类逻辑，而不使用父类语句的情况下使用
 		 * @param {Statements} statements - 该语句将要所处的语句块
@@ -163,7 +163,7 @@ this.PostfixUnaryAssignmentTag = function(UnaryAssignmentTag, PostfixUnaryExpres
 	};
 	PostfixUnaryAssignmentTag = new Rexjs(PostfixUnaryAssignmentTag, UnaryAssignmentTag);
 
-	PostfixUnaryAssignmentTag.props({
+	PostfixUnaryAssignmentTag.$({
 		$class: CLASS_EXPRESSION_CONTEXT,
 		/**
 		 * 获取绑定的表达式，一般在子类使用父类逻辑，而不使用父类表达式的情况下使用

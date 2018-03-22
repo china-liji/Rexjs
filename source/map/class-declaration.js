@@ -11,7 +11,7 @@ this.ClassDeclarationExpression = function(extractTo){
 	};
 	ClassDeclarationExpression = new Rexjs(ClassDeclarationExpression, ClassExpression);
 
-	ClassDeclarationExpression.props({
+	ClassDeclarationExpression.$({
 		/**
 		 * 提取表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
@@ -67,7 +67,7 @@ this.ClassDeclarationTag = function(ClassTag, ClassDeclarationExpression){
 	};
 	ClassDeclarationTag = new Rexjs(ClassDeclarationTag, ClassTag);
 
-	ClassDeclarationTag.props({
+	ClassDeclarationTag.$({
 		$class: CLASS_STATEMENT_BEGIN,
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
@@ -105,7 +105,7 @@ this.ClassVariableTag = function(visitor){
 	};
 	ClassVariableTag = new Rexjs(ClassVariableTag, ClassNameTag);
 
-	ClassVariableTag.props({
+	ClassVariableTag.$({
 		/**
 		 * 标签访问器
 		 * @param {SyntaxParser} parser - 语法解析器

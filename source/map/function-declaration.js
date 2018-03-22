@@ -13,7 +13,7 @@ this.FunctionDeclarationExpression = function(FunctionExpression){
 	};
 	FunctionDeclarationExpression = new Rexjs(FunctionDeclarationExpression, FunctionExpression);
 
-	FunctionDeclarationExpression.props({
+	FunctionDeclarationExpression.$({
 		/**
 		 * 获取表达式状态
 		 */
@@ -41,7 +41,7 @@ this.FunctionDeclarationTag = function(FunctionTag, FunctionDeclarationExpressio
 	};
 	FunctionDeclarationTag = new Rexjs(FunctionDeclarationTag, FunctionTag);
 
-	FunctionDeclarationTag.props({
+	FunctionDeclarationTag.$({
 		$class: CLASS_STATEMENT_BEGIN,
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
@@ -65,7 +65,7 @@ this.FunctionDeclarationTag = function(FunctionTag, FunctionDeclarationExpressio
 				// 如果处于当前闭包语句块层级，说明要变量提升
 				if(statements === statements.closure){
 					// 设置当前表达式为空表达式
-					statement.expression = new EmptyExpression(null);
+					statement.expression = new EmptyExpression(NULL);
 
 					(
 						// 设置当前语句
@@ -101,7 +101,7 @@ this.FunctionDeclarationStarTag = function(StarTag){
 	};
 	FunctionDeclarationStarTag = new Rexjs(FunctionDeclarationStarTag, StarTag);
 
-	FunctionDeclarationStarTag.props({
+	FunctionDeclarationStarTag.$({
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
@@ -126,7 +126,7 @@ this.FunctionVariableTag = function(visitor){
 	};
 	FunctionVariableTag = new Rexjs(FunctionVariableTag, FunctionNameTag);
 
-	FunctionVariableTag.props({
+	FunctionVariableTag.$({
 		order: ECMAScriptOrders.FUNCTION_VARIABLE,
 		/**
 		 * 标签访问器

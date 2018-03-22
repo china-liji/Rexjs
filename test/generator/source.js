@@ -342,6 +342,124 @@ checkGenerator(
 
 }();
 
+// label
+new function(){
+
+// label 与 block
+function *a1(){
+	var a = 1
+	label:
+	{
+		a += 2
+		break label;
+		a += 3
+	}
+
+	a += 4;
+	return a;
+}
+
+if(a1().next().value !== 7){
+	throw "label 与 block";
+}
+
+// label 与 for break
+function *a2(){
+	var a = 1
+	label:
+	for(;;){
+		a += 2
+		break label;
+		a += 3
+	}
+
+	a += 4;
+	return a;
+}
+
+if(a2().next().value !== 7){
+	throw "label 与 for break";
+}
+
+// label 与 for continue
+function *a3(){
+	var a = 1
+	label:
+	for(var i = 0;i < 3;i++){
+		a += i
+		continue label;
+		a += 3
+	}
+
+	a += 4;
+	return a;
+}
+
+if(a3().next().value !== 8){
+	throw "label 与 for continue";
+}
+
+// label 与 while continue
+function *a4(){
+	var a = 1, i = 0
+	label:
+	while(i < 3){
+		a += i++
+		continue label;
+		a += 3
+	}
+
+	a += 4;
+	return a;
+}
+
+if(a4().next().value !== 8){
+	throw "label 与 while continue";
+}
+
+// label 与 do while continue
+function *a5(){
+	var a = 1, i = 0
+	label:
+	do{
+		a += i++
+		continue label;
+		a += 3
+	}
+	while(i < 3)
+
+	a += 4;
+	return a;
+}
+
+if(a5().next().value !== 8){
+	throw "label 与 do while continue";
+}
+
+// label 与 switch
+function *a6(){
+	var a = 1
+	label:
+	{
+		switch(a){
+			case 1:
+				a+= 2;
+				break label;
+		}
+
+		a += 3;
+	}
+
+	a += 4;
+	return a;
+}
+
+if(a6().next().value !== 7){
+	throw "label 与 switch";
+}
+
+}();
+
 
 // switch
 new function(){

@@ -11,7 +11,7 @@ this.ThrowTag = function(TerminatedFlowTag){
 	};
 	ThrowTag = new Rexjs(ThrowTag, TerminatedFlowTag);
 	
-	ThrowTag.props({
+	ThrowTag.$({
 		$class: CLASS_STATEMENT_BEGIN,
 		regexp: /throw/,
 		/**
@@ -38,7 +38,7 @@ this.ThrowContextLineTerminatorTag = function(IllegalLineTerminatorTag){
 	};
 	ThrowContextLineTerminatorTag = new Rexjs(ThrowContextLineTerminatorTag, IllegalLineTerminatorTag);
 
-	ThrowContextLineTerminatorTag.props({
+	ThrowContextLineTerminatorTag.$({
 		/**
 		 * 标签访问器
 		 * @param {SyntaxParser} parser - 语法解析器

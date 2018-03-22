@@ -11,7 +11,7 @@ this.LetTag = function(VarTag){
 	};
 	LetTag = new Rexjs(LetTag, VarTag);
 
-	LetTag.props({
+	LetTag.$({
 		/**
 		 * 获取绑定的标签，该标签一般是用于语句的 try、catch 的返回值
 		 */
@@ -58,7 +58,7 @@ this.LocalVariableTag = function(collectTo){
 	};
 	LocalVariableTag = new Rexjs(LocalVariableTag, ClosureVariableTag);
 	
-	LocalVariableTag.props({
+	LocalVariableTag.$({
 		/**
 		 * 收集变量名
 		 * @param {SyntaxParser} parser - 语法解析器
@@ -96,7 +96,7 @@ this.LetDeclarationSeparatorTag = function(VarDeclarationSeparatorTag){
 	};
 	LetDeclarationSeparatorTag = new Rexjs(LetDeclarationSeparatorTag, VarDeclarationSeparatorTag);
 	
-	LetDeclarationSeparatorTag.props({
+	LetDeclarationSeparatorTag.$({
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
@@ -118,7 +118,7 @@ letDeclarationSeparatorTag = new this.LetDeclarationSeparatorTag();
 	this,
 	this.ClosureVariableTag,
 	// localVariableTag
-	null,
+	NULL,
 	// letDeclarationSeparatorTag
-	null
+	NULL
 );

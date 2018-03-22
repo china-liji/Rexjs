@@ -11,7 +11,7 @@ this.IdentifierPropertyNameExpression = function(LiteralPropertyNameExpression){
 	};
 	IdentifierPropertyNameExpression = new Rexjs(IdentifierPropertyNameExpression, LiteralPropertyNameExpression);
 
-	IdentifierPropertyNameExpression.props({
+	IdentifierPropertyNameExpression.$({
 		/**
 		 * 以定义属性的模式提取表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
@@ -51,7 +51,7 @@ this.ShorthandPropertyValueExpression = function(PropertyValueExpression){
 	};
 	ShorthandPropertyValueExpression = new Rexjs(ShorthandPropertyValueExpression, PropertyValueExpression);
 
-	ShorthandPropertyValueExpression.props({
+	ShorthandPropertyValueExpression.$({
 		/**
 		 * 提取并编译表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
@@ -101,7 +101,7 @@ this.IdentifierPropertyValueStatement = function(PropertyValueStatement, Shortha
 	};
 	IdentifierPropertyValueStatement = new Rexjs(IdentifierPropertyValueStatement, PropertyValueStatement);
 
-	IdentifierPropertyValueStatement.props({
+	IdentifierPropertyValueStatement.$({
 		/**
 		 * 捕获处理异常
 		 * @param {SyntaxParser} parser - 语法解析器
@@ -143,7 +143,7 @@ this.IdentifierPropertyNameTag = function(IdentifierTag, IdentifierPropertyNameE
 	};
 	IdentifierPropertyNameTag = new Rexjs(IdentifierPropertyNameTag, IdentifierTag);
 
-	IdentifierPropertyNameTag.props({
+	IdentifierPropertyNameTag.$({
 		order: ECMAScriptOrders.IDENTIFIER_PROPERTY_NAME,
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
@@ -186,7 +186,7 @@ this.IdentifierMethodNameTag = function(IdentifierPropertyNameTag){
 	};
 	IdentifierMethodNameTag = new Rexjs(IdentifierMethodNameTag, IdentifierPropertyNameTag);
 
-	IdentifierMethodNameTag.props({
+	IdentifierMethodNameTag.$({
 		regexp: new RegExp(IDENTIFIER_REGEXP_SOURCE),
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
@@ -212,7 +212,7 @@ this.WordPropertyNameTag = function(IdentifierPropertyNameTag, POSTFIX_REGEXP_SO
 	};
 	WordPropertyNameTag = new Rexjs(WordPropertyNameTag, IdentifierPropertyNameTag);
 
-	WordPropertyNameTag.static({
+	WordPropertyNameTag.$$({
 		/**
 		 * 编译该标识符的表达式
 		 * @param {String} identifier - 需提供的标识符，并该正则只匹配该标识符
@@ -222,7 +222,7 @@ this.WordPropertyNameTag = function(IdentifierPropertyNameTag, POSTFIX_REGEXP_SO
 		}
 	});
 
-	WordPropertyNameTag.props({
+	WordPropertyNameTag.$({
 		order: ECMAScriptOrders.WORD_PROPERTY_NAME,
 		regexp: /[A-Za-z]+/
 	});
@@ -244,7 +244,7 @@ this.KeywordPropertyNameTag = function(WordPropertyNameTag, IdentifierPropertyNa
 	};
 	KeywordPropertyNameTag = new Rexjs(KeywordPropertyNameTag, WordPropertyNameTag);
 
-	KeywordPropertyNameTag.props({
+	KeywordPropertyNameTag.$({
 		order: ECMAScriptOrders.KEYWORD_PROPERTY_NAME,
 		/**
 		 * 获取此标签接下来所需匹配的标签列表

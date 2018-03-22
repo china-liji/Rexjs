@@ -26,7 +26,7 @@ this.IdentifierTag = function(IdentifierExpression, RegExg, keywords, regexp){
 	};
 	IdentifierTag = new Rexjs(IdentifierTag, SyntaxTag);
 	
-	IdentifierTag.static({
+	IdentifierTag.$$({
 		/**
 		 * 编译该标识符的表达式
 		 * @param {String} exception - 会意外冲突的内容，则正则不会匹配到该内容
@@ -65,7 +65,7 @@ this.IdentifierTag = function(IdentifierExpression, RegExg, keywords, regexp){
 		}
 	});
 
-	IdentifierTag.props({
+	IdentifierTag.$({
 		$class: CLASS_EXPRESSION,
 		/**
 		 * 判断变量名，是否已被指定收集器收集，如果已被收集则报错
@@ -148,7 +148,7 @@ this.IdentifierTag = function(IdentifierExpression, RegExg, keywords, regexp){
 	RegExp,
 	// keywords
 	[
-		"break", "case", "catch", "class", "const", "continue",
+		"async", "await", "break", "case", "catch", "class", "const", "continue",
 		"debugger", "default", "delete", "do", "else", "enum", "export", "extends",
 		"false", "finally", "for", "function", "if", "import", "in(?!stanceof)", "instanceof",
 		"let", "new", "null", "return", "static", "super", "switch",
@@ -156,7 +156,7 @@ this.IdentifierTag = function(IdentifierExpression, RegExg, keywords, regexp){
 		"var", "void", "while", "with", "yield"
 	],
 	// regexp
-	null
+	NULL
 );
 
 }.call(

@@ -11,7 +11,7 @@ this.ClassIdentifierPropertyNameTag = function(IdentifierPropertyNameTag){
 	};
 	ClassIdentifierPropertyNameTag = new Rexjs(ClassIdentifierPropertyNameTag, IdentifierPropertyNameTag);
 
-	ClassIdentifierPropertyNameTag.props({
+	ClassIdentifierPropertyNameTag.$({
 		regexp: new RegExp(IDENTIFIER_REGEXP_SOURCE),
 		require: require
 	});
@@ -31,7 +31,7 @@ this.ClassNumberPropertyNameTag = function(NumberPropertyNameTag){
 	};
 	ClassNumberPropertyNameTag = new Rexjs(ClassNumberPropertyNameTag, NumberPropertyNameTag);
 
-	ClassNumberPropertyNameTag.props({
+	ClassNumberPropertyNameTag.$({
 		require: require
 	});
 
@@ -50,7 +50,7 @@ this.ClassBinaryNumberPropertyNameTag = function(BinaryNumberPropertyNameTag){
 	};
 	ClassBinaryNumberPropertyNameTag = new Rexjs(ClassBinaryNumberPropertyNameTag, BinaryNumberPropertyNameTag);
 
-	ClassBinaryNumberPropertyNameTag.props({
+	ClassBinaryNumberPropertyNameTag.$({
 		require: require
 	});
 
@@ -69,7 +69,7 @@ this.ClassOctalNumberPropertyNameTag = function(OctalNumberPropertyNameTag){
 	};
 	ClassOctalNumberPropertyNameTag = new Rexjs(ClassOctalNumberPropertyNameTag, OctalNumberPropertyNameTag);
 
-	ClassOctalNumberPropertyNameTag.props({
+	ClassOctalNumberPropertyNameTag.$({
 		require: require
 	});
 
@@ -88,7 +88,7 @@ this.ClassStringPropertyNameTag = function(StringPropertyNameTag){
 	};
 	ClassStringPropertyNameTag = new Rexjs(ClassStringPropertyNameTag, StringPropertyNameTag);
 
-	ClassStringPropertyNameTag.props({
+	ClassStringPropertyNameTag.$({
 		require: require
 	});
 
@@ -107,7 +107,7 @@ this.OpenClassComputedPropertyNameTag = function(OpenComputedPropertyNameTag){
 	};
 	OpenClassComputedPropertyNameTag = new Rexjs(OpenClassComputedPropertyNameTag, OpenComputedPropertyNameTag);
 
-	OpenClassComputedPropertyNameTag.props({
+	OpenClassComputedPropertyNameTag.$({
 		/**
 		 * 获取绑定的标签，该标签一般是用于语句的 try、catch 的返回值
 		 */
@@ -131,7 +131,7 @@ this.CloseClassComputedPropertyNameTag = function(CloseComputedPropertyNameTag){
 	};
 	CloseClassComputedPropertyNameTag = new Rexjs(CloseClassComputedPropertyNameTag, CloseComputedPropertyNameTag);
 
-	CloseClassComputedPropertyNameTag.props({
+	CloseClassComputedPropertyNameTag.$({
 		require: require
 	});
 
@@ -145,7 +145,7 @@ closeClassComputedPropertyNameTag = new this.CloseClassComputedPropertyNameTag()
 }.call(
 	this,
 	// closeClassComputedPropertyNameTag
-	null,
+	NULL,
 	// require
 	function(tagsMap){
 		return tagsMap.classIdentifierPropertyNameContextTags;

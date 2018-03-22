@@ -142,14 +142,14 @@ this.bind = Function.bind;
 this.call = Function.call;
 this.hasOwnProperty = Object.prototype.hasOwnProperty;
 
-this.static = function(getOwnPropertyDescriptor){
+this.$$ = function(getOwnPropertyDescriptor){
 	/**
 	 * 将一个或多个静态属性添加到该类，并/或修改现有属性的特性
-	 * @param {Object} props - 包含一个或多个属性的键值对
+	 * @param {Object} staticProps - 包含一个或多个属性的键值对
 	 */
-	return function(props){
-		for(var name in props){
-			var descriptor = getOwnPropertyDescriptor(props, name);
+	return function(staticProps){
+		for(var name in staticProps){
+			var descriptor = getOwnPropertyDescriptor(staticProps, name);
 
 			descriptor.enumerable = false;
 
@@ -160,16 +160,16 @@ this.static = function(getOwnPropertyDescriptor){
 	Object.getOwnPropertyDescriptor
 );
 
-this.props = function(staticMethod){
+this.$ = function($$){
 	/**
 	 * 将一个或多个属性添加到该类，并/或修改现有属性的特性
 	 * @param {Object} props - 包含一个或多个属性的键值对
 	 */
 	return function(props){
-		staticMethod.call(this.prototype, props);
+		$$.call(this.prototype, props);
 	};
 }(
-	this.static
+	this.$$
 );
 
 this.toString = function(){
@@ -185,7 +185,7 @@ this.toString = function(){
 	);
 }();
 
-this.static.call(__proto__, this);
+this.$$.call(__proto__, this);
 
 }(
 	Function,
@@ -231,7 +231,7 @@ this.valueOf = function(){
 	};
 }();
 
-Rexjs.static.call(Rexjs.prototype, this);
+Rexjs.$$.call(Rexjs.prototype, this);
 
 }(
 	// objectPrototype
@@ -400,7 +400,7 @@ this.forEach(
 	Object.getPrototypeOf
 );
 // 基础依赖类
-new function(Rexjs, URL_REGEXP, DIR_SEPARATOR_REGEXP, encodeURI, getUrlInfo){
+new function(Rexjs, URL_REGEXP, DIR_SEPARATOR_REGEXP, NULL, encodeURI, getUrlInfo){
 
 this.List = function(Array, Object, toArray){
 	/**
@@ -409,7 +409,7 @@ this.List = function(Array, Object, toArray){
 	function List(_rest){};
 	List = new Rexjs(List);
 
-	List.props({
+	List.$({
 		/**
 		 * 合并另外一个数组，并返回合并后的新数组
 		 * @param {Array} list - 另一个集合
@@ -474,7 +474,7 @@ this.List = function(Array, Object, toArray){
 
 				props[name] = this[name];
 
-				List.props(props);
+				List.$(props);
 			},
 			Array.prototype
 		);
@@ -493,8 +493,8 @@ this.URL = function(toString, parse){
 	 * @param {String} _baseURLstring - 基准地址
 	 */
 	function URL(urlString, _baseURLstring){
-		// 如果提供的是 null 或 undefined
-		if(urlString == null){
+		// 如果提供的是 NULL 或 undefined
+		if(urlString == NULL){
 			return;
 		}
 
@@ -520,7 +520,7 @@ this.URL = function(toString, parse){
 	};
 	URL = new Rexjs(URL);
 
-	URL.props({
+	URL.$({
 		ext: "",
 		dirname : "",
 		filename: "",
@@ -609,7 +609,7 @@ this.URL = function(toString, parse){
 		// 如果不是字符串
 		if(typeof urlString !== "string"){
 			// 如果是 undefined 或者 null，则为空字符串，否则为 toString 的返回值
-			urlString = urlString == null ? "" : urlString.toString();
+			urlString = urlString == NULL ? "" : urlString.toString();
 		}
 		
 		// 返回转码后的字符串
@@ -753,20 +753,22 @@ this.URL = function(toString, parse){
 	}
 );
 
-Rexjs.static(this);
+Rexjs.$$(this);
 }(
 	Rexjs,
 	// URL_REGEXP
-	/^(?:([^:/?#.]+:)(?:\/+(?:([^/?#]*)@)?([\w\d\-\u0100-\uffff.%]*)(?::([0-9]+))?)?)?(?:([^?#]+?)([^\/]+?(\.[^.?#\/]+))?)?(?:(\?[^#]*))?(?:(#.*))?$/,
+	/^(?:([^:/?#.]+:)(?:\/+(?:([^/?#]*)@)?([\w\d\-\u0100-\uffff.%]*)(?::([0-9]+))?\/?)?)?(?:([^?#]*\/)?([^\/]+?(\.[^.?#\/]+))?)?(?:(\?[^#]*))?(?:(#.*))?$/,
 	// DIR_SEPARATOR_REGEXP
 	/\/|\\/g,
+	// NULL
+	null,
 	encodeURI,
 	// getUrlInfo
 	function(result, index){
 		return result[index] || "";
 	}
 );
-new function(Rexjs, URL, Module, global){
+new function(Rexjs, URL, Module, NULL, global){
 
 // 迭代器相关
 !function(){
@@ -781,7 +783,7 @@ this.IteratorIndex = function(){
 	};
 	IteratorIndex = new Rexjs(IteratorIndex);
 
-	IteratorIndex.props({
+	IteratorIndex.$({
 		current: 0,
 		/**
 		 * 索引增加
@@ -810,7 +812,7 @@ this.IteratorResult = function(){
 	};
 	IteratorResult = new Rexjs(IteratorResult);
 
-	IteratorResult.props({
+	IteratorResult.$({
 		value: void 0,
 		done: false
 	});
@@ -826,8 +828,8 @@ this.Iterator = function(IteratorIndex, IteratorResult){
 	function Iterator(iterable){
 		block:
 		{
-			// 如果是 null 或 undefined
-			if(iterable == null){
+			// 如果是 NULL 或 undefined
+			if(iterable == NULL){
 				break block;
 			}
 
@@ -856,7 +858,7 @@ this.Iterator = function(IteratorIndex, IteratorResult){
 	};
 	Iterator = new Rexjs(Iterator);
 
-	Iterator.props({
+	Iterator.$({
 		/**
 		 * 迭代器关闭，并返回带有指定值的结果
 		 * @param {*} value - 指定的结果值
@@ -875,8 +877,8 @@ this.Iterator = function(IteratorIndex, IteratorResult){
 
 			return index.current >= index.max;
 		},
-		index: null,
-		iterable: null,
+		index: NULL,
+		iterable: NULL,
 		/**
 		 * 获取下一个迭代结果
 		 */
@@ -920,9 +922,9 @@ this.FunctionIterator = function(Iterator, IteratorResult, isNaN, toArray){
 	};
 	FunctionIterator = new Rexjs(FunctionIterator, Iterator);
 
-	FunctionIterator.props({
-		boundThis: null,
-		boundArguments: null,
+	FunctionIterator.$({
+		boundThis: NULL,
+		boundArguments: NULL,
 		/**
 		 * 迭代器关闭，并返回带有指定值的结果
 		 * @param {*} value - 指定的结果值
@@ -947,10 +949,14 @@ this.FunctionIterator = function(Iterator, IteratorResult, isNaN, toArray){
 			// 索引交给函数逻辑去处理，这里只需返回结果
 			return this.result;
 		},
+		/**
+		 * 监视异常
+		 * @param {Number} exceptionIndex - 异常位于迭代的索引值
+		 */
 		observe: function(exceptionIndex){
 			this.observers.push(exceptionIndex);
 		},
-		observers: null,
+		observers: NULL,
 		/**
 		 * 获取当前迭代结果
 		 */
@@ -1005,30 +1011,32 @@ this.Generator = function(Iterator){
 	 */
 	function Generator(iterator){
 		// 初始化迭代器
-		this.iterator = iterator instanceof Iterator ? iterator : new Iterator(iterator);
+		this.$iterator = iterator instanceof Iterator ? iterator : new Iterator(iterator);
 	};
 	Generator = new Rexjs(Generator);
 
-	Generator.props({
-		iterator: null,
+	Generator.$({
+		$iterator: NULL,
 		/**
 		 * 获取下一个迭代结果
 		 */
 		next: function(){
-			return this.iterator.next;
+			return this.$iterator.next;
 		},
 		/**
 		 * 结束迭代，并返回带有指定值的结果
 		 * @param {*} value - 指定的结果值
 		 */
 		return: function(value){
-			return this.iterator.close(value);
+			return this.$iterator.close(value);
 		},
 		/**
 		 * 抛出错误
 		 * @param {Error} error - 错误信息
 		 */
 		throw: function(error){
+			// 结束迭代
+			this.return(NULL);
 			// 抛出错误
 			throw error;
 		}
@@ -1097,11 +1105,11 @@ this.ClassProperty = function(){
 	};
 	ClassProperty = new Rexjs(ClassProperty);
 
-	ClassProperty.props({
+	ClassProperty.$({
 		name: "",
 		static: false,
 		type: "value",
-		value: null
+		value: NULL
 	});
 
 	return ClassProperty;
@@ -1119,7 +1127,7 @@ this.StaticProperty = function(ClassProperty){
 	};
 	StaticProperty = new Rexjs(StaticProperty, ClassProperty);
 
-	StaticProperty.props({
+	StaticProperty.$({
 		static: true
 	});
 
@@ -1135,7 +1143,7 @@ this.Super = function(getPropertyDescriptor){
 	function Super(){};
 	Super = new Rexjs(Super);
 
-	Super.static({
+	Super.$$({
 		/**
 		 * 调用父类的构造函数
 		 * @param {Rexjs} classPrototype - 类的原型链
@@ -1177,7 +1185,8 @@ this.Super = function(getPropertyDescriptor){
 				);
 			}
 
-			return void 0;
+			// return undefined
+			return;
 		},
 		/**
 		 * 获取父类构造函数执行结果所返回的、有效的 this
@@ -1234,7 +1243,7 @@ this.Super = function(getPropertyDescriptor){
 			superPrototype = getPrototypeOf(superPrototype);
 		}
 
-		return null;
+		return NULL;
 	}
 );
 
@@ -1245,7 +1254,7 @@ this.Class = function(ClassProperty, defineProperty){
 	function Class(){};
 	Class = new Rexjs(Class);
 
-	Class.static({
+	Class.$$({
 		/**
 		 * 创建类
 		 * @param {Rexjs} SuperClass - 所需继承的父类
@@ -1311,7 +1320,248 @@ this.Class = function(ClassProperty, defineProperty){
 	Object.getOwnPropertyDescriptor,
 	Object.hasOwnProperty,
 	// getSuperOf
-	null
+	NULL
+);
+
+
+// 异步函数相关
+!function(Generator, Promise, getPromise){
+
+getPromise = function(){
+	/**
+	 * 获取异步方法内的 promise
+	 * @param {AsyncGenerator} asyncGenerator - 异步生成器
+	 * @param {Function} method - 生成器父类的方法
+	 * @param {*} arg - 父类方法的参数
+	 * @param {Function} _res - 所关联的 promise 函数成功回调
+	 * @param {Function} _rej - 所关联的 promise 函数失败回调
+	 */
+	return function(asyncGenerator, method, arg, _res, _rej){
+		var $stack = asyncGenerator.$stack;
+
+		// 如果存在 $stack，说明被某个 promise 暂停了
+		if($stack){
+			// 返回新的 promise
+			return new Promise(function(res, rej){
+				// 添加堆栈
+				$stack.push(function(){
+					// 获取 promise
+					getPromise(asyncGenerator, method, arg, res, rej);
+				});
+			});
+		}
+
+		var promise, returnValue, error;
+
+		try {
+			// 执行父类方法
+			returnValue = method.call(asyncGenerator, arg);
+		}
+		catch(e){
+			// 记录错误
+			error = e;
+		}
+
+		// 如果 有错误 或者 返回值不是 Promise 实例
+		if(error || returnValue.value instanceof Promise === false){
+			// 如果参数是 3 个
+			if(arguments.length === 3){
+				// 实例化 promise
+				promise = new Promise(function(res, rej){
+					// 记录 res
+					_res = res;
+					// 记录 rej
+					_rej = rej;
+				});
+			}
+
+			// 执行回调
+			error ? _rej(error) : _res(returnValue);
+			return promise;
+		}
+
+		// 初始化暂停时所用的堆栈
+		var $stack = asyncGenerator.$stack = [];
+
+		return (
+			Promise
+				.race([
+					returnValue.value
+				])
+				.then(function(v){
+					// 重置值
+					returnValue.value = v;
+
+					// 如果 _res 存在
+					if(_res){
+						// 执行方法
+						_res(returnValue);
+					}
+
+					return returnValue;
+				})
+				.catch(function(error){
+					// 如果 _rej 存在
+					if(_rej){
+						// 结束迭代
+						asyncGenerator.return(NULL);
+						// 执行方法
+						_rej(error);
+						return;
+					}
+
+					// 抛出错误
+					asyncGenerator.throw(error);
+				})
+				.finally(function(){
+					// 清空堆栈
+					asyncGenerator.$stack = NULL;
+
+					// 遍历堆栈
+					$stack.forEach(function(callback){
+						// 执行方法
+						callback();
+					});
+				})
+		);
+	}
+}();
+
+this.AsyncGenerator = function(console, nextMethod, returnMethod){
+	/**
+	 * 异步生成器
+	 * @param {Iterator, *} iterator - 迭代器
+	 */
+	function AsyncGenerator(iterator){
+		Generator.call(this, iterator);
+	};
+	AsyncGenerator = new Rexjs(AsyncGenerator, Generator);
+
+	AsyncGenerator.$({
+		$stack: NULL,
+		/**
+		 * 获取下一个迭代结果
+		 */
+		next: function(){
+			return getPromise(this, nextMethod, void 0);
+		},
+		/**
+		 * 结束迭代，并返回带有指定值的结果
+		 * @param {*} value - 指定的结果值
+		 */
+		return: function(value){
+			return getPromise(this, returnMethod, value);
+		},
+		/**
+		 * 抛出错误
+		 * @param {Error} error - 错误信息
+		 */
+		throw: function(error){
+			// 结束迭代
+			returnMethod.call(this, NULL);
+
+			// 返回 promise
+			return new Promise(function(res, rej){
+				rej(error);
+			});
+		}
+	});
+
+	return AsyncGenerator;
+}(
+	console,
+	Generator.prototype.next,
+	Generator.prototype.return
+);
+
+this.AsyncFunction = function(AsyncGenerator, run){
+	/**
+	 * 异步函数
+	 */
+	function AsyncFunction(){
+		throw 'Do not use the "AsyncFunction" constructor.';
+	};
+	AsyncFunction = new Rexjs(AsyncFunction);
+
+	AsyncFunction.$$({
+		/**
+		 * 将函数异步化
+		 * @param {Function} func - 需要异步化的函数
+		 * @param {Boolean} _isGenerator - 提供的函数是否为生成器
+		 */
+		async: function(func, _isGenerator){
+			return function AsyncFunction(){
+				var generator = func.apply(this, arguments);
+
+				// 如果是生成器
+				if(_isGenerator){
+					return new AsyncGenerator(generator.$iterator);
+				}
+
+				// 返回 Promise 实例
+				return new Promise(function(res, rej){
+					try {
+						run(generator, res, rej, run);
+					}
+					// 如果捕获到了错误
+					catch(e){
+						rej(e);
+					}
+				});
+			};
+		},
+		/**
+		 * 绑定 Promise 构造函数
+		 * @param {Function} constructor - Promise 构造函数
+		 */
+		promise: function(constructor){
+			Promise = constructor;
+		}
+	});
+
+	return AsyncFunction;
+}(
+	this.AsyncGenerator,
+	// run
+	function(generator, res, rej, callee){
+		var result, value;
+
+		do {
+			result = generator.next();
+			value = result.value;
+
+			// 如果是 promise
+			if(value instanceof Promise){
+				Promise
+					.race([value])
+					.then(function(){
+						// 成功后，继续执行 generator
+						callee(generator, res, rej, callee);
+					})
+					.catch(function(error){
+						// 结束迭代
+						generator.return(NULL);
+						// 失败后的处理
+						rej(error);
+					});
+
+				return;
+			}
+		}
+		// 只要没完成
+		while(!result.done);
+
+		// 输出结果
+		res(result.value);
+	}
+);
+
+}.call(
+	this,
+	this.Generator,
+	global.Promise,
+	// getPromise
+	NULL
 );
 
 
@@ -1325,7 +1575,7 @@ this.Function = function(bind, empty){
 	function Function(){};
 	Function = new Rexjs(Function);
 
-	Function.static({
+	Function.$$({
 		/**
 		 * 强制转换为函数
 		 * @param {*} object - 函数属性所处的对象
@@ -1366,7 +1616,7 @@ this.Object = function(){
 	function Object(){};
 	Object = new Rexjs(Object);
 
-	Object.static({
+	Object.$$({
 		/**
 		 * 获取对象可枚举的属性的属性名集合
 		 * @param {*} object - 需要获取属性名的对象
@@ -1398,8 +1648,8 @@ this.ObjectDestructuringTarget = function(getOwnPropertyNames, getOwnPropertyDes
 	};
 	ObjectDestructuringTarget = new Rexjs(ObjectDestructuringTarget);
 
-	ObjectDestructuringTarget.props({
-		destructed: null,
+	ObjectDestructuringTarget.$({
+		destructed: NULL,
 		/**
 		 * 获取解构对象指定名称的属性
 		 * @param {String} name - 解构属性名称
@@ -1411,7 +1661,7 @@ this.ObjectDestructuringTarget = function(getOwnPropertyNames, getOwnPropertyDes
 			// 返回值
 			return this.origin[name];
 		},
-		origin: null,
+		origin: NULL,
 		/**
 		 * 获取没有记录过的其他属性
 		 */
@@ -1455,7 +1705,7 @@ this.SpreadItem = function(forEach, push){
 	};
 	SpreadItem = new Rexjs(SpreadItem);
 
-	SpreadItem.static({
+	SpreadItem.$$({
 		/**
 		 * 给对象赋值，即将另一个对象合并
 		 * @param {Object} object - 需要赋值的对象
@@ -1493,7 +1743,7 @@ this.SpreadItem = function(forEach, push){
 					// 添加单项
 					array.push(item);
 				},
-				null,
+				NULL,
 				true
 			);
 
@@ -1508,8 +1758,8 @@ this.SpreadItem = function(forEach, push){
 		}
 	});
 
-	SpreadItem.props({
-		value: null
+	SpreadItem.$({
+		value: NULL
 	});
 
 	return SpreadItem;
@@ -1528,7 +1778,7 @@ this.SwitchCondition = function(){
 	};
 	SwitchCondition = new Rexjs(SwitchCondition);
 
-	SwitchCondition.props({
+	SwitchCondition.$({
 		/**
 		 * 检测所提供的值是否与条件值一致
 		 * @param {*} value - 所需检测的值
@@ -1563,7 +1813,7 @@ this.SwitchCondition = function(){
 			return true;
 		},
 		matched: false,
-		value: null
+		value: NULL
 	});
 
 	return SwitchCondition;
@@ -1584,7 +1834,7 @@ this.ModuleCompiler = function(){
 	function ModuleCompiler(){};
 	ModuleCompiler = new Rexjs(ModuleCompiler);
 
-	ModuleCompiler.props({
+	ModuleCompiler.$({
 		/**
 		 * 编译模块
 		 * @param {Module} module - 编译的模块
@@ -1593,7 +1843,7 @@ this.ModuleCompiler = function(){
 			this.deps = [];
 			this.result = module.origin;
 		},
-		deps: null,
+		deps: NULL,
 		/**
 		 * 执行模块编译结果
 		 * @param {Module} module - 编译的模块
@@ -1607,7 +1857,7 @@ this.ModuleCompiler = function(){
 				Module.export("default", compiler.result);
 			});
 		},
-		result: null
+		result: NULL
 	});
 
 	return ModuleCompiler;
@@ -1622,7 +1872,7 @@ this.JavaScriptCompiler = function(ModuleCompiler, ECMAScriptParser, File, nativ
 	};
 	JavaScriptCompiler = new Rexjs(JavaScriptCompiler, ModuleCompiler);
 
-	JavaScriptCompiler.props({
+	JavaScriptCompiler.$({
 		/**
 		 * 编译模块
 		 * @param {Module} module - 编译的模块
@@ -1669,7 +1919,7 @@ this.JSONCompiler = function(ModuleCompiler, parse){
 	};
 	JSONCompiler = new Rexjs(JSONCompiler, ModuleCompiler);
 
-	JSONCompiler.props({
+	JSONCompiler.$({
 		/**
 		 * 编译模块
 		 * @param {Module} module - 编译的模块
@@ -1720,7 +1970,7 @@ this.Module = Module = function(ModuleCompiler, cache, stack, create, defineProp
 			return module;
 		}
 
-		this.exports = create(null);
+		this.exports = create(NULL);
 		this.imports = [];
 		this.listeners = [];
 		this.name = moduleName;
@@ -1749,7 +1999,7 @@ this.Module = Module = function(ModuleCompiler, cache, stack, create, defineProp
 	};
 	Module = new Rexjs(Module);
 
-	Module.static({
+	Module.$$({
 		STATUS_NONE: STATUS_NONE,
 		STATUS_LOADING: STATUS_LOADING,
 		STATUS_COMPILING: STATUS_COMPILING,
@@ -1877,8 +2127,8 @@ this.Module = Module = function(ModuleCompiler, cache, stack, create, defineProp
 		}
 	});
 
-	Module.props({
-		compiler: null,
+	Module.$({
+		compiler: NULL,
 		/**
 		 * 判断该模块是否已经加载并执行完成
 		 */
@@ -1897,7 +2147,7 @@ this.Module = Module = function(ModuleCompiler, cache, stack, create, defineProp
 		get error(){
 			return (this.status & STATUS_ERROR) === STATUS_ERROR;
 		},
-		exports: null,
+		exports: NULL,
 		/**
 		 * 执行编译后的代码
 		 */
@@ -1938,7 +2188,7 @@ this.Module = Module = function(ModuleCompiler, cache, stack, create, defineProp
 			this.compiler.exec(this);
 			return true;
 		},
-		imports: null,
+		imports: NULL,
 		/**
 		 * 监听模块加载进度
 		 * @param {Function} listener - 需要添加的监听器
@@ -1954,7 +2204,7 @@ this.Module = Module = function(ModuleCompiler, cache, stack, create, defineProp
 			// 添加到等待列表中
 			this.listeners.push(listener);
 		},
-		listeners: null,
+		listeners: NULL,
 		/**
 		 * 加载当前模块
 		 * @param {Function} loader - 模块加载函数
@@ -1978,7 +2228,7 @@ this.Module = Module = function(ModuleCompiler, cache, stack, create, defineProp
 			// 触发依赖该模块的其他模块的执行方法
 			trigger(this);
 		},
-		name: null,
+		name: NULL,
 		origin: "",
 		/**
 		 * 代码准备就绪处理函数
@@ -2004,7 +2254,7 @@ this.Module = Module = function(ModuleCompiler, cache, stack, create, defineProp
 			// 遍历依赖
 			compiler.deps.forEach(
 				function(dep){
-					var href = moduleReady.parseName(dep, name.href).href, module = cache.hasOwnProperty(href) ? cache[href] : new Module(href, null, _sync);
+					var href = moduleReady.parseName(dep, name.href).href, module = cache.hasOwnProperty(href) ? cache[href] : new Module(href, NULL, _sync);
 
 					// 如果是重复导入
 					if(imports.indexOf(module) > -1){
@@ -2033,7 +2283,7 @@ this.Module = Module = function(ModuleCompiler, cache, stack, create, defineProp
 			this.eval();
 		},
 		status: STATUS_NONE,
-		targets: null
+		targets: NULL
 	});
 
 	return Module;
@@ -2082,7 +2332,7 @@ this.ModuleReady = function(JavaScriptCompiler, JSONCompiler, throwError){
 	};
 	ModuleReady = new Rexjs(ModuleReady);
 
-	ModuleReady.static({
+	ModuleReady.$$({
 		/**
 		 * 获取当前模块系统准备就绪实例
 		 */
@@ -2091,8 +2341,8 @@ this.ModuleReady = function(JavaScriptCompiler, JSONCompiler, throwError){
 		}
 	});
 
-	ModuleReady.props({
-		compilers: null,
+	ModuleReady.$({
+		compilers: NULL,
 		/**
 		 * 解析模块名称
 		 */
@@ -2113,7 +2363,7 @@ this.ModuleReady = function(JavaScriptCompiler, JSONCompiler, throwError){
 	this.JSONCompiler,
 	// throwError
 	function(method){
-		throw "应该在创建 ModuleReady 的子类时，重新定义该方法：" + method;
+		throw 'Please redefine this method "' + method + '"when you extend "Rexjs.ModuleReady" class.';
 	}
 );
 
@@ -2136,7 +2386,7 @@ new this.ModuleReady();
 	// STATUS_ERROR
 	parseInt(1010000, 2),
 	// moduleReady
-	null,
+	NULL,
 	// trigger
 	function(module, _progress){
 		var listeners = module.listeners;
@@ -2164,16 +2414,18 @@ new this.ModuleReady();
 	}
 );
 
-Rexjs.static(this);
+Rexjs.$$(this);
 }(
 	Rexjs,
 	Rexjs.URL,
 	// Module
 	null,
+	// NULL
+	null,
 	// global
 	Function("return this")()
 );
-new function(Rexjs, Module, document, forEach){
+new function(Rexjs, Module, NULL, document, forEach){
 
 // 浏览器环境中的模块编译器相关
 !function(ModuleCompiler){
@@ -2187,7 +2439,7 @@ this.HTMLCompiler = function(URL_PREFIX_REGEXP){
 	};
 	HTMLCompiler = new Rexjs(HTMLCompiler, ModuleCompiler);
 
-	HTMLCompiler.props({
+	HTMLCompiler.$({
 		/**
 		 * 编译模块
 		 * @param {Module} module - 编译的模块
@@ -2238,7 +2490,7 @@ this.CSSSelectorMap = function(CSS_SELECTOR_REGEXP, SEPARATOR_REGEXP, cache, pos
 	};
 	CSSSelectorMap = new Rexjs(CSSSelectorMap);
 
-	CSSSelectorMap.static({
+	CSSSelectorMap.$$({
 		/**
 		 * 根据命名空间地址获取映射表，如果没有则创建一个并返回
 		 * @param {String} namespaceURI - 映射表命名空间地址
@@ -2254,7 +2506,7 @@ this.CSSSelectorMap = function(CSS_SELECTOR_REGEXP, SEPARATOR_REGEXP, cache, pos
 		}
 	});
 
-	CSSSelectorMap.props({
+	CSSSelectorMap.$({
 		/**
 		 * 合并其他选择器映射表
 		 * @param {Array.<CSSSelectorMap>} mapList - 其他的选择器映射表
@@ -2347,7 +2599,7 @@ this.CSSCompiler = function(CSSSelectorMap, CSSRule, CSS_URL_REGEXP, enableSelec
 	};
 	CSSCompiler = new Rexjs(CSSCompiler, ModuleCompiler);
 
-	CSSCompiler.static({
+	CSSCompiler.$$({
 		/**
 		 * 禁止使用选择器解析器
 		 */
@@ -2356,7 +2608,7 @@ this.CSSCompiler = function(CSSSelectorMap, CSSRule, CSS_URL_REGEXP, enableSelec
 		}
 	});
 
-	CSSCompiler.props({
+	CSSCompiler.$({
 		/**
 		 * 编译模块
 		 * @param {Module} module - 编译的模块
@@ -2501,8 +2753,8 @@ this.CSSCompiler = function(CSSSelectorMap, CSSRule, CSS_URL_REGEXP, enableSelec
 				Module.export("default", selectorMap);
 			});
 		},
-		selectorMap: null,
-		style: null
+		selectorMap: NULL,
+		style: NULL
 	});
 
 	return CSSCompiler;
@@ -2565,7 +2817,7 @@ this.BrowserReady = function(HTMLCompiler, CSSCompiler, XMLHttpRequest, BASE_URL
 	};
 	BrowserReady = new Rexjs(BrowserReady, ModuleReady);
 
-	BrowserReady.props({
+	BrowserReady.$({
 		/**
 		 * 解析模块名称
 		 * @param {String} moduleName - 模块名称
@@ -2645,7 +2897,7 @@ this.BrowserReady = function(HTMLCompiler, CSSCompiler, XMLHttpRequest, BASE_URL
 				// 初始化内联模块
 				new Module("inline-script-" + count++ +".js", script.textContent);
 			},
-			null,
+			NULL,
 			true
 		);
 	}
@@ -2661,10 +2913,13 @@ this.BrowserReady = function(HTMLCompiler, CSSCompiler, XMLHttpRequest, BASE_URL
 );
 
 new this.BrowserReady();
-Rexjs.static(this);
+Rexjs.$$(this);
+
 }(
 	Rexjs,
 	Rexjs.Module,
+	// NULL
+	null,
 	document,
 	Rexjs.forEach
 );

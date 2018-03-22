@@ -11,7 +11,7 @@ this.IdentifierDeclarationPropertyNameStatement = function(both){
 	};
 	IdentifierDeclarationPropertyNameStatement = new Rexjs(IdentifierDeclarationPropertyNameStatement, ECMAScriptStatement);
 
-	IdentifierDeclarationPropertyNameStatement.props({
+	IdentifierDeclarationPropertyNameStatement.$({
 		/**
 		 * 捕获处理异常
 		 * @param {SyntaxParser} parser - 语法解析器
@@ -60,7 +60,7 @@ this.IdentifierDeclarationPropertyNameStatement = function(both){
 			statement.target.bound = new PropertyDestructuringItemExpression(expression);
 		}
 
-		return null;
+		return NULL;
 	}
 );
 
@@ -74,7 +74,7 @@ this.IdentifierDeclarationPropertyNameTag = function(IdentifierDeclarationProper
 	};
 	IdentifierDeclarationPropertyNameTag = new Rexjs(IdentifierDeclarationPropertyNameTag, IdentifierPropertyNameTag);
 
-	IdentifierDeclarationPropertyNameTag.props({
+	IdentifierDeclarationPropertyNameTag.$({
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
@@ -114,7 +114,7 @@ this.NumberDeclarationPropertyNameTag = function(NumberPropertyNameTag){
 	};
 	NumberDeclarationPropertyNameTag = new Rexjs(NumberDeclarationPropertyNameTag, NumberPropertyNameTag);
 
-	NumberDeclarationPropertyNameTag.props({
+	NumberDeclarationPropertyNameTag.$({
 		require: require
 	});
 
@@ -133,7 +133,7 @@ this.BinaryNumberDeclarationPropertyNameTag = function(BinaryNumberPropertyNameT
 	};
 	BinaryNumberDeclarationPropertyNameTag = new Rexjs(BinaryNumberDeclarationPropertyNameTag, BinaryNumberPropertyNameTag);
 
-	BinaryNumberDeclarationPropertyNameTag.props({
+	BinaryNumberDeclarationPropertyNameTag.$({
 		require: require
 	});
 
@@ -152,7 +152,7 @@ this.OctalNumberDeclarationPropertyNameTag = function(OctalNumberPropertyNameTag
 	};
 	OctalNumberDeclarationPropertyNameTag = new Rexjs(OctalNumberDeclarationPropertyNameTag, OctalNumberPropertyNameTag);
 
-	OctalNumberDeclarationPropertyNameTag.props({
+	OctalNumberDeclarationPropertyNameTag.$({
 		require: require
 	});
 
@@ -171,7 +171,7 @@ this.KeywordDeclarationPropertyNameTag = function(KeywordPropertyNameTag){
 	};
 	KeywordDeclarationPropertyNameTag = new Rexjs(KeywordDeclarationPropertyNameTag, KeywordPropertyNameTag);
 
-	KeywordDeclarationPropertyNameTag.props({
+	KeywordDeclarationPropertyNameTag.$({
 		require: require
 	});
 
@@ -190,7 +190,7 @@ this.StringDeclarationPropertyNameTag = function(StringPropertyNameTag){
 	};
 	StringDeclarationPropertyNameTag = new Rexjs(StringDeclarationPropertyNameTag, StringPropertyNameTag);
 
-	StringDeclarationPropertyNameTag.props({
+	StringDeclarationPropertyNameTag.$({
 		require: require
 	});
 
@@ -209,7 +209,7 @@ this.OpenComputedDeclarationPropertyNameTag = function(OpenComputedPropertyNameT
 	};
 	OpenComputedDeclarationPropertyNameTag = new Rexjs(OpenComputedDeclarationPropertyNameTag, OpenComputedPropertyNameTag);
 
-	OpenComputedDeclarationPropertyNameTag.props({
+	OpenComputedDeclarationPropertyNameTag.$({
 		/**
 		 * 获取绑定的标签，该标签一般是用于语句的 try、catch 的返回值
 		 */
@@ -233,7 +233,7 @@ this.CloseComputedDeclarationPropertyNameTag = function(CloseComputedPropertyNam
 	};
 	CloseComputedDeclarationPropertyNameTag = new Rexjs(CloseComputedDeclarationPropertyNameTag, CloseComputedPropertyNameTag);
 
-	CloseComputedDeclarationPropertyNameTag.props({
+	CloseComputedDeclarationPropertyNameTag.$({
 		require: require
 	});
 
@@ -249,7 +249,7 @@ closeComputedDeclarationPropertyNameTag = new this.CloseComputedDeclarationPrope
 	this.IdentifierPropertyNameTag,
 	this.PropertyDestructuringItemExpression,
 	// closeComputedDeclarationPropertyNameTag
-	null,
+	NULL,
 	// require
 	function(tagsMap){
 		return tagsMap.declarationPropertyNameSeparatorTags;

@@ -6,18 +6,18 @@ this.PropertyExpression = function(BinaryExpression){
 	 * 对象属性表达式
 	 */
 	function PropertyExpression(){
-		BinaryExpression.call(this, null, null);
+		BinaryExpression.call(this, NULL, NULL);
 	};
 	PropertyExpression = new Rexjs(PropertyExpression, BinaryExpression);
 
-	PropertyExpression.props({
+	PropertyExpression.$({
 		/**
 		 * 获取该属性是否为访问器属性
 		 */
 		get accessible(){
 			return this.named(this.accessor);
 		},
-		accessor: null,
+		accessor: NULL,
 		/**
 		 * 提取并编译表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
@@ -127,7 +127,7 @@ this.PropertyExpression = function(BinaryExpression){
 		 * @parma {Expression} value - 左侧表达式
 		 */
 		set left(value){},
-		name: null,
+		name: NULL,
 		/**
 		 * 判断非属性名标签上下文是否已经用于属性名
 		 * @param {Context} context - 需要判断的指定标签
@@ -135,7 +135,7 @@ this.PropertyExpression = function(BinaryExpression){
 		named: function(context){
 			switch(context){
 				// 如果 context 不存在
-				case null:
+				case NULL:
 					break;
 
 				// 如果 context 仅仅是属性名
@@ -175,7 +175,7 @@ this.PropertyExpression = function(BinaryExpression){
 		 * @parma {Expression} value - 左侧表达式
 		 */
 		set right(value){},
-		star: null,
+		star: NULL,
 		/**
 		 * 给相关对象表达式设置编译时所需使用的临时变量名
 		 * @param {Statements} statements - 对象表达式所处的语句块
@@ -188,7 +188,7 @@ this.PropertyExpression = function(BinaryExpression){
 			// 将对象表达式设置为需要编译
 			objectExpression.needCompile = true;
 		},
-		value: null
+		value: NULL
 	});
 
 	return PropertyExpression;
@@ -206,7 +206,7 @@ this.PropertyValueExpression = function(){
 	};
 	PropertyValueExpression = new Rexjs(PropertyValueExpression, Expression);
 
-	PropertyValueExpression.props({
+	PropertyValueExpression.$({
 		/**
 		 * 以定义属性的模式提取表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
@@ -255,7 +255,7 @@ this.PropertyValueExpression = function(){
 			// 提取属性值
 			this.operand.extractTo(contentBuilder);
 		},
-		operand: null
+		operand: NULL
 	});
 
 	return PropertyValueExpression;
@@ -271,7 +271,7 @@ this.PropertyValueStatement = function(setOperand){
 	};
 	PropertyValueStatement = new Rexjs(PropertyValueStatement, ECMAScriptStatement);
 
-	PropertyValueStatement.props({
+	PropertyValueStatement.$({
 		/**
 		 * 捕获处理异常
 		 * @param {SyntaxParser} parser - 语法解析器
@@ -311,7 +311,7 @@ this.PropertyStatement = function(PropertyExpression, ifComma){
 	};
 	PropertyStatement = new Rexjs(PropertyStatement, ECMAScriptStatement);
 
-	PropertyStatement.props({
+	PropertyStatement.$({
 		assigned: false,
 		/**
 		 * 捕获处理异常
@@ -323,7 +323,7 @@ this.PropertyStatement = function(PropertyExpression, ifComma){
 			if(context.content !== "}"){
 				// 报错
 				parser.error(context);
-				return null;
+				return NULL;
 			}
 
 			var expression = this.expression, objectExpression = this.out();
@@ -369,7 +369,7 @@ this.PropertyStatement = function(PropertyExpression, ifComma){
 					}
 
 					this.assigned = true;
-					return null;
+					return NULL;
 
 				// 如果是逗号
 				case ",":
@@ -413,7 +413,7 @@ this.PropertyNameSeparatorTag = function(ColonTag, PropertyValueExpression, Prop
 	};
 	PropertyNameSeparatorTag = new Rexjs(PropertyNameSeparatorTag, ColonTag);
 
-	PropertyNameSeparatorTag.props({
+	PropertyNameSeparatorTag.$({
 		$type: TYPE_MISTAKABLE,
 		/**
 		 * 获取此标签接下来所需匹配的标签列表

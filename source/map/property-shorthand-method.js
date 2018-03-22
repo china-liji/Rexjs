@@ -6,11 +6,11 @@ this.ShorthandMethodExpression = function(FunctionExpression){
 	 * 简写方法表达式
 	 */
 	function ShorthandMethodExpression(){
-		FunctionExpression.call(this, null);
+		FunctionExpression.call(this, NULL);
 	};
 	ShorthandMethodExpression = new Rexjs(ShorthandMethodExpression, FunctionExpression);
 
-	ShorthandMethodExpression.props({
+	ShorthandMethodExpression.$({
 		head: new DefaultExpression()
 	});
 
@@ -19,16 +19,16 @@ this.ShorthandMethodExpression = function(FunctionExpression){
 	this.FunctionExpression
 );
 	
-this.ShorthandMethodValueExpression = function(PropertyValueExpression, CompiledExpression, complie){
+this.ShorthandMethodValueExpression = function(PropertyValueExpression, complie){
 	/**
 	 * 简写方法值表达式
 	 */
 	function ShorthandMethodValueExpression(){
-		PropertyValueExpression.call(this, null);
+		PropertyValueExpression.call(this, NULL);
 	};
 	ShorthandMethodValueExpression = new Rexjs(ShorthandMethodValueExpression, PropertyValueExpression);
 
-	ShorthandMethodValueExpression.props({
+	ShorthandMethodValueExpression.$({
 		/**
 		 * 以函数参数模式提取表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
@@ -81,7 +81,6 @@ this.ShorthandMethodValueExpression = function(PropertyValueExpression, Compiled
 	return ShorthandMethodValueExpression;
 }(
 	this.PropertyValueExpression,
-	Rexjs.CompiledExpression,
 	// complie
 	function(expression, contentBuilder, separator){
 		// 追加 赋值等于号 和 函数头部
@@ -103,7 +102,7 @@ this.ShorthandMethodValueStatement = function(PropertyValueStatement, ShorthandM
 	};
 	ShorthandMethodValueStatement = new Rexjs(ShorthandMethodValueStatement, PropertyValueStatement);
 
-	ShorthandMethodValueStatement.props({
+	ShorthandMethodValueStatement.$({
 		/**
 		 * 捕获处理异常
 		 * @param {SyntaxParser} parser - 语法解析器
@@ -139,7 +138,7 @@ this.ShorthandMethodBodyStatements = function(FunctionBodyStatements){
 	};
 	ShorthandMethodBodyStatements = new Rexjs(ShorthandMethodBodyStatements, FunctionBodyStatements);
 
-	ShorthandMethodBodyStatements.props({
+	ShorthandMethodBodyStatements.$({
 		/**
 		 * 申请应用 super 关键字
 		 * @param {SyntaxParser} parser - 语法解析器
@@ -173,7 +172,7 @@ this.PropertyStarTag = function(StarTag){
 	};
 	PropertyStarTag = new Rexjs(PropertyStarTag, StarTag);
 
-	PropertyStarTag.props({
+	PropertyStarTag.$({
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
@@ -209,7 +208,7 @@ this.OpenShorthandMethodArgumentsTag = function(ShorthandMethodValueExpression, 
 	};
 	OpenShorthandMethodArgumentsTag = new Rexjs(OpenShorthandMethodArgumentsTag, OpenArgumentsTag);
 
-	OpenShorthandMethodArgumentsTag.props({
+	OpenShorthandMethodArgumentsTag.$({
 		/**
 		 * 获取绑定的标签，该标签一般是用于语句的 try、catch 的返回值
 		 */
@@ -262,7 +261,7 @@ this.CloseShorthandMethodArgumentsTag = function(CloseArgumentsTag){
 	};
 	CloseShorthandMethodArgumentsTag = new Rexjs(CloseShorthandMethodArgumentsTag, CloseArgumentsTag);
 
-	CloseShorthandMethodArgumentsTag.props({
+	CloseShorthandMethodArgumentsTag.$({
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
@@ -287,7 +286,7 @@ this.OpenShorthandMethodBodyTag = function(OpenFunctionBodyTag, ShorthandMethodB
 	};
 	OpenShorthandMethodBodyTag = new Rexjs(OpenShorthandMethodBodyTag, OpenFunctionBodyTag);
 
-	OpenShorthandMethodBodyTag.props({
+	OpenShorthandMethodBodyTag.$({
 		/**
 		 * 获取绑定的标签，该标签一般是用于语句的 try、catch 的返回值
 		 */
@@ -319,7 +318,7 @@ this.CloseShorthandMethodBodyTag = function(CloseFunctionBodyTag){
 	};
 	CloseShorthandMethodBodyTag = new Rexjs(CloseShorthandMethodBodyTag, CloseFunctionBodyTag);
 
-	CloseShorthandMethodBodyTag.props({
+	CloseShorthandMethodBodyTag.$({
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
@@ -341,7 +340,7 @@ closeShorthandMethodBodyTag = new this.CloseShorthandMethodBodyTag();
 	this,
 	this.OpenArgumentsTag,
 	// closeShorthandMethodArgumentsTag
-	null,
+	NULL,
 	// closeShorthandMethodBodyTag
-	null
+	NULL
 );

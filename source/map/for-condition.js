@@ -11,7 +11,7 @@ this.ForConditionInnerStatement = function(){
 	};
 	ForConditionInnerStatement = new Rexjs(ForConditionInnerStatement, ECMAScriptStatement);
 	
-	ForConditionInnerStatement.props({
+	ForConditionInnerStatement.$({
 		expression: new DefaultExpression()
 	});
 
@@ -28,7 +28,7 @@ this.ForInitConditionStatement = function(ForConditionInnerStatement, hasError){
 	};
 	ForInitConditionStatement = new Rexjs(ForInitConditionStatement, ForConditionInnerStatement);
 	
-	ForInitConditionStatement.props({
+	ForInitConditionStatement.$({
 		/**
 		 * 捕获处理异常
 		 * @param {SyntaxParser} parser - 语法解析器
@@ -46,7 +46,7 @@ this.ForInitConditionStatement = function(ForConditionInnerStatement, hasError){
 					
 					(
 						// 设置目标语句的表达式
-						this.target.expression = new ListExpression(null, ";")
+						this.target.expression = new ListExpression(NULL, ";")
 					)
 					// 添加表达式
 					.add(
@@ -100,14 +100,14 @@ this.ForInitConditionStatement = function(ForConditionInnerStatement, hasError){
 
 				// 默认
 				default:
-					return null;
+					return NULL;
 			}
 
 			var expression = this.expression;
 
 			// 如果验证出错
 			if(hasError(parser, expression, context)){
-				return null;
+				return NULL;
 			}
 
 			// 设置目标语句的表达式
@@ -161,7 +161,7 @@ this.ForLogicConditionStatement = function(ForConditionInnerStatement){
 	};
 	ForLogicConditionStatement = new Rexjs(ForLogicConditionStatement, ForConditionInnerStatement);
 	
-	ForLogicConditionStatement.props({
+	ForLogicConditionStatement.$({
 		/**
 		 * 捕获处理异常
 		 * @param {SyntaxParser} parser - 语法解析器
@@ -172,7 +172,7 @@ this.ForLogicConditionStatement = function(ForConditionInnerStatement){
 			if(context.content !== ";"){
 				// 报错
 				parser.error(context);
-				return null;
+				return NULL;
 			}
 
 			// 跳出语句并添加表达式
@@ -197,7 +197,7 @@ this.ForFinallyConditionStatement = function(ForConditionInnerStatement){
 	};
 	ForFinallyConditionStatement = new Rexjs(ForFinallyConditionStatement, ForConditionInnerStatement);
 	
-	ForFinallyConditionStatement.props({
+	ForFinallyConditionStatement.$({
 		/**
 		 * 捕获处理异常
 		 * @param {SyntaxParser} parser - 语法解析器
@@ -224,7 +224,7 @@ this.ForInitConditionSeparatorStatement = function(tryMethod){
 	};
 	ForInitConditionSeparatorStatement = new Rexjs(ForInitConditionSeparatorStatement, CommaStatement);
 
-	ForInitConditionSeparatorStatement.props({
+	ForInitConditionSeparatorStatement.$({
 		/**
 		 * 尝试处理异常
 		 * @param {SyntaxParser} parser - 语法解析器
@@ -235,7 +235,7 @@ this.ForInitConditionSeparatorStatement = function(tryMethod){
 			if(context.content === "in"){
 				// 跳出当前语句并添加表达式
 				this.out().add(this.expression);
-				return null;
+				return NULL;
 			}
 
 			// 返回父类方法处理的结果
@@ -258,7 +258,7 @@ this.OpenForConditionTag = function(OpenParenTag, ConditionStatement, ForInitCon
 	};
 	OpenForConditionTag = new Rexjs(OpenForConditionTag, OpenParenTag);
 	
-	OpenForConditionTag.props({
+	OpenForConditionTag.$({
 		/**
 		 * 获取绑定的标签，该标签一般是用于语句的 try、catch 的返回值
 		 */
@@ -336,7 +336,7 @@ this.ForInitConditionItemSeparatorTag = function(CommaTag, ForInitConditionSepar
 	};
 	ForInitConditionItemSeparatorTag = new Rexjs(ForInitConditionItemSeparatorTag, CommaTag);
 
-	ForInitConditionItemSeparatorTag.props({
+	ForInitConditionItemSeparatorTag.$({
 		/**
 		 * 获取绑定的语句，一般在子类使用父类逻辑，而不使用父类语句的情况下使用
 		 * @param {Statements} statements - 该语句将要所处的语句块
@@ -362,7 +362,7 @@ this.ForConditionSeparatorTag = function(SemicolonTag){
 	};
 	ForConditionSeparatorTag = new Rexjs(ForConditionSeparatorTag, SemicolonTag);
 
-	ForConditionSeparatorTag.props({
+	ForConditionSeparatorTag.$({
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
@@ -398,7 +398,7 @@ this.ForInitConditionSeparatorTag = function(ForConditionSeparatorTag, ForLogicC
 	};
 	ForInitConditionSeparatorTag = new Rexjs(ForInitConditionSeparatorTag, ForConditionSeparatorTag);
 
-	ForInitConditionSeparatorTag.props({
+	ForInitConditionSeparatorTag.$({
 		/**
 		 * 获取绑定的语句，一般在子类使用父类逻辑，而不使用父类语句的情况下使用
 		 * @param {Statements} statements - 该语句将要所处的语句块
@@ -424,7 +424,7 @@ this.ForLogicConditionSeparatorTag = function(ForConditionSeparatorTag, ForFinal
 	};
 	ForLogicConditionSeparatorTag = new Rexjs(ForLogicConditionSeparatorTag, ForConditionSeparatorTag);
 
-	ForLogicConditionSeparatorTag.props({
+	ForLogicConditionSeparatorTag.$({
 		/**
 		 * 获取绑定的语句，一般在子类使用父类逻辑，而不使用父类语句的情况下使用
 		 * @param {Statements} statements - 该语句将要所处的语句块
@@ -457,7 +457,7 @@ this.CloseForConditionTag = function(CloseParenTag, ForBodyStatement){
 	};
 	CloseForConditionTag = new Rexjs(CloseForConditionTag, CloseParenTag);
 	
-	CloseForConditionTag.props({
+	CloseForConditionTag.$({
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
@@ -499,17 +499,17 @@ forLogicConditionSeparatorTag = new this.ForLogicConditionSeparatorTag();
 	this.VarExpression,
 	this.CommaStatement,
 	// closeForConditionTag
-	null,
+	NULL,
 	// forInitConditionItemSeparatorTag
-	null,
+	NULL,
 	// forInTag
-	null,
+	NULL,
 	// forOfTag
-	null,
+	NULL,
 	// forInitConditionSeparatorTag
-	null,
+	NULL,
 	// forLogicConditionSeparatorTag
-	null,
+	NULL,
 	// getOpenConditionTag
 	function(statement){
 		return statement.target.target.expression.condition.open.tag;

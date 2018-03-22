@@ -1,5 +1,5 @@
 // 基础依赖类
-new function(Rexjs, URL_REGEXP, DIR_SEPARATOR_REGEXP, encodeURI, getUrlInfo){
+new function(Rexjs, URL_REGEXP, DIR_SEPARATOR_REGEXP, NULL, encodeURI, getUrlInfo){
 
 this.List = function(Array, Object, toArray){
 	/**
@@ -8,7 +8,7 @@ this.List = function(Array, Object, toArray){
 	function List(_rest){};
 	List = new Rexjs(List);
 
-	List.props({
+	List.$({
 		/**
 		 * 合并另外一个数组，并返回合并后的新数组
 		 * @param {Array} list - 另一个集合
@@ -73,7 +73,7 @@ this.List = function(Array, Object, toArray){
 
 				props[name] = this[name];
 
-				List.props(props);
+				List.$(props);
 			},
 			Array.prototype
 		);
@@ -92,8 +92,8 @@ this.URL = function(toString, parse){
 	 * @param {String} _baseURLstring - 基准地址
 	 */
 	function URL(urlString, _baseURLstring){
-		// 如果提供的是 null 或 undefined
-		if(urlString == null){
+		// 如果提供的是 NULL 或 undefined
+		if(urlString == NULL){
 			return;
 		}
 
@@ -119,7 +119,7 @@ this.URL = function(toString, parse){
 	};
 	URL = new Rexjs(URL);
 
-	URL.props({
+	URL.$({
 		ext: "",
 		dirname : "",
 		filename: "",
@@ -208,7 +208,7 @@ this.URL = function(toString, parse){
 		// 如果不是字符串
 		if(typeof urlString !== "string"){
 			// 如果是 undefined 或者 null，则为空字符串，否则为 toString 的返回值
-			urlString = urlString == null ? "" : urlString.toString();
+			urlString = urlString == NULL ? "" : urlString.toString();
 		}
 		
 		// 返回转码后的字符串
@@ -352,13 +352,15 @@ this.URL = function(toString, parse){
 	}
 );
 
-Rexjs.static(this);
+Rexjs.$$(this);
 }(
 	Rexjs,
 	// URL_REGEXP
-	/^(?:([^:/?#.]+:)(?:\/+(?:([^/?#]*)@)?([\w\d\-\u0100-\uffff.%]*)(?::([0-9]+))?)?)?(?:([^?#]+?)([^\/]+?(\.[^.?#\/]+))?)?(?:(\?[^#]*))?(?:(#.*))?$/,
+	/^(?:([^:/?#.]+:)(?:\/+(?:([^/?#]*)@)?([\w\d\-\u0100-\uffff.%]*)(?::([0-9]+))?\/?)?)?(?:([^?#]*\/)?([^\/]+?(\.[^.?#\/]+))?)?(?:(\?[^#]*))?(?:(#.*))?$/,
 	// DIR_SEPARATOR_REGEXP
 	/\/|\\/g,
+	// NULL
+	null,
 	encodeURI,
 	// getUrlInfo
 	function(result, index){

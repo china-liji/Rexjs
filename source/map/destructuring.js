@@ -9,11 +9,11 @@ this.DestructibleExpression = function(){
 	function DestructibleExpression(open){
 		PartnerExpression.call(this, open);
 
-		this.inner = new ListExpression(null, ",");
+		this.inner = new ListExpression(NULL, ",");
 	};
 	DestructibleExpression = new Rexjs(DestructibleExpression, PartnerExpression);
 
-	DestructibleExpression.props({
+	DestructibleExpression.$({
 		/**
 		 * 将数组每一项转换为解构项表达式
 		 * @param {SyntaxParser} parser - 语法解析器
@@ -65,7 +65,7 @@ this.DestructuringExpression = function(AssignableExpression){
 	};
 	DestructuringExpression = new Rexjs(DestructuringExpression, AssignableExpression);
 
-	DestructuringExpression.props({
+	DestructuringExpression.$({
 		/**
 		 * 提取并编译表达式文本内容
 		 * @param {Expression} expression - 解构当前项
@@ -82,7 +82,7 @@ this.DestructuringExpression = function(AssignableExpression){
 			// 直接提取源表达式
 			this.origin.extractTo(contentBuilder);
 		},
-		origin: null
+		origin: NULL
 	});
 
 	return DestructuringExpression;
@@ -100,7 +100,7 @@ this.DestructuringItemExpression = function(DestructuringExpression){
 	};
 	DestructuringItemExpression = new Rexjs(DestructuringItemExpression, DestructuringExpression);
 
-	DestructuringItemExpression.props({
+	DestructuringItemExpression.$({
 		/**
 		 * 提取并编译表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
@@ -124,7 +124,7 @@ this.DestructuringItemExpression = function(DestructuringExpression){
 			switch(this.origin.inner.length){
 				// 如果是 0，说明没有解构内容，不需要解构
 				case 0:
-					return null;
+					return NULL;
 
 				// 如果是 1，说明可以直接用 $Rexjs_0[0] 形式直接使用，不需要单独使用变量名记录
 				case 1:
@@ -169,7 +169,7 @@ this.DestructuringDefaultItemExpression = function(DestructuringItemExpression){
 	};
 	DestructuringDefaultItemExpression = new Rexjs(DestructuringDefaultItemExpression, DestructuringItemExpression);
 
-	DestructuringDefaultItemExpression.props({
+	DestructuringDefaultItemExpression.$({
 		/**
 		 * 提取并编译表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
@@ -221,7 +221,7 @@ this.PropertyDestructuringItemExpression = function(DestructuringItemExpression)
 	};
 	PropertyDestructuringItemExpression = new Rexjs(PropertyDestructuringItemExpression, DestructuringItemExpression);
 
-	PropertyDestructuringItemExpression.props({
+	PropertyDestructuringItemExpression.$({
 		/**
 		 * 提取并编译表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
@@ -256,7 +256,7 @@ this.PropertyDestructuringRestItemExpression = function(PropertyDestructuringIte
 	};
 	PropertyDestructuringRestItemExpression = new Rexjs(PropertyDestructuringRestItemExpression, PropertyDestructuringItemExpression);
 
-	PropertyDestructuringRestItemExpression.props({
+	PropertyDestructuringRestItemExpression.$({
 		/**
 		 * 提取并编译表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
@@ -292,8 +292,8 @@ this.PropertyDestructuringDefaultItemExpression = function(DestructuringDefaultI
 	};
 	PropertyDestructuringDefaultItemExpression = new Rexjs(PropertyDestructuringDefaultItemExpression, DestructuringDefaultItemExpression);
 
-	PropertyDestructuringDefaultItemExpression.props({
-		assignment: null,
+	PropertyDestructuringDefaultItemExpression.$({
+		assignment: NULL,
 		/**
 		 * 提取表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器

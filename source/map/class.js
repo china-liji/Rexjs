@@ -11,13 +11,13 @@ this.ClassExpression = function(DefaultExtendsExpression){
 	};
 	ClassExpression = new Rexjs(ClassExpression, Expression);
 
-	ClassExpression.props({
+	ClassExpression.$({
 		/**
 		 * 自动化生成变量，以模拟 ObjectExpression 环境
 		 * @param {ECMAScriptStatements} statements - 当前语句块
 		 */
 		autoVariable: function(statements){},
-		extends: null,
+		extends: NULL,
 		/**
 		 * 提取表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
@@ -88,7 +88,7 @@ this.ClassTag = function(ClassExpression){
 	};
 	ClassTag = new Rexjs(ClassTag, SyntaxTag);
 
-	ClassTag.props({
+	ClassTag.$({
 		$class: CLASS_EXPRESSION,
 		regexp: /class/,
 		/**
@@ -126,7 +126,7 @@ this.ClassNameTag = function(VariableDeclarationTag){
 	};
 	ClassNameTag = new Rexjs(ClassNameTag, VariableDeclarationTag);
 
-	ClassNameTag.props({
+	ClassNameTag.$({
 		/**
 		 * 提取文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器

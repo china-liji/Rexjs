@@ -14,7 +14,7 @@ this.TemplateUnicodeExpression = function(){
 	};
 	TemplateUnicodeExpression = new Rexjs(TemplateUnicodeExpression, Expression);
 
-	TemplateUnicodeExpression.props({
+	TemplateUnicodeExpression.$({
 		/**
 		 * 提取并编译表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
@@ -38,7 +38,7 @@ this.TemplateContentTag = function(){
 	};
 	TemplateContentTag = new Rexjs(TemplateContentTag, SyntaxTag);
 
-	TemplateContentTag.props({
+	TemplateContentTag.$({
 		order: ECMAScriptOrders.TEMPLATE_CONTENT,
 		regexp: /(?:\\[\s\S]|[^`])+?(?=\$\{|[`"\r\n\u2028\u2029])/,
 		/**
@@ -74,7 +74,7 @@ this.TemplateLineTerminatorTag = function(TemplateUnicodeExpression, RegExp, vis
 	};
 	TemplateLineTerminatorTag = new Rexjs(TemplateLineTerminatorTag, LineTerminatorTag);
 
-	TemplateLineTerminatorTag.props({
+	TemplateLineTerminatorTag.$({
 		order: ECMAScriptOrders.TEMPLATE_SPECIAL_CONTENT,
 		/**
 		 * 标签访问器
@@ -113,7 +113,7 @@ this.TemplateQouteTag = function(TemplateUnicodeExpression, UNICODE){
 	};
 	TemplateQouteTag = new Rexjs(TemplateQouteTag, SyntaxTag);
 
-	TemplateQouteTag.props({
+	TemplateQouteTag.$({
 		order: ECMAScriptOrders.TEMPLATE_SPECIAL_CONTENT,
 		regexp: /"/,
 		/**

@@ -28,7 +28,7 @@ this.CommaStatement = function(){
 	};
 	CommaStatement = new Rexjs(CommaStatement, ECMAScriptStatement);
 	
-	CommaStatement.props({
+	CommaStatement.$({
 		/**
 		 * 捕获处理异常
 		 * @param {SyntaxParser} parser - 语法解析器
@@ -46,7 +46,7 @@ this.CommaStatement = function(){
 		try: function(parser, context){
 			// 如果不是逗号
 			if(context.content !== ","){
-				return null;
+				return NULL;
 			}
 
 			// 跳出语句并添加表达式
@@ -69,7 +69,7 @@ this.CommaTag = function(ExpressionSeparatorTag, CommaExpression, CommaStatement
 	};
 	CommaTag = new Rexjs(CommaTag, ExpressionSeparatorTag);
 	
-	CommaTag.props({
+	CommaTag.$({
 		/**
 		 * 获取绑定的标签，该标签一般是用于语句的 try、catch 的返回值
 		 */
@@ -126,7 +126,7 @@ this.CommaSiblingTag = function(CommaTag, CommaStatement){
 	};
 	CommaSiblingTag = new Rexjs(CommaSiblingTag, CommaTag);
 
-	CommaSiblingTag.props({
+	CommaSiblingTag.$({
 		/**
 		 * 标签访问器
 		 * @param {SyntaxParser} parser - 语法解析器
@@ -151,5 +151,5 @@ commaSiblingTag = new this.CommaSiblingTag();
 }.call(
 	this,
 	// commaSiblingTag
-	null
+	NULL
 );

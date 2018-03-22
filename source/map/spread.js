@@ -11,7 +11,7 @@ this.SpreadExpression = function(){
 	};
 	SpreadExpression = new Rexjs(SpreadExpression, Expression);
 
-	SpreadExpression.props({
+	SpreadExpression.$({
 		/**
 		 * 提取表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
@@ -33,7 +33,7 @@ this.SpreadExpression = function(){
 			// 提取参数
 			this.operand.extractTo(contentBuilder);
 		},
-		operand: null
+		operand: NULL
 	});
 
 	return SpreadExpression;
@@ -49,7 +49,7 @@ this.SpreadStatement = function(){
 	};
 	SpreadStatement = new Rexjs(SpreadStatement, ECMAScriptStatement);
 
-	SpreadStatement.props({
+	SpreadStatement.$({
 		/**
 		 * 捕获处理异常
 		 * @param {SyntaxParser} parser - 语法解析器
@@ -86,7 +86,7 @@ this.SpreadTag = function(SpreadExpression, SpreadStatement, AccessorExpression,
 	};
 	SpreadTag = new Rexjs(SpreadTag, SyntaxTag);
 	
-	SpreadTag.props({
+	SpreadTag.$({
 		/**
 		 * 获取绑定的表达式，一般在子类使用父类逻辑，而不使用父类表达式的情况下使用
 		 * @param {Context} context - 相关的语法标签上下文

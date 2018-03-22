@@ -11,7 +11,7 @@ this.SuperPropertyBasicAssignmentExpression = function(){
 	};
 	SuperPropertyBasicAssignmentExpression = new Rexjs(SuperPropertyBasicAssignmentExpression, BinaryExpression);
 
-	SuperPropertyBasicAssignmentExpression.props({
+	SuperPropertyBasicAssignmentExpression.$({
 		/**
 		 * 提取表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
@@ -56,7 +56,7 @@ this.SuperPropertyShorthandAssignmentExpression = function(extractTo){
 	};
 	SuperPropertyShorthandAssignmentExpression = new Rexjs(SuperPropertyShorthandAssignmentExpression, BinaryExpression);
 
-	SuperPropertyShorthandAssignmentExpression.props({
+	SuperPropertyShorthandAssignmentExpression.$({
 		/**
 		 * 提取表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
@@ -102,7 +102,7 @@ this.SuperPropertyUnaryAssignmentExpression = function(extractTo){
 	};
 	SuperPropertyUnaryAssignmentExpression = new Rexjs(SuperPropertyUnaryAssignmentExpression, UnaryExpression);
 	
-	SuperPropertyUnaryAssignmentExpression.props({
+	SuperPropertyUnaryAssignmentExpression.$({
 		/**
 		 * 提取表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
@@ -145,7 +145,7 @@ this.SuperPropertyPostfixUnaryAssignmentExpression = function(extractTo){
 	};
 	SuperPropertyPostfixUnaryAssignmentExpression = new Rexjs(SuperPropertyPostfixUnaryAssignmentExpression, PostfixUnaryExpression);
 	
-	SuperPropertyPostfixUnaryAssignmentExpression.props({
+	SuperPropertyPostfixUnaryAssignmentExpression.$({
 		/**
 		 * 提取表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
@@ -192,7 +192,7 @@ this.SuperPropertyUnaryAssignmentStatement = function(SuperPropertyUnaryAssignme
 	};
 	SuperPropertyUnaryAssignmentStatement = new Rexjs(SuperPropertyUnaryAssignmentStatement, UnaryAssignmentStatement);
 
-	SuperPropertyUnaryAssignmentStatement.props({
+	SuperPropertyUnaryAssignmentStatement.$({
 		/**
 		 * 跳出该语句
 		 */
@@ -261,7 +261,7 @@ this.SuperPropertyBasicAssignmentTag = function(BasicAssignmentTag, SuperPropert
 	};
 	SuperPropertyBasicAssignmentTag = new Rexjs(SuperPropertyBasicAssignmentTag, BasicAssignmentTag);
 	
-	SuperPropertyBasicAssignmentTag.props({
+	SuperPropertyBasicAssignmentTag.$({
 		/**
 		 * 获取绑定的表达式，一般在子类使用父类逻辑，而不使用父类表达式的情况下使用
 		 * @param {Context} context - 相关的语法标签上下文
@@ -288,7 +288,7 @@ this.SuperPropertyShorthandAssignmentTag = function(ShorthandAssignmentTag, Supe
 	};
 	SuperPropertyShorthandAssignmentTag = new Rexjs(SuperPropertyShorthandAssignmentTag, ShorthandAssignmentTag);
 	
-	SuperPropertyShorthandAssignmentTag.props({
+	SuperPropertyShorthandAssignmentTag.$({
 		/**
 		 * 获取绑定的表达式，一般在子类使用父类逻辑，而不使用父类表达式的情况下使用
 		 * @param {Context} context - 相关的语法标签上下文
@@ -324,7 +324,7 @@ this.SuperPropertyPostfixIncrementTag = function(PostfixIncrementTag){
 	};
 	SuperPropertyPostfixIncrementTag = new Rexjs(SuperPropertyPostfixIncrementTag, PostfixIncrementTag);
 	
-	SuperPropertyPostfixIncrementTag.props({
+	SuperPropertyPostfixIncrementTag.$({
 		getBoundExpression: getBoundPostfixExpression,
 		order: SUPER_PROPERTY_POSTFIX_UNARY_ASSIGNMENT
 	});
@@ -344,7 +344,7 @@ this.SuperPropertyPostfixDecrementTag = function(PostfixDecrementTag){
 	};
 	SuperPropertyPostfixDecrementTag = new Rexjs(SuperPropertyPostfixDecrementTag, PostfixDecrementTag);
 	
-	SuperPropertyPostfixDecrementTag.props({
+	SuperPropertyPostfixDecrementTag.$({
 		getBoundExpression: getBoundPostfixExpression,
 		order: SUPER_PROPERTY_POSTFIX_UNARY_ASSIGNMENT
 	});
@@ -363,7 +363,7 @@ this.SuperPropertyPostfixDecrementTag = function(PostfixDecrementTag){
 	ECMAScriptOrders.SUPER_PROPERTY_POSTFIX_UNARY_ASSIGNMENT,
 	this.BinaryExpression.prototype.extractTo,
 	// getBoundPostfixExpression
-	null,
+	NULL,
 	// compileHead
 	function(contentBuilder, operand, variable){
 		var propertyOwner = operand.object.propertyOwner, closureReference = operand.closureReference;

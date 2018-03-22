@@ -20,6 +20,8 @@ this.ECMAScriptTags = function(DefaultTags, list){
 	// list
 	[
 		this.ArrowTag,
+		//this.AsyncTag,
+		this.AwaitTag,
 		this.BasicAssignmentTag,
 		this.BinaryNumberTag,
 		this.BitwiseANDTag,

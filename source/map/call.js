@@ -11,7 +11,7 @@ this.CallExpression = function(AccessorExpression, BracketAccessorExpression, Un
 		ExecutableExpression.call(this, open);
 
 		this.operand = statement.expression;
-		this.inner = new ListExpression(null, ",");
+		this.inner = new ListExpression(NULL, ",");
 
 		// 如果是一元语句
 		if(statement instanceof UnaryStatement){
@@ -20,7 +20,7 @@ this.CallExpression = function(AccessorExpression, BracketAccessorExpression, Un
 	};
 	CallExpression = new Rexjs(CallExpression, ExecutableExpression);
 
-	CallExpression.props({
+	CallExpression.$({
 		/**
 		 * 当拓展符存在时，以访问形式提取表达式内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
@@ -110,7 +110,7 @@ this.CallExpression = function(AccessorExpression, BracketAccessorExpression, Un
 			// 追加 bind 方法的结束小括号和函数立即执行的小括号（注：bind 方法与 apply 不同，不具有立即执行效果）
 			contentBuilder.appendString("))()");
 		},
-		operand: null,
+		operand: NULL,
 		spread: false,
 		/**
 		 * 当匹配到拓展符时的处理逻辑
@@ -164,11 +164,11 @@ this.CallStatement = function(){
 	function CallStatement(statements){
 		ECMAScriptStatement.call(this, statements);
 
-		this.expression = new EmptyExpression(null);
+		this.expression = new EmptyExpression(NULL);
 	};
 	CallStatement = new Rexjs(CallStatement, ECMAScriptStatement);
 	
-	CallStatement.props({
+	CallStatement.$({
 		/**
 		 * 捕获处理异常
 		 * @param {SyntaxParser} parser - 语法解析器
@@ -179,7 +179,7 @@ this.CallStatement = function(){
 			if(context.content !== ")"){
 				// 报错
 				parser.error(context, ECMAScriptErrors.CALL);
-				return null;
+				return NULL;
 			}
 			
 			// 跳出该语句并设置表达式
@@ -195,7 +195,7 @@ this.CallStatement = function(){
 		try: function(parser, context){
 			// 如果不是逗号
 			if(context.content !== ","){
-				return null;
+				return NULL;
 			}
 
 			// 跳出该语句并添加表达式
@@ -218,7 +218,7 @@ this.OpenCallTag = function(OpenParenTag, CallExpression, CallStatement){
 	};
 	OpenCallTag = new Rexjs(OpenCallTag, OpenParenTag);
 	
-	OpenCallTag.props({
+	OpenCallTag.$({
 		$class: CLASS_EXPRESSION_CONTEXT,
 		/**
 		 * 获取绑定的标签，该标签一般是用于语句的 try、catch 的返回值
@@ -283,7 +283,7 @@ this.ParameterSeparatorTag = function(CommaTag, CallStatement){
 	};
 	ParameterSeparatorTag = new Rexjs(ParameterSeparatorTag, CommaTag);
 
-	ParameterSeparatorTag.props({
+	ParameterSeparatorTag.$({
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
@@ -320,7 +320,7 @@ this.CloseCallTag = function(CloseParenTag){
 	};
 	CloseCallTag = new Rexjs(CloseCallTag, CloseParenTag);
 	
-	CloseCallTag.props({
+	CloseCallTag.$({
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
@@ -353,7 +353,7 @@ closeCallTag = new this.CloseCallTag();
 	this,
 	this.ExecutableExpression,
 	// parameterSeparatorTag
-	null,
+	NULL,
 	// closeCallTag
-	null
+	NULL
 );

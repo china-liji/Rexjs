@@ -12,8 +12,8 @@ this.WhileExpression = function(ConditionalExpression){
 	};
 	WhileExpression = new Rexjs(WhileExpression, ConditionalExpression);
 	
-	WhileExpression.props({
-		body: null,
+	WhileExpression.$({
+		body: NULL,
 		/**
 		 * 以生成器形式的提取表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
@@ -54,7 +54,7 @@ this.WhileBodyStatement = function(SingleStatement){
 	};
 	WhileBodyStatement = new Rexjs(WhileBodyStatement, SingleStatement);
 	
-	WhileBodyStatement.props({
+	WhileBodyStatement.$({
 		/**
 		 * 请求跳出该语句
 		 * @param {SyntaxParser} parser - 语法解析器
@@ -82,7 +82,7 @@ this.WhileTag = function(WhileExpression){
 	};
 	WhileTag = new Rexjs(WhileTag, SyntaxTag);
 	
-	WhileTag.props({
+	WhileTag.$({
 		$class: CLASS_STATEMENT_BEGIN,
 		regexp: /while/,
 		/**
@@ -120,7 +120,7 @@ this.OpenWhileConditionTag = function(OpenParenTag, ConditionStatement){
 	};
 	OpenWhileConditionTag = new Rexjs(OpenWhileConditionTag, OpenParenTag);
 	
-	OpenWhileConditionTag.props({
+	OpenWhileConditionTag.$({
 		/**
 		 * 获取绑定的标签，该标签一般是用于语句的 try、catch 的返回值
 		 */
@@ -165,7 +165,7 @@ this.CloseWhileConditionTag = function(CloseParenTag, WhileBodyStatement){
 	};
 	CloseWhileConditionTag = new Rexjs(CloseWhileConditionTag, CloseParenTag);
 	
-	CloseWhileConditionTag.props({
+	CloseWhileConditionTag.$({
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
@@ -199,5 +199,5 @@ closeWhileConditionTag = new this.CloseWhileConditionTag();
 }.call(
 	this,
 	// closeWhileConditionTag
-	null
+	NULL
 );

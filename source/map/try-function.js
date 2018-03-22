@@ -10,7 +10,7 @@ this.TryFunctionExpression = function(extractTo){
 	};
 	TryFunctionExpression = new Rexjs(TryFunctionExpression, UnaryExpression);
 
-	TryFunctionExpression.props({
+	TryFunctionExpression.$({
 		/**
 		 * 提取表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
@@ -45,9 +45,9 @@ this.FunctionConvertorExpression = FunctionConvertorExpression = function(Access
 	};
 	FunctionConvertorExpression = new Rexjs(FunctionConvertorExpression, Expression);
 
-	FunctionConvertorExpression.props({
+	FunctionConvertorExpression.$({
 		called: true,
-		function: null,
+		function: NULL,
 		/**
 		 * 提取表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
@@ -125,7 +125,7 @@ this.TryFunctionStatement = function(UnaryStatement, setOperand){
 	};
 	TryFunctionStatement = new Rexjs(TryFunctionStatement, UnaryStatement);
 	
-	TryFunctionStatement.props({
+	TryFunctionStatement.$({
 		/**
 		 * 捕获处理异常
 		 * @param {SyntaxParser} parser - 语法解析器
@@ -183,7 +183,7 @@ this.TryFunctionTag = function(ExecTag, TryFunctionExpression, TryFunctionStatem
 	};
 	TryFunctionTag = new Rexjs(TryFunctionTag, ExecTag);
 
-	TryFunctionTag.props({
+	TryFunctionTag.$({
 		regexp: /try/,
 		/**
 		 * 标签访问器
@@ -212,5 +212,5 @@ this.TryFunctionTag = function(ExecTag, TryFunctionExpression, TryFunctionStatem
 	this.UnaryExpression,
 	this.CallExpression,
 	// FunctionConvertorExpression
-	null
+	NULL
 );

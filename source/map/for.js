@@ -1,5 +1,5 @@
 // for 语句相关
-!function(CompiledExpression){
+!function(){
 
 this.ForExpression = function(ConditionalExpression, compileOf, compileIteratorWithGenerator, compileWithGenerator){
 	/**
@@ -12,8 +12,8 @@ this.ForExpression = function(ConditionalExpression, compileOf, compileIteratorW
 	};
 	ForExpression = new Rexjs(ForExpression, ConditionalExpression);
 
-	ForExpression.props({
-		body: null,
+	ForExpression.$({
+		body: NULL,
 		/**
 		 * 以生成器形式的提取表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
@@ -85,7 +85,7 @@ this.ForExpression = function(ConditionalExpression, compileOf, compileIteratorW
 		inner.right.extractTo(contentBuilder);
 
 		// 追加 for 循环的逻辑条件
-		contentBuilder.appendString(");!" + variable + ".iterator.closed;");
+		contentBuilder.appendString(");!" + variable + ".$iterator.closed;");
 		// 追加 for 循环条件结束小括号
 		contentBuilder.appendContext(condition.close);
 		// 追加语句块起始大括号，目的是让 let、const 发挥效果
@@ -130,7 +130,7 @@ this.ForExpression = function(ConditionalExpression, compileOf, compileIteratorW
 
 		// 以生成器形式编译条件
 		expression.generateConditionTo(
-			new CompiledExpression("!" + variable + ".iterator.closed"),
+			new CompiledExpression("!" + variable + ".$iterator.closed"),
 			contentBuilder
 		);
 
@@ -186,7 +186,7 @@ this.ForBodyStatement = function(SingleStatement){
 	};
 	ForBodyStatement = new Rexjs(ForBodyStatement, SingleStatement);
 	
-	ForBodyStatement.props({
+	ForBodyStatement.$({
 		flow: ECMAScriptStatement.FLOW_CIRCULAR,
 		/**
 		 * 请求跳出该语句
@@ -213,7 +213,7 @@ this.ForTag = function(ForExpression){
 	};
 	ForTag = new Rexjs(ForTag, SyntaxTag);
 	
-	ForTag.props({
+	ForTag.$({
 		$class: CLASS_STATEMENT_BEGIN,
 		regexp: /for/,
 		/**
@@ -242,6 +242,5 @@ this.ForTag = function(ForExpression){
 );
 
 }.call(
-	this,
-	Rexjs.CompiledExpression
+	this
 );

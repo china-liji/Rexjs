@@ -12,9 +12,9 @@ this.IfExpression = function(ConditionalExpression){
 	};
 	IfExpression = new Rexjs(IfExpression, ConditionalExpression);
 	
-	IfExpression.props({
-		elseBody: null,
-		elseContext: null,
+	IfExpression.$({
+		elseBody: NULL,
+		elseContext: NULL,
 		/**
 		 * 以生成器形式的提取表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
@@ -42,7 +42,7 @@ this.IfExpression = function(ConditionalExpression){
 				this.generateBodyTo(this.elseBody, contentBuilder);
 			}
 		},
-		ifBody: null,
+		ifBody: NULL,
 		/**
 		 * 获取 if 关键字上下文
 		 */
@@ -98,7 +98,7 @@ this.IfBodyStatement = function(SingleStatement){
 	};
 	IfBodyStatement = new Rexjs(IfBodyStatement, SingleStatement);
 	
-	IfBodyStatement.props({
+	IfBodyStatement.$({
 		/**
 		 * 请求跳出该语句
 		 * @param {SyntaxParser} parser - 语法解析器
@@ -144,7 +144,7 @@ this.ElseBodyStatement = function(IfBodyStatement){
 	};
 	ElseBodyStatement = new Rexjs(ElseBodyStatement, IfBodyStatement);
 	
-	ElseBodyStatement.props({
+	ElseBodyStatement.$({
 		/**
 		 * 捕获处理异常
 		 * @param {SyntaxParser} parser - 语法解析器
@@ -170,7 +170,7 @@ this.IfTag = function(IfExpression){
 	};
 	IfTag = new Rexjs(IfTag, SyntaxTag);
 	
-	IfTag.props({
+	IfTag.$({
 		$class: CLASS_STATEMENT_BEGIN,
 		/**
 		 * 获取绑定的标签，该标签一般是用于语句的 try、catch 的返回值
@@ -214,7 +214,7 @@ this.OpenIfConditionTag = function(OpenParenTag, ConditionStatement){
 	};
 	OpenIfConditionTag = new Rexjs(OpenIfConditionTag, OpenParenTag);
 	
-	OpenIfConditionTag.props({
+	OpenIfConditionTag.$({
 		/**
 		 * 获取绑定的标签，该标签一般是用于语句的 try、catch 的返回值
 		 */
@@ -259,7 +259,7 @@ this.CloseIfConditionTag = function(CloseParenTag, IfBodyStatement, IfBodyStatem
 	};
 	CloseIfConditionTag = new Rexjs(CloseIfConditionTag, CloseParenTag);
 	
-	CloseIfConditionTag.props({
+	CloseIfConditionTag.$({
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
@@ -299,7 +299,7 @@ this.ElseTag = function(ElseExpression, ElseBodyStatement){
 	};
 	ElseTag = new Rexjs(ElseTag, SyntaxTag);
 	
-	ElseTag.props({
+	ElseTag.$({
 		regexp: /else/,
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
@@ -335,7 +335,7 @@ elseTag = new this.ElseTag();
 }.call(
 	this,
 	// closeIfConditionTag
-	null,
+	NULL,
 	// elseTag
-	null
+	NULL
 );

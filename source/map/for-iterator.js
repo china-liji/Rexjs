@@ -11,7 +11,7 @@ this.IterationStatement = function(BinaryStatement){
 	};
 	IterationStatement = new Rexjs(IterationStatement, BinaryStatement);
 
-	IterationStatement.props({
+	IterationStatement.$({
 		/**
 		 * 捕获处理异常
 		 * @param {SyntaxParser} parser - 语法解析器
@@ -27,7 +27,7 @@ this.IterationStatement = function(BinaryStatement){
 		 * @param {Context} context - 语法标签上下文
 		 */
 		try: function(){
-			return null;
+			return NULL;
 		}
 	});
 
@@ -46,7 +46,7 @@ this.IteratorTag = function(BinaryKeywordTag, BinaryExpression, IterationStateme
 	};
 	IteratorTag = new Rexjs(IteratorTag, BinaryKeywordTag);
 
-	IteratorTag.props({
+	IteratorTag.$({
 		/**
 		 * 获取绑定的语句，一般在子类使用父类逻辑，而不使用父类语句的情况下使用
 		 * @param {Statements} statements - 该语句将要所处的语句块
@@ -59,7 +59,7 @@ this.IteratorTag = function(BinaryKeywordTag, BinaryExpression, IterationStateme
 		 * @param {Statements} statements - 当前语句块
 		 */
 		hasVariable: function(statements){
-			return statements.contextGeneratorIfNeedCompile !== null;
+			return statements.contextGeneratorIfNeedCompile !== NULL;
 		},
 		/**
 		 * 标签访问器
@@ -105,7 +105,7 @@ this.ForInTag = function(IteratorTag){
 	};
 	ForInTag = new Rexjs(ForInTag, IteratorTag);
 
-	ForInTag.props({
+	ForInTag.$({
 		regexp: /in(?!stanceof)/
 	});
 
@@ -124,7 +124,7 @@ this.ForOfTag = function(IteratorTag, hasVariable){
 	};
 	ForOfTag = new Rexjs(ForOfTag, IteratorTag);
 
-	ForOfTag.props({
+	ForOfTag.$({
 		/**
 		 * 判断编译时是否需要临时变量名
 		 * @param {Statements} statements - 当前语句块

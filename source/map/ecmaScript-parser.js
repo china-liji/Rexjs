@@ -20,7 +20,7 @@ this.ECMAScriptTagsMap = function(SyntaxTagsMap, dataArray){
 	};
 	ECMAScriptTagsMap = new Rexjs(ECMAScriptTagsMap, SyntaxTagsMap);
 
-	ECMAScriptTagsMap.static({
+	ECMAScriptTagsMap.$$({
 		/**
 		 * 绑定标签列表
 		 * @param {String} name - 标签列表的唯一名称
@@ -79,7 +79,7 @@ this.ECMAScriptParser = function(SourceBuilder, MappingBuilder, ECMAScriptTagsMa
 	};
 	ECMAScriptParser = new Rexjs(ECMAScriptParser, SyntaxParser);
 
-	ECMAScriptParser.static({
+	ECMAScriptParser.$$({
 		/**
 		 * 获取编译配置
 		 */
@@ -108,7 +108,7 @@ this.ECMAScriptParser = function(SourceBuilder, MappingBuilder, ECMAScriptTagsMa
 		}
 	});
 
-	ECMAScriptParser.props({
+	ECMAScriptParser.$({
 		/**
 		 * 将解析后的语法生成字符串
 		 * @param {ContentBuilder} _contentBuilder - 内容生成器
@@ -150,7 +150,7 @@ this.ECMAScriptParser = function(SourceBuilder, MappingBuilder, ECMAScriptTagsMa
 			return _contentBuilder.complete();
 		},
 		defaultExported: false,
-		deps: null,
+		deps: NULL,
 		/**
 		 * 开始解析
 		 * @param {File} file - 文件信息
@@ -180,7 +180,7 @@ this.ECMAScriptParser = function(SourceBuilder, MappingBuilder, ECMAScriptTagsMa
 	this.ECMAScriptTagsMap,
 	this.GlobalStatements,
 	// tagsMap
-	null,
+	NULL,
 	// sourceMaps
 	false,
 	SyntaxParser.prototype.parse

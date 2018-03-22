@@ -11,8 +11,16 @@ this.ReturnTag = function(SCOPE_CLOSURE, visitor){
 	};
 	ReturnTag = new Rexjs(ReturnTag, TerminatedFlowTag);
 	
-	ReturnTag.props({
+	ReturnTag.$({
 		$class: CLASS_STATEMENT_BEGIN,
+		/**
+		 * 获取上下文中的闭包
+		 * @param {Statements} statements - 当前语句块
+		 */
+		contextClosure: function(statements){
+			return statements.closure;
+		},
+		errorType: "ILLEGAL_STATEMENT",
 		flow: ECMAScriptStatement.FLOW_LINEAR,
 		regexp: /return/,
 		/**
@@ -31,19 +39,19 @@ this.ReturnTag = function(SCOPE_CLOSURE, visitor){
 		 */
 		visitor: function(parser, context, statement, statements){
 			// 如果存在闭包
-			if(statements.closure){
+			if(this.contextClosure(statements)){
 				// 调用父类访问器
 				visitor.call(this, parser, context, statement, statements);
 
 				// 设置当前表达式为空表达式
-				statements.statement.expression = new EmptyExpression(null);
+				statements.statement.expression = new EmptyExpression(NULL);
 				return;
 			}
 
 			// 报错
 			parser.error(
 				context,
-				ECMAScriptErrors.template("ILLEGAL_STATEMENT", context.content)
+				ECMAScriptErrors.template(this.errorType, context.content)
 			);
 		}
 	});

@@ -10,7 +10,7 @@ this.IllegalLineTerminatorTag = function(){
 	};
 	IllegalLineTerminatorTag = new Rexjs(IllegalLineTerminatorTag, SpecialLineTerminatorTag);
 	
-	IllegalLineTerminatorTag.props({
+	IllegalLineTerminatorTag.$({
 		order: ECMAScriptOrders.ILLEGAL_LINE_TERMINATOR,
 		regexp: /(?:\/\*(?:[^*]|\*(?!\/))*)?(?:\r\n?|\n|\u2028|\u2029)/,
 		/**
@@ -38,7 +38,7 @@ this.StatementBreakTag = function(){
 	};
 	StatementBreakTag = new Rexjs(StatementBreakTag, SpecialLineTerminatorTag);
 	
-	StatementBreakTag.props({
+	StatementBreakTag.$({
 		$class: CLASS_STATEMENT_END,
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
@@ -74,7 +74,7 @@ this.ExpressionBreakTag = function(){
 	};
 	ExpressionBreakTag = new Rexjs(ExpressionBreakTag, SpecialLineTerminatorTag);
 	
-	ExpressionBreakTag.props({
+	ExpressionBreakTag.$({
 		// 防止与 StatementBreakTag 冲突
 		order: ECMAScriptOrders.EXPRESSION_BREAK,
 		/**

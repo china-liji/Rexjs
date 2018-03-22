@@ -11,13 +11,13 @@ this.BreakTag = function(){
 	};
 	BreakTag = new Rexjs(BreakTag, TerminatedBranchFlowTag);
 	
-	BreakTag.props({
+	BreakTag.$({
 		/**
 		 * 从相关生成器中获取当前所需使用的生成器索引值
-		 * @param {GeneratorExpression} generatorExpression - 相关生成器表达式
+		 * @param {FunctionExpression} functionExpression - 相关函数生成器表达式
 		 * @param {TerminatedFlowExpression} terminatedFlowExpression - 该标签相关的中断流表达式
 		 */
-		getCurrentIndexBy: function(generatorExpression, terminatedFlowExpression){
+		getCurrentIndexBy: function(functionExpression, terminatedFlowExpression){
 			return terminatedFlowExpression.owner.mainFlowIndex;
 		},
 		regexp: /break/
@@ -36,18 +36,19 @@ this.ContinueTag = function(FLOW_CIRCULAR, checkLabelledStatement){
 	};
 	ContinueTag = new Rexjs(ContinueTag, TerminatedBranchFlowTag);
 	
-	ContinueTag.props({
+	ContinueTag.$({
 		/**
 		 * 核对标记定义语句，是否满足当前中断流所对应的标记
 		 * @param {Statement} statement - 需要判断的语句
+		 * @param {Statement} ownerStatement - owner 表达式所属的语句
 		 * @param {TerminatedBranchFlowExpression} terminatedBranchFlowExpression - 中断分支流表达式
 		 * @param {String} label - 需要核对的标记文本值
 		 */
-		checkLabelledStatement: function(statement, terminatedBranchFlowExpression, label){
+		checkLabelledStatement: function(statement, ownerStatement, terminatedBranchFlowExpression, label){
 			// 如果语句流一致
 			if((statement.flow & FLOW_CIRCULAR) === FLOW_CIRCULAR){
 				// 返回父类判断结果
-				return checkLabelledStatement.call(this, statement.target, terminatedBranchFlowExpression, label);
+				return checkLabelledStatement.call(this, ownerStatement, ownerStatement, terminatedBranchFlowExpression, label);
 			}
 
 			return false;
@@ -55,11 +56,11 @@ this.ContinueTag = function(FLOW_CIRCULAR, checkLabelledStatement){
 		flow: FLOW_CIRCULAR,
 		/**
 		 * 从相关生成器中获取当前所需使用的生成器索引值
-		 * @param {GeneratorExpression} generatorExpression - 相关生成器表达式
+		 * @param {FunctionExpression} functionExpression - 相关函数生成器表达式
 		 * @param {TerminatedFlowExpression} terminatedFlowExpression - 该标签相关的中断流表达式
 		 */
-		getCurrentIndexBy: function(generatorExpression, terminatedFlowExpression){
-			return terminatedFlowExpression.owner.conditionIndex;
+		getCurrentIndexBy: function(functionExpression, terminatedFlowExpression){
+			return terminatedFlowExpression.owner.branchFlowIndex;
 		},
 		regexp: /continue/
 	});

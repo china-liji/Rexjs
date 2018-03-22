@@ -11,7 +11,7 @@ this.ExportAllMembersExpression = function(){
 	};
 	ExportAllMembersExpression = new Rexjs(ExportAllMembersExpression, Expression);
 
-	ExportAllMembersExpression.props({
+	ExportAllMembersExpression.$({
 		/**
 		 * 提取并编译表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
@@ -46,7 +46,7 @@ this.ExportAllMembersTag = function(AllMembersTag, ExportAllMembersExpression){
 	};
 	ExportAllMembersTag = new Rexjs(ExportAllMembersTag, AllMembersTag);
 
-	ExportAllMembersTag.props({
+	ExportAllMembersTag.$({
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射

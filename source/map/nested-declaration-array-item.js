@@ -11,7 +11,7 @@ this.OpenNestedDeclarationArrayItemTag = function(OpenDeclarationArrayTag){
 	};
 	OpenNestedDeclarationArrayItemTag = new Rexjs(OpenNestedDeclarationArrayItemTag, OpenDeclarationArrayTag);
 	
-	OpenNestedDeclarationArrayItemTag.props({
+	OpenNestedDeclarationArrayItemTag.$({
 		/**
 		 * 获取绑定的标签，该标签一般是用于语句的 try、catch 的返回值
 		 */
@@ -42,7 +42,7 @@ this.CloseNestedDeclarationArrayItemTag = function(visitor){
 	};
 	CloseNestedDeclarationArrayItemTag = new Rexjs(CloseNestedDeclarationArrayItemTag, CloseDeclarationArrayTag);
 	
-	CloseNestedDeclarationArrayItemTag.props({
+	CloseNestedDeclarationArrayItemTag.$({
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
@@ -77,5 +77,5 @@ closeNestedDeclarationArrayItemTag = new this.CloseNestedDeclarationArrayItemTag
 	this,
 	this.CloseDeclarationArrayTag,
 	// closeNestedDeclarationArrayItemTag
-	null
+	NULL
 );

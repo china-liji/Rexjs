@@ -14,7 +14,7 @@ this.SuperCallExpression = function(extractTo){
 	};
 	SuperCallExpression = new Rexjs(SuperCallExpression, CallExpression);
 
-	SuperCallExpression.props({
+	SuperCallExpression.$({
 		constructorReference: "",
 		/**
 		 * 提取表达式文本内容
@@ -83,7 +83,7 @@ this.SuperMethodCallExpression = function(extractTo){
 	};
 	SuperMethodCallExpression = new Rexjs(SuperMethodCallExpression, CallExpression);
 
-	SuperMethodCallExpression.props({
+	SuperMethodCallExpression.$({
 		/**
 		 * 提取表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
@@ -138,7 +138,7 @@ this.OpenSuperCallTag = function(SuperCallExpression, visitor){
 	};
 	OpenSuperCallTag = new Rexjs(OpenSuperCallTag, OpenCallTag);
 	
-	OpenSuperCallTag.props({
+	OpenSuperCallTag.$({
 		$type: TYPE_MISTAKABLE,
 		/**
 		 * 获取绑定的表达式，一般在子类使用父类逻辑，而不使用父类表达式的情况下使用
@@ -180,7 +180,7 @@ this.OpenSuperMethodCallTag = function(SuperMethodCallExpression){
 	};
 	OpenSuperMethodCallTag = new Rexjs(OpenSuperMethodCallTag, OpenCallTag);
 	
-	OpenSuperMethodCallTag.props({
+	OpenSuperMethodCallTag.$({
 		$type: TYPE_MISTAKABLE,
 		/**
 		 * 获取绑定的表达式，一般在子类使用父类逻辑，而不使用父类表达式的情况下使用

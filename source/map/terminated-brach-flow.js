@@ -12,7 +12,7 @@ this.TerminatedBranchFlowExpression = function(emptyExpression, generateTo){
 	};
 	TerminatedBranchFlowExpression = new Rexjs(TerminatedBranchFlowExpression, TerminatedFlowExpression);
 
-	TerminatedBranchFlowExpression.props({
+	TerminatedBranchFlowExpression.$({
 		/**
 		 * 以生成器形式的提取表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
@@ -23,13 +23,13 @@ this.TerminatedBranchFlowExpression = function(emptyExpression, generateTo){
 			// 调用 父类方法
 			generateTo.call(this, contentBuilder);
 		},
-		owner: null
+		owner: NULL
 	});
 
 	return TerminatedBranchFlowExpression;
 }(
 	// emptyExpression
-	new EmptyExpression(null),
+	new EmptyExpression(NULL),
 	TerminatedFlowExpression.prototype.generateTo
 );
 
@@ -41,11 +41,11 @@ this.TerminatedBranchFlowStatement = function(catchMethod, withoutAnyFlow){
 	function TerminatedBranchFlowStatement(statements){
 		TerminatedFlowStatement.call(this, statements);
 		
-		this.expression = new EmptyExpression(null);
+		this.expression = new EmptyExpression(NULL);
 	};
 	TerminatedBranchFlowStatement = new Rexjs(TerminatedBranchFlowStatement, TerminatedFlowStatement);
 
-	TerminatedBranchFlowStatement.props({
+	TerminatedBranchFlowStatement.$({
 		/**
 		 * 尝试处理异常
 		 * @param {SyntaxParser} parser - 语法解析器
@@ -105,7 +105,7 @@ this.TerminatedBranchFlowStatement = function(catchMethod, withoutAnyFlow){
 			}
 
 			// 如果是闭包，返回 null，中断循环，否则获取 target
-			statements = (statements.scope & SCOPE_CLOSURE) === SCOPE_CLOSURE ? null : statements.target;
+			statements = (statements.scope & SCOPE_CLOSURE) === SCOPE_CLOSURE ? NULL : statements.target;
 		}
 
 		return true;
@@ -122,20 +122,21 @@ this.TerminatedBranchFlowTag = function(TerminatedFlowTag, TerminatedBranchFlowE
 	};
 	TerminatedBranchFlowTag = new Rexjs(TerminatedBranchFlowTag, TerminatedFlowTag);
 	
-	TerminatedBranchFlowTag.props({
+	TerminatedBranchFlowTag.$({
 		/**
 		 * 核对标记定义语句，是否满足当前中断流所对应的标记
 		 * @param {Statement} statement - 需要判断的语句
+		 * @param {Statement} ownerStatement - owner 表达式所属的语句
 		 * @param {TerminatedBranchFlowExpression} terminatedBranchFlowExpression - 中断分支流表达式
 		 * @param {String} label - 需要核对的标记文本值
 		 */
-		checkLabelledStatement: function(statement, terminatedBranchFlowExpression, label){
+		checkLabelledStatement: function(statement, ownerStatement, terminatedBranchFlowExpression, label){
 			// 如果当前语句是标记语句
 			if(statement instanceof LabelledStatement){
 				// 返回标签对比结果
 				if(statement.target.expression.context.content === label){
 					// 设置中断流表达式所属表达式
-					terminatedBranchFlowExpression.owner = statement.expression;
+					terminatedBranchFlowExpression.owner = ownerStatement.expression;
 					return true;
 				}
 			}
@@ -185,7 +186,7 @@ this.LabelledIdentifierTag = function(LabelTag, withoutAnyFlow){
 	};
 	LabelledIdentifierTag = new Rexjs(LabelledIdentifierTag, LabelTag);
 	
-	LabelledIdentifierTag.props({
+	LabelledIdentifierTag.$({
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
@@ -235,7 +236,7 @@ this.LabelledIdentifierTag = function(LabelTag, withoutAnyFlow){
 			// 如果语句存在
 			while(statement){
 				// 如果流语句核对有效
-				if(tag.checkLabelledStatement(statement, terminatedBranchFlowExpression, content)){
+				if(tag.checkLabelledStatement(statement, statement.target, terminatedBranchFlowExpression, content)){
 					return false;
 				}
 
@@ -243,7 +244,7 @@ this.LabelledIdentifierTag = function(LabelTag, withoutAnyFlow){
 			}
 
 			// 如果是闭包，则获取 target，否则等于 null，中断循环
-			statements = (statements.scope & SCOPE_CLOSURE) === SCOPE_CLOSURE ? null : statements.target;
+			statements = (statements.scope & SCOPE_CLOSURE) === SCOPE_CLOSURE ? NULL : statements.target;
 		}
 
 		return true;

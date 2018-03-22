@@ -11,7 +11,7 @@ this.DefaultMemberExpression = function(MemberExpression){
 	};
 	DefaultMemberExpression = new Rexjs(DefaultMemberExpression, MemberExpression);
 
-	DefaultMemberExpression.props({
+	DefaultMemberExpression.$({
 		/**
 		 * 提取并编译表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
@@ -40,7 +40,7 @@ this.DefaultMemberTag = function(MemberVariableTag, DefaultMemberExpression){
 	};
 	DefaultMemberTag = new Rexjs(DefaultMemberTag, MemberVariableTag);
 
-	DefaultMemberTag.props({
+	DefaultMemberTag.$({
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射

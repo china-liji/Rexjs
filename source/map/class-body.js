@@ -11,7 +11,7 @@ this.ClassBodyExpression = function(ObjectExpression, extractTo, compileItem){
 	};
 	ClassBodyExpression = new Rexjs(ClassBodyExpression, ObjectExpression);
 
-	ClassBodyExpression.props({
+	ClassBodyExpression.$({
 		/**
 		 * 提取并编译表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
@@ -53,7 +53,7 @@ this.ClassPropertyStatement = function(PropertyStatement, ClassPropertyExpressio
 	};
 	ClassPropertyStatement = new Rexjs(ClassPropertyStatement, PropertyStatement);
 
-	ClassPropertyStatement.props({
+	ClassPropertyStatement.$({
 		/**
 		 * 捕获处理异常
 		 * @param {SyntaxParser} parser - 语法解析器
@@ -146,7 +146,7 @@ this.ClassPropertyStatement = function(PropertyStatement, ClassPropertyExpressio
 						default:
 							// 其他都是非法字符，报错
 							parser.error(context);
-							return null;
+							return NULL;
 					}
 				}
 			}
@@ -159,7 +159,7 @@ this.ClassPropertyStatement = function(PropertyStatement, ClassPropertyExpressio
 				if(propertyExpression.value instanceof ClassPropertyInitializerExpression){
 					// 报错
 					parser.error(context);
-					return null;
+					return NULL;
 				}
 			}
 
@@ -253,7 +253,7 @@ this.OpenClassBodyTag = function(
 	};
 	OpenClassBodyTag = new Rexjs(OpenClassBodyTag, OpenObjectTag);
 
-	OpenClassBodyTag.props({
+	OpenClassBodyTag.$({
 		/**
 		 * 获取绑定的类主体结束标签，该标签一般是用于语句的 try、catch 的返回值
 		 */
@@ -385,7 +385,7 @@ this.ClassPropertySeparatorTag = function(SemicolonTag, ClassPropertyStatement){
 	};
 	ClassPropertySeparatorTag = new Rexjs(ClassPropertySeparatorTag, SemicolonTag);
 
-	ClassPropertySeparatorTag.props({
+	ClassPropertySeparatorTag.$({
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
@@ -422,7 +422,7 @@ this.ClassPropertyPlaceholderTag = function(ClassPropertySeparatorTag){
 	};
 	ClassPropertyPlaceholderTag = new Rexjs(ClassPropertyPlaceholderTag, ClassPropertySeparatorTag);
 
-	ClassPropertyPlaceholderTag.props({
+	ClassPropertyPlaceholderTag.$({
 		/**
 		 * 标签访问器
 		 * @param {SyntaxParser} parser - 语法解析器
@@ -448,7 +448,7 @@ this.CloseClassBodyTag = function(CloseObjectTag){
 	};
 	CloseClassBodyTag = new Rexjs(CloseClassBodyTag, CloseObjectTag);
 
-	CloseClassBodyTag.props({
+	CloseClassBodyTag.$({
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
@@ -488,7 +488,7 @@ closeClassBodyTag = new this.CloseClassBodyTag();
 	this.BinaryNumberTag,
 	this.OctalNumberTag,
 	// classPropertySeparatorTag
-	null,
+	NULL,
 	// closeClassBodyTag
-	null
+	NULL
 );

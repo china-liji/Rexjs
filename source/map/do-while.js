@@ -12,8 +12,8 @@ this.DoExpression = function(ConditionalExpression){
 	};
 	DoExpression = new Rexjs(DoExpression, ConditionalExpression);
 	
-	DoExpression.props({
-		body: null,
+	DoExpression.$({
+		body: NULL,
 		/**
 		 * 以生成器形式的提取表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
@@ -63,7 +63,7 @@ this.DoExpression = function(ConditionalExpression){
 		 * @param {Number} state - 表达式状态
 		 */
 		set state(state){},
-		whileContext: null
+		whileContext: NULL
 	});
 	
 	return DoExpression;
@@ -81,7 +81,7 @@ this.DoStatement = function(SingleStatement){
 	};
 	DoStatement = new Rexjs(DoStatement, SingleStatement);
 	
-	DoStatement.props({
+	DoStatement.$({
 		/**
 		 * 请求跳出该语句
 		 * @param {SyntaxParser} parser - 语法解析器
@@ -127,7 +127,7 @@ this.DoTag = function(DoExpression, DoStatement){
 	};
 	DoTag = new Rexjs(DoTag, SyntaxTag);
 	
-	DoTag.props({
+	DoTag.$({
 		$class: CLASS_STATEMENT_BEGIN,
 		/**
 		 * 获取绑定的标签，该标签一般是用于语句的 try、catch 的返回值
@@ -174,7 +174,7 @@ this.DoWhileTag = function(WhileTag){
 	};
 	DoWhileTag = new Rexjs(DoWhileTag, WhileTag);
 
-	DoWhileTag.props({
+	DoWhileTag.$({
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
@@ -209,7 +209,7 @@ this.OpenDoWhileConditionTag = function(OpenWhileConditionTag, ConditionStatemen
 	};
 	OpenDoWhileConditionTag = new Rexjs(OpenDoWhileConditionTag, OpenWhileConditionTag);
 
-	OpenDoWhileConditionTag.props({
+	OpenDoWhileConditionTag.$({
 		/**
 		 * 获取绑定的标签，该标签一般是用于语句的 try、catch 的返回值
 		 */
@@ -247,7 +247,7 @@ this.CloseDoWhileConditionTag = function(CloseWhileConditionTag){
 	};
 	CloseDoWhileConditionTag = new Rexjs(CloseDoWhileConditionTag, CloseWhileConditionTag);
 
-	CloseDoWhileConditionTag.props({
+	CloseDoWhileConditionTag.$({
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
@@ -277,7 +277,7 @@ closeDoWhileConditionTag = new this.CloseDoWhileConditionTag();
 }.call(
 	this,
 	// doWhileTag
-	null,
+	NULL,
 	// closeDoWhileConditionTag
-	null
+	NULL
 );

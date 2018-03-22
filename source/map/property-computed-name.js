@@ -11,7 +11,7 @@ this.ComputedPropertyNameExpression = function(){
 	};
 	ComputedPropertyNameExpression = new Rexjs(ComputedPropertyNameExpression, PartnerExpression);
 
-	ComputedPropertyNameExpression.props({
+	ComputedPropertyNameExpression.$({
 		/**
 		 * 提取并编译表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
@@ -46,7 +46,7 @@ this.ObjectComputedNameStatement = function(){
 	};
 	ObjectComputedNameStatement = new Rexjs(ObjectComputedNameStatement, ECMAScriptStatement);
 
-	ObjectComputedNameStatement.props({
+	ObjectComputedNameStatement.$({
 		/**
 		 * 捕获处理异常
 		 * @param {SyntaxParser} parser - 语法解析器
@@ -57,7 +57,7 @@ this.ObjectComputedNameStatement = function(){
 			if(context.content !== "]"){
 				// 报错
 				parser.error(context);
-				return null;
+				return NULL;
 			}
 
 			// 跳出语句并设置 inner
@@ -93,7 +93,7 @@ this.OpenComputedPropertyNameTag = function(OpenBracketTag, ComputedPropertyName
 	};
 	OpenComputedPropertyNameTag = new Rexjs(OpenComputedPropertyNameTag, OpenBracketTag);
 
-	OpenComputedPropertyNameTag.props({
+	OpenComputedPropertyNameTag.$({
 		/**
 		 * 获取绑定的标签，该标签一般是用于语句的 try、catch 的返回值
 		 */
@@ -149,7 +149,7 @@ this.CloseComputedPropertyNameTag = function(CloseBracketTag){
 	};
 	CloseComputedPropertyNameTag = new Rexjs(CloseComputedPropertyNameTag, CloseBracketTag);
 
-	CloseComputedPropertyNameTag.props({
+	CloseComputedPropertyNameTag.$({
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
@@ -184,7 +184,7 @@ this.OpenComputedMethodNameTag = function(OpenComputedPropertyNameTag){
 	};
 	OpenComputedMethodNameTag = new Rexjs(OpenComputedMethodNameTag, OpenComputedPropertyNameTag);
 
-	OpenComputedMethodNameTag.props({
+	OpenComputedMethodNameTag.$({
 		/**
 		 * 获取绑定的标签，该标签一般是用于语句的 try、catch 的返回值
 		 */
@@ -208,7 +208,7 @@ this.CloseComputedMethodNameTag = function(CloseComputedPropertyNameTag){
 	};
 	CloseComputedMethodNameTag = new Rexjs(CloseComputedMethodNameTag, CloseComputedPropertyNameTag);
 
-	CloseComputedMethodNameTag.props({
+	CloseComputedMethodNameTag.$({
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
@@ -229,7 +229,7 @@ closeComputedMethodNameTag = new this.CloseComputedMethodNameTag();
 }.call(
 	this,
 	// closeComputedPropertyNameTag
-	null,
+	NULL,
 	// closeComputedMethodNameTag
-	null
+	NULL
 );

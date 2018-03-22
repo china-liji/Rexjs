@@ -9,32 +9,32 @@
 * [GitHub]({{GIT_HUB}})
 
 #### {{install}}
-* NPM
+> **NPM**
 ```
 npm install {{PACKAGE_NAME}}
 ```
 
-* Git
+> **Git**
 ```
 git clone {{GIT_HUB}}.git
 ```
 
-* {{download}}
+> **{{download}}**
 
-[Zip]({{GIT_HUB}}/archive/master.zip)
+* [Zip]({{GIT_HUB}}/archive/master.zip)
 
-[{{FILENAME_REXJS}}]({{GIT_HUB_USER_CONTENT}}/{{DIST_DIR}}/{{FILENAME_REXJS}}) - {{REXJS_FILE_SIZE}}
+* [{{FILENAME_REXJS}}]({{GIT_HUB_USER_CONTENT}}/{{DIST_DIR}}/{{FILENAME_REXJS}}) - {{REXJS_FILE_SIZE}}
 
-[{{FILENAME_REXJS_API}}]({{GIT_HUB_USER_CONTENT}}/{{DIST_DIR}}/{{FILENAME_REXJS_API}}) - {{REXJS_API_SIZE}}
+* [{{FILENAME_REXJS_API}}]({{GIT_HUB_USER_CONTENT}}/{{DIST_DIR}}/{{FILENAME_REXJS_API}}) - {{REXJS_API_SIZE}}
 
-[{{FILENAME_REXJS_HELPER}}]({{GIT_HUB_USER_CONTENT}}/{{DIST_DIR}}/{{FILENAME_REXJS_HELPER}}) - {{REXJS_HELPER_SIZE}}
+* [{{FILENAME_REXJS_HELPER}}]({{GIT_HUB_USER_CONTENT}}/{{DIST_DIR}}/{{FILENAME_REXJS_HELPER}}) - {{REXJS_HELPER_SIZE}}
 
 -----
 
 #### {{f&s}}
 ![]({{GIT_HUB_USER_CONTENT}}/doc/image/compare.jpg)
 
-`{{DIST_DIR}}/{{FILENAME_REXJS}}`[{{REXJS_VERSION}}] {{smallerDesc}}
+`{{DIST_DIR}}/{{FILENAME_REXJS}}[{{REXJS_VERSION}}]` {{smallerDesc}}
 
 -----
 

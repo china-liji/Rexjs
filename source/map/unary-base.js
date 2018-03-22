@@ -11,7 +11,7 @@ this.UnaryExpression = function(){
 	};
 	UnaryExpression = new Rexjs(UnaryExpression, Expression);
 	
-	UnaryExpression.props({
+	UnaryExpression.$({
 		/**
 		 * 提取表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
@@ -22,7 +22,7 @@ this.UnaryExpression = function(){
 			// 提取操作对象内容
 			this.operand.extractTo(contentBuilder);
 		},
-		operand: null
+		operand: NULL
 	});
 	
 	return UnaryExpression;
@@ -38,7 +38,7 @@ this.UnaryStatement = function(){
 	};
 	UnaryStatement = new Rexjs(UnaryStatement, ECMAScriptStatement);
 	
-	UnaryStatement.props({
+	UnaryStatement.$({
 		/**
 		 * 捕获处理异常
 		 * @param {SyntaxParser} parser - 语法解析器
@@ -77,7 +77,7 @@ this.UnaryTag = function(UnaryExpression, UnaryStatement, ExpressionSeparatorTag
 	};
 	UnaryTag = new Rexjs(UnaryTag, SyntaxTag);
 	
-	UnaryTag.props({
+	UnaryTag.$({
 		$class: CLASS_EXPRESSION,
 		/**
 		 * 获取绑定的表达式，一般在子类使用父类逻辑，而不使用父类表达式的情况下使用
@@ -136,7 +136,7 @@ this.UnaryKeywordTag = function(UnaryTag){
 	};
 	UnaryKeywordTag = new Rexjs(UnaryKeywordTag, UnaryTag);
 	
-	UnaryKeywordTag.props({
+	UnaryKeywordTag.$({
 		/**
 		 * 提取文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器

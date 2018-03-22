@@ -11,7 +11,7 @@ this.ConstructorNameExpression = function(){
 	};
 	ConstructorNameExpression = new Rexjs(ConstructorNameExpression, IdentifierPropertyNameExpression);
 
-	ConstructorNameExpression.props({
+	ConstructorNameExpression.$({
 		/**
 		 * 提取表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
@@ -54,7 +54,7 @@ this.DefaultConstructorPropertyExpression = function(ClassPropertyExpression, Co
 	};
 	DefaultConstructorPropertyExpression = new Rexjs(DefaultConstructorPropertyExpression, ClassPropertyExpression);
 
-	DefaultConstructorPropertyExpression.props({
+	DefaultConstructorPropertyExpression.$({
 		/**
 		 * 提取并编译表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
@@ -85,7 +85,7 @@ this.DefaultConstructorPropertyExpression = function(ClassPropertyExpression, Co
 		 */
 		extractTo: function(){},
 		hasSuper: false,
-		name: null,
+		name: NULL,
 		/**
 		 * 获取属性的拥有者
 		 * @param {ClassExpression} classExpression - 类表达式
@@ -129,13 +129,13 @@ this.ConstructorBodyStatements = function(extractTo, applyAfterSuperCall){
 	};
 	ConstructorBodyStatements = new Rexjs(ConstructorBodyStatements, ShorthandMethodBodyStatements);
 
-	ConstructorBodyStatements.static({
+	ConstructorBodyStatements.$$({
 		PHASE_CALLED: PHASE_CALLED,
 		PHASE_NONE: PHASE_NONE,
 		PHASE_WAITING_CALL: PHASE_WAITING_CALL
 	});
 
-	ConstructorBodyStatements.props({
+	ConstructorBodyStatements.$({
 		/**
 		 * 申请应用 super 关键字
 		 * @param {SyntaxParser} parser - 语法解析器
@@ -238,7 +238,7 @@ this.ConstructorTag = function(WordPropertyNameTag, ConstructorPropertyExpressio
 	};
 	ConstructorTag = new Rexjs(ConstructorTag, WordPropertyNameTag);
 
-	ConstructorTag.props({
+	ConstructorTag.$({
 		regexp: WordPropertyNameTag.compileRegExp("constructor"),
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
@@ -299,7 +299,7 @@ this.OpenConstructorArgumentsTag = function(ConstructorNameExpression, visitor){
 	};
 	OpenConstructorArgumentsTag = new Rexjs(OpenConstructorArgumentsTag, OpenShorthandMethodArgumentsTag);
 
-	OpenConstructorArgumentsTag.props({
+	OpenConstructorArgumentsTag.$({
 		/**
 		 * 获取绑定的标签，该标签一般是用于语句的 try、catch 的返回值
 		 */
@@ -338,7 +338,7 @@ this.CloseConstructorArgumentsTag = function(CloseShorthandMethodArgumentsTag){
 	};
 	CloseConstructorArgumentsTag = new Rexjs(CloseConstructorArgumentsTag, CloseShorthandMethodArgumentsTag);
 
-	CloseConstructorArgumentsTag.props({
+	CloseConstructorArgumentsTag.$({
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
@@ -363,7 +363,7 @@ this.OpenConstructorBodyTag = function(OpenShorthandMethodBodyTag, ConstructorBo
 	};
 	OpenConstructorBodyTag = new Rexjs(OpenConstructorBodyTag, OpenShorthandMethodBodyTag);
 
-	OpenConstructorBodyTag.props({
+	OpenConstructorBodyTag.$({
 		/**
 		 * 获取绑定的标签，该标签一般是用于语句的 try、catch 的返回值
 		 */
@@ -395,7 +395,7 @@ this.CloseConstructorBodyTag = function(visitor){
 	};
 	CloseConstructorBodyTag = new Rexjs(CloseConstructorBodyTag, CloseShorthandMethodBodyTag);
 
-	CloseConstructorBodyTag.props({
+	CloseConstructorBodyTag.$({
 		/**
 		 * 标签访问器
 		 * @param {SyntaxParser} parser - 语法解析器
@@ -437,7 +437,7 @@ closeConstructorBodyTag = new this.CloseConstructorBodyTag();
 	// PHASE_CALLED
 	2,
 	// closeConstructorArgumentsTag
-	null,
+	NULL,
 	// closeConstructorBodyTag
-	null
+	NULL
 );

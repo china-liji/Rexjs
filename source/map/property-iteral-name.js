@@ -11,7 +11,7 @@ this.LiteralPropertyNameExpression = function(){
 	};
 	LiteralPropertyNameExpression = new Rexjs(LiteralPropertyNameExpression, Expression);
 
-	LiteralPropertyNameExpression.props({
+	LiteralPropertyNameExpression.$({
 		/**
 		 * 以定义属性的模式提取表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
@@ -106,7 +106,7 @@ this.StringPropertyNameTag = function(StringTag){
 	};
 	StringPropertyNameTag = new Rexjs(StringPropertyNameTag, StringTag);
 
-	StringPropertyNameTag.props({
+	StringPropertyNameTag.$({
 		require: require,
 		visitor: visitor
 	});
@@ -126,7 +126,7 @@ this.StringMethodNameTag = function(StringPropertyNameTag){
 	};
 	StringMethodNameTag = new Rexjs(StringMethodNameTag, StringPropertyNameTag);
 
-	StringMethodNameTag.props({
+	StringMethodNameTag.$({
 		require: requireOfMethodName
 	});
 
@@ -145,7 +145,7 @@ this.NumberPropertyNameTag = function(NumberTag){
 	};
 	NumberPropertyNameTag = new Rexjs(NumberPropertyNameTag, NumberTag);
 
-	NumberPropertyNameTag.props({
+	NumberPropertyNameTag.$({
 		require: require,
 		visitor: visitor
 	});
@@ -165,7 +165,7 @@ this.NumberMethodNameTag = function(NumberPropertyNameTag){
 	};
 	NumberMethodNameTag = new Rexjs(NumberMethodNameTag, NumberPropertyNameTag);
 
-	NumberMethodNameTag.props({
+	NumberMethodNameTag.$({
 		require: requireOfMethodName
 	});
 
@@ -184,7 +184,7 @@ this.BinaryNumberPropertyNameTag = function(BinaryNumberTag){
 	};
 	BinaryNumberPropertyNameTag = new Rexjs(BinaryNumberPropertyNameTag, BinaryNumberTag);
 	
-	BinaryNumberPropertyNameTag.props({
+	BinaryNumberPropertyNameTag.$({
 		require: require,
 		visitor: visitorOfMathematicalNumeral
 	});
@@ -204,7 +204,7 @@ this.BinaryNumberMethodNameTag = function(BinaryNumberPropertyNameTag){
 	};
 	BinaryNumberMethodNameTag = new Rexjs(BinaryNumberMethodNameTag, BinaryNumberPropertyNameTag);
 
-	BinaryNumberMethodNameTag.props({
+	BinaryNumberMethodNameTag.$({
 		require: requireOfMethodName
 	});
 
@@ -223,7 +223,7 @@ this.OctalNumberPropertyNameTag = function(OctalNumberTag){
 	};
 	OctalNumberPropertyNameTag = new Rexjs(OctalNumberPropertyNameTag, OctalNumberTag);
 	
-	OctalNumberPropertyNameTag.props({
+	OctalNumberPropertyNameTag.$({
 		require: require,
 		visitor: visitorOfMathematicalNumeral
 	});
@@ -243,7 +243,7 @@ this.OctalNumberMethodNameTag = function(OctalNumberPropertyNameTag){
 	};
 	OctalNumberMethodNameTag = new Rexjs(OctalNumberMethodNameTag, OctalNumberPropertyNameTag);
 
-	OctalNumberMethodNameTag.props({
+	OctalNumberMethodNameTag.$({
 		require: requireOfMethodName
 	});
 
@@ -255,11 +255,11 @@ this.OctalNumberMethodNameTag = function(OctalNumberPropertyNameTag){
 }.call(
 	this,
 	// require
-	null,
+	NULL,
 	// requireOfMethodName
-	null,
+	NULL,
 	// visitor
-	null,
+	NULL,
 	// visitorOfMathematicalNumeral
-	null
+	NULL
 );

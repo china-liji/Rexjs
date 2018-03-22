@@ -11,7 +11,7 @@ this.EmptyStatementTag = function(){
 	};
 	EmptyStatementTag = new Rexjs(EmptyStatementTag, SemicolonTag);
 	
-	EmptyStatementTag.props({
+	EmptyStatementTag.$({
 		$class: CLASS_STATEMENT_BEGIN,
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
@@ -50,7 +50,7 @@ this.StatementEndTag = function(unexpected){
 	};
 	StatementEndTag = new Rexjs(StatementEndTag, SemicolonTag);
 	
-	StatementEndTag.props({
+	StatementEndTag.$({
 		$class: CLASS_STATEMENT_END,
 		$type: TYPE_MISTAKABLE,
 		// 防止与 EmptyStatementTag 冲突
@@ -89,7 +89,7 @@ this.LastStatementEndTag = function(StatementEndTag){
 	};
 	LastStatementEndTag = new Rexjs(LastStatementEndTag, StatementEndTag);
 
-	LastStatementEndTag.props({
+	LastStatementEndTag.$({
 		regexp: /$/,
 		throw: "end of input"
 	});

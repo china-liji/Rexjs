@@ -11,8 +11,8 @@ this.DeclarationArrayExpression = function(ArrayExpression){
 	};
 	DeclarationArrayExpression = new Rexjs(DeclarationArrayExpression, ArrayExpression);
 
-	DeclarationArrayExpression.props({
-		arrayOf: null,
+	DeclarationArrayExpression.$({
+		arrayOf: NULL,
 		declaration: true,
 		/**
 		 * 将数组每一项转换为解构项表达式
@@ -36,7 +36,7 @@ this.DeclarationArrayItemAssignmentReadyStatement = function(){
 	};
 	DeclarationArrayItemAssignmentReadyStatement = new Rexjs(DeclarationArrayItemAssignmentReadyStatement, ECMAScriptStatement);
 	
-	DeclarationArrayItemAssignmentReadyStatement.props({
+	DeclarationArrayItemAssignmentReadyStatement.$({
 		/**
 		 * 捕获处理异常
 		 * @param {SyntaxParser} parser - 语法解析器
@@ -45,7 +45,7 @@ this.DeclarationArrayItemAssignmentReadyStatement = function(){
 		catch: function(parser, context){
 			// 跳出语句
 			this.out();
-			return null;
+			return NULL;
 		},
 		/**
 		 * 尝试处理异常
@@ -59,7 +59,7 @@ this.DeclarationArrayItemAssignmentReadyStatement = function(){
 				this.out();
 			}
 
-			return null;
+			return NULL;
 		}
 	});
 
@@ -76,7 +76,7 @@ this.OpenDeclarationArrayTag = function(DeclarationArrayExpression, visitor){
 	};
 	OpenDeclarationArrayTag = new Rexjs(OpenDeclarationArrayTag, OpenArrayTag);
 	
-	OpenDeclarationArrayTag.props({
+	OpenDeclarationArrayTag.$({
 		/**
 		 * 获取绑定的标签，该标签一般是用于语句的 try、catch 的返回值
 		 */
@@ -142,7 +142,7 @@ this.DeclarationArrayItemTag = function(VariableDeclarationTag, DestructuringIte
 	};
 	DeclarationArrayItemTag = new Rexjs(DeclarationArrayItemTag, VariableDeclarationTag);
 	
-	DeclarationArrayItemTag.props({
+	DeclarationArrayItemTag.$({
 		/**
 		 * 获取该标签所处的数组语句
 		 * @param {Statement} statement - 当前语句
@@ -203,7 +203,7 @@ this.DeclarationArrayItemSeparatorTag = function(ArrayItemSeparatorTag){
 	};
 	DeclarationArrayItemSeparatorTag = new Rexjs(DeclarationArrayItemSeparatorTag, ArrayItemSeparatorTag);
 	
-	DeclarationArrayItemSeparatorTag.props({
+	DeclarationArrayItemSeparatorTag.$({
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
@@ -228,7 +228,7 @@ this.DeclarationArrayItemAssignmentTag = function(DeclarationArrayItemAssignment
 	};
 	DeclarationArrayItemAssignmentTag = new Rexjs(DeclarationArrayItemAssignmentTag, BasicAssignmentTag);
 	
-	DeclarationArrayItemAssignmentTag.props({
+	DeclarationArrayItemAssignmentTag.$({
 		/**
 		 * 标签访问器
 		 * @param {SyntaxParser} parser - 语法解析器
@@ -270,7 +270,7 @@ this.CloseDeclarationArrayTag = function(CloseArrayTag){
 	};
 	CloseDeclarationArrayTag = new Rexjs(CloseDeclarationArrayTag, CloseArrayTag);
 	
-	CloseDeclarationArrayTag.props({
+	CloseDeclarationArrayTag.$({
 		$type: TYPE_UNEXPECTED,
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
@@ -294,7 +294,7 @@ closeDeclarationArrayTag = new this.CloseDeclarationArrayTag();
 	this.OpenArrayTag,
 	this.BasicAssignmentTag,
 	// variableDeclarationArrayItemSeparatorTag
-	null,
+	NULL,
 	// closeDeclarationArrayTag
-	null
+	NULL
 );

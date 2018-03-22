@@ -227,6 +227,8 @@ module.exports = { DevSource: this.DevSource, Source: this.Source };
 		"switch.js",
 		"case.js",
 		"yield.js",
+		"async.js",
+		"await.js",
 		"template.js",
 		"template-content.js",
 		"template-placeholder.js",

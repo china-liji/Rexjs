@@ -11,7 +11,7 @@ this.FunctionBodyExpression = function(extractTo, insertDefaults){
 	};
 	FunctionBodyExpression = new Rexjs(FunctionBodyExpression, PartnerExpression);
 
-	FunctionBodyExpression.props({
+	FunctionBodyExpression.$({
 		/**
 		 * 提取表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
@@ -84,7 +84,7 @@ this.FunctionBodyStatements = function(ECMAScriptStatements, ECMAScriptVariableC
 	};
 	FunctionBodyStatements = new Rexjs(FunctionBodyStatements, ECMAScriptStatements);
 	
-	FunctionBodyStatements.props({
+	FunctionBodyStatements.$({
 		/**
 		 * 申请应用 super 关键字
 		 * @param {SyntaxParser} parser - 语法解析器
@@ -133,14 +133,14 @@ this.FunctionBodyStatements = function(ECMAScriptStatements, ECMAScriptVariableC
 			var expression = this.target.statement.target.expression;
 
 			// 如果存在生成器的星号，则返回表达式
-			return expression.star ? expression : null;
+			return expression.star ? expression : NULL;
 		},
 		/**
 		 * 获取当前上下文中需要编译的生成器
 		 */
 		get contextGeneratorIfNeedCompile(){
 			// 如果需要编译，则返回 contextGenerator
-			return config.es6Base ? this.contextGenerator : null;
+			return config.es6Base ? this.contextGenerator : NULL;
 		},
 		/**
 		 * 初始化语句
@@ -148,7 +148,20 @@ this.FunctionBodyStatements = function(ECMAScriptStatements, ECMAScriptVariableC
 		initStatement: function(){
 			return new BraceBodyStatement(this);
 		},
-		scope: ECMAScriptStatements.SCOPE_CLOSURE
+		scope: ECMAScriptStatements.SCOPE_CLOSURE,
+		/**
+		 * 获取当前上下文中严格意义上的生成器
+		 */
+		get strictContextGenerator(){
+			var generator = this.contextGenerator;
+
+			// 如果 生成器存在 且 生成器的符号不是 "*"，说明是 async 伪造的生成器
+			if(generator && generator.star.content !== "*"){
+				return NULL;
+			}
+
+			return generator;
+		}
 	});
 	
 	return FunctionBodyStatements;
@@ -169,7 +182,7 @@ this.OpenFunctionBodyTag = function(OpenBraceTag, FunctionBodyExpression, Functi
 	};
 	OpenFunctionBodyTag = new Rexjs(OpenFunctionBodyTag, OpenBraceTag);
 
-	OpenFunctionBodyTag.props({
+	OpenFunctionBodyTag.$({
 		/**
 		 * 获取绑定的函数主体结束标签，该标签一般是用于语句的 try、catch 的返回值
 		 */
@@ -254,7 +267,7 @@ this.CloseFunctionBodyTag = function(CloseBraceTag){
 	};
 	CloseFunctionBodyTag = new Rexjs(CloseFunctionBodyTag, CloseBraceTag);
 
-	CloseFunctionBodyTag.props({
+	CloseFunctionBodyTag.$({
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
@@ -293,5 +306,5 @@ closeFunctionBodyTag = new this.CloseFunctionBodyTag();
 }.call(
 	this,
 	// closeFunctionBodyTag
-	null
+	NULL
 );

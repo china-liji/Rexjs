@@ -11,7 +11,7 @@ this.BasicAssignmentTag = function(){
 	};
 	BasicAssignmentTag = new Rexjs(BasicAssignmentTag, AssignmentTag);
 	
-	BasicAssignmentTag.props({
+	BasicAssignmentTag.$({
 		regexp: /=/
 	});
 	
@@ -28,7 +28,7 @@ this.ShorthandAssignmentTag = function(){
 	};
 	ShorthandAssignmentTag = new Rexjs(ShorthandAssignmentTag, AssignmentTag);
 	
-	ShorthandAssignmentTag.props({
+	ShorthandAssignmentTag.$({
 		// 防止与其他二元运算符冲突
 		order: ECMAScriptOrders.SHORTHAND_ASSIGNMENT,
 		regexp: /\+=|-=|\*=|\/=|%=|<<=|>>=|>>>=|\&=|\|=|\^=/
@@ -47,7 +47,7 @@ this.LogicalORTag = function(){
 	};
 	LogicalORTag = new Rexjs(LogicalORTag, BinaryTag);
 	
-	LogicalORTag.props({
+	LogicalORTag.$({
 		// 防止与 "|" 冲突
 		order: ECMAScriptOrders.LOGICAL_OR,
 		precedence: 1,
@@ -67,7 +67,7 @@ this.LogicalANDTag = function(){
 	};
 	LogicalANDTag = new Rexjs(LogicalANDTag, BinaryTag);
 	
-	LogicalANDTag.props({
+	LogicalANDTag.$({
 		// 防止与 "&" 冲突
 		order: ECMAScriptOrders.LOGICAL_AND,
 		precedence: 2,
@@ -87,7 +87,7 @@ this.BitwiseORTag = function(){
 	};
 	BitwiseORTag = new Rexjs(BitwiseORTag, BinaryTag);
 	
-	BitwiseORTag.props({
+	BitwiseORTag.$({
 		precedence: 3,
 		regexp: /\|/
 	});
@@ -105,7 +105,7 @@ this.BitwiseXORTag = function(){
 	};
 	BitwiseXORTag = new Rexjs(BitwiseXORTag, BinaryTag);
 	
-	BitwiseXORTag.props({
+	BitwiseXORTag.$({
 		precedence: 4,
 		regexp: /\^/
 	});
@@ -123,7 +123,7 @@ this.BitwiseANDTag = function(){
 	};
 	BitwiseANDTag = new Rexjs(BitwiseANDTag, BinaryTag);
 	
-	BitwiseANDTag.props({
+	BitwiseANDTag.$({
 		precedence: 5,
 		regexp: /\&/
 	});
@@ -141,7 +141,7 @@ this.IdentityTag = function(){
 	};
 	IdentityTag = new Rexjs(IdentityTag, BinaryTag);
 	
-	IdentityTag.props({
+	IdentityTag.$({
 		// 防止与 "==" 或 "=" 冲突
 		order: ECMAScriptOrders.IDENTITY,
 		precedence: 6,
@@ -161,7 +161,7 @@ this.NonidentityTag = function(){
 	};
 	NonidentityTag = new Rexjs(NonidentityTag, BinaryTag);
 	
-	NonidentityTag.props({
+	NonidentityTag.$({
 		// 防止与 "!=" 冲突
 		order: ECMAScriptOrders.NONIDENTITY,
 		precedence: 6,
@@ -182,7 +182,7 @@ this.EqualityTag = function(){
 	};
 	EqualityTag = new Rexjs(EqualityTag, BinaryTag);
 	
-	EqualityTag.props({
+	EqualityTag.$({
 		order: ECMAScriptOrders.EQUALITY,
 		precedence: 6,
 		regexp: /==/
@@ -201,7 +201,7 @@ this.InequalityTag = function(){
 	};
 	InequalityTag = new Rexjs(InequalityTag, BinaryTag);
 	
-	InequalityTag.props({
+	InequalityTag.$({
 		order: ECMAScriptOrders.INEQUALITY,
 		precedence: 6,
 		regexp: /!=/
@@ -220,7 +220,7 @@ this.LessThanOrEqualTag = function(){
 	};
 	LessThanOrEqualTag = new Rexjs(LessThanOrEqualTag, BinaryTag);
 
-	LessThanOrEqualTag.props({
+	LessThanOrEqualTag.$({
 		order: ECMAScriptOrders.LESS_THAN_OR_EQUAL,
 		precedence: 7,
 		regexp: /<=/
@@ -239,7 +239,7 @@ this.GreaterThanOrEqualTag = function(){
 	};
 	GreaterThanOrEqualTag = new Rexjs(GreaterThanOrEqualTag, BinaryTag);
 	
-	GreaterThanOrEqualTag.props({
+	GreaterThanOrEqualTag.$({
 		order: ECMAScriptOrders.GREATER_THAN_OR_EQUAL,
 		precedence: 7,
 		regexp: />=/
@@ -258,7 +258,7 @@ this.LessThanTag = function(){
 	};
 	LessThanTag = new Rexjs(LessThanTag, BinaryTag);
 	
-	LessThanTag.props({
+	LessThanTag.$({
 		precedence: 7,
 		regexp: /</
 	});
@@ -276,7 +276,7 @@ this.GreaterThanTag = function(){
 	};
 	GreaterThanTag = new Rexjs(GreaterThanTag, BinaryTag);
 	
-	GreaterThanTag.props({
+	GreaterThanTag.$({
 		precedence: 7,
 		regexp: />/
 	});
@@ -294,7 +294,7 @@ this.InstanceofTag = function(){
 	};
 	InstanceofTag = new Rexjs(InstanceofTag, BinaryKeywordTag);
 	
-	InstanceofTag.props({
+	InstanceofTag.$({
 		precedence: 7,
 		regexp: /instanceof/
 	});
@@ -312,7 +312,7 @@ this.InTag = function(){
 	};
 	InTag = new Rexjs(InTag, BinaryKeywordTag);
 	
-	InTag.props({
+	InTag.$({
 		precedence: 7,
 		regexp: /in(?!stanceof)/
 	});
@@ -330,7 +330,7 @@ this.UnsignedRightShiftTag = function(){
 	};
 	UnsignedRightShiftTag = new Rexjs(UnsignedRightShiftTag, BinaryTag);
 	
-	UnsignedRightShiftTag.props({
+	UnsignedRightShiftTag.$({
 		order: ECMAScriptOrders.UNSIGNED_RIGHT_SHIFT,
 		precedence: 8,
 		regexp: />>>/
@@ -349,7 +349,7 @@ this.LeftShiftTag = function(){
 	};
 	LeftShiftTag = new Rexjs(LeftShiftTag, BinaryTag);
 	
-	LeftShiftTag.props({
+	LeftShiftTag.$({
 		order: ECMAScriptOrders.LEFT_SHIFT,
 		precedence: 8,
 		regexp: /<</
@@ -368,7 +368,7 @@ this.RightShiftTag = function(){
 	};
 	RightShiftTag = new Rexjs(RightShiftTag, BinaryTag);
 	
-	RightShiftTag.props({
+	RightShiftTag.$({
 		order: ECMAScriptOrders.RIGHT_SHIFT,
 		precedence: 8,
 		regexp: />>/
@@ -387,7 +387,7 @@ this.AdditionTag = function(){
 	};
 	AdditionTag = new Rexjs(AdditionTag, BinaryTag);
 	
-	AdditionTag.props({
+	AdditionTag.$({
 		precedence: 9,
 		regexp: /\+/,
 		/**
@@ -412,7 +412,7 @@ this.SubtractionTag = function(){
 	};
 	SubtractionTag = new Rexjs(SubtractionTag, BinaryTag);
 	
-	SubtractionTag.props({
+	SubtractionTag.$({
 		precedence: 9,
 		regexp: /-/,
 		/**
@@ -437,7 +437,7 @@ this.DivisionTag = function(){
 	};
 	DivisionTag = new Rexjs(DivisionTag, BinaryTag);
 	
-	DivisionTag.props({
+	DivisionTag.$({
 		precedence: 10,
 		regexp: /\//
 	});
@@ -455,7 +455,7 @@ this.MultiplicationTag = function(){
 	};
 	MultiplicationTag = new Rexjs(MultiplicationTag, BinaryTag);
 	
-	MultiplicationTag.props({
+	MultiplicationTag.$({
 		precedence: 10,
 		regexp: /\*/
 	});
@@ -473,7 +473,7 @@ this.RemainderTag = function(){
 	};
 	RemainderTag = new Rexjs(RemainderTag, BinaryTag);
 	
-	RemainderTag.props({
+	RemainderTag.$({
 		precedence: 10,
 		regexp: /%/
 	});

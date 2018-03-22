@@ -11,7 +11,7 @@ this.AssignmentTag = function(BinaryExpression, isSeparator, assignable){
 	};
 	AssignmentTag = new Rexjs(AssignmentTag, BinaryTag);
 
-	AssignmentTag.props({
+	AssignmentTag.$({
 		/**
 		 * 验证所提供的标签是否为表达式分隔符标签
 		 * @param {Context} context - 所需验证的标签上下文
@@ -110,7 +110,7 @@ this.BinaryKeywordTag = function(){
 	};
 	BinaryKeywordTag = new Rexjs(BinaryKeywordTag, BinaryTag);
 
-	BinaryKeywordTag.props({
+	BinaryKeywordTag.$({
 		/**
 		 * 提取文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器

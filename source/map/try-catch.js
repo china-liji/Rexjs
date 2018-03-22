@@ -12,12 +12,12 @@ this.TryExpression = function(GenerableExpression){
 	};
 	TryExpression = new Rexjs(TryExpression, GenerableExpression);
 	
-	TryExpression.props({
-		catchBlock: null,
-		catchContext: null,
-		exception: null,
-		finallyBlock: null,
-		finallyContext: null,
+	TryExpression.$({
+		catchBlock: NULL,
+		catchContext: NULL,
+		exception: NULL,
+		finallyBlock: NULL,
+		finallyContext: NULL,
 		/**
 		 * 以生成器形式的提取表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
@@ -106,7 +106,7 @@ this.TryExpression = function(GenerableExpression){
 				this.finallyBlock.extractTo(contentBuilder);
 			}
 		},
-		tryBlock: null,
+		tryBlock: NULL,
 		/**
 		 * 获取 try 关键字上下文
 		 */
@@ -130,7 +130,7 @@ this.TryStatement = function(toUnary){
 	};
 	TryStatement = new Rexjs(TryStatement, ECMAScriptStatement);
 	
-	TryStatement.props({
+	TryStatement.$({
 		/**
 		 * 捕获处理异常
 		 * @param {SyntaxParser} parser - 语法解析器
@@ -198,7 +198,7 @@ this.CatchStatement = function(){
 	};
 	CatchStatement = new Rexjs(CatchStatement, ECMAScriptStatement);
 	
-	CatchStatement.props({
+	CatchStatement.$({
 		/**
 		 * 捕获处理异常
 		 * @param {SyntaxParser} parser - 语法解析器
@@ -208,7 +208,7 @@ this.CatchStatement = function(){
 			// 跳出语句并设置 catchBlock 属性
 			this.out().catchBlock = this.expression;
 			// 如果是 finally，则返回 finallyTag
-			return context.content === "finally" ? this.tagOf().finally : null;
+			return context.content === "finally" ? this.tagOf().finally : NULL;
 		}
 	});
 	
@@ -225,7 +225,7 @@ this.FinallyStatement = function(){
 	};
 	FinallyStatement = new Rexjs(FinallyStatement, ECMAScriptStatement);
 	
-	FinallyStatement.props({
+	FinallyStatement.$({
 		/**
 		 * 捕获处理异常
 		 * @param {SyntaxParser} parser - 语法解析器
@@ -250,7 +250,7 @@ this.TryTag = function(TryExpression, TryStatement){
 	};
 	TryTag = new Rexjs(TryTag, SyntaxTag);
 	
-	TryTag.props({
+	TryTag.$({
 		$class: CLASS_STATEMENT_BEGIN,
 		/**
 		 * 获取绑定的标签，该标签一般是用于语句的 try、catch 的返回值
@@ -309,7 +309,7 @@ this.CatchTag = function(CatchStatement){
 	};
 	CatchTag = new Rexjs(CatchTag, SyntaxTag);
 	
-	CatchTag.props({
+	CatchTag.$({
 		regexp: /catch/,
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
@@ -348,7 +348,7 @@ this.OpenCatchedExceptionTag = function(OpenParenTag){
 	};
 	OpenCatchedExceptionTag = new Rexjs(OpenCatchedExceptionTag, OpenParenTag);
 	
-	OpenCatchedExceptionTag.props({
+	OpenCatchedExceptionTag.$({
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
@@ -384,7 +384,7 @@ this.ExceptionVariableTag = function(VariableDeclarationTag){
 	};
 	ExceptionVariableTag = new Rexjs(ExceptionVariableTag, VariableDeclarationTag);
 	
-	ExceptionVariableTag.props({
+	ExceptionVariableTag.$({
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
@@ -438,7 +438,7 @@ this.CloseCatchedExceptionTag = function(CloseParenTag){
 	};
 	CloseCatchedExceptionTag = new Rexjs(CloseCatchedExceptionTag, CloseParenTag);
 	
-	CloseCatchedExceptionTag.props({
+	CloseCatchedExceptionTag.$({
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
@@ -473,7 +473,7 @@ this.FinallyTag = function(FinallyStatement){
 	};
 	FinallyTag = new Rexjs(FinallyTag, SyntaxTag);
 	
-	FinallyTag.props({
+	FinallyTag.$({
 		regexp: /finally/,
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
@@ -512,7 +512,7 @@ finallyTag = new this.FinallyTag();
 	// tryFunctionTag
 	new this.TryFunctionTag(),
 	// catchTag
-	null,
+	NULL,
 	// finallyTag
-	null
+	NULL
 );

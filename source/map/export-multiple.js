@@ -12,7 +12,7 @@ this.PseudoImportExpression = function(ImportExpression){
 	};
 	PseudoImportExpression = new Rexjs(PseudoImportExpression, ImportExpression);
 
-	PseudoImportExpression.props({
+	PseudoImportExpression.$({
 		/**
 		 * 提取表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
@@ -47,7 +47,7 @@ this.OpenExportMultipleMembersTag = function(PseudoImportExpression, visitor){
 	};
 	OpenExportMultipleMembersTag = new Rexjs(OpenExportMultipleMembersTag, OpenMultipleMembersTag);
 
-	OpenExportMultipleMembersTag.props({
+	OpenExportMultipleMembersTag.$({
 		/**
 		 * 获取绑定的标签，该标签一般是用于语句的 try、catch 的返回值
 		 */
@@ -94,7 +94,7 @@ this.CloseExportMultipleMembersTag = function(visitor){
 	};
 	CloseExportMultipleMembersTag = new Rexjs(CloseExportMultipleMembersTag, CloseMultipleMembersTag);
 
-	CloseExportMultipleMembersTag.props({
+	CloseExportMultipleMembersTag.$({
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
@@ -130,5 +130,5 @@ closeExportMultipleMembersTag = new this.CloseExportMultipleMembersTag();
 	this.OpenMultipleMembersTag,
 	this.CloseMultipleMembersTag,
 	// closeExportMultipleMembersTag
-	null
+	NULL
 );

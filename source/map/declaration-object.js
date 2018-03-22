@@ -14,14 +14,14 @@ this.DeclarationObjectExpression = function(ObjectExpression){
 	};
 	DeclarationObjectExpression = new Rexjs(DeclarationObjectExpression, ObjectExpression);
 
-	DeclarationObjectExpression.props({
+	DeclarationObjectExpression.$({
 		/**
 		 * 将对象每一项转换为解构项表达式
 		 * @param {SyntaxParser} parser - 语法解析器
 		 */
 		convert: function(){},
 		declaration: true,
-		objectOf: null
+		objectOf: NULL
 	});
 
 	return DeclarationObjectExpression;
@@ -39,8 +39,8 @@ this.PropertyDestructuringStatement = function(catchMethod, tryMethod, both){
 	};
 	PropertyDestructuringStatement = new Rexjs(PropertyDestructuringStatement, PropertyStatement);
 
-	PropertyDestructuringStatement.props({
-		bound: null,
+	PropertyDestructuringStatement.$({
+		bound: NULL,
 		/**
 		 * 捕获处理异常
 		 * @param {SyntaxParser} parser - 语法解析器
@@ -93,7 +93,7 @@ this.OpenDeclarationObjectTag = function(DeclarationObjectExpression, PropertyDe
 	};
 	OpenDeclarationObjectTag = new Rexjs(OpenDeclarationObjectTag, OpenObjectTag);
 
-	OpenDeclarationObjectTag.props({
+	OpenDeclarationObjectTag.$({
 		/**
 		 * 获取绑定的标签，该标签一般是用于语句的 try、catch 的返回值
 		 */
@@ -158,7 +158,7 @@ this.DeclarationPropertySeparatorTag = function(PropertySeparatorTag, PropertyDe
 	};
 	DeclarationPropertySeparatorTag = new Rexjs(DeclarationPropertySeparatorTag, PropertySeparatorTag);
 
-	DeclarationPropertySeparatorTag.props({
+	DeclarationPropertySeparatorTag.$({
 		/**
 		 * 获取绑定的语句，一般在子类使用父类逻辑，而不使用父类语句的情况下使用
 		 * @param {Statements} statements - 该语句将要所处的语句块
@@ -191,7 +191,7 @@ this.CloseDeclarationObjectTag = function(CloseObjectTag){
 	};
 	CloseDeclarationObjectTag = new Rexjs(CloseDeclarationObjectTag, CloseObjectTag);
 
-	CloseDeclarationObjectTag.props({
+	CloseDeclarationObjectTag.$({
 		$type: TYPE_UNEXPECTED,
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
@@ -216,7 +216,7 @@ closeDeclarationObjectTag = new this.CloseDeclarationObjectTag();
 	this.PropertyStatement,
 	this.OpenObjectTag,
 	// variableDeclarationPropertySeparatorTag
-	null,
+	NULL,
 	// closeDeclarationObjectTag
-	null
+	NULL
 );

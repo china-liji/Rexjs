@@ -57,6 +57,23 @@ this.ArrowContextTags = function(OpenArrowFunctionBodyTag){
 	this.OpenArrowFunctionBodyTag
 );
 
+this.AsyncContextTags = function(AsycnFunctionTag){
+	/**
+	 * async 关键字上下文标签列表
+	 */
+	function AsyncContextTags(){
+		IllegalTags.call(this);
+		
+		this.register(
+			new AsycnFunctionTag()
+		);
+	};
+	AsyncContextTags = new Rexjs(AsyncContextTags, IllegalTags);
+
+	return AsyncContextTags;
+}(
+	this.AsycnFunctionTag
+);
 
 this.BlockTags = function(OpenBlockTag){
 	/**
@@ -213,7 +230,7 @@ this.CloseArrowFunctionBodyContextTags = function(CommaTag, filter){
 	};
 	CloseArrowFunctionBodyContextTags = new Rexjs(CloseArrowFunctionBodyContextTags, MistakableTags);
 	
-	CloseArrowFunctionBodyContextTags.props({
+	CloseArrowFunctionBodyContextTags.$({
 		/**
 		 * 标签过滤处理
 		 * @param {SyntaxTag} tag - 语法标签
@@ -267,7 +284,7 @@ this.ClosureVariableContextTags = function(VarDeclarationBreakTag, BasicAssignme
 	};
 	ClosureVariableContextTags = new Rexjs(ClosureVariableContextTags, StatementEndTags);
 
-	ClosureVariableContextTags.props({
+	ClosureVariableContextTags.$({
 		/**
 		 * 标签过滤处理
 		 * @param {SyntaxTag} tag - 语法标签
@@ -714,7 +731,7 @@ this.ExtendsContextTags = function(UnaryTag, ExecTag, filter){
 	};
 	ExtendsContextTags = new Rexjs(ExtendsContextTags, ExpressionTags);
 
-	ExtendsContextTags.props({
+	ExtendsContextTags.$({
 		/**
 		 * 标签过滤处理
 		 * @param {SyntaxTag} tag - 语法标签
@@ -755,7 +772,7 @@ this.FileStartTags = function(FileStartTag){
 	};
 	FileStartTags = new Rexjs(FileStartTags, IllegalTags);
 	
-	FileStartTags.props({
+	FileStartTags.$({
 		entrance: true
 	});
 	
@@ -791,7 +808,7 @@ this.ForConditionContextTags = function(VarTag, filter){
 	};
 	ForConditionContextTags = new Rexjs(ForConditionContextTags, ExpressionTags);
 
-	ForConditionContextTags.props({
+	ForConditionContextTags.$({
 		/**
 		 * 标签过滤处理
 		 * @param {SyntaxTag} tag - 语法标签
@@ -1204,7 +1221,7 @@ this.NewContextTags = function(ExtendsContextTags, TargetAccessorTag, SuperTag, 
 	};
 	NewContextTags = new Rexjs(NewContextTags, ExtendsContextTags);
 
-	NewContextTags.props({
+	NewContextTags.$({
 		/**
 		 * 标签过滤处理
 		 * @param {SyntaxTag} tag - 语法标签
@@ -1420,7 +1437,7 @@ this.PropertyNameContextTags = function(OpenShorthandMethodArgumentsTag, Propert
 	};
 	PropertyNameContextTags = new Rexjs(PropertyNameContextTags, ECMAScriptTags);
 
-	PropertyNameContextTags.props({
+	PropertyNameContextTags.$({
 		/**
 		 * 标签过滤处理
 		 * @param {SyntaxTag} tag - 语法标签
@@ -1579,7 +1596,7 @@ this.RestrictedExpressionContextTags = function(PostfixUnaryAssignmentTag, Unary
 	};
 	RestrictedExpressionContextTags = new Rexjs(RestrictedExpressionContextTags, ExpressionContextTags);
 	
-	RestrictedExpressionContextTags.props({
+	RestrictedExpressionContextTags.$({
 		/**
 		 * 标签过滤处理
 		 * @param {SyntaxTag} tag - 语法标签
@@ -1702,7 +1719,7 @@ this.AccessorDescriptorContextTags = function(ShorthandMethodNameTags, Construct
 	};
 	AccessorDescriptorContextTags = new Rexjs(AccessorDescriptorContextTags, ShorthandMethodNameTags);
 
-	AccessorDescriptorContextTags.props({
+	AccessorDescriptorContextTags.$({
 		/**
 		 * 标签过滤处理
 		 * @param {SyntaxTag} tag - 语法标签
@@ -1758,7 +1775,7 @@ this.StaticModifierContextTags = function(ClassPropertyNameTags, ConstructorTag,
 	};
 	StaticModifierContextTags = new Rexjs(StaticModifierContextTags, ClassPropertyNameTags);
 
-	StaticModifierContextTags.props({
+	StaticModifierContextTags.$({
 		/**
 		 * 标签过滤处理
 		 * @param {SyntaxTag} tag - 语法标签
@@ -1981,7 +1998,7 @@ this.TryContextTags = function(ExtendsContextTags, OpenBlockTag, filter){
 	};
 	TryContextTags = new Rexjs(TryContextTags, ExtendsContextTags);
 
-	TryContextTags.props({
+	TryContextTags.$({
 		/**
 		 * 标签过滤处理
 		 * @param {SyntaxTag} tag - 语法标签
@@ -2049,7 +2066,7 @@ this.VarDeclarationBreakContextTags = function(ClosureVariableContextTags, Speci
 	};
 	VarDeclarationBreakContextTags = new Rexjs(VarDeclarationBreakContextTags, ClosureVariableContextTags);
 
-	VarDeclarationBreakContextTags.props({
+	VarDeclarationBreakContextTags.$({
 		/**
 		 * 标签过滤处理
 		 * @param {SyntaxTag} tag - 语法标签

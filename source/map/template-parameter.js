@@ -14,7 +14,7 @@ this.TemplateParameterExpression = function(extractTo, compileInner){
 	};
 	TemplateParameterExpression = new Rexjs(TemplateParameterExpression, TemplateExpression);
 
-	TemplateParameterExpression.props({
+	TemplateParameterExpression.$({
 		/**
 		 * 提取表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
@@ -33,7 +33,7 @@ this.TemplateParameterExpression = function(extractTo, compileInner){
 			// 调用父类方法
 			extractTo.call(this, contentBuilder);
 		},
-		operand: null
+		operand: NULL
 	});
 
 	return TemplateParameterExpression;
@@ -96,7 +96,7 @@ this.OpenTemplateParameterTag = function(TemplateParameterExpression, visitor){
 	};
 	OpenTemplateParameterTag = new Rexjs(OpenTemplateParameterTag, OpenTemplateTag);
 
-	OpenTemplateParameterTag.props({
+	OpenTemplateParameterTag.$({
 		$class: CLASS_EXPRESSION_CONTEXT,
 		/**
 		 * 获取绑定的表达式，一般在子类使用父类逻辑，而不使用父类表达式的情况下使用

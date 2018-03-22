@@ -9,32 +9,32 @@
 * [GitHub](https://github.com/china-liji/Rexjs)
 
 #### Install
-* NPM
+> **NPM**
 ```
 npm install rexjs-api
 ```
 
-* Git
+> **Git**
 ```
 git clone https://github.com/china-liji/Rexjs.git
 ```
 
-* Download
+> **Download**
 
-[Zip](https://github.com/china-liji/Rexjs/archive/master.zip)
+* [Zip](https://github.com/china-liji/Rexjs/archive/master.zip)
 
-[rex.min.js](https://raw.githubusercontent.com/china-liji/Rexjs/master/./dist/rex.min.js) - 233KB
+* [rex.min.js](https://raw.githubusercontent.com/china-liji/Rexjs/master/./dist/rex.min.js) - 234KB
 
-[rex-api.min.js](https://raw.githubusercontent.com/china-liji/Rexjs/master/./dist/rex-api.min.js) - 230KB
+* [rex-api.min.js](https://raw.githubusercontent.com/china-liji/Rexjs/master/./dist/rex-api.min.js) - 230KB
 
-[rex-browser-helper.min.js](https://raw.githubusercontent.com/china-liji/Rexjs/master/./dist/rex-browser-helper.min.js) - 18KB
+* [rex-browser-helper.min.js](https://raw.githubusercontent.com/china-liji/Rexjs/master/./dist/rex-browser-helper.min.js) - 18KB
 
 -----
 
 #### Faster and Smaller
 ![](https://raw.githubusercontent.com/china-liji/Rexjs/master/doc/image/compare.jpg)
 
-`./dist/rex.min.js`[1.6.30] only 233KB, smaller than others.
+`./dist/rex.min.js[1.6.31]` only 234KB, smaller than others.
 
 -----
 

@@ -9,13 +9,13 @@ this.ArgumentsExpression = function(VariableCollection){
 	function ArgumentsExpression(open){
 		PartnerExpression.call(this, open);
 
-		this.inner = new ListExpression(null, ",");
+		this.inner = new ListExpression(NULL, ",");
 		this.collection = new VariableCollection();
 	};
 	ArgumentsExpression = new Rexjs(ArgumentsExpression, PartnerExpression);
 
-	ArgumentsExpression.props({
-		collection: null
+	ArgumentsExpression.$({
+		collection: NULL
 	});
 
 	return ArgumentsExpression;
@@ -48,7 +48,7 @@ this.ArgumentStatement = function(){
 	};
 	ArgumentStatement = new Rexjs(ArgumentStatement, ECMAScriptStatement);
 
-	ArgumentStatement.props({
+	ArgumentStatement.$({
 		expression: new DefaultExpression(),
 		/**
 		 * 捕获处理异常
@@ -87,7 +87,7 @@ this.ArgumentStatement = function(){
 		try: function(parser, context){
 			// 如果不是逗号
 			if(context.content !== ","){
-				return null;
+				return NULL;
 			}
 
 			// 跳出语句并添加参数表达式
@@ -116,7 +116,7 @@ this.OpenArgumentsTag = function(OpenParenTag, ArgumentsExpression, ArgumentStat
 	};
 	OpenArgumentsTag = new Rexjs(OpenArgumentsTag, OpenParenTag);
 
-	OpenArgumentsTag.props({
+	OpenArgumentsTag.$({
 		/**
 		 * 获取绑定的标签，该标签一般是用于语句的 try、catch 的返回值
 		 */
@@ -168,7 +168,7 @@ this.ArgumentNameTag = function(VariableDeclarationTag, ArgumentExpression){
 	};
 	ArgumentNameTag = new Rexjs(ArgumentNameTag, VariableDeclarationTag);
 
-	ArgumentNameTag.props({
+	ArgumentNameTag.$({
 		/**
 		 * 收集变量名
 		 * @param {SyntaxParser} parser - 语法解析器
@@ -227,7 +227,7 @@ this.ArgumentSeparatorTag = function(CommaTag, ArgumentStatement){
 	};
 	ArgumentSeparatorTag = new Rexjs(ArgumentSeparatorTag, CommaTag);
 
-	ArgumentSeparatorTag.props({
+	ArgumentSeparatorTag.$({
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
@@ -264,7 +264,7 @@ this.CloseArgumentsTag = function(CloseParenTag){
 	};
 	CloseArgumentsTag = new Rexjs(CloseArgumentsTag, CloseParenTag);
 
-	CloseArgumentsTag.props({
+	CloseArgumentsTag.$({
 		$type: TYPE_UNEXPECTED,
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
@@ -297,7 +297,7 @@ closeArgumentsTag = new this.CloseArgumentsTag();
 }.call(
 	this,
 	// argumentSeparatorTag
-	null,
+	NULL,
 	// closeArgumentsTag
-	null
+	NULL
 );

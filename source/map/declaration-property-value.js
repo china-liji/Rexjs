@@ -11,7 +11,7 @@ this.OpenObjectDeclarationPropertyValueTag = function(DeclarationObjectExpressio
 	};
 	OpenObjectDeclarationPropertyValueTag = new Rexjs(OpenObjectDeclarationPropertyValueTag, OpenDeclarationObjectTag);
 	
-	OpenObjectDeclarationPropertyValueTag.props({
+	OpenObjectDeclarationPropertyValueTag.$({
 		/**
 		 * 获取绑定的标签，该标签一般是用于语句的 try、catch 的返回值
 		 */
@@ -61,7 +61,7 @@ this.CloseObjectDeclarationPropertyValueTag = function(visitor){
 	};
 	CloseObjectDeclarationPropertyValueTag = new Rexjs(CloseObjectDeclarationPropertyValueTag, CloseDeclarationObjectTag);
 	
-	CloseObjectDeclarationPropertyValueTag.props({
+	CloseObjectDeclarationPropertyValueTag.$({
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
@@ -100,7 +100,7 @@ this.OpenArrayDeclarationPropertyValueTag = function(DeclarationArrayExpression,
 	};
 	OpenArrayDeclarationPropertyValueTag = new Rexjs(OpenArrayDeclarationPropertyValueTag, OpenNestedDeclarationArrayItemTag);
 	
-	OpenArrayDeclarationPropertyValueTag.props({
+	OpenArrayDeclarationPropertyValueTag.$({
 		/**
 		 * 获取绑定的标签，该标签一般是用于语句的 try、catch 的返回值
 		 */
@@ -150,7 +150,7 @@ this.CloseArrayDeclarationPropertyValueTag = function(CloseNestedDeclarationArra
 	};
 	CloseArrayDeclarationPropertyValueTag = new Rexjs(CloseArrayDeclarationPropertyValueTag, CloseNestedDeclarationArrayItemTag);
 	
-	CloseArrayDeclarationPropertyValueTag.props({
+	CloseArrayDeclarationPropertyValueTag.$({
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
@@ -175,7 +175,7 @@ this.DeclarationPropertyValueTag = function(visitor){
 	};
 	DeclarationPropertyValueTag = new Rexjs(DeclarationPropertyValueTag, VariableDeclarationTag);
 	
-	DeclarationPropertyValueTag.props({
+	DeclarationPropertyValueTag.$({
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
@@ -219,7 +219,7 @@ this.DeclarationPropertyValueInitializerTag = function(PropertyDestructuringDefa
 	};
 	DeclarationPropertyValueInitializerTag = new Rexjs(DeclarationPropertyValueInitializerTag, BasicAssignmentTag);
 
-	DeclarationPropertyValueInitializerTag.props({
+	DeclarationPropertyValueInitializerTag.$({
 		/**
 		 * 标签访问器
 		 * @param {SyntaxParser} parser - 语法解析器
@@ -256,7 +256,7 @@ closeObjectDeclarationPropertyValueTag = new this.CloseObjectDeclarationProperty
 	this.VariableDeclarationTag,
 	this.BasicAssignmentTag,
 	// closeArrayDeclarationPropertyValueTag
-	null,
+	NULL,
 	// closeObjectDeclarationPropertyValueTag
-	null
+	NULL
 );

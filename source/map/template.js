@@ -11,7 +11,7 @@ this.TemplateExpression = function(extractTo, compileItem){
 	};
 	TemplateExpression = new Rexjs(TemplateExpression, PartnerExpression);
 
-	TemplateExpression.props({
+	TemplateExpression.$({
 		/**
 		 * 提取表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
@@ -50,11 +50,11 @@ this.TemplateStatement = function(){
 	function TemplateStatement(statements){
 		ECMAScriptStatement.call(this, statements);
 
-		this.expression = new ListExpression(null, "");
+		this.expression = new ListExpression(NULL, "");
 	};
 	TemplateStatement = new Rexjs(TemplateStatement, ECMAScriptStatement);
 
-	TemplateStatement.props({
+	TemplateStatement.$({
 		/**
 		 * 捕获处理异常
 		 * @param {SyntaxParser} parser - 语法解析器
@@ -71,7 +71,7 @@ this.TemplateStatement = function(){
 		try: function(parser, context){
 			// 如果不是反引号
 			if(context.content !== "`"){
-				return null;
+				return NULL;
 			}
 
 			// 跳出语句并设置模板表达式的 inner
@@ -94,7 +94,7 @@ this.OpenTemplateTag = function(TemplateExpression, TemplateStatement){
 	};
 	OpenTemplateTag = new Rexjs(OpenTemplateTag, SyntaxTag);
 
-	OpenTemplateTag.props({
+	OpenTemplateTag.$({
 		$class: CLASS_EXPRESSION,
 		/**
 		 * 获取绑定的标签，该标签一般是用于语句的 try、catch 的返回值
@@ -150,7 +150,7 @@ this.CloseTemplateTag = function(){
 	};
 	CloseTemplateTag = new Rexjs(CloseTemplateTag, SyntaxTag);
 
-	CloseTemplateTag.props({
+	CloseTemplateTag.$({
 		$class: CLASS_EXPRESSION_CONTEXT,
 		$type: TYPE_MISTAKABLE,
 		order: ECMAScriptOrders.TEMPLATE_SPECIAL_CONTENT,
@@ -182,5 +182,5 @@ closeTemplateTag = new this.CloseTemplateTag();
 }.call(
 	this,
 	// closeTemplateTag
-	null
+	NULL
 );

@@ -11,7 +11,7 @@ this.ConstStatement = function(catchMethod, tryMethod){
 	};
 	ConstStatement = new Rexjs(ConstStatement, VarStatement);
 	
-	ConstStatement.props({
+	ConstStatement.$({
 		/**
 		 * 捕获处理异常
 		 * @param {SyntaxParser} parser - 语法解析器
@@ -23,7 +23,7 @@ this.ConstStatement = function(catchMethod, tryMethod){
 				// 由于没有赋值操作，则报错
 				parser.error(this.expression.context, ECMAScriptErrors.MISSING_INITIALIZER);
 				// 返回分隔符标签
-				return null;
+				return NULL;
 			}
 
 			return catchMethod.call(this, parser, context);
@@ -38,7 +38,7 @@ this.ConstStatement = function(catchMethod, tryMethod){
 			if(this.expression instanceof IdentifierExpression){
 				// 由于没有赋值操作，则报错
 				parser.error(this.expression.context, ECMAScriptErrors.MISSING_INITIALIZER);
-				return null;
+				return NULL;
 			}
 
 			// 调用父类方法
@@ -62,7 +62,7 @@ this.ConstTag = function(LetTag, ConstStatement){
 	};
 	ConstTag = new Rexjs(ConstTag, LetTag);
 
-	ConstTag.props({
+	ConstTag.$({
 		/**
 		 * 获取绑定的标签，该标签一般是用于语句的 try、catch 的返回值
 		 */
@@ -117,7 +117,7 @@ this.ConstVariableTag = function(collectTo){
 	};
 	ConstVariableTag = new Rexjs(ConstVariableTag, LocalVariableTag);
 	
-	ConstVariableTag.props({
+	ConstVariableTag.$({
 		/**
 		 * 收集变量名
 		 * @param {SyntaxParser} parser - 语法解析器
@@ -147,7 +147,7 @@ this.ConstDeclarationSeparatorTag = function(LetDeclarationSeparatorTag, ConstSt
 	};
 	ConstDeclarationSeparatorTag = new Rexjs(ConstDeclarationSeparatorTag, LetDeclarationSeparatorTag);
 	
-	ConstDeclarationSeparatorTag.props({
+	ConstDeclarationSeparatorTag.$({
 		/**
 		 * 获取绑定的语句，一般在子类使用父类逻辑，而不使用父类语句的情况下使用
 		 * @param {Statements} statements - 该语句将要所处的语句块
@@ -180,7 +180,7 @@ constDeclarationSeparatorTag = new this.ConstDeclarationSeparatorTag();
 	this.VarStatement,
 	this.LocalVariableTag,
 	// constVariableTag
-	null,
+	NULL,
 	// constDeclarationSeparatorTag
-	null
+	NULL
 );

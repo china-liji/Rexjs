@@ -11,7 +11,7 @@ this.BlockVariableCollections = function(ECMAScriptVariableCollections){
 	};
 	BlockVariableCollections = new Rexjs(BlockVariableCollections, ECMAScriptVariableCollections);
 
-	BlockVariableCollections.props({
+	BlockVariableCollections.$({
 		/**
 		 * 初始化 rex 临时变量名
 		 * @param {ECMAScriptVariableCollections} prevCollections - 可参考上一个收集器集合
@@ -39,8 +39,8 @@ this.BlockExpression = function(extractTo){
 	};
 	BlockExpression = new Rexjs(BlockExpression, PartnerExpression);
 	
-	BlockExpression.props({
-		contextGeneratorIfNeedCompile: null,
+	BlockExpression.$({
+		contextGeneratorIfNeedCompile: NULL,
 		/**
 		 * 提取表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
@@ -89,7 +89,7 @@ this.BlockBodyStatements = function(ECMAScriptStatements, BraceBodyStatement, Bl
 	};
 	BlockBodyStatements = new Rexjs(BlockBodyStatements, ECMAScriptStatements);
 	
-	BlockBodyStatements.props({
+	BlockBodyStatements.$({
 		/**
 		 * 声明变量名
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
@@ -121,7 +121,7 @@ this.OpenBlockTag = function(OpenBraceTag, BlockExpression, BlockBodyStatements,
 	};
 	OpenBlockTag = new Rexjs(OpenBlockTag, OpenBraceTag);
 	
-	OpenBlockTag.props({
+	OpenBlockTag.$({
 		$class: CLASS_STATEMENT_BEGIN,
 		/**
 		 * 获取绑定的标签，该标签一般是用于语句的 try、catch 的返回值
@@ -184,7 +184,7 @@ this.CloseBlockTag = function(CloseBraceTag){
 	};
 	CloseBlockTag = new Rexjs(CloseBlockTag, CloseBraceTag);
 	
-	CloseBlockTag.props({
+	CloseBlockTag.$({
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
@@ -215,5 +215,5 @@ closeBlockTag = new this.CloseBlockTag();
 }.call(
 	this,
 	// closeBlockTag
-	null
+	NULL
 );

@@ -9,11 +9,11 @@ this.GroupingExpression = function(){
 	function GroupingExpression(open){
 		PartnerExpression.call(this, open);
 
-		this.inner = new ListExpression(null, ",");
+		this.inner = new ListExpression(NULL, ",");
 	};
 	GroupingExpression = new Rexjs(GroupingExpression, PartnerExpression);
 
-	GroupingExpression.props({
+	GroupingExpression.$({
 		asArguments: false,
 		restIndex: -1
 	});
@@ -32,14 +32,14 @@ this.IllegibleRestArgumentExpression = function(){
 	};
 	IllegibleRestArgumentExpression = new Rexjs(IllegibleRestArgumentExpression, RestArgumentExpression);
 
-	IllegibleRestArgumentExpression.props({
+	IllegibleRestArgumentExpression.$({
 		/**
 		 * 获取参数名上下文
 		 */
 		get name(){
 			return this.operand.context;
 		},
-		operand: null
+		operand: NULL
 	});
 
 	return IllegibleRestArgumentExpression;
@@ -55,7 +55,7 @@ this.GroupingStatement = function(){
 	};
 	GroupingStatement = new Rexjs(GroupingStatement, ECMAScriptStatement);
 	
-	GroupingStatement.props({
+	GroupingStatement.$({
 		/**
 		 * 捕获处理异常
 		 * @param {SyntaxParser} parser - 语法解析器
@@ -66,7 +66,7 @@ this.GroupingStatement = function(){
 			if(context.content !== ")"){
 				// 报错
 				parser.error(context);
-				return null;
+				return NULL;
 			}
 
 			var groupingExpression = this.out(), inner = groupingExpression.inner;
@@ -92,7 +92,7 @@ this.GroupingStatement = function(){
 		try: function(parser, context){
 			// 如果不是逗号
 			if(context.content !== ","){
-				return null;
+				return NULL;
 			}
 
 			// 跳出该语句并添加表达式
@@ -114,7 +114,7 @@ this.IllegibleRestArgumentStatement = function(){
 	};
 	IllegibleRestArgumentStatement = new Rexjs(IllegibleRestArgumentStatement, ECMAScriptStatement);
 
-	IllegibleRestArgumentStatement.props({
+	IllegibleRestArgumentStatement.$({
 		/**
 		 * 捕获处理异常
 		 * @param {SyntaxParser} parser - 语法解析器
@@ -151,7 +151,7 @@ this.GroupingContextStatement = function(ArgumentsExpression, BinaryExpression, 
 	};
 	GroupingContextStatement = new Rexjs(GroupingContextStatement, ECMAScriptStatement);
 
-	GroupingContextStatement.props({
+	GroupingContextStatement.$({
 		/**
 		 * 捕获处理异常
 		 * @param {SyntaxParser} parser - 语法解析器
@@ -306,7 +306,7 @@ this.OpenGroupingTag = function(OpenParenTag, GroupingExpression, GroupingStatem
 	};
 	OpenGroupingTag = new Rexjs(OpenGroupingTag, OpenParenTag);
 	
-	OpenGroupingTag.props({
+	OpenGroupingTag.$({
 		$class: CLASS_EXPRESSION,
 		/**
 		 * 获取绑定的标签，该标签一般是用于语句的 try、catch 的返回值
@@ -359,7 +359,7 @@ this.IllegibleRestTag = function(IllegibleRestArgumentExpression, IllegibleRestA
 	};
 	IllegibleRestTag = new Rexjs(IllegibleRestTag, RestTag);
 
-	IllegibleRestTag.props({
+	IllegibleRestTag.$({
 		/**
 		 * 获取绑定的表达式，一般在子类使用父类逻辑，而不使用父类表达式的情况下使用
 		 * @param {Context} context - 相关的语法标签上下文
@@ -423,7 +423,7 @@ this.GroupingSeparatorTag = function(CommaTag, GroupingStatement){
 	};
 	GroupingSeparatorTag = new Rexjs(GroupingSeparatorTag, CommaTag);
 
-	GroupingSeparatorTag.props({
+	GroupingSeparatorTag.$({
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
@@ -460,7 +460,7 @@ this.CloseGroupingTag = function(CloseParenTag, GroupingContextStatement){
 	};
 	CloseGroupingTag = new Rexjs(CloseGroupingTag, CloseParenTag);
 	
-	CloseGroupingTag.props({
+	CloseGroupingTag.$({
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
@@ -500,8 +500,8 @@ closeGroupingTag = new this.CloseGroupingTag();
 	this.RestArgumentExpression,
 	this.RestTag,
 	// groupingSeparatorTag
-	null,
+	NULL,
 	// closeGroupingTag
-	null,
+	NULL,
 	this.ArgumentNameTag.prototype.collectTo
 );

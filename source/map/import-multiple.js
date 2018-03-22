@@ -9,11 +9,11 @@ this.MultipleMembersExpression = function(importMember, exportMember, exportMemb
 	function MultipleMembersExpression(open){
 		PartnerExpression.call(this, open);
 
-		this.inner = new ListExpression(null, ",");
+		this.inner = new ListExpression(NULL, ",");
 	};
 	MultipleMembersExpression = new Rexjs(MultipleMembersExpression, PartnerExpression);
 
-	MultipleMembersExpression.props({
+	MultipleMembersExpression.$({
 		/**
 		 * 提取并编译表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
@@ -83,7 +83,7 @@ this.MemberExpression = function(){
 	};
 	MemberExpression = new Rexjs(MemberExpression, Expression);
 
-	MemberExpression.props({
+	MemberExpression.$({
 		/**
 		 * 以输出形式提取并编译表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
@@ -142,8 +142,8 @@ this.MemberAliasExpression = function(MemberExpression){
 	};
 	MemberAliasExpression = new Rexjs(MemberAliasExpression, MemberExpression);
 
-	MemberAliasExpression.props({
-		alias: null,
+	MemberAliasExpression.$({
+		alias: NULL,
 		/**
 		 * 提取表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
@@ -160,7 +160,7 @@ this.MemberAliasExpression = function(MemberExpression){
 			// 追加别名变量名
 			contentBuilder.appendContext(this.variable);
 		},
-		variable: null
+		variable: NULL
 	});
 
 	return MemberAliasExpression;
@@ -178,7 +178,7 @@ this.MultipleMembersStatement = function(out){
 	};
 	MultipleMembersStatement = new Rexjs(MultipleMembersStatement, ECMAScriptStatement);
 
-	MultipleMembersStatement.props({
+	MultipleMembersStatement.$({
 		/**
 		 * 捕获处理异常
 		 * @param {SyntaxParser} parser - 语法解析器
@@ -189,7 +189,7 @@ this.MultipleMembersStatement = function(out){
 			if(context.content !== "}"){
 				// 报错
 				parser.error(context);
-				return null;
+				return NULL;
 			}
 
 			// 跳出语句
@@ -208,7 +208,7 @@ this.MultipleMembersStatement = function(out){
 			if(context.content !== ","){
 				// 报错
 				parser.error(context);
-				return null;
+				return NULL;
 			}
 
 			// 跳出语句
@@ -256,7 +256,7 @@ this.OpenMultipleMembersTag = function(OpenBraceTag, MultipleMembersExpression, 
 	};
 	OpenMultipleMembersTag = new Rexjs(OpenMultipleMembersTag, OpenBraceTag);
 
-	OpenMultipleMembersTag.props({
+	OpenMultipleMembersTag.$({
 		/**
 		 * 获取绑定的标签，该标签一般是用于语句的 try、catch 的返回值
 		 */
@@ -311,7 +311,7 @@ this.MemberVariableTag = function(ConstVariableTag, MemberExpression){
 	};
 	MemberVariableTag = new Rexjs(MemberVariableTag, ConstVariableTag);
 
-	MemberVariableTag.props({
+	MemberVariableTag.$({
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
@@ -350,7 +350,7 @@ this.MemberAliasVariableTag = function(MemberVariableTag){
 	};
 	MemberAliasVariableTag = new Rexjs(MemberAliasVariableTag, MemberVariableTag);
 
-	MemberAliasVariableTag.props({
+	MemberAliasVariableTag.$({
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
@@ -386,7 +386,7 @@ this.MemberAliasTag = function(AsTag, MemberAliasExpression){
 	};
 	MemberAliasTag = new Rexjs(MemberAliasTag, AsTag);
 
-	MemberAliasTag.props({
+	MemberAliasTag.$({
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
@@ -427,7 +427,7 @@ this.MultipleMembersSeparatorTag = function(MemberSeparatorTag, MultipleMembersS
 	};
 	MultipleMembersSeparatorTag = new Rexjs(MultipleMembersSeparatorTag, MemberSeparatorTag);
 
-	MultipleMembersSeparatorTag.props({
+	MultipleMembersSeparatorTag.$({
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
@@ -464,7 +464,7 @@ this.CloseMultipleMembersTag = function(CloseBraceTag){
 	};
 	CloseMultipleMembersTag = new Rexjs(CloseMultipleMembersTag, CloseBraceTag);
 
-	CloseMultipleMembersTag.props({
+	CloseMultipleMembersTag.$({
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
@@ -496,7 +496,7 @@ closeMultipleMembersTag = new this.CloseMultipleMembersTag();
 }.call(
 	this,
 	// multipleMembersSeparatorTag
-	null,
+	NULL,
 	// closeMultipleMembersTag
-	null
+	NULL
 );

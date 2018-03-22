@@ -10,7 +10,7 @@ this.DefaultBraceBodyExpression = function(){
 	};
 	DefaultBraceBodyExpression = new Rexjs(DefaultBraceBodyExpression, DefaultExpression);
 
-	DefaultBraceBodyExpression.props({
+	DefaultBraceBodyExpression.$({
 		/**
 		 * 获取表达式状态
 		 */
@@ -36,7 +36,7 @@ this.BraceBodyStatement = function(DefaultBraceBodyExpression){
 	};
 	BraceBodyStatement = new Rexjs(BraceBodyStatement, ECMAScriptStatement);
 	
-	BraceBodyStatement.props({
+	BraceBodyStatement.$({
 		/**
 		 * 捕获处理异常
 		 * @param {SyntaxParser} parser - 语法解析器
@@ -45,7 +45,7 @@ this.BraceBodyStatement = function(DefaultBraceBodyExpression){
 		catch: function(parser, context){
 			// 如果不是关闭大括号
 			if(context.content !== "}"){
-				return null;
+				return NULL;
 			}
 
 			// 跳出语句并设置 inner

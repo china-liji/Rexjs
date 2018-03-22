@@ -1,5 +1,5 @@
 // 公用的表达式
-!function(){
+!function(DEFAULT_INDEX){
 
 this.AssignableExpression = function(){
 	/**
@@ -27,8 +27,8 @@ this.GenerableExpression = function(){
 	};
 	GenerableExpression = new Rexjs(GenerableExpression, Expression);
 
-	GenerableExpression.props({
-		contextGeneratorIfNeedCompile: null,
+	GenerableExpression.$({
+		contextGeneratorIfNeedCompile: NULL,
 		/**
 		 * 提取表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
@@ -49,6 +49,7 @@ this.GenerableExpression = function(){
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
 		 */
 		generateTo: function(){},
+		mainFlowIndex: DEFAULT_INDEX,
 		/**
 		 * 以常规形式的提取表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
@@ -59,7 +60,7 @@ this.GenerableExpression = function(){
 	return GenerableExpression;
 }();
 
-this.ConditionalExpression = function(GenerableExpression, DEFAULT_INDEX, generateBody){
+this.ConditionalExpression = function(GenerableExpression, generateBody){
 	/**
 	 * 带条件的表达式
 	 * @param {Context} context - 语法标签上下文
@@ -70,10 +71,22 @@ this.ConditionalExpression = function(GenerableExpression, DEFAULT_INDEX, genera
 	};
 	ConditionalExpression = new Rexjs(ConditionalExpression, GenerableExpression);
 
-	ConditionalExpression.props({
+	ConditionalExpression.$({
+		/**
+		 * 该条件表达式其他用途适配时所对应的索引值，即保留索引值，供辅助使用
+		 * @type {Number}
+		 */
 		adapterIndex: DEFAULT_INDEX,
+		/**
+		 * 条件表达式所处分支流结束时所对应的索引值
+		 * @type {Number}
+		 */
 		branchFlowIndex: DEFAULT_INDEX,
-		condition: null,
+		condition: NULL,
+		/**
+		 * 条件表达式所处分支流起始时所对应的索引值
+		 * @type {Number}
+		 */
 		conditionIndex: DEFAULT_INDEX,
 		/**
 		 * 提取表达式文本内容
@@ -147,16 +160,22 @@ this.ConditionalExpression = function(GenerableExpression, DEFAULT_INDEX, genera
 			// 以生成器形式去编译主体代码
 			generateBody(this, body, contentBuilder);
 		},
+		/**
+		 * 条件不成立所对应的索引值
+		 * @type {Number}
+		 */
 		negativeIndex: DEFAULT_INDEX,
-		mainFlowIndex: DEFAULT_INDEX,
+		/**
+		 * 条件成立所对应的索引值
+		 * @type {Number}
+		 */
 		positiveIndex: DEFAULT_INDEX
 	});
 
 	return ConditionalExpression;
 }(
 	this.GenerableExpression,
-	// DEFAULT_INDEX
-	-1,
+	
 	// generateBody
 	function(expression, body, contentBuilder){
 		// 提取主体内容
@@ -174,5 +193,7 @@ this.ConditionalExpression = function(GenerableExpression, DEFAULT_INDEX, genera
 );
 
 }.call(
-	this
+	this,
+	// DEFAULT_INDEX
+	-1
 );

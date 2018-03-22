@@ -11,7 +11,7 @@ this.DeclarationPropertyNameInitializerTag = function(PropertyDestructuringDefau
 	};
 	DeclarationPropertyNameInitializerTag = new Rexjs(DeclarationPropertyNameInitializerTag, PropertyInitializerTag);
 
-	DeclarationPropertyNameInitializerTag.props({
+	DeclarationPropertyNameInitializerTag.$({
 		/**
 		 * 标签访问器
 		 * @param {SyntaxParser} parser - 语法解析器
@@ -53,7 +53,7 @@ this.DeclarationPropertyNameSeparatorTag = function(visitor){
 	};
 	DeclarationPropertyNameSeparatorTag = new Rexjs(DeclarationPropertyNameSeparatorTag, PropertyNameSeparatorTag);
 
-	DeclarationPropertyNameSeparatorTag.props({
+	DeclarationPropertyNameSeparatorTag.$({
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射

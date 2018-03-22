@@ -11,7 +11,7 @@ this.CaseExpression = function(){
 	};
 	CaseExpression = new Rexjs(CaseExpression, Expression);
 
-	CaseExpression.props({
+	CaseExpression.$({
 		/**
 		 * 提取表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容存储列表
@@ -28,7 +28,7 @@ this.CaseExpression = function(){
 			// 提取 case 语句块
 			this.statements.extractTo(contentBuilder);
 		},
-		separator: null,
+		separator: NULL,
 		/**
 		 * 获取状态
 		 */
@@ -40,8 +40,8 @@ this.CaseExpression = function(){
 		 * @param {Number} value - 状态
 		 */
 		set state(value){},
-		statements: null,
-		value: null
+		statements: NULL,
+		value: NULL
 	});
 
 	return CaseExpression;
@@ -57,7 +57,7 @@ this.DefaultCaseExpression = function(CaseExpression){
 	};
 	DefaultCaseExpression = new Rexjs(DefaultCaseExpression, CaseExpression);
 
-	DefaultCaseExpression.props({
+	DefaultCaseExpression.$({
 		/**
 		 * 提取表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容存储列表
@@ -71,7 +71,7 @@ this.DefaultCaseExpression = function(CaseExpression){
 			// 提取 case 语句块
 			this.statements.extractTo(contentBuilder);
 		},
-		value: null
+		value: NULL
 	});
 
 	return DefaultCaseExpression;
@@ -89,7 +89,7 @@ this.CaseValueStatement = function(){
 	};
 	CaseValueStatement = new Rexjs(CaseValueStatement, ECMAScriptStatement);
 	
-	CaseValueStatement.props({
+	CaseValueStatement.$({
 		/**
 		 * 捕获处理异常
 		 * @param {SyntaxParser} parser - 语法解析器
@@ -100,7 +100,7 @@ this.CaseValueStatement = function(){
 			if(context.content !== ":"){
 				// 报错
 				parser.error(context);
-				return null;
+				return NULL;
 			}
 
 			// 跳出语句并设置 value
@@ -122,7 +122,7 @@ this.DefaultValueStatement = function(CaseValueStatement){
 	};
 	DefaultValueStatement = new Rexjs(DefaultValueStatement, CaseValueStatement);
 
-	DefaultValueStatement.props({
+	DefaultValueStatement.$({
 		expression: new DefaultExpression()
 	});
 	
@@ -141,7 +141,7 @@ this.CaseBodyStatement = function(BraceBodyStatement, isCase, isCloseBrace){
 	};
 	CaseBodyStatement = new Rexjs(CaseBodyStatement, BraceBodyStatement);
 	
-	CaseBodyStatement.props({
+	CaseBodyStatement.$({
 		/**
 		 * 捕获处理异常
 		 * @param {SyntaxParser} parser - 语法解析器
@@ -160,10 +160,10 @@ this.CaseBodyStatement = function(BraceBodyStatement, isCase, isCloseBrace){
 				// 如果是结束大括号
 				case "}":
 					isCloseBrace(parser, this.statements);
-					return null;
+					return NULL;
 
 				default:
-					return null;
+					return NULL;
 			}
 		}
 	});
@@ -215,7 +215,7 @@ this.CaseBodyStatements = function(SwitchBodyStatements, CaseBodyStatement){
 	};
 	CaseBodyStatements = new Rexjs(CaseBodyStatements, SwitchBodyStatements);
 
-	CaseBodyStatements.props({
+	CaseBodyStatements.$({
 		/**
 		 * 初始化语句
 		 */
@@ -240,7 +240,7 @@ this.CaseTag = function(CaseExpression, CaseValueStatement){
 	};
 	CaseTag = new Rexjs(CaseTag, SyntaxTag);
 
-	CaseTag.props({
+	CaseTag.$({
 		/**
 		 * 获取绑定的标签，该标签一般是用于语句的 try、catch 的返回值
 		 */
@@ -298,7 +298,7 @@ this.DefaultTag = function(CaseTag, DefaultCaseExpression, DefaultValueStatement
 	};
 	DefaultTag = new Rexjs(DefaultTag, CaseTag);
 
-	DefaultTag.props({
+	DefaultTag.$({
 		regexp: /default/,
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
@@ -350,7 +350,7 @@ this.CaseValueSeparatorTag = function(ColonTag, CaseBodyStatements){
 	};
 	CaseValueSeparatorTag = new Rexjs(CaseValueSeparatorTag, ColonTag);
 
-	CaseValueSeparatorTag.props({
+	CaseValueSeparatorTag.$({
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
@@ -386,9 +386,9 @@ caseValueSeparatorTag = new this.CaseValueSeparatorTag();
 }.call(
 	this,
 	// caseTag
-	null,
+	NULL,
 	// defaultTag
-	null,
+	NULL,
 	// caseValueSeparatorTag
-	null
+	NULL
 );

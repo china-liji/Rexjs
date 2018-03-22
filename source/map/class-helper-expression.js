@@ -11,7 +11,7 @@ this.ExtendsExpression = function(){
 	};
 	ExtendsExpression = new Rexjs(ExtendsExpression, Expression);
 
-	ExtendsExpression.props({
+	ExtendsExpression.$({
 		/**
 		 * 提取并编译表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
@@ -34,7 +34,7 @@ this.ExtendsExpression = function(){
 			// 提取 super 表达式
 			this.super.extractTo(contentBuilder);
 		},
-		super: null
+		super: NULL
 	});
 
 	return ExtendsExpression;
@@ -47,11 +47,11 @@ this.DefaultExtendsExpression = function(ExtendsExpression){
 	 * 默认 extends 表达式
 	 */
 	function DefaultExtendsExpression(){
-		ExtendsExpression.call(this, null);
+		ExtendsExpression.call(this, NULL);
 	};
 	DefaultExtendsExpression = new Rexjs(DefaultExtendsExpression, ExtendsExpression);
 
-	DefaultExtendsExpression.props({
+	DefaultExtendsExpression.$({
 		/**
 		 * 提取并编译表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
@@ -80,7 +80,7 @@ this.ClassPropertyExpression = function(extractTo, requestVariableOf){
 	};
 	ClassPropertyExpression = new Rexjs(ClassPropertyExpression, PropertyExpression);
 
-	ClassPropertyExpression.props({
+	ClassPropertyExpression.$({
 		/**
 		 * 提取并编译表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
@@ -127,7 +127,7 @@ this.ClassPropertyExpression = function(extractTo, requestVariableOf){
 			// 调用父类方法
 			extractTo.call(this, contentBuilder);
 		},
-		modifier: null,
+		modifier: NULL,
 		/**
 		 * 请求获取相关类表达式的临时变量名，如果没有，则先生成变量名
 		 * @param {Statements} statements - 对象表达式所处的语句块

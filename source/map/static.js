@@ -11,7 +11,7 @@ this.StaticTag = function(){
 	};
 	StaticTag = new Rexjs(StaticTag, SyntaxTag);
 
-	StaticTag.props({
+	StaticTag.$({
 		regexp: /static/
 	});
 
@@ -28,7 +28,7 @@ this.StaticModifierTag = function(StaticTag, IdentifierPropertyNameExpression){
 	};
 	StaticModifierTag = new Rexjs(StaticModifierTag, StaticTag);
 
-	StaticModifierTag.props({
+	StaticModifierTag.$({
 		order: ECMAScriptOrders.STATIC_MODIFIER,
 		/**
 		 * 获取此标签接下来所需匹配的标签列表

@@ -8,8 +8,9 @@ this.ECMAScriptErrors = ECMAScriptErrors = function(REGEXP){
 	function ECMAScriptErrors(){};
 	ECMAScriptErrors = new Rexjs(ECMAScriptErrors);
 
-	ECMAScriptErrors.static({
+	ECMAScriptErrors.$$({
 		ASSIGNMENT: "Invalid left-hand side in assignment",
+		AWAIT: "await is only valid in async function",
 		CALL: "Missing ) after argument list",
 		CONST: "Assignment to constant variable",
 		CONSTRUCTOR: "Class constructor may not be ${1}",
@@ -71,7 +72,7 @@ this.ECMAScriptOrders = ECMAScriptOrders = function(){
 	function ECMAScriptOrders(){};
 	ECMAScriptOrders = new Rexjs(ECMAScriptOrders);
 
-	ECMAScriptOrders.static({
+	ECMAScriptOrders.$$({
 		OPEN_ARROW_FUNCTION_BODY: 100,
 		OPEN_BRACKET_ACCESSOR: 100,
 		OPEN_CALL: 100,

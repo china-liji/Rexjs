@@ -24,7 +24,7 @@ this.ExecTag = function(ExecutableExpression, isSeparator){
 	};
 	ExecTag = new Rexjs(ExecTag, UnaryKeywordTag);
 	
-	ExecTag.props({
+	ExecTag.$({
 		/**
 		 * 验证所提供的标签是否为表达式分隔符标签
 		 * @param {Context} context - 所需验证的标签上下文

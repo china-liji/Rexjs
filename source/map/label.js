@@ -11,14 +11,33 @@ this.LabelledExpression = function(GenerableExpression){
 	};
 	LabelledExpression = new Rexjs(LabelledExpression, GenerableExpression);
 
-	LabelledExpression.props({
+	LabelledExpression.$({
 		/**
 		 * 以生成器形式的提取表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
 		 */
 		generateTo: function(contentBuilder){
+			var generator = this.contextGeneratorIfNeedCompile, currentIndexString = generator.currentIndexString,
+			
+				labelIndex = generator.nextIndex(), mainFlowIndex = generator.nextIndex();
+
+			contentBuilder.appendString(
+				currentIndexString + "=" + labelIndex + ";break;" +
+				// 追加异常索引代码
+				"case " + labelIndex + ":"
+			);
+
+			// 设置主语句流索引
+			this.mainFlowIndex = mainFlowIndex;
+
 			// 提取语句表达式内容
 			this.statementExpression.extractTo(contentBuilder);
+
+			contentBuilder.appendString(
+				currentIndexString + "=" + mainFlowIndex + ";break;" +
+				// 追加异常索引代码
+				"case " + mainFlowIndex + ":"
+			);
 		},
 		/**
 		 * 以常规形式的提取表达式文本内容
@@ -33,7 +52,7 @@ this.LabelledExpression = function(GenerableExpression){
 			// 提取语句表达式内容
 			this.statementExpression.extractTo(contentBuilder);
 		},
-		statementExpression: null
+		statementExpression: NULL
 	});
 	
 	return LabelledExpression;
@@ -51,7 +70,7 @@ this.LabelledStatement = function(){
 	};
 	LabelledStatement = new Rexjs(LabelledStatement, ECMAScriptStatement);
 	
-	LabelledStatement.props({
+	LabelledStatement.$({
 		/**
 		 * 捕获处理异常
 		 * @param {SyntaxParser} parser - 语法解析器
@@ -76,7 +95,7 @@ this.LabelTag = function(VariableTag){
 	};
 	LabelTag = new Rexjs(LabelTag, VariableTag);
 	
-	LabelTag.props({
+	LabelTag.$({
 		$class: CLASS_STATEMENT_BEGIN,
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
@@ -102,7 +121,7 @@ this.LabelColonTag = function(ColonTag, LabelledExpression, LabelledStatement){
 	};
 	LabelColonTag = new Rexjs(LabelColonTag, ColonTag);
 	
-	LabelColonTag.props({
+	LabelColonTag.$({
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射

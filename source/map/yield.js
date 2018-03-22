@@ -11,7 +11,14 @@ this.YieldTag = function(visitor){
 	};
 	YieldTag = new Rexjs(YieldTag, ReturnTag);
 
-	YieldTag.props({
+	YieldTag.$({
+		/**
+		 * 获取上下文中的闭包
+		 * @param {Statement} statements - 当前语句块
+		 */
+		contextClosure: function(statements){
+			return statements.strictContextGenerator;
+		},
 		/**
 		 * 提取文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
@@ -23,42 +30,21 @@ this.YieldTag = function(visitor){
 		},
 		/**
 		 * 从相关生成器中获取当前所需使用的生成器索引值
-		 * @param {GeneratorExpression} generatorExpression - 相关生成器表达式
+		 * @param @param {FunctionExpression} functionExpression - 相关函数生成器表达式
 		 * @param {TerminatedFlowExpression} terminatedFlowExpression - 该标签相关的中断流表达式
 		 */
-		getCurrentIndexBy: function(generatorExpression){
-			return generatorExpression.nextIndex();
+		getCurrentIndexBy: function(functionExpression){
+			return functionExpression.nextIndex();
 		},
 		/**
 		 * 从相关生成器中获取下一次所需使用的生成器索引值
-		 * @param {GeneratorExpression} generatorExpression - 相关生成器表达式
+		 * @param @param {FunctionExpression} functionExpression - 相关函数生成器表达式
 		 * @param {TerminatedFlowExpression} terminatedFlowExpression - 该标签相关的中断流表达式
 		 */
-		getNextIndexBy: function(generatorExpression){
-			return generatorExpression.index;
+		getNextIndexBy: function(functionExpression){
+			return functionExpression.index;
 		},
-		regexp: /yield/,
-		/**
-		 * 标签访问器
-		 * @param {SyntaxParser} parser - 语法解析器
-		 * @param {Context} context - 标签上下文
-		 * @param {Statement} statement - 当前语句
-		 * @param {Statements} statements - 当前语句块
-		 */
-		visitor: function(parser, context, statement, statements){
-			// 如果在生成器内
-			if(statements.contextGenerator){
-				// 调用父类方法
-				visitor.call(this, parser, context, statement, statements);
-				return;
-			}
-
-			// 报错
-			parser.error(
-				context,
-				ECMAScriptErrors.template("ILLEGAL_STATEMENT", context.content)
-			);
-		}
+		regexp: /yield/
 	});
 
 	return YieldTag;

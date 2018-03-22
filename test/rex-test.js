@@ -1,13 +1,13 @@
-new function(Rexjs, File, String){
+new function(Rexjs, File, URL, String, fileIndex){
 
-this.SimpleTest = function(ECMAScriptParser, XMLHttpRequest, Error, INNER_CONTENT_REGEXP, file, console, toArray, e, catchErrors){
+this.SimpleTest = function(ECMAScriptParser, XMLHttpRequest, Error, INNER_CONTENT_REGEXP, console, toArray, e, getFile, catchErrors){
 	/**
 	 * 解析器测试
 	 */
 	function SimpleTest(){};
 	SimpleTest = new Rexjs(SimpleTest);
 	
-	SimpleTest.static({
+	SimpleTest.$$({
 		/**
 		 * 获取函数主体代码
 		 * @param {Function} func - 需要获取主体代码的函数
@@ -17,7 +17,7 @@ this.SimpleTest = function(ECMAScriptParser, XMLHttpRequest, Error, INNER_CONTEN
 		}
 	});
 	
-	SimpleTest.props({
+	SimpleTest.$({
 		/**
 		 * 测试结果为假的代码，即代码解析时候正确应该报错
 		 * @param {String} description - 该测试的描述
@@ -28,11 +28,11 @@ this.SimpleTest = function(ECMAScriptParser, XMLHttpRequest, Error, INNER_CONTEN
 			var parser = new ECMAScriptParser();
 			
 			try {
-				// 设置文件源代码
-				file.source = source;
-				
 				// 解析文件
-				parser.parse(file);
+				parser.parse(
+					getFile(source)
+				);
+
 				// 如果进入这里，说明上面解析没有报错，而我们是希望报错的，说明解析有 bug
 				console.error("Uncaught Exceptions: " + description);
 			}
@@ -81,11 +81,10 @@ this.SimpleTest = function(ECMAScriptParser, XMLHttpRequest, Error, INNER_CONTEN
 			try {
 				var parser = new ECMAScriptParser(), result = "";
 				
-				// 设置文件源代码
-				file.source = source;
-				
 				// 解析文件
-				parser.parse(file);
+				parser.parse(
+					getFile(source)
+				);
 				
 				// 如果需要执行
 				if(_eval){
@@ -159,14 +158,16 @@ this.SimpleTest = function(ECMAScriptParser, XMLHttpRequest, Error, INNER_CONTEN
 	Error,
 	// INNER_CONTENT_REGEXP
 	/\{([\s\S]*)\}\s*$/,
-	// file
-	new File(
-		new Rexjs.URL("test.js"),
-		""
-	),
 	console,
 	Rexjs.toArray,
 	eval,
+	// getFile
+	function(source){
+		return new File(
+			new URL("test_" + fileIndex++ + ".js"),
+			source
+		);
+	},
 	// catchErrors
 	function(description, callbacks, parser, error){
 		// 遍历回调
@@ -189,9 +190,12 @@ this.SimpleTest = function(ECMAScriptParser, XMLHttpRequest, Error, INNER_CONTEN
 	}
 );
 
-Rexjs.static(this);
+Rexjs.$$(this);
 }(
 	Rexjs,
 	Rexjs.File,
-	String
+	Rexjs.URL,
+	String,
+	// fileIndex
+	0
 );

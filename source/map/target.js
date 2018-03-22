@@ -7,11 +7,11 @@ this.TargetExpression = function(AccessorExpression){
 	 * @param {Context} context - 语法标签上下文
 	 */
 	function TargetExpression(context){
-		AccessorExpression.call(this, context, null);
+		AccessorExpression.call(this, context, NULL);
 	};
 	TargetExpression = new Rexjs(TargetExpression, AccessorExpression);
 
-	TargetExpression.props({
+	TargetExpression.$({
 		/**
 		 * 提取表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
@@ -41,7 +41,7 @@ this.TargetAccessorTag = function(TargetExpression, visitor){
 	};
 	TargetAccessorTag = new Rexjs(TargetAccessorTag, DotAccessorTag);
 
-	TargetAccessorTag.props({
+	TargetAccessorTag.$({
 		/**
 		 * 获取绑定的表达式，一般在子类使用父类逻辑，而不使用父类表达式的情况下使用
 		 * @param {Context} context - 相关的语法标签上下文
@@ -92,7 +92,7 @@ this.TargetTag = function(SCOPE_CLOSURE, SCOPE_LAZY, visitor){
 	};
 	TargetTag = new Rexjs(TargetTag, PropertyNameTag);
 
-	TargetTag.props({
+	TargetTag.$({
 		order: ECMAScriptOrders.TARGET,
 		regexp: /target/,
 		/**

@@ -14,7 +14,7 @@ this.PropertySpreadExpression = function(PropertyExpression, SpreadExpression){
 	};
 	PropertySpreadExpression = new Rexjs(PropertySpreadExpression, PropertyExpression);
 
-	PropertySpreadExpression.props({
+	PropertySpreadExpression.$({
 		/**
 		 * 提取并编译表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
@@ -55,7 +55,7 @@ this.PropertySpreadTag = function(SpreadTag, PropertySpreadExpression, SpreadSta
 	};
 	PropertySpreadTag = new Rexjs(PropertySpreadTag, SpreadTag);
 	
-	PropertySpreadTag.props({
+	PropertySpreadTag.$({
 		/**
 		 * 标签访问器
 		 * @param {SyntaxParser} parser - 语法解析器

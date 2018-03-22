@@ -12,7 +12,7 @@ this.ExpressionTags = function(list){
 	};
 	ExpressionTags = new Rexjs(ExpressionTags, ECMAScriptTags);
 	
-	ExpressionTags.props({
+	ExpressionTags.$({
 		/**
 		 * 标签过滤处理
 		 * @param {SyntaxTag} tag - 语法标签
@@ -32,6 +32,7 @@ this.ExpressionTags = function(list){
 }(
 	// list
 	[
+		this.AsyncTag,
 		this.ClassTag,
 		this.FunctionTag,
 		this.OpenObjectTag,
@@ -51,7 +52,7 @@ this.ExpressionContextTags = function(list){
 	};
 	ExpressionContextTags = new Rexjs(ExpressionContextTags, ECMAScriptTags);
 	
-	ExpressionContextTags.props({
+	ExpressionContextTags.$({
 		/**
 		 * 标签过滤处理
 		 * @param {SyntaxTag} tag - 语法标签
@@ -101,7 +102,7 @@ this.StatementTags = function(FileEndTag){
 	};
 	StatementTags = new Rexjs(StatementTags, ECMAScriptTags);
 	
-	StatementTags.props({
+	StatementTags.$({
 		/**
 		 * 标签过滤处理
 		 * @param {SyntaxTag} tag - 语法标签
@@ -149,7 +150,7 @@ this.MistakableTags = function(StatementTags){
 	};
 	MistakableTags = new Rexjs(MistakableTags, StatementTags);
 	
-	MistakableTags.props({
+	MistakableTags.$({
 		/**
 		 * 标签过滤处理
 		 * @param {SyntaxTag} tag - 语法标签

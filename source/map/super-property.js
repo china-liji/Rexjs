@@ -14,7 +14,7 @@ this.SuperBracketAccessorExpression = function(extractTo){
 	};
 	SuperBracketAccessorExpression = new Rexjs(SuperBracketAccessorExpression, BracketAccessorExpression);
 	
-	SuperBracketAccessorExpression.props({
+	SuperBracketAccessorExpression.$({
 		closureReference: "",
 		/**
 		 * 提取属性文本内容
@@ -63,7 +63,7 @@ this.SuperDotAccessorExpression = function(extractTo){
 	};
 	SuperDotAccessorExpression = new Rexjs(SuperDotAccessorExpression, AccessorExpression);
 	
-	SuperDotAccessorExpression.props({
+	SuperDotAccessorExpression.$({
 		closureReference: "",
 		/**
 		 * 提取属性文本内容
@@ -109,7 +109,7 @@ this.OpenSuperBracketAccessorTag = function(SuperBracketAccessorExpression, Brac
 	};
 	OpenSuperBracketAccessorTag = new Rexjs(OpenSuperBracketAccessorTag, OpenBracketAccessorTag);
 	
-	OpenSuperBracketAccessorTag.props({
+	OpenSuperBracketAccessorTag.$({
 		$type: TYPE_MISTAKABLE,
 		/**
 		 * 获取绑定的标签，该标签一般是用于语句的 try、catch 的返回值
@@ -164,7 +164,7 @@ this.CloseSuperBracketAccessorTag = function(CloseBracketAccessorTag){
 	};
 	CloseSuperBracketAccessorTag = new Rexjs(CloseSuperBracketAccessorTag, CloseBracketAccessorTag);
 	
-	CloseSuperBracketAccessorTag.props({
+	CloseSuperBracketAccessorTag.$({
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
@@ -189,7 +189,7 @@ this.SuperDotAccessorTag = function(SuperDotAccessorExpression, visitor){
 	};
 	SuperDotAccessorTag = new Rexjs(SuperDotAccessorTag, DotAccessorTag);
 	
-	SuperDotAccessorTag.props({
+	SuperDotAccessorTag.$({
 		$type: TYPE_MISTAKABLE,
 		/**
 		 * 获取绑定的表达式，一般在子类使用父类逻辑，而不使用父类表达式的情况下使用
@@ -237,7 +237,7 @@ this.SuperPropertyNameTag = function(PropertyNameTag){
 	};
 	SuperPropertyNameTag = new Rexjs(SuperPropertyNameTag, PropertyNameTag);
 	
-	SuperPropertyNameTag.props({
+	SuperPropertyNameTag.$({
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
@@ -261,7 +261,7 @@ closeSuperBracketAccessorTag = new this.CloseSuperBracketAccessorTag();
 	this.OpenBracketAccessorTag,
 	this.DotAccessorTag,
 	// closeSuperBracketAccessorTag
-	null,
+	NULL,
 	// compileSuperAccessor
 	function(expression, contentBuilder, extractProperty){
 		// 追加获取父类属性方法的起始代码

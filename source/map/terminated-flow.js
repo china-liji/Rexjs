@@ -12,8 +12,8 @@ this.TerminatedFlowExpression = function(GenerableExpression){
 	};
 	TerminatedFlowExpression = new Rexjs(TerminatedFlowExpression, GenerableExpression);
 	
-	TerminatedFlowExpression.props({
-		branch: null,
+	TerminatedFlowExpression.$({
+		branch: NULL,
 		/**
 		 * 以生成器形式的提取表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
@@ -57,7 +57,7 @@ this.TerminatedFlowExpression = function(GenerableExpression){
 			// 提取对象
 			object.extractTo(contentBuilder);
 		},
-		object: null
+		object: NULL
 	});
 	
 	return TerminatedFlowExpression;
@@ -75,7 +75,7 @@ this.TerminatedFlowStatement = function(){
 	};
 	TerminatedFlowStatement = new Rexjs(TerminatedFlowStatement, ECMAScriptStatement);
 
-	TerminatedFlowStatement.props({
+	TerminatedFlowStatement.$({
 		/**
 		 * 尝试处理异常
 		 * @param {SyntaxParser} parser - 语法解析器
@@ -90,7 +90,7 @@ this.TerminatedFlowStatement = function(){
 	return TerminatedFlowStatement;
 }();
 
-this.TerminatedFlowTag = function(TerminatedFlowExpression, TerminatedFlowStatement){
+this.TerminatedFlowTag = function(TerminatedFlowExpression, TerminatedFlowStatement, NaNString){
 	/**
 	 * 中断流标签
 	 * @param {Number} _type - 标签类型
@@ -100,7 +100,7 @@ this.TerminatedFlowTag = function(TerminatedFlowExpression, TerminatedFlowStatem
 	};
 	TerminatedFlowTag = new Rexjs(TerminatedFlowTag, SyntaxTag);
 	
-	TerminatedFlowTag.props({
+	TerminatedFlowTag.$({
 		$class: CLASS_STATEMENT_BEGIN,
 		flow: ECMAScriptStatement.FLOW_MAIN,
 		/**
@@ -120,19 +120,19 @@ this.TerminatedFlowTag = function(TerminatedFlowExpression, TerminatedFlowStatem
 		},
 		/**
 		 * 从相关生成器中获取当前所需使用的生成器索引值
-		 * @param {GeneratorExpression} generatorExpression - 相关生成器表达式
+		 * @param @param {FunctionExpression} functionExpression - 相关函数生成器表达式
 		 * @param {TerminatedFlowExpression} terminatedFlowExpression - 该标签相关的中断流表达式
 		 */
 		getCurrentIndexBy: function(){
-			return "NaN";
+			return NaNString;
 		},
 		/**
 		 * 从相关生成器中获取下一次所需使用的生成器索引值
-		 * @param {GeneratorExpression} generatorExpression - 相关生成器表达式
+		 * @param @param {FunctionExpression} functionExpression - 相关函数生成器表达式
 		 * @param {TerminatedFlowExpression} terminatedFlowExpression - 该标签相关的中断流表达式
 		 */
 		getNextIndexBy: function(){
-			return "NaN";
+			return NaNString;
 		},
 		/**
 		 * 标签访问器
@@ -147,7 +147,9 @@ this.TerminatedFlowTag = function(TerminatedFlowExpression, TerminatedFlowStatem
 	return TerminatedFlowTag;
 }(
 	this.TerminatedFlowExpression,
-	this.TerminatedFlowStatement
+	this.TerminatedFlowStatement,
+	// NaNString
+	"0/0"
 );
 
 }.call(

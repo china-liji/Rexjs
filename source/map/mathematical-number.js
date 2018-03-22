@@ -11,7 +11,7 @@ this.MathematicalNumberTag = function(NumberTag){
 	};
 	MathematicalNumberTag = new Rexjs(MathematicalNumberTag, NumberTag);
 	
-	MathematicalNumberTag.props({
+	MathematicalNumberTag.$({
 		/**
 		 * 提取文本内容，空函数，不做任何处理
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
@@ -46,7 +46,7 @@ this.BinaryNumberTag = function(MathematicalNumberTag){
 	};
 	BinaryNumberTag = new Rexjs(BinaryNumberTag, MathematicalNumberTag);
 	
-	BinaryNumberTag.props({
+	BinaryNumberTag.$({
 		radix: "2",
 		regexp: /0[bB][01]+/
 	});
@@ -66,7 +66,7 @@ this.OctalNumberTag = function(MathematicalNumberTag){
 	};
 	OctalNumberTag = new Rexjs(OctalNumberTag, MathematicalNumberTag);
 	
-	OctalNumberTag.props({
+	OctalNumberTag.$({
 		radix: "8",
 		regexp: /0[oO][0-7]+/
 	});

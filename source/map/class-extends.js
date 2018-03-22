@@ -7,7 +7,7 @@ this.ExtendsStatement = function(){
 	};
 	ExtendsStatement = new Rexjs(ExtendsStatement, ECMAScriptStatement);
 
-	ExtendsStatement.props({
+	ExtendsStatement.$({
 		/**
 		 * 捕获处理异常
 		 * @param {SyntaxParser} parser - 语法解析器
@@ -18,7 +18,7 @@ this.ExtendsStatement = function(){
 			if(context.content !== "{"){
 				// 报错
 				parser.error(context);
-				return null;
+				return NULL;
 			}
 
 			// 跳出语句并设置 extends 表达式的 super 属性
@@ -57,7 +57,7 @@ this.ExtendsStatement = function(){
 				default:
 					// 报错
 					parser.error(context);
-					return null;
+					return NULL;
 			}
 
 			return context.tag;
@@ -77,7 +77,7 @@ this.ExtendsTag = function(ExtendsExpression, ExtendsStatement, openClassBodyTag
 	};
 	ExtendsTag = new Rexjs(ExtendsTag, SyntaxTag);
 
-	ExtendsTag.props({
+	ExtendsTag.$({
 		/**
 		 * 获取绑定的标签，该标签一般是用于语句的 try、catch 的返回值
 		 */

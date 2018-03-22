@@ -14,7 +14,7 @@ this.PropertyInitializerExpression = function(extractTo, toTernary){
 	};
 	PropertyInitializerExpression = new Rexjs(PropertyInitializerExpression, PropertyValueExpression);
 
-	PropertyInitializerExpression.props({
+	PropertyInitializerExpression.$({
 		/**
 		 * 提取并编译表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
@@ -38,7 +38,7 @@ this.PropertyInitializerExpression = function(extractTo, toTernary){
 			// 调用父类方法
 			extractTo.call(this, contentBuilder);
 		},
-		variable: null
+		variable: NULL
 	});
 
 	return PropertyInitializerExpression;
@@ -73,7 +73,7 @@ this.PropertyInitializerTag = function(BasicAssignmentTag, PropertyInitializerEx
 	};
 	PropertyInitializerTag = new Rexjs(PropertyInitializerTag, BasicAssignmentTag);
 
-	PropertyInitializerTag.props({
+	PropertyInitializerTag.$({
 		/**
 		 * 获取绑定的表达式，一般在子类使用父类逻辑，而不使用父类表达式的情况下使用
 		 * @param {Context} context - 相关的语法标签上下文

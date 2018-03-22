@@ -14,7 +14,7 @@ this.ExportExpression = function(compile){
 	};
 	ExportExpression = new Rexjs(ExportExpression, Expression);
 
-	ExportExpression.props({
+	ExportExpression.$({
 		/**
 		 * 提取表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
@@ -48,9 +48,9 @@ this.ExportExpression = function(compile){
 				contentBuilder.appendContext(this.name);
 			}
 		},
-		file: null,
-		member: null,
-		name: null
+		file: NULL,
+		member: NULL,
+		name: NULL
 	});
 
 	return ExportExpression;
@@ -97,7 +97,7 @@ this.ExportStatement = function(){
 	};
 	ExportStatement = new Rexjs(ExportStatement, ECMAScriptStatement);
 
-	ExportStatement.props({
+	ExportStatement.$({
 		allowFrom: false,
 		/**
 		 * 捕获处理异常
@@ -109,7 +109,7 @@ this.ExportStatement = function(){
 			this.out().member = this.expression;
 
 			// 如果是 from 且 该语句上下文中允许 from 出现
-			return context.content === "from" && this.allowFrom ? this.bindingOf() : null;
+			return context.content === "from" && this.allowFrom ? this.bindingOf() : NULL;
 		}
 	});
 
@@ -126,7 +126,7 @@ this.ExportTag = function(ModuleTag, ExportExpression, ExportStatement, fromTag)
 	};
 	ExportTag = new Rexjs(ExportTag, ModuleTag);
 
-	ExportTag.props({
+	ExportTag.$({
 		/**
 		 * 获取绑定的标签，该标签一般是用于语句的 try、catch 的返回值
 		 */

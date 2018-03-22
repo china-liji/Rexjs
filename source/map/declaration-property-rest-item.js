@@ -11,7 +11,7 @@ this.DeclarationPropertyRestStatement = function(out){
 	};
 	DeclarationPropertyRestStatement = new Rexjs(DeclarationPropertyRestStatement, SpreadStatement);
 
-	DeclarationPropertyRestStatement.props({
+	DeclarationPropertyRestStatement.$({
 		/**
 		 * 跳出该语句
 		 */
@@ -35,7 +35,7 @@ this.DeclarationPropertyRestItemTag = function(IdentifierDeclarationPropertyName
 	};
 	DeclarationPropertyRestItemTag = new Rexjs(DeclarationPropertyRestItemTag, IdentifierDeclarationPropertyNameTag);
 
-	DeclarationPropertyRestItemTag.props({
+	DeclarationPropertyRestItemTag.$({
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
@@ -79,7 +79,7 @@ this.DeclarationPropertyRestTag = function(PropertySpreadTag, PropertyDestructur
 	};
 	DeclarationPropertyRestTag = new Rexjs(DeclarationPropertyRestTag, PropertySpreadTag);
 	
-	DeclarationPropertyRestTag.props({
+	DeclarationPropertyRestTag.$({
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射

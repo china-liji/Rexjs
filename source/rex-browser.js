@@ -1,4 +1,4 @@
-new function(Rexjs, Module, document, forEach){
+new function(Rexjs, Module, NULL, document, forEach){
 
 // 浏览器环境中的模块编译器相关
 !function(ModuleCompiler){
@@ -12,7 +12,7 @@ this.HTMLCompiler = function(URL_PREFIX_REGEXP){
 	};
 	HTMLCompiler = new Rexjs(HTMLCompiler, ModuleCompiler);
 
-	HTMLCompiler.props({
+	HTMLCompiler.$({
 		/**
 		 * 编译模块
 		 * @param {Module} module - 编译的模块
@@ -63,7 +63,7 @@ this.CSSSelectorMap = function(CSS_SELECTOR_REGEXP, SEPARATOR_REGEXP, cache, pos
 	};
 	CSSSelectorMap = new Rexjs(CSSSelectorMap);
 
-	CSSSelectorMap.static({
+	CSSSelectorMap.$$({
 		/**
 		 * 根据命名空间地址获取映射表，如果没有则创建一个并返回
 		 * @param {String} namespaceURI - 映射表命名空间地址
@@ -79,7 +79,7 @@ this.CSSSelectorMap = function(CSS_SELECTOR_REGEXP, SEPARATOR_REGEXP, cache, pos
 		}
 	});
 
-	CSSSelectorMap.props({
+	CSSSelectorMap.$({
 		/**
 		 * 合并其他选择器映射表
 		 * @param {Array.<CSSSelectorMap>} mapList - 其他的选择器映射表
@@ -172,7 +172,7 @@ this.CSSCompiler = function(CSSSelectorMap, CSSRule, CSS_URL_REGEXP, enableSelec
 	};
 	CSSCompiler = new Rexjs(CSSCompiler, ModuleCompiler);
 
-	CSSCompiler.static({
+	CSSCompiler.$$({
 		/**
 		 * 禁止使用选择器解析器
 		 */
@@ -181,7 +181,7 @@ this.CSSCompiler = function(CSSSelectorMap, CSSRule, CSS_URL_REGEXP, enableSelec
 		}
 	});
 
-	CSSCompiler.props({
+	CSSCompiler.$({
 		/**
 		 * 编译模块
 		 * @param {Module} module - 编译的模块
@@ -326,8 +326,8 @@ this.CSSCompiler = function(CSSSelectorMap, CSSRule, CSS_URL_REGEXP, enableSelec
 				Module.export("default", selectorMap);
 			});
 		},
-		selectorMap: null,
-		style: null
+		selectorMap: NULL,
+		style: NULL
 	});
 
 	return CSSCompiler;
@@ -390,7 +390,7 @@ this.BrowserReady = function(HTMLCompiler, CSSCompiler, XMLHttpRequest, BASE_URL
 	};
 	BrowserReady = new Rexjs(BrowserReady, ModuleReady);
 
-	BrowserReady.props({
+	BrowserReady.$({
 		/**
 		 * 解析模块名称
 		 * @param {String} moduleName - 模块名称
@@ -470,7 +470,7 @@ this.BrowserReady = function(HTMLCompiler, CSSCompiler, XMLHttpRequest, BASE_URL
 				// 初始化内联模块
 				new Module("inline-script-" + count++ +".js", script.textContent);
 			},
-			null,
+			NULL,
 			true
 		);
 	}
@@ -486,10 +486,13 @@ this.BrowserReady = function(HTMLCompiler, CSSCompiler, XMLHttpRequest, BASE_URL
 );
 
 new this.BrowserReady();
-Rexjs.static(this);
+Rexjs.$$(this);
+
 }(
 	Rexjs,
 	Rexjs.Module,
+	// NULL
+	null,
 	document,
 	Rexjs.forEach
 );

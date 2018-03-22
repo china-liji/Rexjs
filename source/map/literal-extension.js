@@ -11,7 +11,7 @@ this.BooleanTag = function(){
 	};
 	BooleanTag = new Rexjs(BooleanTag, LiteralTag);
 	
-	BooleanTag.props({
+	BooleanTag.$({
 		regexp: /true|false/
 	});
 	
@@ -28,7 +28,7 @@ this.NullTag = function(){
 	};
 	NullTag = new Rexjs(NullTag, LiteralTag);
 	
-	NullTag.props({
+	NullTag.$({
 		regexp: /null/
 	});
 	
@@ -45,7 +45,7 @@ this.ThisTag = function(visitor){
 	};
 	ThisTag = new Rexjs(ThisTag, LiteralTag);
 	
-	ThisTag.props({
+	ThisTag.$({
 		regexp: /this/,
 		/**
 		 * 标签访问器
@@ -83,7 +83,7 @@ this.RegExpTag = function(visitor){
 	};
 	RegExpTag = new Rexjs(RegExpTag, LiteralTag);
 
-	RegExpTag.props({
+	RegExpTag.$({
 		/*
 			主体分三部分：
 				1. 反斜杠 + 非换行符，如：\/
@@ -163,7 +163,7 @@ this.NumberTag = function(){
 	};
 	NumberTag = new Rexjs(NumberTag, LiteralTag);
 	
-	NumberTag.props({
+	NumberTag.$({
 		regexp: /0[xX][0-9a-fA-F]+|0{2,}(?!\.)|(?:\d*\.\d+|\d+\.?)(?:[eE][+-]?\d+)?/,
 		throw: "number"
 	});
@@ -181,7 +181,7 @@ this.StringTag = function(){
 	};
 	StringTag = new Rexjs(StringTag, LiteralTag);
 	
-	StringTag.props({
+	StringTag.$({
 		regexp: /"(?:\\(?:[^\r]|\r\n?)|[^"\\\r\n\u2028\u2029]+)*"|'(?:\\(?:[^\r]|\r\n?)|[^'\\\r\n\u2028\u2029]+)*'/,
 		throw: "string"
 	});

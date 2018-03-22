@@ -18,7 +18,7 @@ this.SwitchExpression = function(ConditionalExpression, generateBody){
 	};
 	SwitchExpression = new Rexjs(SwitchExpression, ConditionalExpression);
 
-	SwitchExpression.props({
+	SwitchExpression.$({
 		/**
 		 * 获取表达式主体语句块
 		 */
@@ -32,7 +32,7 @@ this.SwitchExpression = function(ConditionalExpression, generateBody){
 		set block(value){
 			this.body = value;
 		},
-		body: null,
+		body: NULL,
 		/**
 		 * 以生成器形式的提取表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
@@ -118,7 +118,7 @@ this.SwitchStatement = function(){
 	};
 	SwitchStatement = new Rexjs(SwitchStatement, BoxStatement);
 
-	SwitchStatement.props({
+	SwitchStatement.$({
 		flow: BoxStatement.FLOW_LINEAR
 	});
 
@@ -135,7 +135,7 @@ this.SwitchBodyStatement = function(BraceBodyStatement){
 	};
 	SwitchBodyStatement = new Rexjs(SwitchBodyStatement, BraceBodyStatement);
 
-	SwitchBodyStatement.props({
+	SwitchBodyStatement.$({
 		/**
 		 * 捕获处理异常
 		 * @param {SyntaxParser} parser - 语法解析器
@@ -145,7 +145,7 @@ this.SwitchBodyStatement = function(BraceBodyStatement){
 			// 如果不是关闭大括号
 			if(context.content !== "}"){
 				parser.error(context);
-				return null;
+				return NULL;
 			}
 
 			// 跳出语句并设置 inner
@@ -176,7 +176,7 @@ this.SwitchBodyStatements = function(BlockBodyStatements, SwitchBodyStatement, S
 	};
 	SwitchBodyStatements = new Rexjs(SwitchBodyStatements, BlockBodyStatements);
 
-	SwitchBodyStatements.props({
+	SwitchBodyStatements.$({
 		/**
 		 * 初始化语句
 		 */
@@ -202,7 +202,7 @@ this.SwitchTag = function(SwitchExpression){
 	};
 	SwitchTag = new Rexjs(SwitchTag, SyntaxTag);
 	
-	SwitchTag.props({
+	SwitchTag.$({
 		$class: CLASS_STATEMENT_BEGIN,
 		regexp: /switch/,
 		/**
@@ -240,7 +240,7 @@ this.OpenSwitchConditionTag = function(OpenParenTag, ConditionStatement){
 	};
 	OpenSwitchConditionTag = new Rexjs(OpenSwitchConditionTag, OpenParenTag);
 	
-	OpenSwitchConditionTag.props({
+	OpenSwitchConditionTag.$({
 		/**
 		 * 获取绑定的标签，该标签一般是用于语句的 try、catch 的返回值
 		 */
@@ -285,7 +285,7 @@ this.CloseSwitchConditionTag = function(CloseParenTag){
 	};
 	CloseSwitchConditionTag = new Rexjs(CloseSwitchConditionTag, CloseParenTag);
 	
-	CloseSwitchConditionTag.props({
+	CloseSwitchConditionTag.$({
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
@@ -320,7 +320,7 @@ this.OpenSwitchBodyTag = function(SwitchStatement, SwitchBodyStatements, visitor
 	};
 	OpenSwitchBodyTag = new Rexjs(OpenSwitchBodyTag, OpenBlockTag);
 	
-	OpenSwitchBodyTag.props({
+	OpenSwitchBodyTag.$({
 		/**
 		 * 获取绑定的标签，该标签一般是用于语句的 try、catch 的返回值
 		 */
@@ -377,7 +377,7 @@ this.CloseSwitchBodyTag = function(visitor){
 	};
 	CloseSwitchBodyTag = new Rexjs(CloseSwitchBodyTag, CloseBlockTag);
 	
-	CloseSwitchBodyTag.props({
+	CloseSwitchBodyTag.$({
 		$type: TYPE_UNEXPECTED,
 		/**
 		 * 标签访问器
@@ -409,9 +409,9 @@ closeSwitchBodyTag = new this.CloseSwitchBodyTag();
 	this.OpenBlockTag,
 	this.CloseBlockTag,
 	// closeSwitchConditionTag
-	null,
+	NULL,
 	// closeSwitchBodyTag
-	null,
+	NULL,
 	// generateCase
 	function(switchExpression, statement, generator, variable, currentIndexString, contentBuilder){
 		var expression = statement.expression;

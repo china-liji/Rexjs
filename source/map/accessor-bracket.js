@@ -14,7 +14,7 @@ this.BracketAccessorExpression = function(AccessorExpression){
 	};
 	BracketAccessorExpression = new Rexjs(BracketAccessorExpression, AccessorExpression);
 	
-	BracketAccessorExpression.props({
+	BracketAccessorExpression.$({
 		/**
 		 * 提取表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
@@ -42,7 +42,7 @@ this.BracketAccessorStatement = function(){
 	};
 	BracketAccessorStatement = new Rexjs(BracketAccessorStatement, ECMAScriptStatement);
 	
-	BracketAccessorStatement.props({
+	BracketAccessorStatement.$({
 		/**
 		 * 捕获处理异常
 		 * @param {SyntaxParser} parser - 语法解析器
@@ -53,7 +53,7 @@ this.BracketAccessorStatement = function(){
 			if(context.content !== "]"){
 				// 报错
 				parser.error(context);
-				return null;
+				return NULL;
 			}
 
 			// 跳出该语句并设置 inner
@@ -75,7 +75,7 @@ this.OpenBracketAccessorTag = function(OpenBracketTag, BracketAccessorExpression
 	};
 	OpenBracketAccessorTag = new Rexjs(OpenBracketAccessorTag, OpenBracketTag);
 	
-	OpenBracketAccessorTag.props({
+	OpenBracketAccessorTag.$({
 		$class: CLASS_EXPRESSION_CONTEXT,
 		/**
 		 * 获取绑定的标签，该标签一般是用于语句的 try、catch 的返回值
@@ -134,7 +134,7 @@ this.CloseBracketAccessorTag = function(CloseBracketTag){
 	};
 	CloseBracketAccessorTag = new Rexjs(CloseBracketAccessorTag, CloseBracketTag);
 	
-	CloseBracketAccessorTag.props({
+	CloseBracketAccessorTag.$({
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
@@ -165,5 +165,5 @@ closeBracketAccessorTag = new this.CloseBracketAccessorTag();
 }.call(
 	this,
 	// closeBracketAccessorTag
-	null
+	NULL
 );

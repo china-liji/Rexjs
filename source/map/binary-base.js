@@ -11,7 +11,7 @@ this.BinaryExpression = function(){
 	};
 	BinaryExpression = new Rexjs(BinaryExpression, Expression);
 
-	BinaryExpression.props({
+	BinaryExpression.$({
 		/**
 		 * 提取表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
@@ -24,9 +24,9 @@ this.BinaryExpression = function(){
 			// 提取右侧表达式
 			this.right.extractTo(contentBuilder);
 		},
-		last: null,
-		left: null,
-		right: null
+		last: NULL,
+		left: NULL,
+		right: NULL
 	});
 
 	return BinaryExpression;
@@ -42,7 +42,7 @@ this.BinaryStatement = function(setRight){
 	};
 	BinaryStatement = new Rexjs(BinaryStatement, ECMAScriptStatement);
 	
-	BinaryStatement.props({
+	BinaryStatement.$({
 		/**
 		 * 捕获处理异常
 		 * @param {SyntaxParser} parser - 语法解析器
@@ -83,7 +83,7 @@ this.BinaryTag = function(ExpressionSeparatorTag, BinaryExpression, BinaryStatem
 	};
 	BinaryTag = new Rexjs(BinaryTag, ExpressionSeparatorTag);
 	
-	BinaryTag.props({
+	BinaryTag.$({
 		/**
 		 * 获取绑定的表达式，一般在子类使用父类逻辑，而不使用父类表达式的情况下使用
 		 * @param {Context} context - 相关的语法标签上下文

@@ -11,7 +11,7 @@ this.GetDescriptorTag = function(GetTag){
 	};
 	GetDescriptorTag = new Rexjs(GetDescriptorTag, GetTag);
 
-	GetDescriptorTag.props({
+	GetDescriptorTag.$({
 		require: require
 	});
 
@@ -30,7 +30,7 @@ this.SetDescriptorTag = function(SetTag){
 	};
 	SetDescriptorTag = new Rexjs(SetDescriptorTag, SetTag);
 
-	SetDescriptorTag.props({
+	SetDescriptorTag.$({
 		require: require
 	});
 

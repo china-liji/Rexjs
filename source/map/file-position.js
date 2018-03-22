@@ -11,7 +11,7 @@ this.FileStartTag = function(FileStartExpression){
 	};
 	FileStartTag = new Rexjs(FileStartTag, FilePositionTag);
 	
-	FileStartTag.props({
+	FileStartTag.$({
 		order: ECMAScriptOrders.FILE_START,
 		regexp: /^/,
 		/**
@@ -46,7 +46,7 @@ this.FileEndTag = function(FileEndExpression, GlobalStatements){
 	};
 	FileEndTag = new Rexjs(FileEndTag, FilePositionTag);
 	
-	FileEndTag.props({
+	FileEndTag.$({
 		regexp: /$/,
 		throw: "end of input",
 		/**

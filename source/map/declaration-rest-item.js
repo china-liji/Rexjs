@@ -11,7 +11,7 @@ this.DeclarationRestStatement = function(out){
 	};
 	DeclarationRestStatement = new Rexjs(DeclarationRestStatement, SpreadStatement);
 
-	DeclarationRestStatement.props({
+	DeclarationRestStatement.$({
 		/**
 		 * 跳出该语句
 		 */
@@ -35,7 +35,7 @@ this.DeclarationRestItemSeparatorTag = function(CommaTag){
 	};
 	DeclarationRestItemSeparatorTag = new Rexjs(DeclarationRestItemSeparatorTag, CommaTag);
 	
-	DeclarationRestItemSeparatorTag.props({
+	DeclarationRestItemSeparatorTag.$({
 		$type: TYPE_MATCHABLE,
 		/**
 		 * 标签访问器

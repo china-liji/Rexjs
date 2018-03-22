@@ -14,7 +14,7 @@ this.ArrowFunctionExpression = function(){
 	};
 	ArrowFunctionExpression = new Rexjs(ArrowFunctionExpression, FunctionExpression);
 
-	ArrowFunctionExpression.props({
+	ArrowFunctionExpression.$({
 		/**
 		 * 提取表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
@@ -72,7 +72,7 @@ this.SingleArgumentExpression = function(ArgumentsExpression, ArgumentExpression
 	 * @param {Context} argumentContext - 参数上下文
 	 */
 	function SingleArgumentExpression(argumentContext){
-		ArgumentsExpression.call(this, null);
+		ArgumentsExpression.call(this, NULL);
 
 		// 添加参数表达式
 		this.inner.add(
@@ -84,7 +84,7 @@ this.SingleArgumentExpression = function(ArgumentsExpression, ArgumentExpression
 	};
 	SingleArgumentExpression = new Rexjs(SingleArgumentExpression, ArgumentsExpression);
 
-	SingleArgumentExpression.props({
+	SingleArgumentExpression.$({
 		/**
 		 * 提取并编译表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
@@ -119,13 +119,13 @@ this.ArrowFunctionBodyExpression = function(FunctionBodyExpression){
 	 * @param {Expression} inner - 函数主体返回值表达式
 	 */
 	function ArrowFunctionBodyExpression(inner){
-		FunctionBodyExpression.call(this, null);
+		FunctionBodyExpression.call(this, NULL);
 
 		this.inner = inner;
 	};
 	ArrowFunctionBodyExpression = new Rexjs(ArrowFunctionBodyExpression, FunctionBodyExpression);
 
-	ArrowFunctionBodyExpression.props({
+	ArrowFunctionBodyExpression.$({
 		/**
 		 * 提取并编译表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
@@ -183,7 +183,7 @@ this.ArrowContextStatement = function(SingleStatement, ArrowFunctionBodyExpressi
 	};
 	ArrowContextStatement = new Rexjs(ArrowContextStatement, SingleStatement);
 
-	ArrowContextStatement.props({
+	ArrowContextStatement.$({
 		expression: new DefaultExpression(),
 		/**
 		 * 请求跳出该语句
@@ -223,7 +223,7 @@ this.ArrowTag = function(ExpressionSeparatorTag, ArrowFunctionExpression, Single
 	};
 	ArrowTag = new Rexjs(ArrowTag, ExpressionSeparatorTag);
 
-	ArrowTag.props({
+	ArrowTag.$({
 		$class: CLASS_EXPRESSION_CONTEXT,
 		// 防止与“=”冲突
 		order: ECMAScriptOrders.ARROW,
@@ -299,7 +299,7 @@ this.OpenArrowFunctionBodyTag = function(SCOPE_LAZY, visitor){
 	};
 	OpenArrowFunctionBodyTag = new Rexjs(OpenArrowFunctionBodyTag, OpenFunctionBodyTag);
 
-	OpenArrowFunctionBodyTag.props({
+	OpenArrowFunctionBodyTag.$({
 		/**
 		 * 获取绑定的标签，该标签一般是用于语句的 try、catch 的返回值
 		 */
@@ -341,7 +341,7 @@ this.CloseArrowFunctionBodyTag = function(visitor){
 	};
 	CloseArrowFunctionBodyTag = new Rexjs(CloseArrowFunctionBodyTag, CloseFunctionBodyTag);
 
-	CloseArrowFunctionBodyTag.props({
+	CloseArrowFunctionBodyTag.$({
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
@@ -379,5 +379,5 @@ closeArrowFunctionBodyTag = new this.CloseArrowFunctionBodyTag();
 	this.OpenFunctionBodyTag,
 	this.CloseFunctionBodyTag,
 	// closeArrowFunctionBodyTag
-	null
+	NULL
 );

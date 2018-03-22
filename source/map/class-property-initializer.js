@@ -12,7 +12,7 @@ this.ClassPropertyInitializerExpression = function(PropertyInitializerExpression
 	};
 	ClassPropertyInitializerExpression = new Rexjs(ClassPropertyInitializerExpression, PropertyInitializerExpression);
 
-	ClassPropertyInitializerExpression.props({
+	ClassPropertyInitializerExpression.$({
 		/**
 		 * 以参数模式提取并编译表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
@@ -61,7 +61,7 @@ this.ClassPropertyInitializerTag = function(PropertyInitializerTag, ClassPropert
 	};
 	ClassPropertyInitializerTag = new Rexjs(ClassPropertyInitializerTag, PropertyInitializerTag);
 
-	ClassPropertyInitializerTag.props({
+	ClassPropertyInitializerTag.$({
 		$type: TYPE_MATCHABLE,
 		/**
 		 * 获取绑定的表达式，一般在子类使用父类逻辑，而不使用父类表达式的情况下使用

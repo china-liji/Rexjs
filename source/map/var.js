@@ -12,7 +12,7 @@ this.VarExpression = function(GenerableExpression){
 
 		GenerableExpression.call(this, context, statements);
 
-		this.list = new ListExpression(null, ",");
+		this.list = new ListExpression(NULL, ",");
 		this.range = range;
 
 		generator = this.contextGeneratorIfNeedCompile;
@@ -25,7 +25,7 @@ this.VarExpression = function(GenerableExpression){
 	};
 	VarExpression = new Rexjs(VarExpression, GenerableExpression);
 
-	VarExpression.props({
+	VarExpression.$({
 		declaration: true,
 		/**
 		 * 以生成器形式的提取表达式文本内容
@@ -48,8 +48,8 @@ this.VarExpression = function(GenerableExpression){
 			// 提取变量列表
 			this.list.extractTo(contentBuilder);
 		},
-		list: null,
-		range: null
+		list: NULL,
+		range: NULL
 	});
 
 	return VarExpression;
@@ -67,7 +67,7 @@ this.VarStatement = function(){
 	};
 	VarStatement = new Rexjs(VarStatement, ECMAScriptStatement);
 	
-	VarStatement.props({
+	VarStatement.$({
 		/**
 		 * 捕获处理异常
 		 * @param {SyntaxParser} parser - 语法解析器
@@ -87,7 +87,7 @@ this.VarStatement = function(){
 		try: function(parser, context){
 			// 如果不是逗号
 			if(context.content !== ","){
-				return null;
+				return NULL;
 			}
 
 			// 跳出语句并添加表达式
@@ -110,7 +110,7 @@ this.VarTag = function(VarExpression, VarStatement){
 	};
 	VarTag = new Rexjs(VarTag, SyntaxTag);
 
-	VarTag.props({
+	VarTag.$({
 		$class: CLASS_STATEMENT_BEGIN,
 		/**
 		 * 获取绑定的标签，该标签一般是用于语句的 try、catch 的返回值
@@ -173,7 +173,7 @@ this.ClosureVariableTag = function(){
 	};
 	ClosureVariableTag = new Rexjs(ClosureVariableTag, VariableDeclarationTag);
 	
-	ClosureVariableTag.props({
+	ClosureVariableTag.$({
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
@@ -196,7 +196,7 @@ this.VarDeclarationBreakTag = function(ExpressionBreakTag){
 	};
 	VarDeclarationBreakTag = new Rexjs(VarDeclarationBreakTag, ExpressionBreakTag);
 
-	VarDeclarationBreakTag.props({
+	VarDeclarationBreakTag.$({
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
@@ -221,7 +221,7 @@ this.VarDeclarationSeparatorTag = function(CommaTag, VarStatement){
 	};
 	VarDeclarationSeparatorTag = new Rexjs(VarDeclarationSeparatorTag, CommaTag);
 	
-	VarDeclarationSeparatorTag.props({
+	VarDeclarationSeparatorTag.$({
 		/**
 		 * 获取绑定的语句，一般在子类使用父类逻辑，而不使用父类语句的情况下使用
 		 * @param {Statements} statements - 该语句将要所处的语句块
@@ -262,7 +262,7 @@ varDeclarationSeparatorTag = new this.VarDeclarationSeparatorTag();
 	this,
 	this.VariableDeclarationTag,
 	// closureVariableTag
-	null,
+	NULL,
 	// varDeclarationSeparatorTag
-	null
+	NULL
 );

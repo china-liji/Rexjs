@@ -26,7 +26,7 @@ this.BoxStatement = BoxStatement = function(){
 	};
 	BoxStatement = new Rexjs(BoxStatement, ECMAScriptStatement);
 
-	BoxStatement.props({
+	BoxStatement.$({
 		/**
 		 * 捕获处理异常
 		 * @param {SyntaxParser} parser - 语法解析器
@@ -44,7 +44,7 @@ this.BoxStatement = BoxStatement = function(){
 		try: function(parser, context){
 			// 跳出语句
 			this.out();
-			return null;
+			return NULL;
 		}
 	});
 
@@ -61,7 +61,7 @@ this.ConditionStatement = function(){
 	};
 	ConditionStatement = new Rexjs(ConditionStatement, ECMAScriptStatement);
 	
-	ConditionStatement.props({
+	ConditionStatement.$({
 		/**
 		 * 捕获处理异常
 		 * @param {SyntaxParser} parser - 语法解析器
@@ -72,7 +72,7 @@ this.ConditionStatement = function(){
 			if(context.content !== ")"){
 				// 报错
 				parser.error(context);
-				return null;
+				return NULL;
 			}
 
 			// 跳出该语句并设置条件表达式的 inner
@@ -100,7 +100,7 @@ this.SingleStatement = function(){
 	};
 	SingleStatement = new Rexjs(SingleStatement, ECMAScriptStatement);
 	
-	SingleStatement.props({
+	SingleStatement.$({
 		/**
 		 * 捕获处理异常
 		 * @param {SyntaxParser} parser - 语法解析器
@@ -134,7 +134,7 @@ this.SingleStatement = function(){
 		 * @param {Context} context - 语法标签上下文
 		 */
 		requestOut: function(){
-			return null;
+			return NULL;
 		}
 	});
 

@@ -11,7 +11,7 @@ this.AllMembersExpression = function(MemberAliasExpression){
 	};
 	AllMembersExpression = new Rexjs(AllMembersExpression, MemberAliasExpression);
 
-	AllMembersExpression.props({
+	AllMembersExpression.$({
 		/**
 		 * 提取并编译表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
@@ -39,7 +39,7 @@ this.AllMembersTag = function(AllMembersExpression){
 	};
 	AllMembersTag = new Rexjs(AllMembersTag, SyntaxTag);
 
-	AllMembersTag.props({
+	AllMembersTag.$({
 		regexp: /\*/,
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
@@ -83,7 +83,7 @@ this.ModuleAliasTag = function(AsTag){
 	};
 	ModuleAliasTag = new Rexjs(ModuleAliasTag, AsTag);
 
-	ModuleAliasTag.props({
+	ModuleAliasTag.$({
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
@@ -119,7 +119,7 @@ this.ModuleVariableTag = function(ConstVariableTag){
 	};
 	ModuleVariableTag = new Rexjs(ModuleVariableTag, ConstVariableTag);
 
-	ModuleVariableTag.props({
+	ModuleVariableTag.$({
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射

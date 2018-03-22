@@ -11,7 +11,7 @@ this.IncrementTag = function(){
 	};
 	IncrementTag = new Rexjs(IncrementTag, UnaryAssignmentTag);
 	
-	IncrementTag.props({
+	IncrementTag.$({
 		regexp: /\+\+/,
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
@@ -35,7 +35,7 @@ this.IncrementSiblingTag = function(IncrementTag){
 	};
 	IncrementSiblingTag = new Rexjs(IncrementSiblingTag, IncrementTag);
 	
-	IncrementSiblingTag.props({
+	IncrementSiblingTag.$({
 		/**
 		 * 提取文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
@@ -64,7 +64,7 @@ this.PostfixIncrementTag = function(){
 	};
 	PostfixIncrementTag = new Rexjs(PostfixIncrementTag, PostfixUnaryAssignmentTag);
 	
-	PostfixIncrementTag.props({
+	PostfixIncrementTag.$({
 		regexp: /\+\+/
 	});
 	
@@ -81,7 +81,7 @@ this.DecrementTag = function(){
 	};
 	DecrementTag = new Rexjs(DecrementTag, UnaryAssignmentTag);
 	
-	DecrementTag.props({
+	DecrementTag.$({
 		regexp: /--/,
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
@@ -105,7 +105,7 @@ this.DecrementSiblingTag = function(DecrementTag){
 	};
 	DecrementSiblingTag = new Rexjs(DecrementSiblingTag, DecrementTag);
 	
-	DecrementSiblingTag.props({
+	DecrementSiblingTag.$({
 		/**
 		 * 提取文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
@@ -134,7 +134,7 @@ this.PostfixDecrementTag = function(){
 	};
 	PostfixDecrementTag = new Rexjs(PostfixDecrementTag, PostfixUnaryAssignmentTag);
 	
-	PostfixDecrementTag.props({
+	PostfixDecrementTag.$({
 		regexp: /--/
 	});
 	
