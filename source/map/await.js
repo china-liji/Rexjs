@@ -1,104 +1,85 @@
 // await 表达式相关
-!function(TerminatedFlowExpression, YieldTag, extracter){
+!function(TerminatedFlowExpression, YieldTag){
 
-this.AwaitHoistingExtracters = function(){
-	function AwaitHoistingExtracters(){};
-	AwaitHoistingExtracters = new Rexjs(AwaitHoistingExtracters);
+	// array: function(){
 
-	AwaitHoistingExtracters.$$({
-		array: function(){
+	// 	},
+	// 	binary: function(expression, contentBuilder){
+	// 		debugger
+	// 	},
+	// if for while 
+	// 	bracketAccessor: function(){
 
-		},
-		binary: function(){
+	// 	},
+	// 	call: function(){
 
-		},
-		bracketAccessor: function(){
+	// 	},
+	// 	common: function(){
 
-		},
-		call: function(){
+	// 	},
+	// 	grouping: function(){
 
-		},
-		common: function(){
+	// 	},
+	// 	property: function(){
 
-		},
-		grouping: function(){
+	// 	},
+	// 	ternary: function(){
 
-		},
-		property: function(){
+	// 	}
 
-		},
-		ternary: function(){
-
-		}
-	});
-
-	return AwaitHoistingExtracters;
-}();
-
-this.AwaitHoistingExpression = function(){
+this.AwaitBlockExpression = function(){
 	/**
-	 * await 提升表达式
-	 * @param {Expression} target - 需要提升的表达式
-	 * @param {Function} extracter - 需要提升表达式的提取器
+	 * await 解析时，所需提升表达式的外层语句块表达式
+	 * @param {Statements} statements - 该语句将要所处的语句块
+	 * @param {Expression} origin - 被替代的表达式
 	 */
-	function AwaitHoistingExpression(target, extracter){
-		Expression.call(this, NULL);
+	function AwaitBlockExpression(statements, rootStatement, statement){
+		var expression, target = statement, list = new ListExpression(NULL, "");
 
-		this.target = target;
-		this.extracter = extracter;
+		PartnerExpression.call(this, NULL);
+
+		do {
+			// 设置当前语句
+			statement = target;
+			// 获取 target
+			target = target.target;
+			// 获取 target 的表达式
+			expression = target.expression;
+
+			// 提升表达式
+			expression.hoist(list, statements);
+		}
+		// 如果不是根语句
+		while(target !== rootStatement);
+
+		this.basicStatement = statement;
+		this.origin = expression;
+		this.inner = list;
 	};
-	AwaitHoistingExpression = new Rexjs(AwaitHoistingExpression, Expression);
+	AwaitBlockExpression = new Rexjs(AwaitBlockExpression, PartnerExpression);
 
-	AwaitHoistingExpression.$({
+	AwaitBlockExpression.$({
+		/**
+		 * 所处语句块中的基础语句，即根语句下的第一个语句
+		 * @param {ECMAScriptStatement}
+		 */
+		basicStatement: NULL,
 		/**
 		 * 提取表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
 		 */
 		extractTo: function(contentBuilder){
-			debugger
-		},
-		extracter: NULL,
-		target: NULL
-	});
+			var inner = this.inner;
 
-	return AwaitHoistingExpression;
-}();
+			//contentBuilder.appendString("{");
 
-this.AwaitBlockExpression = function(AwaitHoistingExpression, dataset, everyHanlder){
-	/**
-	 * await 解析时，所需提升表达式的外层语句块表达式
-	 * @param {Expression} origin - 被替代的表达式
-	 */
-	function AwaitBlockExpression(origin, statement){
-		var list = [], target = statement.target;
-
-		Expression.call(this, NULL);
-
-		// 只要 target 存在
-		while(target){
-			var expression = target.expression;
-
-			// 获取 target
-			target = target.target;
-
-			// 如果没有匹配项
-			if(dataset.every(everyHanlder, expression)){
-				// 继续循环
-				continue;
+			for(var i = inner.length - 1;i > -1;i--){
+				inner[i].hoistTo(contentBuilder);
 			}
 
-			// 添加表达式
-			list.push(
-				new AwaitHoistingExpression(expression, extracter)
-			);
-		}
-
-		this.origin = origin;
-		this.inner = list;
-	};
-	AwaitBlockExpression = new Rexjs(AwaitBlockExpression, Expression);
-
-	AwaitBlockExpression.$({
+			this.origin.extractTo(contentBuilder);
+			//contentBuilder.appendString("}");
+		},
 		/**
 		 * 被替代的表达式
 		 * @type {Expression}
@@ -107,40 +88,7 @@ this.AwaitBlockExpression = function(AwaitHoistingExpression, dataset, everyHanl
 	});
 
 	return AwaitBlockExpression;
-}(
-	this.AwaitHoistingExpression,
-	// dataset - 按优先级顺序
-	[
-		"property",
-		"binary",
-		"comma",
-		"grouping",
-		"call",
-		"ternary",
-		"bracketAccessor",
-		"array"
-	]
-	.map(
-		function(name){
-			return {
-				expression: this[name[0].toUpperCase() + name.substring(1) + "Expression"],
-				extracter: this.AwaitHoistingExtracters[name]
-			};
-		},
-		this
-	),
-	// everyHanlder
-	function(data){
-		// 如果是该表达式的实例
-		if(this instanceof data.expression){
-			// 设置 extracter
-			extracter = data.extracter;
-			return false;
-		}
-
-		return true;
-	}
-);
+}();
 
 this.AwaitExpression = function(generateTo){
 	/**
@@ -150,6 +98,12 @@ this.AwaitExpression = function(generateTo){
 	 */
 	function AwaitExpression(context, statements){
 		TerminatedFlowExpression.call(this, context, statements);
+
+		// 如果需要编译 es6
+		if(config.es6Base){
+			// 记录临时变量
+			this.variable = statements.collections.generate();
+		}
 	};
 	AwaitExpression = new Rexjs(AwaitExpression, TerminatedFlowExpression);
 
@@ -173,8 +127,7 @@ this.AwaitExpression = function(generateTo){
 
 			// 调用父类方法
 			generateTo.call(this, contentBuilder);
-		},
-		variable: ""
+		}
 	});
 
 	return AwaitExpression;
@@ -212,7 +165,42 @@ this.AwaitStatement = function(TerminatedFlowStatement, ExpressionSeparatorTag){
 	this.ExpressionSeparatorTag
 );
 
-this.AwaitTag = function(AwaitExpression, AwaitBlockExpression, AwaitStatement, AsyncStatement, visitor){
+this.AwaitBlockStatement = function(){
+	/**
+	 * 外层 await 语句块语句
+	 * @param {Statements} statements - 该语句将要所处的语句块
+	 */
+	function AwaitBlockStatement(statements, rootStatement, expression){
+		ECMAScriptStatement.call(this, statements);
+
+		this.target = rootStatement;
+		this.expression = expression;
+	};
+	AwaitBlockStatement = new Rexjs(AwaitBlockStatement, ECMAScriptStatement);
+
+	AwaitBlockStatement.$({
+		/**
+		 * 捕获处理异常
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 语法标签上下文
+		 */
+		catch: function(){
+			this.out();
+		},
+		/**
+		 * 尝试处理异常
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 语法标签上下文
+		 */
+		try: function(parser, context){
+			return this.catch(parser, context);
+		}
+	});
+
+	return AwaitBlockStatement;
+}();
+
+this.AwaitTag = function(AwaitExpression, AwaitBlockExpression, AwaitStatement, AwaitBlockStatement, AsyncStatement, visitor){
 	/**
 	 * await 关键字标签
 	 * @param {Number} _type - 标签类型
@@ -291,8 +279,12 @@ this.AwaitTag = function(AwaitExpression, AwaitBlockExpression, AwaitStatement, 
 
 				// 如果不是根语句
 				if(statement !== rootStatement){
+					var awaitBlockExpression = new AwaitBlockExpression(statements, rootStatement, statement);
+
 					// 重置根语句表达式
-					rootStatement.expression = new AwaitBlockExpression(rootStatement.expression, statement);
+					rootStatement.expression = awaitBlockExpression;
+					// 修改根语句下面基础语句的 target
+					awaitBlockExpression.basicStatement.target = new AwaitBlockStatement(statements, rootStatement, awaitBlockExpression.origin);
 				}
 
 				return;
@@ -311,6 +303,7 @@ this.AwaitTag = function(AwaitExpression, AwaitBlockExpression, AwaitStatement, 
 	this.AwaitExpression,
 	this.AwaitBlockExpression,
 	this.AwaitStatement,
+	this.AwaitBlockStatement,
 	this.AsyncStatement,
 	YieldTag.prototype.visitor
 );
@@ -318,7 +311,5 @@ this.AwaitTag = function(AwaitExpression, AwaitBlockExpression, AwaitStatement, 
 }.call(
 	this,
 	this.TerminatedFlowExpression,
-	this.YieldTag,
-	// extracter
-	NULL
+	this.YieldTag
 );

@@ -806,7 +806,7 @@ this.TagData = function(){
 
 
 // 标签数据子类相关
-!function(TagData, parseInt){
+!function(TagData){
 
 this.TagClass = function(CLASS_NONE, CLASS_STATEMENT, CLASS_STATEMENT_BEGIN, CLASS_STATEMENT_END, CLASS_EXPRESSION, CLASS_EXPRESSION_CONTEXT){
 	/**
@@ -997,8 +997,7 @@ this.SyntaxTag = function(SyntaxElement, TagClass, TagType){
 
 }.call(
 	this,
-	this.TagData,
-	parseInt
+	this.TagData
 );
 
 
@@ -1352,7 +1351,7 @@ this.SyntaxTagsMap = function(){
 // 语法解析相关
 !function(SyntaxElement, SyntaxTag, SyntaxConfig){
 
-this.Expression = function(parseInt){
+this.Expression = function(afterHoist){
 	/**
 	 * 表达式
 	 * @param {Context} context - 语法标签上下文
@@ -1386,6 +1385,10 @@ this.Expression = function(parseInt){
 		compileTo: function(contentBuilder, _anotherBuilder){
 			this.extractTo(contentBuilder, _anotherBuilder);
 		},
+		/**
+		 * 表达式上下文
+		 * @type {Context}
+		 */
 		context: NULL,
 		/**
 		 * 获取是否为默认表达式
@@ -1406,12 +1409,59 @@ this.Expression = function(parseInt){
 		extractTo: function(contentBuilder){
 			contentBuilder.appendContext(this.context);
 		},
-		state: Expression.STATE_NONE
+		/**
+		 * 可无实质性的提升表达式（可提升就提升，不可提升则不处理），即将其脱离当前语句流，但需保留其结构语法
+		 * @param {ListExpression} list - 记录提升表达式的列表
+		 * @param {Statements} statements - 该语句将要所处的语句块
+		 * @returns {Boolean} 是否可以继续往上层提升
+		 */
+		hoist: function(){
+			return true;
+		},
+		/**
+		 * 实质性的提升表达式，即将其脱离当前语句流，但需保留其结构语法
+		 * @param {ListExpression} list - 记录提升表达式的列表
+		 * @param {Statements} statements - 该语句将要所处的语句块
+		 */
+		hoisting: function(list, statements){
+			// 记录临时变量名
+			this.variable = statements.collections.generate();
+
+			// 添加提升表达式
+			list.add(this);
+		},
+		/**
+		 * 以提升表达式的形式提取其文本内容
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 */
+		hoistTo: function(contentBuilder){
+			// 追加赋值字符串
+			contentBuilder.appendString(this.variable + "=");
+			// 提取表达式
+			this.extractTo(contentBuilder);
+			// 追加分号
+			contentBuilder.appendString(";");
+
+			this.extractTo = afterHoist;
+		},
+		/**
+		 * 表达式状态
+		 * @type {Number}
+		 */
+		state: Expression.STATE_NONE,
+		/**
+		 * 临时变量
+		 * @type {String}
+		 */
+		variable: ""
 	});
 	
 	return Expression;
 }(
-	parseInt
+	// afterHoist
+	function(contentBuilder){
+		contentBuilder.appendString(this.variable);
+	}
 );
 
 this.Statement = function(){
@@ -1498,7 +1548,7 @@ this.Statement = function(){
 	return Statement;
 }();
 
-this.Statements = function(Statement, STATE_STATEMENT_ENDED, parseInt){
+this.Statements = function(Statement, STATE_STATEMENT_ENDED){
 	/**
 	 * 语句块
 	 * @param {Statements} target - 目标语句块，即上一层语句块
@@ -1586,8 +1636,7 @@ this.Statements = function(Statement, STATE_STATEMENT_ENDED, parseInt){
 	return Statements;
 }(
 	this.Statement,
-	this.Expression.STATE_STATEMENT_ENDED,
-	parseInt
+	this.Expression.STATE_STATEMENT_ENDED
 );
 
 }.call(
@@ -1689,6 +1738,36 @@ this.DefaultExpression = function(EmptyExpression, STATE_NONE){
 	this.EmptyExpression.STATE_NONE
 );
 
+this.LeftHandSideExpression = function(){
+	/**
+	 * 左侧表达式
+	 * @param {Expression} left - 左侧表达式
+	 * @param {Context} context - 语法标签上下文
+	 */
+	function LeftHandSideExpression(left, context){
+		Expression.call(this, context);
+
+		this.left = left;
+	};
+	LeftHandSideExpression = new Rexjs(LeftHandSideExpression, Expression);
+
+	LeftHandSideExpression.$({
+		left: NULL,
+		/**
+		 * 提取文本内容
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 */
+		extractTo: function(contentBuilder){
+			// 提取左侧的表达式内容
+			this.left.extractTo(contentBuilder);
+			// 添加上下文内容
+			contentBuilder.appendContext(this.context);
+		}
+	});
+
+	return LeftHandSideExpression;
+}();
+
 this.ListExpression = function(extractItem){
 	/**
 	 * 列表表达式
@@ -1786,36 +1865,6 @@ this.ListExpression = function(extractItem){
 		item.extractTo(contentBuilder, _anotherBuilder);
 	}
 );
-
-this.LeftHandSideExpression = function(){
-	/**
-	 * 左侧表达式
-	 * @param {Expression} left - 左侧表达式
-	 * @param {Context} context - 语法标签上下文
-	 */
-	function LeftHandSideExpression(left, context){
-		Expression.call(this, context);
-
-		this.left = left;
-	};
-	LeftHandSideExpression = new Rexjs(LeftHandSideExpression, Expression);
-
-	LeftHandSideExpression.$({
-		left: NULL,
-		/**
-		 * 提取文本内容
-		 * @param {ContentBuilder} contentBuilder - 内容生成器
-		 */
-		extractTo: function(contentBuilder){
-			// 提取左侧的表达式内容
-			this.left.extractTo(contentBuilder);
-			// 添加上下文内容
-			contentBuilder.appendContext(this.context);
-		}
-	});
-
-	return LeftHandSideExpression;
-}();
 
 this.PartnerExpression = function(){
 	/**

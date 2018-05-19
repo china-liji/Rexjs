@@ -5,12 +5,12 @@ this.PropertyInitializerExpression = function(extractTo, toTernary){
 	/**
 	 * 属性初始值表达式
 	 * @param {Context} context - 语法标签上下文
-	 * @param {Expression} variable - 对象简写属性所对应的变量名
+	 * @param {Expression} key - 对象简写属性键名
 	 */
-	function PropertyInitializerExpression(context, variable){
+	function PropertyInitializerExpression(context, key){
 		PropertyValueExpression.call(this, context);
 
-		this.variable = variable;
+		this.key = key;
 	};
 	PropertyInitializerExpression = new Rexjs(PropertyInitializerExpression, PropertyValueExpression);
 
@@ -38,7 +38,7 @@ this.PropertyInitializerExpression = function(extractTo, toTernary){
 			// 调用父类方法
 			extractTo.call(this, contentBuilder);
 		},
-		variable: NULL
+		key: NULL
 	});
 
 	return PropertyInitializerExpression;
@@ -46,20 +46,18 @@ this.PropertyInitializerExpression = function(extractTo, toTernary){
 	PropertyValueExpression.prototype.extractTo,
 	// toTernary
 	function(contentBuilder, expression, assignment){
-		var variableContent = expression.variable.context.content;
+		var content = expression.key.context.content;
 			
 		// 追加 undefined 判断
 		contentBuilder.appendString(
-			assignment + variableContent + "===void 0?"
+			assignment + content + "===void 0?"
 		);
 
 		// 提取属性值
 		expression.operand.extractTo(contentBuilder);
 
 		// 追加三元运算的否定结果表达式
-		contentBuilder.appendString(
-			":" + variableContent
-		);
+		contentBuilder.appendString(":" + content);
 	}
 );
 

@@ -2336,7 +2336,7 @@ this.CloseMultiLineCommentTag = function(){
 
 eval(
 									function(){
-										// 点属性访问器相关
+										// 属性访问器相关
 !function(){
 
 this.AccessorExpression = function(AssignableExpression){
@@ -2366,6 +2366,15 @@ this.AccessorExpression = function(AssignableExpression){
 			// 追加属性
 			contentBuilder.appendContext(this.property);
 		},
+		/**
+		 * 可无实质性的提升表达式（可提升就提升，不可提升则不处理），即将其脱离当前语句流，但需保留其结构语法
+		 * @param {ListExpression} list - 记录提升表达式的列表
+		 * @param {Statements} statements - 该语句将要所处的语句块
+		 */
+		hoist: function(list, statements){
+			// 实质性的提升表达式
+			this.hoisting(list, statements);
+		},
 		object: NULL,
 		property: NULL
 	});
@@ -2374,6 +2383,23 @@ this.AccessorExpression = function(AssignableExpression){
 }(
 	this.AssignableExpression
 );
+
+}.call(
+	this
+);
+									}
+									.toString()
+									.match(
+										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+									)[1] +
+									"\n//# sourceURL=http://rexjs/maps/accessor-base.js"
+								);
+
+
+eval(
+									function(){
+										// 点属性访问器相关
+!function(){
 
 this.DotAccessorTag = function(DotTag, AccessorExpression){
 	/**
@@ -3693,8 +3719,37 @@ this.BinaryExpression = function(){
 			// 提取右侧表达式
 			this.right.extractTo(contentBuilder);
 		},
+		/**
+		 * 可无实质性的提升表达式（可提升就提升，不可提升则不处理），即将其脱离当前语句流，但需保留其结构语法
+		 * @param {ListExpression} list - 记录提升表达式的列表
+		 * @param {Statements} statements - 该语句将要所处的语句块
+		 */
+		hoist: function(list, statements){
+			var right = this.right;
+
+			// 提升左侧表达式
+			this.left.hoist(list, statements);
+
+			// 因为当前二元表达式的右侧一直是 null，所以要判断一次
+			if(right){
+				// 提升右侧表达式
+				right.hoist(list, statements);
+			}
+		},
+		/**
+		 * 当前二元运算解析中的最后一个二元表达式
+		 * @type {BinaryExpression}
+		 */
 		last: NULL,
+		/**
+		 * 该二元表达式的左侧表达式
+		 * @type {Expression}
+		 */
 		left: NULL,
+		/**
+		 * 该二元表达式的右侧表达式
+		 * @type {Expression}
+		 */
 		right: NULL
 	});
 
@@ -4540,8 +4595,7 @@ this.QuestionAssignmentExpression = function(BinaryExpression){
 			this.left.extractTo(contentBuilder);
 			// 在三元表达式的成立条件部分，给左侧表达式赋值；并在否定条件部分直接返回该临时变量
 			contentBuilder.appendString("=" + variable + ":" + variable + ")");
-		},
-		variable: ""
+		}
 	});
 
 	return QuestionAssignmentExpression;
@@ -5597,8 +5651,7 @@ this.DestructuringItemExpression = function(DestructuringExpression){
 
 			return builder;
 		},
-		rest: false,
-		variable: ""
+		rest: false
 	});
 
 	return DestructuringItemExpression;
@@ -7299,8 +7352,7 @@ this.FunctionExpression = function(appendRange, appendHoisting, compileBody){
 			this.star = star;
 			this.ranges = [];
 			this.hoistings = [];
-		},
-		variable: ""
+		}
 	});
 
 	return FunctionExpression;
@@ -10713,12 +10765,12 @@ this.PropertyInitializerExpression = function(extractTo, toTernary){
 	/**
 	 * 属性初始值表达式
 	 * @param {Context} context - 语法标签上下文
-	 * @param {Expression} variable - 对象简写属性所对应的变量名
+	 * @param {Expression} key - 对象简写属性键名
 	 */
-	function PropertyInitializerExpression(context, variable){
+	function PropertyInitializerExpression(context, key){
 		PropertyValueExpression.call(this, context);
 
-		this.variable = variable;
+		this.key = key;
 	};
 	PropertyInitializerExpression = new Rexjs(PropertyInitializerExpression, PropertyValueExpression);
 
@@ -10746,7 +10798,7 @@ this.PropertyInitializerExpression = function(extractTo, toTernary){
 			// 调用父类方法
 			extractTo.call(this, contentBuilder);
 		},
-		variable: NULL
+		key: NULL
 	});
 
 	return PropertyInitializerExpression;
@@ -10754,20 +10806,18 @@ this.PropertyInitializerExpression = function(extractTo, toTernary){
 	PropertyValueExpression.prototype.extractTo,
 	// toTernary
 	function(contentBuilder, expression, assignment){
-		var variableContent = expression.variable.context.content;
+		var content = expression.key.context.content;
 			
 		// 追加 undefined 判断
 		contentBuilder.appendString(
-			assignment + variableContent + "===void 0?"
+			assignment + content + "===void 0?"
 		);
 
 		// 提取属性值
 		expression.operand.extractTo(contentBuilder);
 
 		// 追加三元运算的否定结果表达式
-		contentBuilder.appendString(
-			":" + variableContent
-		);
+		contentBuilder.appendString(":" + content);
 	}
 );
 
@@ -11959,8 +12009,7 @@ this.ObjectExpression = function(
 			// 转换内部表达式
 			this.convert(parser, this.inner);
 			return expression;
-		},
-		variable: ""
+		}
 	});
 
 	return ObjectExpression;
@@ -15643,8 +15692,7 @@ this.ForExpression = function(ConditionalExpression, compileOf, compileIteratorW
 			this.condition.extractTo(contentBuilder);
 			// 提取主体
 			this.body.extractTo(contentBuilder);
-		},
-		variable: ""
+		}
 	});
 	
 	return ForExpression;
@@ -17350,8 +17398,7 @@ this.SwitchExpression = function(ConditionalExpression, generateBody){
 		 * 设置状态
 		 * @param {Number} value - 状态
 		 */
-		set state(value){},
-		variable: ""
+		set state(value){}
 	});
 
 	return SwitchExpression;
@@ -18408,106 +18455,86 @@ this.AsycnFunctionTag = function(visitor){
 eval(
 									function(){
 										// await 表达式相关
-!function(TerminatedFlowExpression, YieldTag, extracter){
+!function(TerminatedFlowExpression, YieldTag){
 
-this.AwaitHoistingExtracters = function(){
-	function AwaitHoistingExtracters(){};
-	AwaitHoistingExtracters = new Rexjs(AwaitHoistingExtracters);
+	// array: function(){
 
-	AwaitHoistingExtracters.$$({
-		array: function(){
+	// 	},
+	// 	binary: function(expression, contentBuilder){
+	// 		debugger
+	// 	},
+	// 	bracketAccessor: function(){
 
-		},
-		binary: function(){
+	// 	},
+	// 	call: function(){
 
-		},
-		bracketAccessor: function(){
+	// 	},
+	// 	common: function(){
 
-		},
-		call: function(){
+	// 	},
+	// 	grouping: function(){
 
-		},
-		common: function(){
+	// 	},
+	// 	property: function(){
 
-		},
-		grouping: function(){
+	// 	},
+	// 	ternary: function(){
 
-		},
-		property: function(){
+	// 	}
 
-		},
-		ternary: function(){
-
-		}
-	});
-
-	return AwaitHoistingExtracters;
-}();
-
-this.AwaitHoistingExpression = function(){
+this.AwaitBlockExpression = function(){
 	/**
-	 * await 提升表达式
-	 * @param {Expression} target - 需要提升的表达式
-	 * @param {Function} extracter - 需要提升表达式的提取器
+	 * await 解析时，所需提升表达式的外层语句块表达式
+	 * @param {Statements} statements - 该语句将要所处的语句块
+	 * @param {Expression} origin - 被替代的表达式
 	 */
-	function AwaitHoistingExpression(target, extracter){
-		Expression.call(this, NULL);
+	function AwaitBlockExpression(statements, rootStatement, statement){
+		var expression, target = statement, list = new ListExpression(NULL, "");
 
-		this.target = target;
-		this.extracter = extracter;
+		PartnerExpression.call(this, NULL);
+
+		do {
+			// 设置当前语句
+			statement = target;
+			// 获取 target
+			target = target.target;
+			// 获取 target 的表达式
+			expression = target.expression;
+
+			// 提升表达式
+			expression.hoist(list, statements);
+		}
+		// 如果不是根语句
+		while(target !== rootStatement);
+
+		this.basicStatement = statement;
+		this.origin = expression;
+		this.inner = list;
 	};
-	AwaitHoistingExpression = new Rexjs(AwaitHoistingExpression, Expression);
+	AwaitBlockExpression = new Rexjs(AwaitBlockExpression, PartnerExpression);
 
-	AwaitHoistingExpression.$({
+	AwaitBlockExpression.$({
+		/**
+		 * 所处语句块中的基础语句，即根语句下的第一个语句
+		 * @param {ECMAScriptStatement}
+		 */
+		basicStatement: NULL,
 		/**
 		 * 提取表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
 		 */
 		extractTo: function(contentBuilder){
-			debugger
-		},
-		extracter: NULL,
-		target: NULL
-	});
+			var inner = this.inner;
 
-	return AwaitHoistingExpression;
-}();
+			//contentBuilder.appendString("{");
 
-this.AwaitBlockExpression = function(AwaitHoistingExpression, dataset, everyHanlder){
-	/**
-	 * await 解析时，所需提升表达式的外层语句块表达式
-	 * @param {Expression} origin - 被替代的表达式
-	 */
-	function AwaitBlockExpression(origin, statement){
-		var list = [], target = statement.target;
-
-		Expression.call(this, NULL);
-
-		// 只要 target 存在
-		while(target){
-			var expression = target.expression;
-
-			// 获取 target
-			target = target.target;
-
-			// 如果没有匹配项
-			if(dataset.every(everyHanlder, expression)){
-				// 继续循环
-				continue;
+			for(var i = inner.length - 1;i > -1;i--){
+				inner[i].hoistTo(contentBuilder);
 			}
 
-			// 添加表达式
-			list.push(
-				new AwaitHoistingExpression(expression, extracter)
-			);
-		}
-
-		this.origin = origin;
-		this.inner = list;
-	};
-	AwaitBlockExpression = new Rexjs(AwaitBlockExpression, Expression);
-
-	AwaitBlockExpression.$({
+			this.origin.extractTo(contentBuilder);
+			//contentBuilder.appendString("}");
+		},
 		/**
 		 * 被替代的表达式
 		 * @type {Expression}
@@ -18516,40 +18543,7 @@ this.AwaitBlockExpression = function(AwaitHoistingExpression, dataset, everyHanl
 	});
 
 	return AwaitBlockExpression;
-}(
-	this.AwaitHoistingExpression,
-	// dataset - 按优先级顺序
-	[
-		"property",
-		"binary",
-		"comma",
-		"grouping",
-		"call",
-		"ternary",
-		"bracketAccessor",
-		"array"
-	]
-	.map(
-		function(name){
-			return {
-				expression: this[name[0].toUpperCase() + name.substring(1) + "Expression"],
-				extracter: this.AwaitHoistingExtracters[name]
-			};
-		},
-		this
-	),
-	// everyHanlder
-	function(data){
-		// 如果是该表达式的实例
-		if(this instanceof data.expression){
-			// 设置 extracter
-			extracter = data.extracter;
-			return false;
-		}
-
-		return true;
-	}
-);
+}();
 
 this.AwaitExpression = function(generateTo){
 	/**
@@ -18559,6 +18553,12 @@ this.AwaitExpression = function(generateTo){
 	 */
 	function AwaitExpression(context, statements){
 		TerminatedFlowExpression.call(this, context, statements);
+
+		// 如果需要编译 es6
+		if(config.es6Base){
+			// 记录临时变量
+			this.variable = statements.collections.generate();
+		}
 	};
 	AwaitExpression = new Rexjs(AwaitExpression, TerminatedFlowExpression);
 
@@ -18582,8 +18582,7 @@ this.AwaitExpression = function(generateTo){
 
 			// 调用父类方法
 			generateTo.call(this, contentBuilder);
-		},
-		variable: ""
+		}
 	});
 
 	return AwaitExpression;
@@ -18621,7 +18620,42 @@ this.AwaitStatement = function(TerminatedFlowStatement, ExpressionSeparatorTag){
 	this.ExpressionSeparatorTag
 );
 
-this.AwaitTag = function(AwaitExpression, AwaitBlockExpression, AwaitStatement, AsyncStatement, visitor){
+this.AwaitBlockStatement = function(){
+	/**
+	 * 外层 await 语句块语句
+	 * @param {Statements} statements - 该语句将要所处的语句块
+	 */
+	function AwaitBlockStatement(statements, rootStatement, expression){
+		ECMAScriptStatement.call(this, statements);
+
+		this.target = rootStatement;
+		this.expression = expression;
+	};
+	AwaitBlockStatement = new Rexjs(AwaitBlockStatement, ECMAScriptStatement);
+
+	AwaitBlockStatement.$({
+		/**
+		 * 捕获处理异常
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 语法标签上下文
+		 */
+		catch: function(){
+			this.out();
+		},
+		/**
+		 * 尝试处理异常
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 语法标签上下文
+		 */
+		try: function(parser, context){
+			return this.catch(parser, context);
+		}
+	});
+
+	return AwaitBlockStatement;
+}();
+
+this.AwaitTag = function(AwaitExpression, AwaitBlockExpression, AwaitStatement, AwaitBlockStatement, AsyncStatement, visitor){
 	/**
 	 * await 关键字标签
 	 * @param {Number} _type - 标签类型
@@ -18700,8 +18734,12 @@ this.AwaitTag = function(AwaitExpression, AwaitBlockExpression, AwaitStatement, 
 
 				// 如果不是根语句
 				if(statement !== rootStatement){
+					var awaitBlockExpression = new AwaitBlockExpression(statements, rootStatement, statement);
+
 					// 重置根语句表达式
-					rootStatement.expression = new AwaitBlockExpression(rootStatement.expression, statement);
+					rootStatement.expression = awaitBlockExpression;
+					// 修改根语句下面基础语句的 target
+					awaitBlockExpression.basicStatement.target = new AwaitBlockStatement(statements, rootStatement, awaitBlockExpression.origin);
 				}
 
 				return;
@@ -18720,6 +18758,7 @@ this.AwaitTag = function(AwaitExpression, AwaitBlockExpression, AwaitStatement, 
 	this.AwaitExpression,
 	this.AwaitBlockExpression,
 	this.AwaitStatement,
+	this.AwaitBlockStatement,
 	this.AsyncStatement,
 	YieldTag.prototype.visitor
 );
@@ -18727,9 +18766,7 @@ this.AwaitTag = function(AwaitExpression, AwaitBlockExpression, AwaitStatement, 
 }.call(
 	this,
 	this.TerminatedFlowExpression,
-	this.YieldTag,
-	// extracter
-	NULL
+	this.YieldTag
 );
 									}
 									.toString()
@@ -19759,8 +19796,7 @@ this.ClassExpression = function(DefaultExtendsExpression){
 			// 提取主体
 			body.extractTo(contentBuilder);
 		},
-		name: new DefaultExpression(),
-		variable: ""
+		name: new DefaultExpression()
 	});
 
 	return ClassExpression;
@@ -21820,8 +21856,7 @@ this.SuperPropertyShorthandAssignmentExpression = function(extractTo){
 
 			// 调用父类方法
 			extractTo.call(this, contentBuilder);
-		},
-		variable: ""
+		}
 	});
 	
 	return SuperPropertyShorthandAssignmentExpression;
@@ -21862,8 +21897,7 @@ this.SuperPropertyUnaryAssignmentExpression = function(extractTo){
 
 			// 调用父类方法
 			extractTo.call(this, contentBuilder);
-		},
-		variable: ""
+		}
 	});
 	
 	return SuperPropertyUnaryAssignmentExpression;
@@ -21911,7 +21945,13 @@ this.SuperPropertyPostfixUnaryAssignmentExpression = function(extractTo){
 			extractTo.call(this, contentBuilder);
 		},
 		nameVariable: "",
-		valueVariable: ""
+		valueVariable: "",
+		/**
+		 * 获取临时变量
+		 */
+		get variable(){
+			return this.nameVariable;
+		}
 	});
 	
 	return SuperPropertyPostfixUnaryAssignmentExpression;
@@ -22870,7 +22910,7 @@ this.MemberExpression = function(){
 		 */
 		exportAsTo: function(contentBuilder, anotherBuilder){
 			// 追加属性名
-			contentBuilder.appendContext(this.variable);
+			contentBuilder.appendContext(this.name);
 			// 追加属性值
 			contentBuilder.appendString(':"' + this.context.content + '"');
 		},
@@ -22881,7 +22921,7 @@ this.MemberExpression = function(){
 		 */
 		exportTo: function(contentBuilder, anotherBuilder){
 			// 追加属性名
-			contentBuilder.appendContext(this.variable);
+			contentBuilder.appendContext(this.name);
 			// 追加属性值
 			contentBuilder.appendString(":" + this.context.content);
 		},
@@ -22895,7 +22935,7 @@ this.MemberExpression = function(){
 
 			// 追加成员变量赋值字符串
 			contentBuilder.appendString(
-				this.variable.content + "=" + 'Rexjs.Module.memberOf("' +
+				this.name.content + "=" + 'Rexjs.Module.memberOf("' +
 					this.context.content + '"' + (result.length > 0 ? "," : "") +
 					result +
 				")"
@@ -22904,7 +22944,7 @@ this.MemberExpression = function(){
 		/**
 		 * 获取模块成员变量名
 		 */
-		get variable(){
+		get name(){
 			return this.context;
 		}
 	});
@@ -22938,9 +22978,9 @@ this.MemberAliasExpression = function(MemberExpression){
 			// 追加空格
 			contentBuilder.appendSpace();
 			// 追加别名变量名
-			contentBuilder.appendContext(this.variable);
+			contentBuilder.appendContext(this.name);
 		},
-		variable: NULL
+		name: NULL
 	});
 
 	return MemberAliasExpression;
@@ -23022,7 +23062,7 @@ this.MultipleMembersStatement = function(out){
 		}
 
 		// 收集变量名
-		importExpression.context.tag.collectVariables(parser, expression.variable);
+		importExpression.context.tag.collectVariables(parser, expression.name);
 	}
 );
 
@@ -23146,8 +23186,8 @@ this.MemberAliasVariableTag = function(MemberVariableTag){
 		 * @param {Statements} statements - 当前语句块
 		 */
 		visitor: function(parser, context, statement, statements){
-			// 设置 MemberAliasExpression 表达式的 variable 属性
-			statement.expression.variable = context;
+			// 设置 MemberAliasExpression 表达式的 name 属性
+			statement.expression.name = context;
 		}
 	});
 	
@@ -23405,7 +23445,7 @@ this.AllMembersExpression = function(MemberAliasExpression){
 		 */
 		compileTo: function(contentBuilder, anotherBuilder){
 			contentBuilder.appendString(
-				this.variable.content + "=Rexjs.Module.moduleOf(" + anotherBuilder.result + ")"
+				this.name.content + "=Rexjs.Module.moduleOf(" + anotherBuilder.result + ")"
 			);
 		}
 	});
@@ -23524,8 +23564,8 @@ this.ModuleVariableTag = function(ConstVariableTag){
 			// 收集变量名
 			this.collectTo(parser, context, statements);
 
-			// 设置 AllMembersExpression 表达式的 variable 属性
-			statement.expression.members.latest.variable = context;
+			// 设置 AllMembersExpression 表达式的 name 属性
+			statement.expression.members.latest.name = context;
 		}
 	});
 
@@ -24177,8 +24217,7 @@ this.DestructuringAssignmentExpression = function(extractTo, extractRight){
 			}
 
 			extractTo.call(this, contentBuilder);
-		},
-		variable: ""
+		}
 	});
 
 	return DestructuringAssignmentExpression;

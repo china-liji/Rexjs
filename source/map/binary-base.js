@@ -24,8 +24,39 @@ this.BinaryExpression = function(){
 			// 提取右侧表达式
 			this.right.extractTo(contentBuilder);
 		},
+		/**
+		 * 可无实质性的提升表达式（可提升就提升，不可提升则不处理），即将其脱离当前语句流，但需保留其结构语法
+		 * @param {ListExpression} list - 记录提升表达式的列表
+		 * @param {Statements} statements - 该语句将要所处的语句块
+		 */
+		hoist: function(list, statements){
+			var right = this.right;
+
+			// 提升左侧表达式
+			this.left.hoist(list, statements);
+
+			// 因为当前二元表达式的右侧一直是 null，所以要判断一次
+			if(right){
+				// 提升右侧表达式
+				right.hoist(list, statements);
+			}
+
+			return true;
+		},
+		/**
+		 * 当前二元运算解析中的最后一个二元表达式
+		 * @type {BinaryExpression}
+		 */
 		last: NULL,
+		/**
+		 * 该二元表达式的左侧表达式
+		 * @type {Expression}
+		 */
 		left: NULL,
+		/**
+		 * 该二元表达式的右侧表达式
+		 * @type {Expression}
+		 */
 		right: NULL
 	});
 

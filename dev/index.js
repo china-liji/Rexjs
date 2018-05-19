@@ -1,5 +1,6 @@
 var a = async function(){
-	1 + await new Promise((r) => { r() });
+	if(window.x + 2)
+	b = 5 * window.a.b.c + 1 / await new Promise((r) => { r() });
 }
 
 // var a = async function(){

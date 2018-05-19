@@ -32,8 +32,7 @@ this.QuestionAssignmentExpression = function(BinaryExpression){
 			this.left.extractTo(contentBuilder);
 			// 在三元表达式的成立条件部分，给左侧表达式赋值；并在否定条件部分直接返回该临时变量
 			contentBuilder.appendString("=" + variable + ":" + variable + ")");
-		},
-		variable: ""
+		}
 	});
 
 	return QuestionAssignmentExpression;

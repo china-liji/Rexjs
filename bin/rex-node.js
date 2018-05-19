@@ -153,54 +153,41 @@ this.NodejsReady = function(NodejsJavaScriptCompiler, NodejsModuleURL, Buffer, N
 	require,
 	// parseArgv
 	() => {
+		var mpath;
+
 		// 开启 sourceMaps
 		ECMAScriptParser.sourceMaps = true;
 
-		// 判断基本命令
-		["rexjs", "rexjs-api", __filename].every((cmd) => {
-			var index = argv.indexOf(cmd);
+		// 循环检查参数
+		for(let i = argv.length - 1;i > 0;i--){
+			let arg = argv[i];
 
-			// 如果不是基础命令
-			if(index === -1){
-				// 继续判断下一个
-				return true;
+			// 如果不是配置参数
+			if(!PREFIX_REGEXP.test(arg)){
+				// 默认为模块文件路径参数
+				mpath || (mpath = arg);
+				continue;
 			}
 
-			var mpath;
-
-			// 从基础命令开始，循环判断其他参数
-			for(let i = index + 1, j = argv.length;i < j;i++){
-				let arg = argv[i];
-
-				// 如果不是配置参数
-				if(!PREFIX_REGEXP.test(arg)){
-					// 默认为模块文件路径参数
-					mpath = arg;
+			// 判断配置参数
+			switch(arg){
+				// 如果是禁用 sourcemaps
+				case "--disable-sourcemaps":
+					// 禁用 sourcemaps
+					ECMAScriptParser.sourceMaps = false;
 					continue;
-				}
-
-				// 判断配置参数
-				switch(arg){
-					// 如果是禁用 sourcemaps
-					case "--disable-sourcemaps":
-						// 禁用 sourcemaps
-						ECMAScriptParser.sourceMaps = false;
-						continue;
-				}
 			}
+		}
 
-			// 如果没有文件入口
-			if(!mpath){
-				throw "需要提供一个入口文件路径为命令参数...";
-			}
+		// 如果没有文件入口
+		if(!mpath){
+			throw "需要提供一个入口文件路径为命令参数...";
+		}
 
-			// 初始化模块
-			new Module(
-				path.resolve(CWD, mpath)
-			);
-
-			return false;
-		});
+		// 初始化模块
+		new Module(
+			path.resolve(CWD, mpath)
+		);
 	}
 );
 

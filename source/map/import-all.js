@@ -19,7 +19,7 @@ this.AllMembersExpression = function(MemberAliasExpression){
 		 */
 		compileTo: function(contentBuilder, anotherBuilder){
 			contentBuilder.appendString(
-				this.variable.content + "=Rexjs.Module.moduleOf(" + anotherBuilder.result + ")"
+				this.name.content + "=Rexjs.Module.moduleOf(" + anotherBuilder.result + ")"
 			);
 		}
 	});
@@ -138,8 +138,8 @@ this.ModuleVariableTag = function(ConstVariableTag){
 			// 收集变量名
 			this.collectTo(parser, context, statements);
 
-			// 设置 AllMembersExpression 表达式的 variable 属性
-			statement.expression.members.latest.variable = context;
+			// 设置 AllMembersExpression 表达式的 name 属性
+			statement.expression.members.latest.name = context;
 		}
 	});
 

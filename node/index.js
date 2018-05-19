@@ -159,6 +159,7 @@ module.exports = { DevSource: this.DevSource, Source: this.Source };
 		"semicolon.js",
 		"line-terminator.js",
 		"comment.js",
+		"accessor-base.js",
 		"accessor-dot.js",
 		"accessor-bracket.js",
 		"comma.js",

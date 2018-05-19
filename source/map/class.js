@@ -69,8 +69,7 @@ this.ClassExpression = function(DefaultExtendsExpression){
 			// 提取主体
 			body.extractTo(contentBuilder);
 		},
-		name: new DefaultExpression(),
-		variable: ""
+		name: new DefaultExpression()
 	});
 
 	return ClassExpression;

@@ -51,8 +51,7 @@ this.DestructuringAssignmentExpression = function(extractTo, extractRight){
 			}
 
 			extractTo.call(this, contentBuilder);
-		},
-		variable: ""
+		}
 	});
 
 	return DestructuringAssignmentExpression;

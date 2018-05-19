@@ -143,8 +143,7 @@ this.DestructuringItemExpression = function(DestructuringExpression){
 
 			return builder;
 		},
-		rest: false,
-		variable: ""
+		rest: false
 	});
 
 	return DestructuringItemExpression;

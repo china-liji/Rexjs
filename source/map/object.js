@@ -267,8 +267,7 @@ this.ObjectExpression = function(
 			// 转换内部表达式
 			this.convert(parser, this.inner);
 			return expression;
-		},
-		variable: ""
+		}
 	});
 
 	return ObjectExpression;

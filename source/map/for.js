@@ -65,8 +65,7 @@ this.ForExpression = function(ConditionalExpression, compileOf, compileIteratorW
 			this.condition.extractTo(contentBuilder);
 			// 提取主体
 			this.body.extractTo(contentBuilder);
-		},
-		variable: ""
+		}
 	});
 	
 	return ForExpression;

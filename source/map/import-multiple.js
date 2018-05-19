@@ -90,7 +90,7 @@ this.MemberExpression = function(){
 		 */
 		exportAsTo: function(contentBuilder, anotherBuilder){
 			// 追加属性名
-			contentBuilder.appendContext(this.variable);
+			contentBuilder.appendContext(this.name);
 			// 追加属性值
 			contentBuilder.appendString(':"' + this.context.content + '"');
 		},
@@ -101,7 +101,7 @@ this.MemberExpression = function(){
 		 */
 		exportTo: function(contentBuilder, anotherBuilder){
 			// 追加属性名
-			contentBuilder.appendContext(this.variable);
+			contentBuilder.appendContext(this.name);
 			// 追加属性值
 			contentBuilder.appendString(":" + this.context.content);
 		},
@@ -115,7 +115,7 @@ this.MemberExpression = function(){
 
 			// 追加成员变量赋值字符串
 			contentBuilder.appendString(
-				this.variable.content + "=" + 'Rexjs.Module.memberOf("' +
+				this.name.content + "=" + 'Rexjs.Module.memberOf("' +
 					this.context.content + '"' + (result.length > 0 ? "," : "") +
 					result +
 				")"
@@ -124,7 +124,7 @@ this.MemberExpression = function(){
 		/**
 		 * 获取模块成员变量名
 		 */
-		get variable(){
+		get name(){
 			return this.context;
 		}
 	});
@@ -158,9 +158,9 @@ this.MemberAliasExpression = function(MemberExpression){
 			// 追加空格
 			contentBuilder.appendSpace();
 			// 追加别名变量名
-			contentBuilder.appendContext(this.variable);
+			contentBuilder.appendContext(this.name);
 		},
-		variable: NULL
+		name: NULL
 	});
 
 	return MemberAliasExpression;
@@ -242,7 +242,7 @@ this.MultipleMembersStatement = function(out){
 		}
 
 		// 收集变量名
-		importExpression.context.tag.collectVariables(parser, expression.variable);
+		importExpression.context.tag.collectVariables(parser, expression.name);
 	}
 );
 
@@ -366,8 +366,8 @@ this.MemberAliasVariableTag = function(MemberVariableTag){
 		 * @param {Statements} statements - 当前语句块
 		 */
 		visitor: function(parser, context, statement, statements){
-			// 设置 MemberAliasExpression 表达式的 variable 属性
-			statement.expression.variable = context;
+			// 设置 MemberAliasExpression 表达式的 name 属性
+			statement.expression.name = context;
 		}
 	});
 	

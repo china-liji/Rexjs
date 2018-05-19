@@ -83,8 +83,7 @@ this.SuperPropertyShorthandAssignmentExpression = function(extractTo){
 
 			// 调用父类方法
 			extractTo.call(this, contentBuilder);
-		},
-		variable: ""
+		}
 	});
 	
 	return SuperPropertyShorthandAssignmentExpression;
@@ -125,8 +124,7 @@ this.SuperPropertyUnaryAssignmentExpression = function(extractTo){
 
 			// 调用父类方法
 			extractTo.call(this, contentBuilder);
-		},
-		variable: ""
+		}
 	});
 	
 	return SuperPropertyUnaryAssignmentExpression;
@@ -174,7 +172,13 @@ this.SuperPropertyPostfixUnaryAssignmentExpression = function(extractTo){
 			extractTo.call(this, contentBuilder);
 		},
 		nameVariable: "",
-		valueVariable: ""
+		valueVariable: "",
+		/**
+		 * 获取临时变量
+		 */
+		get variable(){
+			return this.nameVariable;
+		}
 	});
 	
 	return SuperPropertyPostfixUnaryAssignmentExpression;

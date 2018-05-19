@@ -74,8 +74,7 @@ this.SwitchExpression = function(ConditionalExpression, generateBody){
 		 * 设置状态
 		 * @param {Number} value - 状态
 		 */
-		set state(value){},
-		variable: ""
+		set state(value){}
 	});
 
 	return SwitchExpression;

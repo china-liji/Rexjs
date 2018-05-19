@@ -92,8 +92,7 @@ this.FunctionExpression = function(appendRange, appendHoisting, compileBody){
 			this.star = star;
 			this.ranges = [];
 			this.hoistings = [];
-		},
-		variable: ""
+		}
 	});
 
 	return FunctionExpression;
