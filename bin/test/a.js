@@ -26,8 +26,6 @@ let $path = gen.next().value;
 
 let myUrl = url(URL_STRING);
 
-debugger
-
 [
 	hello,
 	ext,

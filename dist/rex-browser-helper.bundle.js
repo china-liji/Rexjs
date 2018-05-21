@@ -2579,8 +2579,9 @@ this.BrowserReady = function(HTMLCompiler, CSSCompiler, XMLHttpRequest, BASE_URL
 
 			// 如果文件名不存在
 			if(url.filename === ""){
-				url.ext = ".js";
-				url.filename = "index.js";
+				var pathname = url.pathname;
+
+				return new URL(url.origin + (pathname ? pathname : "/index") + ".js" + url.search + url.hash);
 			}
 
 			return url;
