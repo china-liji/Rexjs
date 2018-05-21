@@ -1521,7 +1521,7 @@ this.Statements = function(Statement, STATE_STATEMENT_ENDED, parseInt){
 		SCOPE_BLOCK: parseInt(100, 2),
 		// 闭包作用域
 		SCOPE_CLOSURE: parseInt(1000, 2),
-		// 惰性闭包作用域，一般用于特殊的闭包处理使用
+		// 惰性闭包作用域，一般用于特殊的闭包处理使用，如箭头函数
 		SCOPE_LAZY: parseInt(11000, 2)
 	});
 	

@@ -2289,7 +2289,7 @@ this.Statements = function(Statement, STATE_STATEMENT_ENDED, parseInt){
 		SCOPE_BLOCK: parseInt(100, 2),
 		// 闭包作用域
 		SCOPE_CLOSURE: parseInt(1000, 2),
-		// 惰性闭包作用域，一般用于特殊的闭包处理使用
+		// 惰性闭包作用域，一般用于特殊的闭包处理使用，如箭头函数
 		SCOPE_LAZY: parseInt(11000, 2)
 	});
 	
@@ -12019,6 +12019,62 @@ this.ArrowContextStatement = function(SingleStatement, ArrowFunctionBodyExpressi
 	this.ArrowFunctionBodyExpression
 );
 
+this.ArrowFunctionBodyStatements = function(FunctionBodyStatements){
+	/**
+	 * 函数主体语句块
+	 * @param {Statements} target - 目标语句块，即上一层语句块
+	 */
+	function ArrowFunctionBodyStatements(target){
+		FunctionBodyStatements.call(this, target);
+	};
+	ArrowFunctionBodyStatements = new Rexjs(ArrowFunctionBodyStatements, FunctionBodyStatements);
+	
+	ArrowFunctionBodyStatements.props({
+		/**
+		 * 申请应用 super 关键字
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - super 关键字上下文
+		 */
+		applySuper: function(parser, context){
+			return this.target.closure.applySuper(parser, context);
+		},
+		/**
+		 * 申请父类调用
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - super 关键字上下文
+		 * @param {Context} open - 起始父类调用小括号标签上下文
+		 */
+		applySuperCall: function(parser, context, open){
+			return this.target.closure.applySuperCall(parser, context, open);
+		},
+		/**
+		 * 申请应用 this 关键字
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - this 关键字上下文
+		 */
+		applyThis: function(parser, context){
+			var closure = this.target.closure;
+
+			// 如果外层闭包存在
+			if(closure){
+				// 返回外层闭包应用结果
+				return closure.applyThis(parser, context);
+			}
+		},
+		/**
+		 * 获取当前引用标识符
+		 */
+		get reference(){
+			return this.target.reference;
+		},
+		scope: FunctionBodyStatements.SCOPE_LAZY
+	});
+	
+	return ArrowFunctionBodyStatements;
+}(
+	this.FunctionBodyStatements
+);
+
 this.ArrowTag = function(ExpressionSeparatorTag, ArrowFunctionExpression, SingleArgumentExpression, IdentifierExpression, ArgumentsExpression, ArrowContextStatement){
 	/**
 	 * 箭头标签
@@ -12095,7 +12151,7 @@ this.ArrowTag = function(ExpressionSeparatorTag, ArrowFunctionExpression, Single
 	this.ArrowContextStatement
 );
 
-this.OpenArrowFunctionBodyTag = function(SCOPE_LAZY, visitor){
+this.OpenArrowFunctionBodyTag = function(ArrowFunctionBodyStatements, visitor){
 	/**
 	 * 起始箭头函数主体标签
 	 * @param {Number} _type - 标签类型
@@ -12112,6 +12168,13 @@ this.OpenArrowFunctionBodyTag = function(SCOPE_LAZY, visitor){
 		get binding(){
 			return closeArrowFunctionBodyTag;
 		},
+		/**
+		 * 获取绑定的语句块，一般在子类使用父类逻辑，而不使用父类语句块的情况下使用
+		 * @param {Statements} statements - 当前语句块
+		 */
+		getBoundStatements: function(statements){
+			return new ArrowFunctionBodyStatements(statements);
+		},
 		order: ECMAScriptOrders.OPEN_ARROW_FUNCTION_BODY,
 		/**
 		 * 标签访问器
@@ -12125,15 +12188,12 @@ this.OpenArrowFunctionBodyTag = function(SCOPE_LAZY, visitor){
 			statement.out();
 			// 调用父类方法
 			visitor.call(this, parser, context, statements.statement, statements);
-
-			// 将 FunctionBodyStatements 作用域设置为惰性闭包
-			parser.statements.scope = SCOPE_LAZY;
 		}
 	});
 
 	return OpenArrowFunctionBodyTag;
 }(
-	this.ECMAScriptStatements.SCOPE_LAZY,
+	this.ArrowFunctionBodyStatements,
 	OpenFunctionBodyTag.prototype.visitor
 );
 
@@ -23950,7 +24010,7 @@ this.SuperStatement = function(){
 	return SuperStatement;
 }();
 
-this.SuperTag = function(SuperExpression, SuperStatement, UnaryAssignmentStatement, SuperPropertyUnaryAssignmentStatement){
+this.SuperTag = function(SuperExpression, SuperStatement, UnaryAssignmentStatement, SuperPropertyUnaryAssignmentStatement, SCOPE_LAZY){
 	/**
 	 * super 关键字标签
 	 * @param {Number} _type - 标签类型
@@ -23988,6 +24048,21 @@ this.SuperTag = function(SuperExpression, SuperStatement, UnaryAssignmentStateme
 				statements.statement = statement = new SuperPropertyUnaryAssignmentStatement(statements);
 			}
 
+			// 如果是箭头函数
+			while(closure && (closure.scope & SCOPE_LAZY) === SCOPE_LAZY){
+				var target = closure.target;
+
+				// 如果 target 存在
+				if(target){
+					// 重新获取闭包
+					closure = target.closure;
+					continue;
+				}
+
+				closure = null;
+				break;
+			}
+
 			// 如果存在闭包
 			if(closure){
 				var superExpression = new SuperExpression(context), targetStatements = closure.target, propertyStatement = targetStatements.statement.target.target;
@@ -24021,7 +24096,8 @@ this.SuperTag = function(SuperExpression, SuperStatement, UnaryAssignmentStateme
 	this.SuperExpression,
 	this.SuperStatement,
 	this.UnaryAssignmentStatement,
-	this.SuperPropertyUnaryAssignmentStatement
+	this.SuperPropertyUnaryAssignmentStatement,
+	this.ECMAScriptStatements.SCOPE_LAZY
 );
 
 }.call(

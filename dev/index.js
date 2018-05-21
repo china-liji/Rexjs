@@ -2,11 +2,35 @@
 
 // import html, { compiler } from "./temp.html"
 
-1.7976931348623157E+308;
+class a {
+	constructor(){
+		console.log(999)
+	}
 
-import json from "./test?a=1#b=2";
+	a(){
+		console.log("super.a called")
+	}
+};
 
-import md from "./ReadMe.md";
+class b extends a {
+	constructor(){
+		let fn = () => {
+			super();
+		};
+
+		debugger
+	};
+
+	c(){
+		let fn = () => {
+			super.a();
+		};
+
+		fn();
+	}
+}
+
+new b().c()
 
 // import styles, { compiler } from "./index.css";
 

@@ -13,6 +13,8 @@ test.unit(
 		this.true("与赋值表达式共存的箭头函数", "let a = c /= b += a=>{}");
 		this.true("带语句块的箭头函数与逗号", "() => {}, 2, 3");
 		this.true("带语句块的箭头函数与三元运算符", "a ? ()=>{0} : ()=>{1}");
+		this.true("单层箭头函数中使用 this", "let fn = () => { this }");
+		this.true("多层箭头函数中使用 this", "let fn = () => { return () => { this } }");
 
 		this.true(
 			"没语句块的箭头函数与逗号",

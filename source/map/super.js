@@ -82,7 +82,7 @@ this.SuperStatement = function(){
 	return SuperStatement;
 }();
 
-this.SuperTag = function(SuperExpression, SuperStatement, UnaryAssignmentStatement, SuperPropertyUnaryAssignmentStatement){
+this.SuperTag = function(SuperExpression, SuperStatement, UnaryAssignmentStatement, SuperPropertyUnaryAssignmentStatement, SCOPE_LAZY){
 	/**
 	 * super 关键字标签
 	 * @param {Number} _type - 标签类型
@@ -120,6 +120,21 @@ this.SuperTag = function(SuperExpression, SuperStatement, UnaryAssignmentStateme
 				statements.statement = statement = new SuperPropertyUnaryAssignmentStatement(statements);
 			}
 
+			// 如果是箭头函数
+			while(closure && (closure.scope & SCOPE_LAZY) === SCOPE_LAZY){
+				var target = closure.target;
+
+				// 如果 target 存在
+				if(target){
+					// 重新获取闭包
+					closure = target.closure;
+					continue;
+				}
+
+				closure = null;
+				break;
+			}
+
 			// 如果存在闭包
 			if(closure){
 				var superExpression = new SuperExpression(context), targetStatements = closure.target, propertyStatement = targetStatements.statement.target.target;
@@ -153,7 +168,8 @@ this.SuperTag = function(SuperExpression, SuperStatement, UnaryAssignmentStateme
 	this.SuperExpression,
 	this.SuperStatement,
 	this.UnaryAssignmentStatement,
-	this.SuperPropertyUnaryAssignmentStatement
+	this.SuperPropertyUnaryAssignmentStatement,
+	this.ECMAScriptStatements.SCOPE_LAZY
 );
 
 }.call(

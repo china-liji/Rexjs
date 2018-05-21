@@ -87,6 +87,10 @@ if(X5.color !== "red"){
 var a, b, c;
 
 class A {
+	constructor(){
+		this.z = 45;
+	}
+
 	static get x(){
 		return 100;
 	};
@@ -107,9 +111,15 @@ class A {
 // 有构造函数
 class B extends A {
 	constructor(){
-		super();
+		let fn = () => {
+			super();
+		}
 
-		this.z = 45;
+		if(this !== void 0){
+			throw "super() 在箭头函数中，且没有调用之前，this 应该是 undefined";
+		}
+
+		fn();
 	};
 
 	static get x(){
@@ -136,7 +146,12 @@ class C extends B {
 	};
 
 	getZ(){
-		return super.z_c = 66;
+		// 测试箭头函数中调用 super
+		let fn = () => {
+			return super.z_c = 66;
+		};
+
+		return fn();
 	};
 
 	get y(){
