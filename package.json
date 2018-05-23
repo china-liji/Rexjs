@@ -1,6 +1,6 @@
 {
 	"name": "rexjs-api",
-	"version": "1.6.41",
+	"version": "1.6.42",
 	"description": "Rexjs is a faster and smaller JavaScript(ES6+) compiler!",
 	"scripts": {
 		"start": "node ./node/dev.js",

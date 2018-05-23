@@ -31,8 +31,12 @@ if(
 }
 
 class BMW extends Car {
-	constructor(){
+	constructor(x, y, z){
 		super();
+
+		if(x + y + z !== 6){
+			throw "参数传递错误";
+		}
 
 		return super.getObj();
 	}
@@ -40,6 +44,10 @@ class BMW extends Car {
 
 class X5 extends BMW {}
 
-if(new X5() !== obj){
+if(new X5(1, 2, 3) !== obj){
 	throw "类的返回不等于父类的返回值";
 }
+
+class X5_1 extends X5 {}
+
+new X5_1(1, 2, 3);

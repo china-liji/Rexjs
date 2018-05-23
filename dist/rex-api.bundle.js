@@ -21760,7 +21760,7 @@ this.DefaultConstructorPropertyExpression = function(ClassPropertyExpression, Co
 			if(this.hasSuper){
 				// 追加父类构造函数的调用
 				contentBuilder.appendString(
-					"return Rexjs.Super.callConstructor(" + this.propertyOwner + ", this);"
+					"return Rexjs.Super.callConstructor(" + this.propertyOwner + ", this, arguments);"
 				);
 			}
 
