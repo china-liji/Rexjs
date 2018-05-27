@@ -34,7 +34,7 @@ git clone https://github.com/china-liji/Rexjs.git
 #### 更小且更快
 ![](https://raw.githubusercontent.com/china-liji/Rexjs/master/doc/image/compare.jpg)
 
-`./dist/rex.min.js`[1.6.42] 仅仅只有 234KB，比其他解析器更小。
+`./dist/rex.min.js`[1.6.43] 仅仅只有 234KB，比其他解析器更小。
 
 -----
 

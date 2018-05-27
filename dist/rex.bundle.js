@@ -30364,7 +30364,9 @@ this.BrowserReady = function(HTMLCompiler, CSSCompiler, XMLHttpRequest, BASE_URL
 					}
 
 					// 初始化模块
-					new Module(script.src);
+					new Module(
+						script.getAttribute("src")
+					);
 					return;
 				}
 
