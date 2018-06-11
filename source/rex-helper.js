@@ -928,7 +928,7 @@ this.JSONCompiler = function(ModuleCompiler, parse){
 // 模块相关
 !function(STATUS_NONE, STATUS_LOADING, STATUS_COMPILING, STATUS_READY, STATUS_ENDED, STATUS_COMPLETED, STATUS_ERROR, moduleReady, trigger){
 
-this.Module = Module = function(ModuleCompiler, cache, stack, create, defineProperty, readFile){
+this.Module = Module = function(ModuleCompiler, cache, stack, create, defineProperty, readFile, importedByDep){
 	/**
 	 * 模块
 	 * @param {String} name - 模块名称
@@ -1244,15 +1244,7 @@ this.Module = Module = function(ModuleCompiler, cache, stack, create, defineProp
 					}
 
 					// 如果是两模块相互引用
-					if(module.imports.indexOf(this) > - 1){
-						// 报错
-						throw (
-							"Module has been imported by each other " +
-							name.href + " " +
-							module.name.href
-						);
-					}
-
+					importedByDep(this, module, module, importedByDep);
 					// 添加需要导入的模块
 					imports.push(module);
 					// 给导入模块添加目标模块
@@ -1297,6 +1289,24 @@ this.Module = Module = function(ModuleCompiler, cache, stack, create, defineProp
 			},
 			_sync
 		);
+	},
+	// importedByDep
+	function(self, depModule, module, callee){
+		var imports = module.imports;
+
+		// 如果是两模块相互引用
+		if(imports.indexOf(self) > - 1){
+			// 报错
+			throw (
+				"Module has been imported by each other " +
+				self.name.href + " " +
+				depModule.name.href
+			);
+		}
+
+		imports.forEach(function(module){
+			callee(self, depModule, module, callee);
+		});
 	}
 );
 
