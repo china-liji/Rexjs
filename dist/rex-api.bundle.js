@@ -1,4 +1,4 @@
-﻿!function(Rexjs, Object, MODULE_CODE_STRING, defineProperty, getPrototypeOf){
+﻿!function(Rexjs, Object, defineProperty, getPrototypeOf){
 
 // Rexjs 的实现
 new function(global, module, descriptor, setPrototypeOf, getOwnPropertyNames){
@@ -123,7 +123,7 @@ defineProperty(global, "Rexjs", this);
 	// global
 	Function("return this")(),
 	// module
-	eval(MODULE_CODE_STRING),
+	typeof exports === "object" && typeof module === "object" ? module : {},
 	// descriptor
 	Object.getOwnPropertyDescriptor(
 		Object.prototype,
@@ -242,8 +242,6 @@ Rexjs.static.call(Rexjs.prototype, this);
 // 基本方法和属性的定义
 new function(Array){
 "use strict";
-
-this.MODULE_CODE_STRING = MODULE_CODE_STRING;
 
 this.every = function(){
 	/**
@@ -394,8 +392,6 @@ this.forEach(
 	// Rexjs
 	null,
 	Object,
-	// MODULE_CODE_STRING
-	'typeof exports === "object" && typeof module === "object" ? module : {}',
 	Object.defineProperty,
 	Object.getPrototypeOf
 );

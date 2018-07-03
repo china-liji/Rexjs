@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 module.exports = new function(NodeModule, PREFIX_REGEXP, CWD, { JavaScriptCompiler, Module, ModuleReady, Base64, ECMAScriptParser, URL }, path, paths, argv){
 
 this.NodejsJavaScriptCompiler = function(forEach){
