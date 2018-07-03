@@ -1,7 +1,7 @@
-﻿!function(Rexjs, Object, defineProperty, getPrototypeOf){
+﻿!function(Rexjs, Object, global, defineProperty, getPrototypeOf){
 
 // Rexjs 的实现
-new function(global, module, descriptor, setPrototypeOf, getOwnPropertyNames){
+new function(module, descriptor, setPrototypeOf, getOwnPropertyNames){
 "use strict";
 
 this.Rexjs = Rexjs = module.exports = function(create, getProperties, setPrototypeOf){
@@ -120,8 +120,6 @@ this.value = function(definePrototype){
 // 定义全局变量
 defineProperty(global, "Rexjs", this);
 }(
-	// global
-	Function("return this")(),
 	// module
 	typeof exports === "object" && typeof module === "object" ? module : {},
 	// descriptor
@@ -141,6 +139,7 @@ this.apply = Function.apply;
 this.bind = Function.bind;
 this.call = Function.call;
 this.hasOwnProperty = Object.prototype.hasOwnProperty;
+this.global = global;
 
 this.static = function(getOwnPropertyDescriptor){
 	/**
@@ -392,6 +391,11 @@ this.forEach(
 	// Rexjs
 	null,
 	Object,
+	// global
+	typeof window === "object" ? window :
+	typeof global === "object" ? global :
+	typeof self === "object" ? self :
+	Function("return this;")(),
 	Object.defineProperty,
 	Object.getPrototypeOf
 );
@@ -2176,8 +2180,7 @@ Rexjs.static(this);
 	Rexjs.URL,
 	// Module
 	null,
-	// global
-	Function("return this")()
+	Rexjs.global
 );
 new function(Rexjs, Module, document, forEach){
 

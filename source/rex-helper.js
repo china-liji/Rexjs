@@ -1412,6 +1412,5 @@ Rexjs.static(this);
 	Rexjs.URL,
 	// Module
 	null,
-	// global
-	Function("return this")()
+	Rexjs.global
 );
