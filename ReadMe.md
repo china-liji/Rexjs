@@ -34,7 +34,7 @@ git clone https://github.com/china-liji/Rexjs.git
 #### Faster and Smaller
 ![](https://raw.githubusercontent.com/china-liji/Rexjs/master/doc/image/compare.jpg)
 
-`./dist/rex.min.js`[1.6.46] only 234KB, smaller than others.
+`./dist/rex.min.js`[1.6.47] only 234KB, smaller than others.
 
 -----
 

@@ -153,11 +153,19 @@ this.NodejsReady = function(NodejsJavaScriptCompiler, NodejsModuleURL, Buffer, N
 	require,
 	// parseArgv
 	() => {
+		let cmds = ["rexjs", "rexjs-api", __filename];
+
 		// 开启 sourceMaps
 		ECMAScriptParser.sourceMaps = true;
 
+		NodeModule._nodeModulePaths("").forEach((path) => {
+			cmds.push(`${path}/.bin/rexjs-api`);
+			cmds.push(`${path}/.bin/rexjs`);
+			cmds.push(`${path}/rexjs-api/bin/rex-node.js`);
+		});
+
 		// 判断基本命令
-		["rexjs", "rexjs-api", __filename].every((cmd) => {
+		cmds.every((cmd) => {
 			var index = argv.indexOf(cmd);
 
 			// 如果不是基础命令
