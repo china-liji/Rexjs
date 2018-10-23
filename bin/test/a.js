@@ -14,7 +14,7 @@ export default class A {}
 let uglifyByRequire = require("uglify-js");
 let pathByRequire = require("path");
 
-const URL_STRING = "http://rexjs.org";
+const URL_STRING = "https://china-liji.github.io/Rexjs.org";
 
 let gen = generator();
 

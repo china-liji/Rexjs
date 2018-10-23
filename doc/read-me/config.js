@@ -29,6 +29,8 @@ this.Config = function(Lang, BROWSER_SUPPORT, GIT_HUB_USER_CONTENT, REXJS_FILE_S
 
 		static GIT_HUB = "https://github.com/china-liji/Rexjs";
 
+		static HOME_PAGE_URL = "https://china-liji.github.io/Rexjs.org";
+
 		static GIT_HUB_USER_CONTENT = GIT_HUB_USER_CONTENT;
 
 		static FILENAME_REXJS = "rex.min.js";

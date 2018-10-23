@@ -5,7 +5,7 @@
 #### [{{lang}}]({{GIT_HUB}}/{{langPath}})
 
 #### {{link}}
-* [{{homepage}}](http://www.rexjs.org)
+* [{{homepage}}]({{HOME_PAGE_URL}})
 * [GitHub]({{GIT_HUB}})
 
 #### {{install}}
