@@ -107,6 +107,14 @@ this.AsyncTag = function(AsyncExpression, AsyncStatement){
 		 * @param {Statements} statements - 当前语句块
 		 */
 		visitor: function(parser, context, statement, statements){
+			// 报错
+			parser.error(
+				context,
+				ECMAScriptErrors.template("KEYWORD", context.content)
+			);
+
+			return;
+
 			// 设置当前表达式
 			statement.expression = new AsyncExpression(context);
 			// 设置当前语句

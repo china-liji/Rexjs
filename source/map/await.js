@@ -270,6 +270,14 @@ this.AwaitTag = function(AwaitExpression, AwaitBlockExpression, AwaitStatement, 
 		 * @param {Statements} statements - 当前语句块
 		 */
 		visitor: function(parser, context, statement, statements){
+			// 报错
+			parser.error(
+				context,
+				ECMAScriptErrors.template("KEYWORD", context.content)
+			);
+
+			return;
+
 			// 调用父类方法
 			visitor.call(this, parser, context, statement, statements);
 

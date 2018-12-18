@@ -2237,6 +2237,7 @@ this.AccessorExpression = function(AssignableExpression){
 		hoist: function(list, statements){
 			// 实质性的提升表达式
 			this.hoisting(list, statements);
+			return true;
 		},
 		object: NULL,
 		property: NULL
@@ -3517,6 +3518,8 @@ this.BinaryExpression = function(){
 				// 提升右侧表达式
 				right.hoist(list, statements);
 			}
+
+			return true;
 		},
 		/**
 		 * 当前二元运算解析中的最后一个二元表达式
@@ -17629,6 +17632,14 @@ this.AsyncTag = function(AsyncExpression, AsyncStatement){
 		 * @param {Statements} statements - 当前语句块
 		 */
 		visitor: function(parser, context, statement, statements){
+			// 报错
+			parser.error(
+				context,
+				ECMAScriptErrors.template("KEYWORD", context.content)
+			);
+
+			return;
+
 			// 设置当前表达式
 			statement.expression = new AsyncExpression(context);
 			// 设置当前语句
@@ -17696,6 +17707,7 @@ this.AsycnFunctionTag = function(visitor){
 	// 	binary: function(expression, contentBuilder){
 	// 		debugger
 	// 	},
+	// if for while 
 	// 	bracketAccessor: function(){
 
 	// 	},
@@ -17958,6 +17970,14 @@ this.AwaitTag = function(AwaitExpression, AwaitBlockExpression, AwaitStatement, 
 		 * @param {Statements} statements - 当前语句块
 		 */
 		visitor: function(parser, context, statement, statements){
+			// 报错
+			parser.error(
+				context,
+				ECMAScriptErrors.template("KEYWORD", context.content)
+			);
+
+			return;
+
 			// 调用父类方法
 			visitor.call(this, parser, context, statement, statements);
 

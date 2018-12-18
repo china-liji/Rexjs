@@ -1,4 +1,4 @@
-var a = async function(){
+var a = function(){
 	if(window.x + 2)
 	b = 5 * window.a.b.c + 1 / await new Promise((r) => { r() });
 }
