@@ -159,7 +159,7 @@ test.unit(
 			"箭头与函数主体大括号之间有其他字符",
 			"a => 1{}",
 			function(parser, err){
-				return err.context.tag instanceof Rexjs.OpenBraceTag ? "" : "没有识别到起始大括号";
+				return err.context.tag instanceof Rexjs.OpeningBraceTag ? "" : "没有识别到起始大括号";
 			}
 		);
 

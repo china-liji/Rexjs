@@ -131,7 +131,7 @@ this.DefaultValueStatement = function(CaseValueStatement){
 	this.CaseValueStatement
 );
 
-this.CaseBodyStatement = function(BraceBodyStatement, isCase, isCloseBrace){
+this.CaseBodyStatement = function(BraceBodyStatement, isCase, isClosingBrace){
 	/**
 	 * case 语句
 	 * @param {Statements} statements - 该语句将要所处的语句块
@@ -159,7 +159,7 @@ this.CaseBodyStatement = function(BraceBodyStatement, isCase, isCloseBrace){
 
 				// 如果是结束大括号
 				case "}":
-					isCloseBrace(parser, this.statements);
+					isClosingBrace(parser, this.statements);
 					return null;
 
 				default:
@@ -193,7 +193,7 @@ this.CaseBodyStatement = function(BraceBodyStatement, isCase, isCloseBrace){
 		// 返回 case 标签
 		return caseExpression.context.tag;
 	},
-	// isCloseBrace
+	// isClosingBrace
 	function(parser, statements){
 		(
 			// 恢复语句块

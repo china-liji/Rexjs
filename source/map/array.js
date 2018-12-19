@@ -1,5 +1,5 @@
 // 数组相关
-!function(DestructibleExpression, DestructuringExpression, DestructuringItemExpression, DestructuringDefaultItemExpression, IdentifierExpression, AssignableExpression, BinaryExpression, BasicAssignmentTag, closeArrayTag, arrayItemSeparatorTag, destructItem){
+!function(DestructibleExpression, DestructuringExpression, DestructuringItemExpression, DestructuringDefaultItemExpression, IdentifierExpression, AssignableExpression, BinaryExpression, BasicAssignmentTag, closingArrayTag, arrayItemSeparatorTag, destructItem){
 
 this.ArrayDestructuringExpression = function(){
 	/**
@@ -7,7 +7,7 @@ this.ArrayDestructuringExpression = function(){
 	 * @param {Expression} origin - 解构赋值源表达式
 	 */
 	function ArrayDestructuringExpression(origin){
-		DestructuringExpression.call(this, origin.open, origin);
+		DestructuringExpression.call(this, origin.opening, origin);
 	};
 	ArrayDestructuringExpression = new Rexjs(ArrayDestructuringExpression, DestructuringExpression);
 
@@ -88,10 +88,10 @@ this.ArrayDestructuringRestItemExpression = function(){
 this.ArrayExpression = function(ArrayDestructuringExpression, ArrayDestructuringItemExpression, ArrayDestructuringRestItemExpression, SpreadExpression, extractTo, collected, error){
 	/**
 	 * 数组表达式
-	 * @param {Context} open - 起始标签上下文
+	 * @param {Context} opening - 起始标签上下文
 	 */
-	function ArrayExpression(open){
-		DestructibleExpression.call(this, open);
+	function ArrayExpression(opening){
+		DestructibleExpression.call(this, opening);
 	};
 	ArrayExpression = new Rexjs(ArrayExpression, DestructibleExpression);
 
@@ -320,23 +320,23 @@ this.ArrayStatement = function(){
 	return ArrayStatement;
 }();
 
-this.OpenArrayTag = function(OpenBracketTag, ArrayExpression, ArrayStatement){
+this.OpeningArrayTag = function(OpeningBracketTag, ArrayExpression, ArrayStatement){
 	/**
 	 * 起始数组标签
 	 * @param {Number} _type - 标签类型
 	 */
-	function OpenArrayTag(_type){
-		OpenBracketTag.call(this, _type);
+	function OpeningArrayTag(_type){
+		OpeningBracketTag.call(this, _type);
 	};
-	OpenArrayTag = new Rexjs(OpenArrayTag, OpenBracketTag);
+	OpeningArrayTag = new Rexjs(OpeningArrayTag, OpeningBracketTag);
 	
-	OpenArrayTag.props({
+	OpeningArrayTag.props({
 		$class: CLASS_EXPRESSION,
 		/**
 		 * 获取绑定的标签，该标签一般是用于语句的 try、catch 的返回值
 		 */
 		get binding(){
-			return closeArrayTag;
+			return closingArrayTag;
 		},
 		/**
 		 * 获取绑定的表达式，一般在子类使用父类逻辑，而不使用父类表达式的情况下使用
@@ -363,7 +363,7 @@ this.OpenArrayTag = function(OpenBracketTag, ArrayExpression, ArrayStatement){
 		 * @param {TagsMap} tagsMap - 标签集合映射
 		 */
 		require: function(tagsMap){
-			return tagsMap.openArrayContextTags;
+			return tagsMap.openingArrayContextTags;
 		},
 		/**
 		 * 标签访问器
@@ -375,9 +375,9 @@ this.OpenArrayTag = function(OpenBracketTag, ArrayExpression, ArrayStatement){
 		visitor: commonVisitor
 	});
 	
-	return OpenArrayTag;
+	return OpeningArrayTag;
 }(
-	this.OpenBracketTag,
+	this.OpeningBracketTag,
 	this.ArrayExpression,
 	this.ArrayStatement
 );
@@ -398,7 +398,7 @@ this.ArrayItemSeparatorTag = function(CommaTag, ArrayStatement){
 		 * @param {TagsMap} tagsMap - 标签集合映射
 		 */
 		require: function(tagsMap){
-			return tagsMap.openArrayContextTags;
+			return tagsMap.openingArrayContextTags;
 		},
 		/**
 		 * 标签访问器
@@ -423,17 +423,17 @@ this.ArrayItemSeparatorTag = function(CommaTag, ArrayStatement){
 	this.ArrayStatement
 );
 
-this.CloseArrayTag = function(CloseBracketTag){
+this.ClosingArrayTag = function(ClosingBracketTag){
 	/**
 	 * 结束数组标签
 	 * @param {Number} _type - 标签类型
 	 */
-	function CloseArrayTag(_type){
-		CloseBracketTag.call(this, _type);
+	function ClosingArrayTag(_type){
+		ClosingBracketTag.call(this, _type);
 	};
-	CloseArrayTag = new Rexjs(CloseArrayTag, CloseBracketTag);
+	ClosingArrayTag = new Rexjs(ClosingArrayTag, ClosingBracketTag);
 	
-	CloseArrayTag.props({
+	ClosingArrayTag.props({
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
@@ -449,18 +449,18 @@ this.CloseArrayTag = function(CloseBracketTag){
 		 * @param {Statements} statements - 当前语句块
 		 */
 		visitor: function(parser, context, statement, statements){
-			// 设置表达式的 close
-			statement.expression.close = context;
+			// 设置表达式的 closing
+			statement.expression.closing = context;
 		}
 	});
 	
-	return CloseArrayTag;
+	return ClosingArrayTag;
 }(
-	this.CloseBracketTag
+	this.ClosingBracketTag
 );
 
 arrayItemSeparatorTag = new this.ArrayItemSeparatorTag();
-closeArrayTag = new this.CloseArrayTag();
+closingArrayTag = new this.ClosingArrayTag();
 
 }.call(
 	this,
@@ -472,7 +472,7 @@ closeArrayTag = new this.CloseArrayTag();
 	this.AssignableExpression,
 	this.BinaryExpression,
 	this.BasicAssignmentTag,
-	// closeArrayTag
+	// closingArrayTag
 	null,
 	// arrayItemSeparatorTag
 	null,

@@ -254,6 +254,7 @@ module.exports = { DevSource: this.DevSource, Source: this.Source };
 		"export-multiple.js",
 		"export-all.js",
 		"destructuring-assginment.js",
+		"jsx.js",
 		"tags-helper.js",
 		"ecmaScript-tags.js",
 		"tags-base.js",

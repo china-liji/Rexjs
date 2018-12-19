@@ -1,13 +1,13 @@
 // 对象计算式属性相关
-!function(closeComputedPropertyNameTag, closeComputedMethodNameTag){
+!function(closingComputedPropertyNameTag, closingComputedMethodNameTag){
 
 this.ComputedPropertyNameExpression = function(){
 	/**
 	 * 属性计算式表达式
-	 * @param {Context} open - 起始标签上下文
+	 * @param {Context} opening - 起始标签上下文
 	 */
-	function ComputedPropertyNameExpression(open){
-		PartnerExpression.call(this, open);
+	function ComputedPropertyNameExpression(opening){
+		PartnerExpression.call(this, opening);
 	};
 	ComputedPropertyNameExpression = new Rexjs(ComputedPropertyNameExpression, PartnerExpression);
 
@@ -83,22 +83,22 @@ this.ObjectComputedNameStatement = function(){
 	return ObjectComputedNameStatement;
 }();
 
-this.OpenComputedPropertyNameTag = function(OpenBracketTag, ComputedPropertyNameExpression, ObjectComputedNameStatement){
+this.OpeningComputedPropertyNameTag = function(OpeningBracketTag, ComputedPropertyNameExpression, ObjectComputedNameStatement){
 	/**
 	 * 起始对象计算式属性名标签
 	 * @param {Number} _type - 标签类型
 	 */
-	function OpenComputedPropertyNameTag(_type){
-		OpenBracketTag.call(this, _type);
+	function OpeningComputedPropertyNameTag(_type){
+		OpeningBracketTag.call(this, _type);
 	};
-	OpenComputedPropertyNameTag = new Rexjs(OpenComputedPropertyNameTag, OpenBracketTag);
+	OpeningComputedPropertyNameTag = new Rexjs(OpeningComputedPropertyNameTag, OpeningBracketTag);
 
-	OpenComputedPropertyNameTag.props({
+	OpeningComputedPropertyNameTag.props({
 		/**
 		 * 获取绑定的标签，该标签一般是用于语句的 try、catch 的返回值
 		 */
 		get binding(){
-			return closeComputedPropertyNameTag;
+			return closingComputedPropertyNameTag;
 		},
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
@@ -132,24 +132,24 @@ this.OpenComputedPropertyNameTag = function(OpenBracketTag, ComputedPropertyName
 		}
 	});
 
-	return OpenComputedPropertyNameTag;
+	return OpeningComputedPropertyNameTag;
 }(
-	this.OpenBracketTag,
+	this.OpeningBracketTag,
 	this.ComputedPropertyNameExpression,
 	this.ObjectComputedNameStatement
 );
 
-this.CloseComputedPropertyNameTag = function(CloseBracketTag){
+this.ClosingComputedPropertyNameTag = function(ClosingBracketTag){
 	/**
 	 * 结束对象计算式属性名标签
 	 * @param {Number} _type - 标签类型
 	 */
-	function CloseComputedPropertyNameTag(_type){
-		CloseBracketTag.call(this, _type);
+	function ClosingComputedPropertyNameTag(_type){
+		ClosingBracketTag.call(this, _type);
 	};
-	CloseComputedPropertyNameTag = new Rexjs(CloseComputedPropertyNameTag, CloseBracketTag);
+	ClosingComputedPropertyNameTag = new Rexjs(ClosingComputedPropertyNameTag, ClosingBracketTag);
 
-	CloseComputedPropertyNameTag.props({
+	ClosingComputedPropertyNameTag.props({
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
@@ -165,50 +165,50 @@ this.CloseComputedPropertyNameTag = function(CloseBracketTag){
 		 * @param {Statements} statements - 当前语句块
 		 */
 		visitor: function(parser, context, statement, statements){
-			statement.expression.name.close = context;
+			statement.expression.name.closing = context;
 		}
 	});
 
-	return CloseComputedPropertyNameTag;
+	return ClosingComputedPropertyNameTag;
 }(
-	this.CloseBracketTag
+	this.ClosingBracketTag
 );
 
-this.OpenComputedMethodNameTag = function(OpenComputedPropertyNameTag){
+this.OpeningComputedMethodNameTag = function(OpeningComputedPropertyNameTag){
 	/**
 	 * 起始计算式方法名标签
 	 * @param {Number} _type - 标签类型
 	 */
-	function OpenComputedMethodNameTag(context){
-		OpenComputedPropertyNameTag.call(this, context);
+	function OpeningComputedMethodNameTag(context){
+		OpeningComputedPropertyNameTag.call(this, context);
 	};
-	OpenComputedMethodNameTag = new Rexjs(OpenComputedMethodNameTag, OpenComputedPropertyNameTag);
+	OpeningComputedMethodNameTag = new Rexjs(OpeningComputedMethodNameTag, OpeningComputedPropertyNameTag);
 
-	OpenComputedMethodNameTag.props({
+	OpeningComputedMethodNameTag.props({
 		/**
 		 * 获取绑定的标签，该标签一般是用于语句的 try、catch 的返回值
 		 */
 		get binding(){
-			return closeComputedPropertyNameTag;
+			return closingComputedPropertyNameTag;
 		}
 	});
 
-	return OpenComputedMethodNameTag;
+	return OpeningComputedMethodNameTag;
 }(
-	this.OpenComputedPropertyNameTag
+	this.OpeningComputedPropertyNameTag
 );
 
-this.CloseComputedMethodNameTag = function(CloseComputedPropertyNameTag){
+this.ClosingComputedMethodNameTag = function(ClosingComputedPropertyNameTag){
 	/**
 	 * 结束计算式方法名标签
 	 * @param {Number} _type - 标签类型
 	 */
-	function CloseComputedMethodNameTag(context){
-		CloseComputedPropertyNameTag.call(this, context);
+	function ClosingComputedMethodNameTag(context){
+		ClosingComputedPropertyNameTag.call(this, context);
 	};
-	CloseComputedMethodNameTag = new Rexjs(CloseComputedMethodNameTag, CloseComputedPropertyNameTag);
+	ClosingComputedMethodNameTag = new Rexjs(ClosingComputedMethodNameTag, ClosingComputedPropertyNameTag);
 
-	CloseComputedMethodNameTag.props({
+	ClosingComputedMethodNameTag.props({
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
@@ -218,18 +218,18 @@ this.CloseComputedMethodNameTag = function(CloseComputedPropertyNameTag){
 		}
 	});
 
-	return CloseComputedMethodNameTag;
+	return ClosingComputedMethodNameTag;
 }(
-	this.CloseComputedPropertyNameTag
+	this.ClosingComputedPropertyNameTag
 );
 
-closeComputedPropertyNameTag = new this.CloseComputedPropertyNameTag();
-closeComputedMethodNameTag = new this.CloseComputedMethodNameTag();
+closingComputedPropertyNameTag = new this.ClosingComputedPropertyNameTag();
+closingComputedMethodNameTag = new this.ClosingComputedMethodNameTag();
 
 }.call(
 	this,
-	// closeComputedPropertyNameTag
+	// closingComputedPropertyNameTag
 	null,
-	// closeComputedMethodNameTag
+	// closingComputedMethodNameTag
 	null
 );

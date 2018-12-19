@@ -17,7 +17,7 @@ test.unit(
 			"空的 if 条件",
 			"if();",
 			function(parser, err){
-				return err.context.tag instanceof Rexjs.CloseParenTag ? "" : "没有正确的捕获错误的结束小括号";
+				return err.context.tag instanceof Rexjs.ClosingParenTag ? "" : "没有正确的捕获错误的结束小括号";
 			}
 		);
 

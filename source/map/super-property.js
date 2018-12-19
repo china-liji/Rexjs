@@ -1,5 +1,5 @@
 // 父类属性相关
-!function(AccessorExpression, BracketAccessorExpression, OpenBracketAccessorTag, DotAccessorTag, closeSuperBracketAccessorTag, compileSuperAccessor){
+!function(AccessorExpression, BracketAccessorExpression, OpeningBracketAccessorTag, DotAccessorTag, closingSuperBracketAccessorTag, compileSuperAccessor){
 
 this.SuperBracketAccessorExpression = function(extractTo){
 	/**
@@ -99,23 +99,23 @@ this.SuperDotAccessorExpression = function(extractTo){
 	AccessorExpression.prototype.extractTo
 );
 
-this.OpenSuperBracketAccessorTag = function(SuperBracketAccessorExpression, BracketAccessorStatement, visitor){
+this.OpeningSuperBracketAccessorTag = function(SuperBracketAccessorExpression, BracketAccessorStatement, visitor){
 	/**
 	 * 起始父类中括号属性访问器标签
 	 * @param {Number} _type - 标签类型
 	 */
-	function OpenSuperBracketAccessorTag(_type){
-		OpenBracketAccessorTag.call(this, _type);
+	function OpeningSuperBracketAccessorTag(_type){
+		OpeningBracketAccessorTag.call(this, _type);
 	};
-	OpenSuperBracketAccessorTag = new Rexjs(OpenSuperBracketAccessorTag, OpenBracketAccessorTag);
+	OpeningSuperBracketAccessorTag = new Rexjs(OpeningSuperBracketAccessorTag, OpeningBracketAccessorTag);
 	
-	OpenSuperBracketAccessorTag.props({
+	OpeningSuperBracketAccessorTag.props({
 		$type: TYPE_MISTAKABLE,
 		/**
 		 * 获取绑定的标签，该标签一般是用于语句的 try、catch 的返回值
 		 */
 		get binding(){
-			return closeSuperBracketAccessorTag;
+			return closingSuperBracketAccessorTag;
 		},
 		/**
 		 * 获取绑定的表达式，一般在子类使用父类逻辑，而不使用父类表达式的情况下使用
@@ -147,24 +147,24 @@ this.OpenSuperBracketAccessorTag = function(SuperBracketAccessorExpression, Brac
 		}
 	});
 	
-	return OpenSuperBracketAccessorTag;
+	return OpeningSuperBracketAccessorTag;
 }(
 	this.SuperBracketAccessorExpression,
 	this.BracketAccessorStatement,
-	OpenBracketAccessorTag.prototype.visitor
+	OpeningBracketAccessorTag.prototype.visitor
 );
 
-this.CloseSuperBracketAccessorTag = function(CloseBracketAccessorTag){
+this.ClosingSuperBracketAccessorTag = function(ClosingBracketAccessorTag){
 	/**
 	 * 结束父类中括号属性访问器标签
 	 * @param {Number} _type - 标签类型
 	 */
-	function CloseSuperBracketAccessorTag(_type){
-		CloseBracketAccessorTag.call(this, _type);
+	function ClosingSuperBracketAccessorTag(_type){
+		ClosingBracketAccessorTag.call(this, _type);
 	};
-	CloseSuperBracketAccessorTag = new Rexjs(CloseSuperBracketAccessorTag, CloseBracketAccessorTag);
+	ClosingSuperBracketAccessorTag = new Rexjs(ClosingSuperBracketAccessorTag, ClosingBracketAccessorTag);
 	
-	CloseSuperBracketAccessorTag.props({
+	ClosingSuperBracketAccessorTag.props({
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
@@ -174,9 +174,9 @@ this.CloseSuperBracketAccessorTag = function(CloseBracketAccessorTag){
 		}
 	});
 	
-	return CloseSuperBracketAccessorTag;
+	return ClosingSuperBracketAccessorTag;
 }(
-	this.CloseBracketAccessorTag
+	this.ClosingBracketAccessorTag
 );
 
 this.SuperDotAccessorTag = function(SuperDotAccessorExpression, visitor){
@@ -252,15 +252,15 @@ this.SuperPropertyNameTag = function(PropertyNameTag){
 	this.PropertyNameTag
 );
 
-closeSuperBracketAccessorTag = new this.CloseSuperBracketAccessorTag();
+closingSuperBracketAccessorTag = new this.ClosingSuperBracketAccessorTag();
 
 }.call(
 	this,
 	this.AccessorExpression,
 	this.BracketAccessorExpression,
-	this.OpenBracketAccessorTag,
+	this.OpeningBracketAccessorTag,
 	this.DotAccessorTag,
-	// closeSuperBracketAccessorTag
+	// closingSuperBracketAccessorTag
 	null,
 	// compileSuperAccessor
 	function(expression, contentBuilder, extractProperty){

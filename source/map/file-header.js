@@ -14,11 +14,9 @@ new function(
 	TYPE_MATCHABLE, TYPE_UNEXPECTED, TYPE_MISTAKABLE, TYPE_ILLEGAL,
 	// 表达式状态相关
 	STATE_STATEMENT_ENDABLE, STATE_STATEMENT_END, STATE_STATEMENT_ENDED,
-	// 其他常量
-	IDENTIFIER_REGEXP_SOURCE,
 	// 其他非方法变量
 	config,
 	// 其他方法变量
-	commonVisitor
+	commonVisitor, getIdentifierRegExpSource
 ){
 "use strict";

@@ -34,7 +34,7 @@ this.ExpressionTags = function(list){
 	[
 		this.ClassTag,
 		this.FunctionTag,
-		this.OpenObjectTag,
+		this.OpeningObjectTag,
 		this.TryFunctionTag,
 		this.VariableTag
 	]
@@ -81,14 +81,14 @@ this.ExpressionContextTags = function(list){
 		this.DotAccessorTag,
 		this.ExpressionBreakTag,
 		this.OnlyStatementEndTags,
-		this.OpenBracketAccessorTag,
-		this.OpenCallTag,
-		this.OpenRestrictedCommentTag,
+		this.OpeningBracketAccessorTag,
+		this.OpeningCallTag,
+		this.OpeningRestrictedCommentTag,
 		this.PostfixDecrementTag,
 		this.PostfixIncrementTag,
 		this.QuestionAssignmentTag,
 		this.SubtractionTag,
-		this.OpenTemplateParameterTag
+		this.OpeningTemplateParameterTag
 	]
 );
 

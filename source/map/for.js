@@ -77,7 +77,7 @@ this.ForExpression = function(ConditionalExpression, compileOf, compileIteratorW
 		var inner = condition.inner;
 
 		// 追加 for 循环条件起始小括号
-		contentBuilder.appendContext(condition.open);
+		contentBuilder.appendContext(condition.opening);
 		// 追加 for 循环初始化语句
 		contentBuilder.appendString(variable + "=new Rexjs.Generator(");
 
@@ -87,7 +87,7 @@ this.ForExpression = function(ConditionalExpression, compileOf, compileIteratorW
 		// 追加 for 循环的逻辑条件
 		contentBuilder.appendString(");!" + variable + ".iterator.closed;");
 		// 追加 for 循环条件结束小括号
-		contentBuilder.appendContext(condition.close);
+		contentBuilder.appendContext(condition.closing);
 		// 追加语句块起始大括号，目的是让 let、const 发挥效果
 		contentBuilder.appendString("{");
 

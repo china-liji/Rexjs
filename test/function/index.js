@@ -59,7 +59,7 @@ test.unit(
 			"缺少函数名的函数声明",
 			"function (){}",
 			function(parser, err){
-				return err.context.tag instanceof Rexjs.OpenGroupingTag ? "" : "没有识别出小括号";
+				return err.context.tag instanceof Rexjs.OpeningGroupingTag ? "" : "没有识别出小括号";
 			}
 		);
 

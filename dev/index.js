@@ -1,14 +1,3 @@
-class a extends Array {
-	constructor(){
-		if(true){
-			super(111)
-		}
-		else {
-			super(222);
-		}
-	}
-}
+const a = 1;
 
-new  a();
-
-debugger
+<a />

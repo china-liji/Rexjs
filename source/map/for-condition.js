@@ -1,5 +1,5 @@
 // for 循环条件表达式相关
-!function(IdentifierExpression, VarExpression, CommaStatement, closeForConditionTag, forInitConditionItemSeparatorTag, forInTag, forOfTag, forInitConditionSeparatorTag, forLogicConditionSeparatorTag, getOpenConditionTag){
+!function(IdentifierExpression, VarExpression, CommaStatement, closingForConditionTag, forInitConditionItemSeparatorTag, forInTag, forOfTag, forInitConditionSeparatorTag, forLogicConditionSeparatorTag, getOpeningConditionTag){
 
 this.ForConditionInnerStatement = function(){
 	/**
@@ -42,7 +42,7 @@ this.ForInitConditionStatement = function(ForConditionInnerStatement, hasError){
 				// 如果是分号
 				case ";":
 					// 设置标签
-					tag = getOpenConditionTag(this).forInitConditionSeparator;
+					tag = getOpeningConditionTag(this).forInitConditionSeparator;
 					
 					(
 						// 设置目标语句的表达式
@@ -56,7 +56,7 @@ this.ForInitConditionStatement = function(ForConditionInnerStatement, hasError){
 
 				// 如果是 in
 				case "in":
-					tag = getOpenConditionTag(this).forIn;
+					tag = getOpeningConditionTag(this).forIn;
 
 				// 如果是 of
 				case "of":
@@ -66,7 +66,7 @@ this.ForInitConditionStatement = function(ForConditionInnerStatement, hasError){
 					}
 
 					// 设置标签
-					tag = tag || getOpenConditionTag(this).forOf;
+					tag = tag || getOpeningConditionTag(this).forOf;
 					// 设置目标语句的表达式
 					this.target.expression = expression;
 					break;
@@ -96,7 +96,7 @@ this.ForInitConditionStatement = function(ForConditionInnerStatement, hasError){
 
 				// 如果是逗号
 				case ",":
-					return getOpenConditionTag(this).forInitConditionItemSeparator;
+					return getOpeningConditionTag(this).forInitConditionItemSeparator;
 
 				// 默认
 				default:
@@ -115,7 +115,7 @@ this.ForInitConditionStatement = function(ForConditionInnerStatement, hasError){
 
 			// 跳出当前语句
 			this.out();
-			return getOpenConditionTag(this).forIn;
+			return getOpeningConditionTag(this).forIn;
 		}
 	});
 	
@@ -178,7 +178,7 @@ this.ForLogicConditionStatement = function(ForConditionInnerStatement){
 			// 跳出语句并添加表达式
 			this.out().add(this.expression);
 			// 返回标签
-			return getOpenConditionTag(this).forLogicConditionSeparator;
+			return getOpeningConditionTag(this).forLogicConditionSeparator;
 		}
 	});
 	
@@ -248,22 +248,22 @@ this.ForInitConditionSeparatorStatement = function(tryMethod){
 	CommaStatement.prototype.try
 );
 
-this.OpenForConditionTag = function(OpenParenTag, ConditionStatement, ForInitConditionStatement){
+this.OpeningForConditionTag = function(OpeningParenTag, ConditionStatement, ForInitConditionStatement){
 	/**
 	 * for 条件起始标签
 	 * @param {Number} _type - 标签类型
 	 */
-	function OpenForConditionTag(_type){
-		OpenParenTag.call(this, _type);
+	function OpeningForConditionTag(_type){
+		OpeningParenTag.call(this, _type);
 	};
-	OpenForConditionTag = new Rexjs(OpenForConditionTag, OpenParenTag);
+	OpeningForConditionTag = new Rexjs(OpeningForConditionTag, OpeningParenTag);
 	
-	OpenForConditionTag.props({
+	OpeningForConditionTag.props({
 		/**
 		 * 获取绑定的标签，该标签一般是用于语句的 try、catch 的返回值
 		 */
 		get binding(){
-			return closeForConditionTag;
+			return closingForConditionTag;
 		},
 		/**
 		 * 获取绑定的 forInTag 标签，该标签一般是用于语句的 try、catch 的返回值
@@ -319,9 +319,9 @@ this.OpenForConditionTag = function(OpenParenTag, ConditionStatement, ForInitCon
 		}
 	});
 	
-	return OpenForConditionTag;
+	return OpeningForConditionTag;
 }(
-	this.OpenParenTag,
+	this.OpeningParenTag,
 	this.ConditionStatement,
 	this.ForInitConditionStatement
 );
@@ -447,17 +447,17 @@ this.ForLogicConditionSeparatorTag = function(ForConditionSeparatorTag, ForFinal
 	this.ForFinallyConditionStatement
 );
 
-this.CloseForConditionTag = function(CloseParenTag, ForBodyStatement){
+this.ClosingForConditionTag = function(ClosingParenTag, ForBodyStatement){
 	/**
 	 * for 条件结束标签
 	 * @param {Number} _type - 标签类型
 	 */
-	function CloseForConditionTag(_type){
-		CloseParenTag.call(this, _type);
+	function ClosingForConditionTag(_type){
+		ClosingParenTag.call(this, _type);
 	};
-	CloseForConditionTag = new Rexjs(CloseForConditionTag, CloseParenTag);
+	ClosingForConditionTag = new Rexjs(ClosingForConditionTag, ClosingParenTag);
 	
-	CloseForConditionTag.props({
+	ClosingForConditionTag.props({
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
@@ -473,20 +473,20 @@ this.CloseForConditionTag = function(CloseParenTag, ForBodyStatement){
 		 * @param {Statements} statements - 当前语句块
 		 */
 		visitor: function(parser, context, statement, statements){
-			// 设置 for 表达式条件的 close
-			statement.expression.condition.close = context;
+			// 设置 for 表达式条件的 closing
+			statement.expression.condition.closing = context;
 			// 设置当前语句
 			statements.statement = new ForBodyStatement(statements);
 		}
 	});
 	
-	return CloseForConditionTag;
+	return ClosingForConditionTag;
 }(
-	this.CloseParenTag,
+	this.ClosingParenTag,
 	this.ForBodyStatement
 );
 
-closeForConditionTag = new this.CloseForConditionTag();
+closingForConditionTag = new this.ClosingForConditionTag();
 forInTag = new this.ForInTag();
 forOfTag = new this.ForOfTag();
 forInitConditionItemSeparatorTag = new this.ForInitConditionItemSeparatorTag();
@@ -498,7 +498,7 @@ forLogicConditionSeparatorTag = new this.ForLogicConditionSeparatorTag();
 	this.IdentifierExpression,
 	this.VarExpression,
 	this.CommaStatement,
-	// closeForConditionTag
+	// closingForConditionTag
 	null,
 	// forInitConditionItemSeparatorTag
 	null,
@@ -510,8 +510,8 @@ forLogicConditionSeparatorTag = new this.ForLogicConditionSeparatorTag();
 	null,
 	// forLogicConditionSeparatorTag
 	null,
-	// getOpenConditionTag
+	// getOpeningConditionTag
 	function(statement){
-		return statement.target.target.expression.condition.open.tag;
+		return statement.target.target.expression.condition.opening.tag;
 	}
 );

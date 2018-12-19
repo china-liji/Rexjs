@@ -4,10 +4,10 @@
 this.ExecutableExpression = function(){
 	/**
 	 * 可被执行的（函数）表达式
-	 * @param {Context} open - 起始标签上下文
+	 * @param {Context} opening - 起始标签上下文
 	 */
-	function ExecutableExpression(open){
-		PartnerExpression.call(this, open);
+	function ExecutableExpression(opening){
+		PartnerExpression.call(this, opening);
 	};
 	ExecutableExpression = new Rexjs(ExecutableExpression, PartnerExpression);
 

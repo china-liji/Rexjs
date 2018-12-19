@@ -1,5 +1,5 @@
 // switch 语句相关
-!function(OpenBlockTag, CloseBlockTag, closeSwitchConditionTag, closeSwitchBodyTag, generateCase){
+!function(OpeningBlockTag, ClosingBlockTag, closingSwitchConditionTag, closingSwitchBodyTag, generateCase){
 
 this.SwitchExpression = function(ConditionalExpression, generateBody){
 	/**
@@ -157,7 +157,7 @@ this.SwitchBodyStatement = function(BraceBodyStatement){
 		 * 获取该语句 try、catch 方法中所需使用到的标签，一般是指向实例化该语句的标签
 		 */
 		tagOf: function(){
-			return this.statements.target.statement.expression.open.tag;
+			return this.statements.target.statement.expression.opening.tag;
 		}
 	});
 
@@ -230,22 +230,22 @@ this.SwitchTag = function(SwitchExpression){
 	this.SwitchExpression
 );
 
-this.OpenSwitchConditionTag = function(OpenParenTag, ConditionStatement){
+this.OpeningSwitchConditionTag = function(OpeningParenTag, ConditionStatement){
 	/**
 	 * switch 条件起始标签
 	 * @param {Number} _type - 标签类型
 	 */
-	function OpenSwitchConditionTag(_type){
-		OpenParenTag.call(this, _type);
+	function OpeningSwitchConditionTag(_type){
+		OpeningParenTag.call(this, _type);
 	};
-	OpenSwitchConditionTag = new Rexjs(OpenSwitchConditionTag, OpenParenTag);
+	OpeningSwitchConditionTag = new Rexjs(OpeningSwitchConditionTag, OpeningParenTag);
 	
-	OpenSwitchConditionTag.props({
+	OpeningSwitchConditionTag.props({
 		/**
 		 * 获取绑定的标签，该标签一般是用于语句的 try、catch 的返回值
 		 */
 		get binding(){
-			return closeSwitchConditionTag;
+			return closingSwitchConditionTag;
 		},
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
@@ -269,23 +269,23 @@ this.OpenSwitchConditionTag = function(OpenParenTag, ConditionStatement){
 		}
 	});
 	
-	return OpenSwitchConditionTag;
+	return OpeningSwitchConditionTag;
 }(
-	this.OpenParenTag,
+	this.OpeningParenTag,
 	this.ConditionStatement
 );
 
-this.CloseSwitchConditionTag = function(CloseParenTag){
+this.ClosingSwitchConditionTag = function(ClosingParenTag){
 	/**
 	 * switch 条件结束标签
 	 * @param {Number} _type - 标签类型
 	 */
-	function CloseSwitchConditionTag(_type){
-		CloseParenTag.call(this, _type);
+	function ClosingSwitchConditionTag(_type){
+		ClosingParenTag.call(this, _type);
 	};
-	CloseSwitchConditionTag = new Rexjs(CloseSwitchConditionTag, CloseParenTag);
+	ClosingSwitchConditionTag = new Rexjs(ClosingSwitchConditionTag, ClosingParenTag);
 	
-	CloseSwitchConditionTag.props({
+	ClosingSwitchConditionTag.props({
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
@@ -302,30 +302,30 @@ this.CloseSwitchConditionTag = function(CloseParenTag){
 		 */
 		visitor: function(parser, context, statement, statements){
 			// 条件表达式结束
-			statement.expression.condition.close = context;
+			statement.expression.condition.closing = context;
 		}
 	});
 	
-	return CloseSwitchConditionTag;
+	return ClosingSwitchConditionTag;
 }(
-	this.CloseParenTag
+	this.ClosingParenTag
 );
 
-this.OpenSwitchBodyTag = function(SwitchStatement, SwitchBodyStatements, visitor){
+this.OpeningSwitchBodyTag = function(SwitchStatement, SwitchBodyStatements, visitor){
 	/**
 	 * switch 主体起始标签
 	 */
-	function OpenSwitchBodyTag(_type){
-		OpenBlockTag.call(this, _type);
+	function OpeningSwitchBodyTag(_type){
+		OpeningBlockTag.call(this, _type);
 	};
-	OpenSwitchBodyTag = new Rexjs(OpenSwitchBodyTag, OpenBlockTag);
+	OpeningSwitchBodyTag = new Rexjs(OpeningSwitchBodyTag, OpeningBlockTag);
 	
-	OpenSwitchBodyTag.props({
+	OpeningSwitchBodyTag.props({
 		/**
 		 * 获取绑定的标签，该标签一般是用于语句的 try、catch 的返回值
 		 */
 		get binding(){
-			return closeSwitchBodyTag;
+			return closingSwitchBodyTag;
 		},
 		/**
 		 * 获取绑定的语句块，一般在子类使用父类逻辑，而不使用父类语句块的情况下使用
@@ -339,7 +339,7 @@ this.OpenSwitchBodyTag = function(SwitchStatement, SwitchBodyStatements, visitor
 		 * @param {TagsMap} tagsMap - 标签集合映射
 		 */
 		require: function(tagsMap){
-			return tagsMap.openSwitchBodyContextTags;
+			return tagsMap.openingSwitchBodyContextTags;
 		},
 		/**
 		 * 标签访问器
@@ -361,23 +361,23 @@ this.OpenSwitchBodyTag = function(SwitchStatement, SwitchBodyStatements, visitor
 		}
 	});
 	
-	return OpenSwitchBodyTag;
+	return OpeningSwitchBodyTag;
 }(
 	this.SwitchStatement,
 	this.SwitchBodyStatements,
-	OpenBlockTag.prototype.visitor
+	OpeningBlockTag.prototype.visitor
 );
 
-this.CloseSwitchBodyTag = function(visitor){
+this.ClosingSwitchBodyTag = function(visitor){
 	/**
 	 * switch 主体结束标签
 	 */
-	function CloseSwitchBodyTag(_type){
-		CloseBlockTag.call(this, _type);
+	function ClosingSwitchBodyTag(_type){
+		ClosingBlockTag.call(this, _type);
 	};
-	CloseSwitchBodyTag = new Rexjs(CloseSwitchBodyTag, CloseBlockTag);
+	ClosingSwitchBodyTag = new Rexjs(ClosingSwitchBodyTag, ClosingBlockTag);
 	
-	CloseSwitchBodyTag.props({
+	ClosingSwitchBodyTag.props({
 		$type: TYPE_UNEXPECTED,
 		/**
 		 * 标签访问器
@@ -395,22 +395,22 @@ this.CloseSwitchBodyTag = function(visitor){
 		}
 	});
 	
-	return CloseSwitchBodyTag;
+	return ClosingSwitchBodyTag;
 }(
-	CloseBlockTag.prototype.visitor
+	ClosingBlockTag.prototype.visitor
 );
 
-closeSwitchConditionTag = new this.CloseSwitchConditionTag();
+closingSwitchConditionTag = new this.ClosingSwitchConditionTag();
 
-closeSwitchBodyTag = new this.CloseSwitchBodyTag();
+closingSwitchBodyTag = new this.ClosingSwitchBodyTag();
 
 }.call(
 	this,
-	this.OpenBlockTag,
-	this.CloseBlockTag,
-	// closeSwitchConditionTag
+	this.OpeningBlockTag,
+	this.ClosingBlockTag,
+	// closingSwitchConditionTag
 	null,
-	// closeSwitchBodyTag
+	// closingSwitchBodyTag
 	null,
 	// generateCase
 	function(switchExpression, statement, generator, variable, currentIndexString, contentBuilder){

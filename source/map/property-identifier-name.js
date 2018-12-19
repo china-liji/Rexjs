@@ -1,5 +1,5 @@
 // 对象标识符属性名相关
-!function(PropertySeparatorTag, RegExp){
+!function(IdentifierTag, PropertySeparatorTag, RegExp){
 
 this.IdentifierPropertyNameExpression = function(LiteralPropertyNameExpression){
 	/**
@@ -133,7 +133,7 @@ this.IdentifierPropertyValueStatement = function(PropertyValueStatement, Shortha
 	this.ShorthandPropertyValueExpression
 );
 
-this.IdentifierPropertyNameTag = function(IdentifierTag, IdentifierPropertyNameExpression, ShorthandPropertyValueExpression){
+this.IdentifierPropertyNameTag = function(IdentifierPropertyNameExpression, ShorthandPropertyValueExpression){
 	/**
 	 * 标识符属性名称标签
 	 * @param {Number} _type - 标签类型
@@ -171,7 +171,6 @@ this.IdentifierPropertyNameTag = function(IdentifierTag, IdentifierPropertyNameE
 
 	return IdentifierPropertyNameTag;
 }(
-	this.IdentifierTag,
 	this.IdentifierPropertyNameExpression,
 	this.ShorthandPropertyValueExpression
 );
@@ -187,7 +186,7 @@ this.IdentifierMethodNameTag = function(IdentifierPropertyNameTag){
 	IdentifierMethodNameTag = new Rexjs(IdentifierMethodNameTag, IdentifierPropertyNameTag);
 
 	IdentifierMethodNameTag.props({
-		regexp: new RegExp(IDENTIFIER_REGEXP_SOURCE),
+		regexp: new RegExp(IdentifierTag.REGEXP_SOURCE),
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
@@ -231,7 +230,7 @@ this.WordPropertyNameTag = function(IdentifierPropertyNameTag, POSTFIX_REGEXP_SO
 }(
 	this.IdentifierPropertyNameTag,
 	// POSTFIX_REGEXP_SOURCE
-	"(?!\\d+|\\d*" + IDENTIFIER_REGEXP_SOURCE + ")"
+	"(?!\\d+|\\d*" + IdentifierTag.REGEXP_SOURCE + ")"
 );
 
 this.KeywordPropertyNameTag = function(WordPropertyNameTag, IdentifierPropertyNameExpression){
@@ -274,6 +273,7 @@ this.KeywordPropertyNameTag = function(WordPropertyNameTag, IdentifierPropertyNa
 
 }.call(
 	this,
+	this.IdentifierTag,
 	this.PropertySeparatorTag,
 	RegExp
 );

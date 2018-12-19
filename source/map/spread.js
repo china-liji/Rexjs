@@ -4,7 +4,7 @@
 this.SpreadExpression = function(){
 	/**
 	 * 拓展参数表达式
-	 * @param {Context} open - 起始标签上下文
+	 * @param {Context} opening - 起始标签上下文
 	 */
 	function SpreadExpression(context){
 		Expression.call(this, context);

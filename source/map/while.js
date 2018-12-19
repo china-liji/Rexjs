@@ -1,5 +1,5 @@
 // while 语句相关
-!function(closeWhileConditionTag){
+!function(closingWhileConditionTag){
 
 this.WhileExpression = function(ConditionalExpression){
 	/**
@@ -110,22 +110,22 @@ this.WhileTag = function(WhileExpression){
 	this.WhileExpression
 );
 
-this.OpenWhileConditionTag = function(OpenParenTag, ConditionStatement){
+this.OpeningWhileConditionTag = function(OpeningParenTag, ConditionStatement){
 	/**
 	 * while 条件起始标签
 	 * @param {Number} _type - 标签类型
 	 */
-	function OpenWhileConditionTag(_type){
-		OpenParenTag.call(this, _type);
+	function OpeningWhileConditionTag(_type){
+		OpeningParenTag.call(this, _type);
 	};
-	OpenWhileConditionTag = new Rexjs(OpenWhileConditionTag, OpenParenTag);
+	OpeningWhileConditionTag = new Rexjs(OpeningWhileConditionTag, OpeningParenTag);
 	
-	OpenWhileConditionTag.props({
+	OpeningWhileConditionTag.props({
 		/**
 		 * 获取绑定的标签，该标签一般是用于语句的 try、catch 的返回值
 		 */
 		get binding(){
-			return closeWhileConditionTag;
+			return closingWhileConditionTag;
 		},
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
@@ -149,23 +149,23 @@ this.OpenWhileConditionTag = function(OpenParenTag, ConditionStatement){
 		}
 	});
 	
-	return OpenWhileConditionTag;
+	return OpeningWhileConditionTag;
 }(
-	this.OpenParenTag,
+	this.OpeningParenTag,
 	this.ConditionStatement
 );
 
-this.CloseWhileConditionTag = function(CloseParenTag, WhileBodyStatement){
+this.ClosingWhileConditionTag = function(ClosingParenTag, WhileBodyStatement){
 	/**
 	 * while 条件结束标签
 	 * @param {Number} _type - 标签类型
 	 */
-	function CloseWhileConditionTag(_type){
-		CloseParenTag.call(this, _type);
+	function ClosingWhileConditionTag(_type){
+		ClosingParenTag.call(this, _type);
 	};
-	CloseWhileConditionTag = new Rexjs(CloseWhileConditionTag, CloseParenTag);
+	ClosingWhileConditionTag = new Rexjs(ClosingWhileConditionTag, ClosingParenTag);
 	
-	CloseWhileConditionTag.props({
+	ClosingWhileConditionTag.props({
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
@@ -182,22 +182,22 @@ this.CloseWhileConditionTag = function(CloseParenTag, WhileBodyStatement){
 		 */
 		visitor: function(parser, context, statement, statements){
 			// 条件表达式结束
-			statement.expression.condition.close = context;
+			statement.expression.condition.closing = context;
 			// 设置当前语句
 			statements.statement = new WhileBodyStatement(statements);
 		}
 	});
 	
-	return CloseWhileConditionTag;
+	return ClosingWhileConditionTag;
 }(
-	this.CloseParenTag,
+	this.ClosingParenTag,
 	this.WhileBodyStatement
 );
 
-closeWhileConditionTag = new this.CloseWhileConditionTag();
+closingWhileConditionTag = new this.ClosingWhileConditionTag();
 
 }.call(
 	this,
-	// closeWhileConditionTag
+	// closingWhileConditionTag
 	null
 );

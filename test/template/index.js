@@ -55,7 +55,7 @@ test.unit(
 			"空的参数",
 			"`1${}`",
 			function(parser, err){
-				return err.context.tag instanceof Rexjs.CloseBraceTag ? "" : "没有识别出结束大括号";
+				return err.context.tag instanceof Rexjs.ClosingBraceTag ? "" : "没有识别出结束大括号";
 			}
 		);
 

@@ -338,17 +338,17 @@ this.CatchTag = function(CatchStatement){
 	this.CatchStatement
 );
 
-this.OpenCatchedExceptionTag = function(OpenParenTag){
+this.OpeningCatchedExceptionTag = function(OpeningParenTag){
 	/**
 	 * try catch 异常起始标签
 	 * @param {Number} _type - 标签类型
 	 */
-	function OpenCatchedExceptionTag(_type){
-		OpenParenTag.call(this, _type);
+	function OpeningCatchedExceptionTag(_type){
+		OpeningParenTag.call(this, _type);
 	};
-	OpenCatchedExceptionTag = new Rexjs(OpenCatchedExceptionTag, OpenParenTag);
+	OpeningCatchedExceptionTag = new Rexjs(OpeningCatchedExceptionTag, OpeningParenTag);
 	
-	OpenCatchedExceptionTag.props({
+	OpeningCatchedExceptionTag.props({
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
@@ -369,9 +369,9 @@ this.OpenCatchedExceptionTag = function(OpenParenTag){
 		}
 	});
 	
-	return OpenCatchedExceptionTag;
+	return OpeningCatchedExceptionTag;
 }(
-	this.OpenParenTag
+	this.OpeningParenTag
 );
 
 this.ExceptionVariableTag = function(VariableDeclarationTag){
@@ -390,7 +390,7 @@ this.ExceptionVariableTag = function(VariableDeclarationTag){
 		 * @param {TagsMap} tagsMap - 标签集合映射
 		 */
 		require: function(tagsMap){
-			return tagsMap.closeCatchedExceptionTags;
+			return tagsMap.closingCatchedExceptionTags;
 		},
 		/**
 		 * 标签访问器
@@ -428,17 +428,17 @@ this.ExceptionVariableTag = function(VariableDeclarationTag){
 	this.VariableDeclarationTag
 );
 
-this.CloseCatchedExceptionTag = function(CloseParenTag){
+this.ClosingCatchedExceptionTag = function(ClosingParenTag){
 	/**
 	 * try catch 异常结束标签
 	 * @param {Number} _type - 标签类型
 	 */
-	function CloseCatchedExceptionTag(_type){
-		CloseParenTag.call(this, _type);
+	function ClosingCatchedExceptionTag(_type){
+		ClosingParenTag.call(this, _type);
 	};
-	CloseCatchedExceptionTag = new Rexjs(CloseCatchedExceptionTag, CloseParenTag);
+	ClosingCatchedExceptionTag = new Rexjs(ClosingCatchedExceptionTag, ClosingParenTag);
 	
-	CloseCatchedExceptionTag.props({
+	ClosingCatchedExceptionTag.props({
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
@@ -454,13 +454,13 @@ this.CloseCatchedExceptionTag = function(CloseParenTag){
 		 * @param {Statements} statements - 当前语句块
 		 */
 		visitor: function(parser, context, statement, statements){
-			statement.target.expression.exception.close = context;
+			statement.target.expression.exception.closing = context;
 		}
 	});
 	
-	return CloseCatchedExceptionTag;
+	return ClosingCatchedExceptionTag;
 }(
-	this.CloseParenTag
+	this.ClosingParenTag
 );
 
 this.FinallyTag = function(FinallyStatement){

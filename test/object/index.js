@@ -82,7 +82,7 @@ test.unit(
 			"简写关键字属性",
 			"!{ var }",
 			function(parser, err){
-				return err.context.tag instanceof Rexjs.CloseBraceTag ? "" : "没有识别出结束大括号";
+				return err.context.tag instanceof Rexjs.ClosingBraceTag ? "" : "没有识别出结束大括号";
 			}
 		);
 
@@ -98,7 +98,7 @@ test.unit(
 			"简写数字属性",
 			"!{ 1 }",
 			function(parser, err){
-				return err.context.tag instanceof Rexjs.CloseBraceTag ? "" : "没有识别出结束大括号";
+				return err.context.tag instanceof Rexjs.ClosingBraceTag ? "" : "没有识别出结束大括号";
 			}
 		);
 
@@ -106,7 +106,7 @@ test.unit(
 			"简写字符串属性",
 			"!{ 'abc' }",
 			function(parser, err){
-				return err.context.tag instanceof Rexjs.CloseBraceTag ? "" : "没有识别出结束大括号";
+				return err.context.tag instanceof Rexjs.ClosingBraceTag ? "" : "没有识别出结束大括号";
 			}
 		);
 
@@ -130,7 +130,7 @@ test.unit(
 			"简写方法后面接其他非法字符",
 			"!{ a(){}() }",
 			function(parser, err){
-				return err.context.tag instanceof Rexjs.OpenParenTag ? "" : "没有识别出非法字符";
+				return err.context.tag instanceof Rexjs.OpeningParenTag ? "" : "没有识别出非法字符";
 			}
 		);
 
@@ -226,7 +226,7 @@ test.unit(
 			"缺少参数的设置器",
 			"!{ set var(){} }",
 			function(parser, err){
-				return err.context.tag instanceof Rexjs.OpenArgumentsTag ? "" : "没有识别出访问器参数个数";
+				return err.context.tag instanceof Rexjs.OpeningArgumentsTag ? "" : "没有识别出访问器参数个数";
 			}
 		);
 

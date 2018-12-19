@@ -1,5 +1,5 @@
 // 对象解构声明的属性名相关
-!function(IdentifierPropertyNameTag, PropertyDestructuringItemExpression, closeComputedDeclarationPropertyNameTag, require){
+!function(IdentifierPropertyNameTag, PropertyDestructuringItemExpression, closingComputedDeclarationPropertyNameTag, require){
 
 this.IdentifierDeclarationPropertyNameStatement = function(both){
 	/**
@@ -199,56 +199,56 @@ this.StringDeclarationPropertyNameTag = function(StringPropertyNameTag){
 	this.StringPropertyNameTag
 );
 
-this.OpenComputedDeclarationPropertyNameTag = function(OpenComputedPropertyNameTag){
+this.OpeningComputedDeclarationPropertyNameTag = function(OpeningComputedPropertyNameTag){
 	/**
 	 * 起始计算式属性名称标签
 	 * @param {Number} _type - 标签类型
 	 */
-	function OpenComputedDeclarationPropertyNameTag(_type){
-		OpenComputedPropertyNameTag.call(this, _type);
+	function OpeningComputedDeclarationPropertyNameTag(_type){
+		OpeningComputedPropertyNameTag.call(this, _type);
 	};
-	OpenComputedDeclarationPropertyNameTag = new Rexjs(OpenComputedDeclarationPropertyNameTag, OpenComputedPropertyNameTag);
+	OpeningComputedDeclarationPropertyNameTag = new Rexjs(OpeningComputedDeclarationPropertyNameTag, OpeningComputedPropertyNameTag);
 
-	OpenComputedDeclarationPropertyNameTag.props({
+	OpeningComputedDeclarationPropertyNameTag.props({
 		/**
 		 * 获取绑定的标签，该标签一般是用于语句的 try、catch 的返回值
 		 */
 		get binding(){
-			return closeComputedDeclarationPropertyNameTag;
+			return closingComputedDeclarationPropertyNameTag;
 		}
 	});
 
-	return OpenComputedDeclarationPropertyNameTag;
+	return OpeningComputedDeclarationPropertyNameTag;
 }(
-	this.OpenComputedPropertyNameTag
+	this.OpeningComputedPropertyNameTag
 );
 
-this.CloseComputedDeclarationPropertyNameTag = function(CloseComputedPropertyNameTag){
+this.ClosingComputedDeclarationPropertyNameTag = function(ClosingComputedPropertyNameTag){
 	/**
 	 * 结束计算式属性名称标签
 	 * @param {Number} _type - 标签类型
 	 */
-	function CloseComputedDeclarationPropertyNameTag(_type){
-		CloseComputedPropertyNameTag.call(this, _type);
+	function ClosingComputedDeclarationPropertyNameTag(_type){
+		ClosingComputedPropertyNameTag.call(this, _type);
 	};
-	CloseComputedDeclarationPropertyNameTag = new Rexjs(CloseComputedDeclarationPropertyNameTag, CloseComputedPropertyNameTag);
+	ClosingComputedDeclarationPropertyNameTag = new Rexjs(ClosingComputedDeclarationPropertyNameTag, ClosingComputedPropertyNameTag);
 
-	CloseComputedDeclarationPropertyNameTag.props({
+	ClosingComputedDeclarationPropertyNameTag.props({
 		require: require
 	});
 
-	return CloseComputedDeclarationPropertyNameTag;
+	return ClosingComputedDeclarationPropertyNameTag;
 }(
-	this.CloseComputedPropertyNameTag
+	this.ClosingComputedPropertyNameTag
 );
 
-closeComputedDeclarationPropertyNameTag = new this.CloseComputedDeclarationPropertyNameTag();
+closingComputedDeclarationPropertyNameTag = new this.ClosingComputedDeclarationPropertyNameTag();
 
 }.call(
 	this,
 	this.IdentifierPropertyNameTag,
 	this.PropertyDestructuringItemExpression,
-	// closeComputedDeclarationPropertyNameTag
+	// closingComputedDeclarationPropertyNameTag
 	null,
 	// require
 	function(tagsMap){

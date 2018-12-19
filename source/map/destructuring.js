@@ -4,10 +4,10 @@
 this.DestructibleExpression = function(){
 	/**
 	 * 可解构的表达式
-	 * @param {Context} open - 起始标签上下文
+	 * @param {Context} opening - 起始标签上下文
 	 */
-	function DestructibleExpression(open){
-		PartnerExpression.call(this, open);
+	function DestructibleExpression(opening){
+		PartnerExpression.call(this, opening);
 
 		this.inner = new ListExpression(null, ",");
 	};

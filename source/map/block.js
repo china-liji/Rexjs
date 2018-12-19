@@ -1,5 +1,5 @@
 // 语句块相关
-!function(closeBlockTag){
+!function(closingBlockTag){
 
 this.BlockVariableCollections = function(ECMAScriptVariableCollections){
 	/**
@@ -29,11 +29,11 @@ this.BlockVariableCollections = function(ECMAScriptVariableCollections){
 this.BlockExpression = function(extractTo){
 	/**
 	 * 语句块表达式
-	 * @param {Context} open - 起始标签上下文
+	 * @param {Context} opening - 起始标签上下文
 	 * @param {Statements} statements - 当前语句块
 	 */
-	function BlockExpression(open, statements){
-		PartnerExpression.call(this, open);
+	function BlockExpression(opening, statements){
+		PartnerExpression.call(this, opening);
 
 		this.contextGeneratorIfNeedCompile = statements.contextGeneratorIfNeedCompile;
 	};
@@ -111,23 +111,23 @@ this.BlockBodyStatements = function(ECMAScriptStatements, BraceBodyStatement, Bl
 	this.BlockVariableCollections
 );
 
-this.OpenBlockTag = function(OpenBraceTag, BlockExpression, BlockBodyStatements, BlockVariableCollections){
+this.OpeningBlockTag = function(OpeningBraceTag, BlockExpression, BlockBodyStatements, BlockVariableCollections){
 	/**
 	 * 起始语句块标签
 	 * @param {Number} _type - 标签类型
 	 */
-	function OpenBlockTag(_type){
-		OpenBraceTag.call(this, _type);
+	function OpeningBlockTag(_type){
+		OpeningBraceTag.call(this, _type);
 	};
-	OpenBlockTag = new Rexjs(OpenBlockTag, OpenBraceTag);
+	OpeningBlockTag = new Rexjs(OpeningBlockTag, OpeningBraceTag);
 	
-	OpenBlockTag.props({
+	OpeningBlockTag.props({
 		$class: CLASS_STATEMENT_BEGIN,
 		/**
 		 * 获取绑定的标签，该标签一般是用于语句的 try、catch 的返回值
 		 */
 		get binding(){
-			return closeBlockTag;
+			return closingBlockTag;
 		},
 		/**
 		 * 获取绑定的表达式，一般在子类使用父类逻辑，而不使用父类表达式的情况下使用
@@ -166,25 +166,25 @@ this.OpenBlockTag = function(OpenBraceTag, BlockExpression, BlockBodyStatements,
 		}
 	});
 	
-	return OpenBlockTag;
+	return OpeningBlockTag;
 }(
-	this.OpenBraceTag,
+	this.OpeningBraceTag,
 	this.BlockExpression,
 	this.BlockBodyStatements,
 	this.BlockVariableCollections
 );
 
-this.CloseBlockTag = function(CloseBraceTag){
+this.ClosingBlockTag = function(ClosingBraceTag){
 	/**
 	 * 结束语句块标签
 	 * @param {Number} _type - 标签类型
 	 */
-	function CloseBlockTag(_type){
-		CloseBraceTag.call(this, _type);
+	function ClosingBlockTag(_type){
+		ClosingBraceTag.call(this, _type);
 	};
-	CloseBlockTag = new Rexjs(CloseBlockTag, CloseBraceTag);
+	ClosingBlockTag = new Rexjs(ClosingBlockTag, ClosingBraceTag);
 	
-	CloseBlockTag.props({
+	ClosingBlockTag.props({
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
@@ -200,20 +200,20 @@ this.CloseBlockTag = function(CloseBraceTag){
 		 * @param {Statements} statements - 当前语句块
 		 */
 		visitor: function(parser, context, statement, statements){
-			// 设置表达式的 close
-			statement.expression.close = context;
+			// 设置表达式的 closing
+			statement.expression.closing = context;
 		}
 	});
 	
-	return CloseBlockTag;
+	return ClosingBlockTag;
 }(
-	this.CloseBraceTag
+	this.ClosingBraceTag
 );
 
-closeBlockTag = new this.CloseBlockTag();
+closingBlockTag = new this.ClosingBlockTag();
 
 }.call(
 	this,
-	// closeBlockTag
+	// closingBlockTag
 	null
 );

@@ -1820,17 +1820,17 @@ this.LeftHandSideExpression = function(){
 this.PartnerExpression = function(){
 	/**
 	 * 匹配组表达式
-	 * @param {Context} open - 起始标签上下文
+	 * @param {Context} opening - 起始标签上下文
 	 */
-	function PartnerExpression(open){
-		Expression.call(this, open);
+	function PartnerExpression(opening){
+		Expression.call(this, opening);
 		
-		this.open = open;
+		this.opening = opening;
 	};
 	PartnerExpression = new Rexjs(PartnerExpression, Expression);
 	
 	PartnerExpression.props({
-		close: null,
+		closing: null,
 		/**
 		 * 提取文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
@@ -1838,14 +1838,14 @@ this.PartnerExpression = function(){
 		 */
 		extractTo: function(contentBuilder, _anotherBuilder){
 			// 追加起始标签内容
-			contentBuilder.appendContext(this.open);
+			contentBuilder.appendContext(this.opening);
 			// 追加中间内容
 			this.inner.extractTo(contentBuilder, _anotherBuilder);
 			// 追加结束标签内容
-			contentBuilder.appendContext(this.close);
+			contentBuilder.appendContext(this.closing);
 		},
 		inner: null,
-		open: null
+		opening: null
 	});
 	
 	return PartnerExpression;

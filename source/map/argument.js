@@ -1,13 +1,13 @@
 // 函数参数表达式相关
-!function(argumentSeparatorTag, closeArgumentsTag){
+!function(argumentSeparatorTag, closingArgumentsTag){
 
 this.ArgumentsExpression = function(VariableCollection){
 	/**
 	 * 函数参数列表表达式
-	 * @param {Context} open - 起始标签上下文
+	 * @param {Context} opening - 起始标签上下文
 	 */
-	function ArgumentsExpression(open){
-		PartnerExpression.call(this, open);
+	function ArgumentsExpression(opening){
+		PartnerExpression.call(this, opening);
 
 		this.inner = new ListExpression(null, ",");
 		this.collection = new VariableCollection();
@@ -99,29 +99,29 @@ this.ArgumentStatement = function(){
 		 * 获取该语句 try、catch 方法中所需使用到的标签，一般是指向实例化该语句的标签
 		 */
 		tagOf: function(){
-			return this.target.expression.arguments.open.tag;
+			return this.target.expression.arguments.opening.tag;
 		}
 	});
 
 	return ArgumentStatement;
 }();
 
-this.OpenArgumentsTag = function(OpenParenTag, ArgumentsExpression, ArgumentStatement){
+this.OpeningArgumentsTag = function(OpeningParenTag, ArgumentsExpression, ArgumentStatement){
 	/**
 	 * 起始函数参数标签
 	 * @param {Number} _type - 标签类型
 	 */
-	function OpenArgumentsTag(_type){
-		OpenParenTag.call(this, _type);
+	function OpeningArgumentsTag(_type){
+		OpeningParenTag.call(this, _type);
 	};
-	OpenArgumentsTag = new Rexjs(OpenArgumentsTag, OpenParenTag);
+	OpeningArgumentsTag = new Rexjs(OpeningArgumentsTag, OpeningParenTag);
 
-	OpenArgumentsTag.props({
+	OpeningArgumentsTag.props({
 		/**
 		 * 获取绑定的标签，该标签一般是用于语句的 try、catch 的返回值
 		 */
 		get binding(){
-			return closeArgumentsTag;
+			return closingArgumentsTag;
 		},
 		/**
 		 * 获取绑定的分隔符标签，该标签一般是用于语句的 try、catch 的返回值
@@ -134,7 +134,7 @@ this.OpenArgumentsTag = function(OpenParenTag, ArgumentsExpression, ArgumentStat
 		 * @param {TagsMap} tagsMap - 标签集合映射
 		 */
 		require: function(tagsMap){
-			return tagsMap.openArgumentsContextTags;
+			return tagsMap.openingArgumentsContextTags;
 		},
 		/**
 		 * 标签访问器
@@ -151,9 +151,9 @@ this.OpenArgumentsTag = function(OpenParenTag, ArgumentsExpression, ArgumentStat
 		}
 	});
 
-	return OpenArgumentsTag;
+	return OpeningArgumentsTag;
 }(
-	this.OpenParenTag,
+	this.OpeningParenTag,
 	this.ArgumentsExpression,
 	this.ArgumentStatement
 );
@@ -254,17 +254,17 @@ this.ArgumentSeparatorTag = function(CommaTag, ArgumentStatement){
 	this.ArgumentStatement
 );
 
-this.CloseArgumentsTag = function(CloseParenTag){
+this.ClosingArgumentsTag = function(ClosingParenTag){
 	/**
 	 * 结束函数参数标签
 	 * @param {Number} _type - 标签类型
 	 */
-	function CloseArgumentsTag(_type){
-		CloseParenTag.call(this, _type);
+	function ClosingArgumentsTag(_type){
+		ClosingParenTag.call(this, _type);
 	};
-	CloseArgumentsTag = new Rexjs(CloseArgumentsTag, CloseParenTag);
+	ClosingArgumentsTag = new Rexjs(ClosingArgumentsTag, ClosingParenTag);
 
-	CloseArgumentsTag.props({
+	ClosingArgumentsTag.props({
 		$type: TYPE_UNEXPECTED,
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
@@ -281,23 +281,23 @@ this.CloseArgumentsTag = function(CloseParenTag){
 		 * @param {Statements} statements - 当前语句块
 		 */
 		visitor: function(parser, context, statement, statements){
-			// 设置参数表达式的 close 属性
-			statement.expression.arguments.close = context;
+			// 设置参数表达式的 closing 属性
+			statement.expression.arguments.closing = context;
 		}
 	});
 
-	return CloseArgumentsTag;
+	return ClosingArgumentsTag;
 }(
-	this.CloseParenTag
+	this.ClosingParenTag
 );
 
 argumentSeparatorTag = new this.ArgumentSeparatorTag();
-closeArgumentsTag = new this.CloseArgumentsTag();
+closingArgumentsTag = new this.ClosingArgumentsTag();
 
 }.call(
 	this,
 	// argumentSeparatorTag
 	null,
-	// closeArgumentsTag
+	// closingArgumentsTag
 	null
 );

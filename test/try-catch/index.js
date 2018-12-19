@@ -44,7 +44,7 @@ test.unit(
 			"缺少的异常变量",
 			"try{}catch(){}",
 			function(parser, err){
-				return err.context.tag instanceof Rexjs.CloseParenTag ? "" : "没有识别出结束小括号";
+				return err.context.tag instanceof Rexjs.ClosingParenTag ? "" : "没有识别出结束小括号";
 			}
 		);
 

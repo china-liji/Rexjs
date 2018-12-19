@@ -1,5 +1,5 @@
 // 对象相关
-!function(DestructuringExpression, propertySeparatorTag, closeObjectTag, destructItem){
+!function(DestructuringExpression, propertySeparatorTag, closingObjectTag, destructItem){
 
 this.ObjectDestructuringExpression = function(){
 	/**
@@ -7,7 +7,7 @@ this.ObjectDestructuringExpression = function(){
 	 * @param {Expression} origin - 解构赋值源表达式
 	 */
 	function ObjectDestructuringExpression(origin){
-		DestructuringExpression.call(this, origin.open, origin);
+		DestructuringExpression.call(this, origin.opening, origin);
 	};
 	ObjectDestructuringExpression = new Rexjs(ObjectDestructuringExpression, DestructuringExpression);
 
@@ -72,10 +72,10 @@ this.ObjectExpression = function(
 ){
 	/**
 	 * 对象表达式
-	 * @param {Context} open - 起始标签上下文
+	 * @param {Context} opening - 起始标签上下文
 	 */
-	function ObjectExpression(open){
-		DestructibleExpression.call(this, open);
+	function ObjectExpression(opening){
+		DestructibleExpression.call(this, opening);
 	};
 	ObjectExpression = new Rexjs(ObjectExpression, DestructibleExpression);
 
@@ -314,23 +314,23 @@ this.ObjectExpression = function(
 	}
 );
 
-this.OpenObjectTag = function(OpenBraceTag, ObjectExpression, PropertyStatement){
+this.OpeningObjectTag = function(OpeningBraceTag, ObjectExpression, PropertyStatement){
 	/**
 	 * 起始对象标签
 	 * @param {Number} _type - 标签类型
 	 */
-	function OpenObjectTag(_type){
-		OpenBraceTag.call(this, _type);
+	function OpeningObjectTag(_type){
+		OpeningBraceTag.call(this, _type);
 	};
-	OpenObjectTag = new Rexjs(OpenObjectTag, OpenBraceTag);
+	OpeningObjectTag = new Rexjs(OpeningObjectTag, OpeningBraceTag);
 
-	OpenObjectTag.props({
+	OpeningObjectTag.props({
 		$class: CLASS_EXPRESSION,
 		/**
 		 * 获取绑定的标签，该标签一般是用于语句的 try、catch 的返回值
 		 */
 		get binding(){
-			return closeObjectTag;
+			return closingObjectTag;
 		},
 		/**
 		 * 获取绑定的表达式，一般在子类使用父类逻辑，而不使用父类表达式的情况下使用
@@ -369,9 +369,9 @@ this.OpenObjectTag = function(OpenBraceTag, ObjectExpression, PropertyStatement)
 		visitor: commonVisitor
 	});
 
-	return OpenObjectTag;
+	return OpeningObjectTag;
 }(
-	this.OpenBraceTag,
+	this.OpeningBraceTag,
 	this.ObjectExpression,
 	this.PropertyStatement
 );
@@ -420,17 +420,17 @@ this.PropertySeparatorTag = function(CommaTag, PropertyStatement){
 	this.PropertyStatement
 );
 
-this.CloseObjectTag = function(CloseBraceTag){
+this.ClosingObjectTag = function(ClosingBraceTag){
 	/**
 	 * 结束对象标签
 	 * @param {Number} _type - 标签类型
 	 */
-	function CloseObjectTag(_type){
-		CloseBraceTag.call(this, _type);
+	function ClosingObjectTag(_type){
+		ClosingBraceTag.call(this, _type);
 	};
-	CloseObjectTag = new Rexjs(CloseObjectTag, CloseBraceTag);
+	ClosingObjectTag = new Rexjs(ClosingObjectTag, ClosingBraceTag);
 
-	CloseObjectTag.props({
+	ClosingObjectTag.props({
 		$type: TYPE_UNEXPECTED,
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
@@ -447,25 +447,25 @@ this.CloseObjectTag = function(CloseBraceTag){
 		 * @param {Statements} statements - 当前语句块
 		 */
 		visitor: function(parser, context, statement, statements){
-			// 设置 close
-			statement.expression.close = context;
+			// 设置 closing
+			statement.expression.closing = context;
 		}
 	});
 
-	return CloseObjectTag;
+	return ClosingObjectTag;
 }(
-	this.CloseBraceTag
+	this.ClosingBraceTag
 );
 
 propertySeparatorTag = new this.PropertySeparatorTag();
-closeObjectTag = new this.CloseObjectTag();
+closingObjectTag = new this.ClosingObjectTag();
 
 }.call(
 	this,
 	this.DestructuringExpression,
 	// propertySeparatorTag
 	null,
-	// closeObjectTag
+	// closingObjectTag
 	null,
 	// destructItem
 	function(expression, contentBuilder, anotherBuilder){

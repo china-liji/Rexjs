@@ -1,13 +1,13 @@
 // 模块多成员表达式相关
-!function(multipleMembersSeparatorTag, closeMultipleMembersTag){
+!function(multipleMembersSeparatorTag, closingMultipleMembersTag){
 
 this.MultipleMembersExpression = function(importMember, exportMember, exportMemberAs){
 	/**
 	 * 多成员导入表达式
-	 * @param {Context} open - 起始标签上下文
+	 * @param {Context} opening - 起始标签上下文
 	 */
-	function MultipleMembersExpression(open){
-		PartnerExpression.call(this, open);
+	function MultipleMembersExpression(opening){
+		PartnerExpression.call(this, opening);
 
 		this.inner = new ListExpression(null, ",");
 	};
@@ -34,7 +34,7 @@ this.MultipleMembersExpression = function(importMember, exportMember, exportMemb
 			// 追加提取方法
 			contentBuilder.appendString("Rexjs.Module.exportAs(");
 			// 追加对象起始大括号
-			contentBuilder.appendContext(this.open);
+			contentBuilder.appendContext(this.opening);
 
 			// 如果长度大于 0，则说明是 export from 表达式
 			if(result.length > 0){
@@ -50,7 +50,7 @@ this.MultipleMembersExpression = function(importMember, exportMember, exportMemb
 			}
 
 			// 追加对象结束大括号
-			contentBuilder.appendContext(this.close);
+			contentBuilder.appendContext(this.closing);
 			// 追加提取方法结束小括号
 			contentBuilder.appendString(endingString);
 		},
@@ -219,7 +219,7 @@ this.MultipleMembersStatement = function(out){
 		 * 获取该语句 try、catch 方法中所需使用到的标签，一般是指向实例化该语句的标签
 		 */
 		tagOf: function(){
-			return this.target.expression.members.latest.open.tag;
+			return this.target.expression.members.latest.opening.tag;
 		}
 	});
 
@@ -246,22 +246,22 @@ this.MultipleMembersStatement = function(out){
 	}
 );
 
-this.OpenMultipleMembersTag = function(OpenBraceTag, MultipleMembersExpression, MultipleMembersStatement){
+this.OpeningMultipleMembersTag = function(OpeningBraceTag, MultipleMembersExpression, MultipleMembersStatement){
 	/**
 	 * 多成员导入起始标签
 	 * @param {Number} _type - 标签类型
 	 */
-	function OpenMultipleMembersTag(_type){
-		OpenBraceTag.call(this, _type);
+	function OpeningMultipleMembersTag(_type){
+		OpeningBraceTag.call(this, _type);
 	};
-	OpenMultipleMembersTag = new Rexjs(OpenMultipleMembersTag, OpenBraceTag);
+	OpeningMultipleMembersTag = new Rexjs(OpeningMultipleMembersTag, OpeningBraceTag);
 
-	OpenMultipleMembersTag.props({
+	OpeningMultipleMembersTag.props({
 		/**
 		 * 获取绑定的标签，该标签一般是用于语句的 try、catch 的返回值
 		 */
 		get binding(){
-			return closeMultipleMembersTag;
+			return closingMultipleMembersTag;
 		},
 		/**
 		 * 获取绑定的分隔符标签，该标签一般是用于语句的 try、catch 的返回值
@@ -294,9 +294,9 @@ this.OpenMultipleMembersTag = function(OpenBraceTag, MultipleMembersExpression, 
 		}
 	});
 
-	return OpenMultipleMembersTag;
+	return OpeningMultipleMembersTag;
 }(
-	this.OpenBraceTag,
+	this.OpeningBraceTag,
 	this.MultipleMembersExpression,
 	this.MultipleMembersStatement
 );
@@ -454,17 +454,17 @@ this.MultipleMembersSeparatorTag = function(MemberSeparatorTag, MultipleMembersS
 	this.MultipleMembersStatement
 );
 
-this.CloseMultipleMembersTag = function(CloseBraceTag){
+this.ClosingMultipleMembersTag = function(ClosingBraceTag){
 	/**
 	 * 多成员导入结束标签
 	 * @param {Number} _type - 标签类型
 	 */
-	function CloseMultipleMembersTag(_type){
-		CloseBraceTag.call(this, _type);
+	function ClosingMultipleMembersTag(_type){
+		ClosingBraceTag.call(this, _type);
 	};
-	CloseMultipleMembersTag = new Rexjs(CloseMultipleMembersTag, CloseBraceTag);
+	ClosingMultipleMembersTag = new Rexjs(ClosingMultipleMembersTag, ClosingBraceTag);
 
-	CloseMultipleMembersTag.props({
+	ClosingMultipleMembersTag.props({
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
@@ -480,23 +480,23 @@ this.CloseMultipleMembersTag = function(CloseBraceTag){
 		 * @param {Statements} statements - 当前语句块
 		 */
 		visitor: function(parser, context, statement, statements){
-			// 设置 MultipleMembersExpression 的 close 属性
-			statement.expression.members.latest.close = context;
+			// 设置 MultipleMembersExpression 的 closing 属性
+			statement.expression.members.latest.closing = context;
 		}
 	});
 
-	return CloseMultipleMembersTag;
+	return ClosingMultipleMembersTag;
 }(
-	this.CloseBraceTag
+	this.ClosingBraceTag
 );
 
 multipleMembersSeparatorTag = new this.MultipleMembersSeparatorTag();
-closeMultipleMembersTag = new this.CloseMultipleMembersTag();
+closingMultipleMembersTag = new this.ClosingMultipleMembersTag();
 
 }.call(
 	this,
 	// multipleMembersSeparatorTag
 	null,
-	// closeMultipleMembersTag
+	// closingMultipleMembersTag
 	null
 );

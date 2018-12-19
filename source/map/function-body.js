@@ -1,13 +1,13 @@
 // 函数主体表达式相关
-!function(closeFunctionBodyTag){
+!function(closingFunctionBodyTag){
 
 this.FunctionBodyExpression = function(extractTo, insertDefaults){
 	/**
 	 * 函数主体语句块表达式
-	 * @param {Context} open - 起始标签上下文
+	 * @param {Context} opening - 起始标签上下文
 	 */
-	function FunctionBodyExpression(open){
-		PartnerExpression.call(this, open);
+	function FunctionBodyExpression(opening){
+		PartnerExpression.call(this, opening);
 	};
 	FunctionBodyExpression = new Rexjs(FunctionBodyExpression, PartnerExpression);
 
@@ -41,7 +41,7 @@ this.FunctionBodyExpression = function(extractTo, insertDefaults){
 		var inner = expression.inner, builder = new ContentBuilder();
 		
 		// 追加起始大括号
-		contentBuilder.appendContext(expression.open);
+		contentBuilder.appendContext(expression.opening);
 		// 提取第一个表达式至临时生成器
 		inner[0].expression.extractTo(builder);
 
@@ -66,7 +66,7 @@ this.FunctionBodyExpression = function(extractTo, insertDefaults){
 		// 提取函数内部语句
 		expression.inner.extractTo(contentBuilder);
 		// 追加结束大括号
-		contentBuilder.appendContext(expression.close);
+		contentBuilder.appendContext(expression.closing);
 	}
 );
 
@@ -101,7 +101,7 @@ this.FunctionBodyStatements = function(ECMAScriptStatements, ECMAScriptVariableC
 		 * 申请父类调用
 		 * @param {SyntaxParser} parser - 语法解析器
 		 * @param {Context} context - super 关键字上下文
-		 * @param {Context} open - 起始父类调用小括号标签上下文
+		 * @param {Context} opening - 起始父类调用小括号标签上下文
 		 */
 		applySuperCall: function(parser, context){
 			this.applySuper(parser, context);
@@ -159,22 +159,22 @@ this.FunctionBodyStatements = function(ECMAScriptStatements, ECMAScriptVariableC
 	Rexjs.VariableIndex
 );
 
-this.OpenFunctionBodyTag = function(OpenBraceTag, FunctionBodyExpression, FunctionBodyStatements, forEach){
+this.OpeningFunctionBodyTag = function(OpeningBraceTag, FunctionBodyExpression, FunctionBodyStatements, forEach){
 	/**
 	 * 起始函数主体标签
 	 * @param {Number} _type - 标签类型
 	 */
-	function OpenFunctionBodyTag(_type){
-		OpenBraceTag.call(this, _type);
+	function OpeningFunctionBodyTag(_type){
+		OpeningBraceTag.call(this, _type);
 	};
-	OpenFunctionBodyTag = new Rexjs(OpenFunctionBodyTag, OpenBraceTag);
+	OpeningFunctionBodyTag = new Rexjs(OpeningFunctionBodyTag, OpeningBraceTag);
 
-	OpenFunctionBodyTag.props({
+	OpeningFunctionBodyTag.props({
 		/**
 		 * 获取绑定的函数主体结束标签，该标签一般是用于语句的 try、catch 的返回值
 		 */
 		get binding(){
-			return closeFunctionBodyTag;
+			return closingFunctionBodyTag;
 		},
 		/**
 		 * 获取绑定的表达式，一般在子类使用父类逻辑，而不使用父类表达式的情况下使用
@@ -236,25 +236,25 @@ this.OpenFunctionBodyTag = function(OpenBraceTag, FunctionBodyExpression, Functi
 		}
 	});
 
-	return OpenFunctionBodyTag;
+	return OpeningFunctionBodyTag;
 }(
-	this.OpenBraceTag,
+	this.OpeningBraceTag,
 	this.FunctionBodyExpression,
 	this.FunctionBodyStatements,
 	Rexjs.forEach
 );
 
-this.CloseFunctionBodyTag = function(CloseBraceTag){
+this.ClosingFunctionBodyTag = function(ClosingBraceTag){
 	/**
 	 * 结束函数主体标签
 	 * @param {Number} _type - 标签类型
 	 */
-	function CloseFunctionBodyTag(_type){
-		CloseBraceTag.call(this, _type);
+	function ClosingFunctionBodyTag(_type){
+		ClosingBraceTag.call(this, _type);
 	};
-	CloseFunctionBodyTag = new Rexjs(CloseFunctionBodyTag, CloseBraceTag);
+	ClosingFunctionBodyTag = new Rexjs(ClosingFunctionBodyTag, ClosingBraceTag);
 
-	CloseFunctionBodyTag.props({
+	ClosingFunctionBodyTag.props({
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
@@ -275,23 +275,23 @@ this.CloseFunctionBodyTag = function(CloseBraceTag){
 		 * @param {Statements} statements - 当前语句块
 		 */
 		visitor: function(parser, context, statement, statements){
-			// 设置表达式的 close
-			statement.expression.close = context;
+			// 设置表达式的 closing
+			statement.expression.closing = context;
 
 			// 跳出语句并设置表达式的 body 属性
 			statement.out().body = statement.expression;
 		}
 	});
 
-	return CloseFunctionBodyTag;
+	return ClosingFunctionBodyTag;
 }(
-	this.CloseBraceTag
+	this.ClosingBraceTag
 );
 
-closeFunctionBodyTag = new this.CloseFunctionBodyTag();
+closingFunctionBodyTag = new this.ClosingFunctionBodyTag();
 
 }.call(
 	this,
-	// closeFunctionBodyTag
+	// closingFunctionBodyTag
 	null
 );

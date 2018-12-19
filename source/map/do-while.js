@@ -1,5 +1,5 @@
 // do while 语句相关
-!function(doWhileTag, closeDoWhileConditionTag){
+!function(doWhileTag, closingDoWhileConditionTag){
 	
 this.DoExpression = function(ConditionalExpression){
 	/**
@@ -199,22 +199,22 @@ this.DoWhileTag = function(WhileTag){
 	this.WhileTag
 );
 
-this.OpenDoWhileConditionTag = function(OpenWhileConditionTag, ConditionStatement){
+this.OpeningDoWhileConditionTag = function(OpeningWhileConditionTag, ConditionStatement){
 	/**
 	 * do while 条件起始标签
 	 * @param {Number} _type - 标签类型
 	 */
-	function OpenDoWhileConditionTag(_type){
-		OpenWhileConditionTag.call(this, _type);
+	function OpeningDoWhileConditionTag(_type){
+		OpeningWhileConditionTag.call(this, _type);
 	};
-	OpenDoWhileConditionTag = new Rexjs(OpenDoWhileConditionTag, OpenWhileConditionTag);
+	OpeningDoWhileConditionTag = new Rexjs(OpeningDoWhileConditionTag, OpeningWhileConditionTag);
 
-	OpenDoWhileConditionTag.props({
+	OpeningDoWhileConditionTag.props({
 		/**
 		 * 获取绑定的标签，该标签一般是用于语句的 try、catch 的返回值
 		 */
 		get binding(){
-			return closeDoWhileConditionTag;
+			return closingDoWhileConditionTag;
 		},
 		/**
 		 * 标签访问器
@@ -231,23 +231,23 @@ this.OpenDoWhileConditionTag = function(OpenWhileConditionTag, ConditionStatemen
 		}
 	});
 	
-	return OpenDoWhileConditionTag;
+	return OpeningDoWhileConditionTag;
 }(
-	this.OpenWhileConditionTag,
+	this.OpeningWhileConditionTag,
 	this.ConditionStatement
 );
 
-this.CloseDoWhileConditionTag = function(CloseWhileConditionTag){
+this.ClosingDoWhileConditionTag = function(ClosingWhileConditionTag){
 	/**
 	 * do while 条件结束标签
 	 * @param {Number} _type - 标签类型
 	 */
-	function CloseDoWhileConditionTag(_type){
-		CloseWhileConditionTag.call(this, _type);
+	function ClosingDoWhileConditionTag(_type){
+		ClosingWhileConditionTag.call(this, _type);
 	};
-	CloseDoWhileConditionTag = new Rexjs(CloseDoWhileConditionTag, CloseWhileConditionTag);
+	ClosingDoWhileConditionTag = new Rexjs(ClosingDoWhileConditionTag, ClosingWhileConditionTag);
 
-	CloseDoWhileConditionTag.props({
+	ClosingDoWhileConditionTag.props({
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
@@ -262,22 +262,22 @@ this.CloseDoWhileConditionTag = function(CloseWhileConditionTag){
 		 * @param {Statement} statement - 当前语句
 		 */
 		visitor: function(parser, context, statement){
-			statement.expression.condition.close = context;
+			statement.expression.condition.closing = context;
 		}
 	});
 	
-	return CloseDoWhileConditionTag;
+	return ClosingDoWhileConditionTag;
 }(
-	this.CloseWhileConditionTag
+	this.ClosingWhileConditionTag
 );
 
 doWhileTag = new this.DoWhileTag();
-closeDoWhileConditionTag = new this.CloseDoWhileConditionTag();
+closingDoWhileConditionTag = new this.ClosingDoWhileConditionTag();
 	
 }.call(
 	this,
 	// doWhileTag
 	null,
-	// closeDoWhileConditionTag
+	// closingDoWhileConditionTag
 	null
 );

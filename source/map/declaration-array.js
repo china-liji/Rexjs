@@ -1,13 +1,13 @@
 // 数组解构赋值相关
-!function(OpenArrayTag, BasicAssignmentTag, variableDeclarationArrayItemSeparatorTag, closeDeclarationArrayTag){
+!function(OpeningArrayTag, BasicAssignmentTag, variableDeclarationArrayItemSeparatorTag, closingDeclarationArrayTag){
 
 this.DeclarationArrayExpression = function(ArrayExpression){
 	/**
 	 * 变量声明数组表达式
-	 * @param {Context} open - 起始标签上下文
+	 * @param {Context} opening - 起始标签上下文
 	 */
-	function DeclarationArrayExpression(open){
-		ArrayExpression.call(this, open);
+	function DeclarationArrayExpression(opening){
+		ArrayExpression.call(this, opening);
 	};
 	DeclarationArrayExpression = new Rexjs(DeclarationArrayExpression, ArrayExpression);
 
@@ -66,22 +66,22 @@ this.DeclarationArrayItemAssignmentReadyStatement = function(){
 	return DeclarationArrayItemAssignmentReadyStatement;
 }();
 
-this.OpenDeclarationArrayTag = function(DeclarationArrayExpression, visitor){
+this.OpeningDeclarationArrayTag = function(DeclarationArrayExpression, visitor){
 	/**
 	 * 变量声明数组起始标签
 	 * @param {Number} _type - 标签类型
 	 */
-	function OpenDeclarationArrayTag(_type){
-		OpenArrayTag.call(this, _type);
+	function OpeningDeclarationArrayTag(_type){
+		OpeningArrayTag.call(this, _type);
 	};
-	OpenDeclarationArrayTag = new Rexjs(OpenDeclarationArrayTag, OpenArrayTag);
+	OpeningDeclarationArrayTag = new Rexjs(OpeningDeclarationArrayTag, OpeningArrayTag);
 	
-	OpenDeclarationArrayTag.props({
+	OpeningDeclarationArrayTag.props({
 		/**
 		 * 获取绑定的标签，该标签一般是用于语句的 try、catch 的返回值
 		 */
 		get binding(){
-			return closeDeclarationArrayTag;
+			return closingDeclarationArrayTag;
 		},
 		/**
 		 * 获取拥有该数组的表达式
@@ -108,7 +108,7 @@ this.OpenDeclarationArrayTag = function(DeclarationArrayExpression, visitor){
 		 * @param {TagsMap} tagsMap - 标签集合映射
 		 */
 		require: function(tagsMap){
-			return tagsMap.openDeclarationArrayContextTags;
+			return tagsMap.openingDeclarationArrayContextTags;
 		},
 		/**
 		 * 标签访问器
@@ -126,10 +126,10 @@ this.OpenDeclarationArrayTag = function(DeclarationArrayExpression, visitor){
 		}
 	});
 
-	return OpenDeclarationArrayTag;
+	return OpeningDeclarationArrayTag;
 }(
 	this.DeclarationArrayExpression,
-	OpenArrayTag.prototype.visitor
+	OpeningArrayTag.prototype.visitor
 );
 
 this.DeclarationArrayItemTag = function(VariableDeclarationTag, DestructuringItemExpression, IdentifierExpression){
@@ -209,7 +209,7 @@ this.DeclarationArrayItemSeparatorTag = function(ArrayItemSeparatorTag){
 		 * @param {TagsMap} tagsMap - 标签集合映射
 		 */
 		require: function(tagsMap){
-			return tagsMap.openDeclarationArrayContextTags;
+			return tagsMap.openingDeclarationArrayContextTags;
 		}
 	});
 
@@ -260,17 +260,17 @@ this.DeclarationArrayItemAssignmentTag = function(DeclarationArrayItemAssignment
 	BasicAssignmentTag.prototype.visitor
 );
 
-this.CloseDeclarationArrayTag = function(CloseArrayTag){
+this.ClosingDeclarationArrayTag = function(ClosingArrayTag){
 	/**
 	 * 标签变量声明数组结束标签
 	 * @param {Number} _type - 标签类型
 	 */
-	function CloseDeclarationArrayTag(_type){
-		CloseArrayTag.call(this, _type);
+	function ClosingDeclarationArrayTag(_type){
+		ClosingArrayTag.call(this, _type);
 	};
-	CloseDeclarationArrayTag = new Rexjs(CloseDeclarationArrayTag, CloseArrayTag);
+	ClosingDeclarationArrayTag = new Rexjs(ClosingDeclarationArrayTag, ClosingArrayTag);
 	
-	CloseDeclarationArrayTag.props({
+	ClosingDeclarationArrayTag.props({
 		$type: TYPE_UNEXPECTED,
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
@@ -281,20 +281,20 @@ this.CloseDeclarationArrayTag = function(CloseArrayTag){
 		}
 	});
 	
-	return CloseDeclarationArrayTag;
+	return ClosingDeclarationArrayTag;
 }(
-	this.CloseArrayTag
+	this.ClosingArrayTag
 );
 
 variableDeclarationArrayItemSeparatorTag = new this.DeclarationArrayItemSeparatorTag();
-closeDeclarationArrayTag = new this.CloseDeclarationArrayTag();
+closingDeclarationArrayTag = new this.ClosingDeclarationArrayTag();
 
 }.call(
 	this,
-	this.OpenArrayTag,
+	this.OpeningArrayTag,
 	this.BasicAssignmentTag,
 	// variableDeclarationArrayItemSeparatorTag
 	null,
-	// closeDeclarationArrayTag
+	// closingDeclarationArrayTag
 	null
 );

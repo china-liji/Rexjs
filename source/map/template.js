@@ -1,13 +1,13 @@
 // 模板相关
-!function(closeTemplateTag){
+!function(closingTemplateTag){
 
 this.TemplateExpression = function(extractTo, compileItem){
 	/**
 	 * 模板表达式
-	 * @param {Context} open - 起始标签上下文
+	 * @param {Context} opening - 起始标签上下文
 	 */
-	function TemplateExpression(open){
-		PartnerExpression.call(this, open);
+	function TemplateExpression(opening){
+		PartnerExpression.call(this, opening);
 	};
 	TemplateExpression = new Rexjs(TemplateExpression, PartnerExpression);
 
@@ -84,23 +84,23 @@ this.TemplateStatement = function(){
 	return TemplateStatement;
 }();
 
-this.OpenTemplateTag = function(TemplateExpression, TemplateStatement){
+this.OpeningTemplateTag = function(TemplateExpression, TemplateStatement){
 	/**
 	 * 起始模板标签
 	 * @param {Number} _type - 标签类型
 	 */
-	function OpenTemplateTag(_type){
+	function OpeningTemplateTag(_type){
 		SyntaxTag.call(this, _type);
 	};
-	OpenTemplateTag = new Rexjs(OpenTemplateTag, SyntaxTag);
+	OpeningTemplateTag = new Rexjs(OpeningTemplateTag, SyntaxTag);
 
-	OpenTemplateTag.props({
+	OpeningTemplateTag.props({
 		$class: CLASS_EXPRESSION,
 		/**
 		 * 获取绑定的标签，该标签一般是用于语句的 try、catch 的返回值
 		 */
 		get binding(){
-			return closeTemplateTag;
+			return closingTemplateTag;
 		},
 		/**
 		 * 获取绑定的表达式，一般在子类使用父类逻辑，而不使用父类表达式的情况下使用
@@ -134,23 +134,23 @@ this.OpenTemplateTag = function(TemplateExpression, TemplateStatement){
 		visitor: commonVisitor
 	});
 
-	return OpenTemplateTag;
+	return OpeningTemplateTag;
 }(
 	this.TemplateExpression,
 	this.TemplateStatement
 );
 
-this.CloseTemplateTag = function(){
+this.ClosingTemplateTag = function(){
 	/**
 	 * 结束模板标签
 	 * @param {Number} _type - 标签类型
 	 */
-	function CloseTemplateTag(_type){
+	function ClosingTemplateTag(_type){
 		SyntaxTag.call(this, _type);
 	};
-	CloseTemplateTag = new Rexjs(CloseTemplateTag, SyntaxTag);
+	ClosingTemplateTag = new Rexjs(ClosingTemplateTag, SyntaxTag);
 
-	CloseTemplateTag.props({
+	ClosingTemplateTag.props({
 		$class: CLASS_EXPRESSION_CONTEXT,
 		$type: TYPE_MISTAKABLE,
 		order: ECMAScriptOrders.TEMPLATE_SPECIAL_CONTENT,
@@ -170,17 +170,17 @@ this.CloseTemplateTag = function(){
 		 * @param {Statements} statements - 当前语句块
 		 */
 		visitor: function(parser, context, statement, statements){
-			statement.expression.close = context;
+			statement.expression.closing = context;
 		}
 	});
 
-	return CloseTemplateTag;
+	return ClosingTemplateTag;
 }();
 
-closeTemplateTag = new this.CloseTemplateTag();
+closingTemplateTag = new this.ClosingTemplateTag();
 
 }.call(
 	this,
-	// closeTemplateTag
+	// closingTemplateTag
 	null
 );

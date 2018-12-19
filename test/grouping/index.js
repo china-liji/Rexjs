@@ -30,7 +30,7 @@ test.unit(
 			"空的分组小括号",
 			"()",
 			function(parser, err){
-				return err.context.tag instanceof Rexjs.CloseParenTag ? "" : "没有正确捕获到结束小括号";
+				return err.context.tag instanceof Rexjs.ClosingParenTag ? "" : "没有正确捕获到结束小括号";
 			}
 		);
 

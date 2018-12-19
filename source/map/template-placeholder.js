@@ -1,13 +1,13 @@
 // 模板占位符（模板参数）标签相关
-!function(closePlaceHolderTag){
+!function(closingPlaceHolderTag){
 
 this.PlaceHolderExpression = function(){
 	/**
 	 * 模板占位符（模板参数）表达式
-	 * @param {Context} open - 起始标签上下文
+	 * @param {Context} opening - 起始标签上下文
 	 */
-	function PlaceHolderExpression(open){
-		PartnerExpression.call(this, open);
+	function PlaceHolderExpression(opening){
+		PartnerExpression.call(this, opening);
 	};
 	PlaceHolderExpression = new Rexjs(PlaceHolderExpression, PartnerExpression);
 
@@ -91,22 +91,22 @@ this.PlaceHolderStatement = function(){
 	return PlaceHolderStatement;
 }();
 
-this.OpenPlaceHolderTag = function(OpenBraceTag, PlaceHolderExpression, PlaceHolderStatement){
+this.OpeningPlaceHolderTag = function(OpeningBraceTag, PlaceHolderExpression, PlaceHolderStatement){
 	/**
 	 * 起始模板占位符（模板参数）标签
 	 * @param {Number} _type - 标签类型
 	 */
-	function OpenPlaceHolderTag(_type){
-		OpenBraceTag.call(this, _type);
+	function OpeningPlaceHolderTag(_type){
+		OpeningBraceTag.call(this, _type);
 	};
-	OpenPlaceHolderTag = new Rexjs(OpenPlaceHolderTag, OpenBraceTag);
+	OpeningPlaceHolderTag = new Rexjs(OpeningPlaceHolderTag, OpeningBraceTag);
 
-	OpenPlaceHolderTag.props({
+	OpeningPlaceHolderTag.props({
 		/**
 		 * 获取绑定的标签，该标签一般是用于语句的 try、catch 的返回值
 		 */
 		get binding(){
-			return closePlaceHolderTag;
+			return closingPlaceHolderTag;
 		},
 		order: ECMAScriptOrders.TEMPLATE_SPECIAL_CONTENT,
 		regexp: /\$\{/,
@@ -135,24 +135,24 @@ this.OpenPlaceHolderTag = function(OpenBraceTag, PlaceHolderExpression, PlaceHol
 		}
 	});
 
-	return OpenPlaceHolderTag;
+	return OpeningPlaceHolderTag;
 }(
-	this.OpenBraceTag,
+	this.OpeningBraceTag,
 	this.PlaceHolderExpression,
 	this.PlaceHolderStatement
 );
 
-this.ClosePlaceHolderTag = function(CloseBraceTag){
+this.ClosingPlaceHolderTag = function(ClosingBraceTag){
 	/**
 	 * 结束模板占位符（模板参数）标签
 	 * @param {Number} _type - 标签类型
 	 */
-	function ClosePlaceHolderTag(_type){
-		CloseBraceTag.call(this, _type);
+	function ClosingPlaceHolderTag(_type){
+		ClosingBraceTag.call(this, _type);
 	};
-	ClosePlaceHolderTag = new Rexjs(ClosePlaceHolderTag, CloseBraceTag);
+	ClosingPlaceHolderTag = new Rexjs(ClosingPlaceHolderTag, ClosingBraceTag);
 
-	ClosePlaceHolderTag.props({
+	ClosingPlaceHolderTag.props({
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
@@ -168,19 +168,19 @@ this.ClosePlaceHolderTag = function(CloseBraceTag){
 		 * @param {Statements} statements - 当前语句块
 		 */
 		visitor: function(parser, context, statement, statements){
-			statement.expression.latest.close = context;
+			statement.expression.latest.closing = context;
 		}
 	});
 
-	return ClosePlaceHolderTag;
+	return ClosingPlaceHolderTag;
 }(
-	this.CloseBraceTag
+	this.ClosingBraceTag
 );
 
-closePlaceHolderTag = new this.ClosePlaceHolderTag();
+closingPlaceHolderTag = new this.ClosingPlaceHolderTag();
 
 }.call(
 	this,
-	// closePlaceHolderTag
+	// closingPlaceHolderTag
 	null
 );

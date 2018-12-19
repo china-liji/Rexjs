@@ -1,14 +1,14 @@
 // 对象声明解构赋值相关
-!function(PropertyDestructuringItemExpression, PropertyStatement, OpenObjectTag, variableDeclarationPropertySeparatorTag, closeDeclarationObjectTag){
+!function(PropertyDestructuringItemExpression, PropertyStatement, OpeningObjectTag, variableDeclarationPropertySeparatorTag, closingDeclarationObjectTag){
 	
 this.DeclarationObjectExpression = function(ObjectExpression){
 	/**
 	 * 变量声明数组表达式
-	 * @param {Context} open - 起始标签上下文
+	 * @param {Context} opening - 起始标签上下文
 	 * @param {Expression} objectOf - 该对象声明所处语句的表达式
 	 */
-	function DeclarationObjectExpression(open, objectOf){
-		ObjectExpression.call(this, open);
+	function DeclarationObjectExpression(opening, objectOf){
+		ObjectExpression.call(this, opening);
 
 		this.objectOf = objectOf;
 	};
@@ -83,22 +83,22 @@ this.PropertyDestructuringStatement = function(catchMethod, tryMethod, both){
 	}
 );
 
-this.OpenDeclarationObjectTag = function(DeclarationObjectExpression, PropertyDestructuringStatement, visitor){
+this.OpeningDeclarationObjectTag = function(DeclarationObjectExpression, PropertyDestructuringStatement, visitor){
 	/**
 	 * 变量声明对象起始标签
 	 * @param {Number} _type - 标签类型
 	 */
-	function OpenDeclarationObjectTag(_type){
-		OpenObjectTag.call(this, _type);
+	function OpeningDeclarationObjectTag(_type){
+		OpeningObjectTag.call(this, _type);
 	};
-	OpenDeclarationObjectTag = new Rexjs(OpenDeclarationObjectTag, OpenObjectTag);
+	OpeningDeclarationObjectTag = new Rexjs(OpeningDeclarationObjectTag, OpeningObjectTag);
 
-	OpenDeclarationObjectTag.props({
+	OpeningDeclarationObjectTag.props({
 		/**
 		 * 获取绑定的标签，该标签一般是用于语句的 try、catch 的返回值
 		 */
 		get binding(){
-			return closeDeclarationObjectTag;
+			return closingDeclarationObjectTag;
 		},
 		/**
 		 * 获取绑定的表达式，一般在子类使用父类逻辑，而不使用父类表达式的情况下使用
@@ -140,12 +140,12 @@ this.OpenDeclarationObjectTag = function(DeclarationObjectExpression, PropertyDe
 		}
 	});
 
-	return OpenDeclarationObjectTag;
+	return OpeningDeclarationObjectTag;
 }(
 	
 	this.DeclarationObjectExpression,
 	this.PropertyDestructuringStatement,
-	OpenObjectTag.prototype.visitor
+	OpeningObjectTag.prototype.visitor
 );
 
 this.DeclarationPropertySeparatorTag = function(PropertySeparatorTag, PropertyDestructuringStatement){
@@ -181,17 +181,17 @@ this.DeclarationPropertySeparatorTag = function(PropertySeparatorTag, PropertyDe
 	this.PropertyDestructuringStatement
 );
 
-this.CloseDeclarationObjectTag = function(CloseObjectTag){
+this.ClosingDeclarationObjectTag = function(ClosingObjectTag){
 	/**
 	 * 结束变量声明对象标签
 	 * @param {Number} _type - 标签类型
 	 */
-	function CloseDeclarationObjectTag(_type){
-		CloseObjectTag.call(this, _type);
+	function ClosingDeclarationObjectTag(_type){
+		ClosingObjectTag.call(this, _type);
 	};
-	CloseDeclarationObjectTag = new Rexjs(CloseDeclarationObjectTag, CloseObjectTag);
+	ClosingDeclarationObjectTag = new Rexjs(ClosingDeclarationObjectTag, ClosingObjectTag);
 
-	CloseDeclarationObjectTag.props({
+	ClosingDeclarationObjectTag.props({
 		$type: TYPE_UNEXPECTED,
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
@@ -202,21 +202,21 @@ this.CloseDeclarationObjectTag = function(CloseObjectTag){
 		}
 	});
 
-	return CloseDeclarationObjectTag;
+	return ClosingDeclarationObjectTag;
 }(
-	this.CloseObjectTag
+	this.ClosingObjectTag
 );
 
 variableDeclarationPropertySeparatorTag = new this.DeclarationPropertySeparatorTag();
-closeDeclarationObjectTag = new this.CloseDeclarationObjectTag();
+closingDeclarationObjectTag = new this.ClosingDeclarationObjectTag();
 
 }.call(
 	this,
 	this.PropertyDestructuringItemExpression,
 	this.PropertyStatement,
-	this.OpenObjectTag,
+	this.OpeningObjectTag,
 	// variableDeclarationPropertySeparatorTag
 	null,
-	// closeDeclarationObjectTag
+	// closingDeclarationObjectTag
 	null
 );

@@ -62,7 +62,7 @@ test.unit(
 			"空的 for 条件",
 			"for();",
 			function(parser, err){
-				return err.context.tag instanceof Rexjs.CloseParenTag ? "" : "没有正确的捕获错误的结束小括号";
+				return err.context.tag instanceof Rexjs.ClosingParenTag ? "" : "没有正确的捕获错误的结束小括号";
 			}
 		);
 
@@ -78,7 +78,7 @@ test.unit(
 			"for 条件中少了分号",
 			"for(;){}",
 			function(parser, err){
-				return err.context.tag instanceof Rexjs.CloseParenTag ? "" : "没有正确的捕获错误的结束小括号";
+				return err.context.tag instanceof Rexjs.ClosingParenTag ? "" : "没有正确的捕获错误的结束小括号";
 			}
 		);
 

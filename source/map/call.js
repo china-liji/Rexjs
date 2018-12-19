@@ -1,14 +1,14 @@
 // 函数调用相关
-!function(ExecutableExpression, parameterSeparatorTag, closeCallTag){
+!function(ExecutableExpression, parameterSeparatorTag, closingCallTag){
 
 this.CallExpression = function(AccessorExpression, BracketAccessorExpression, UnaryStatement, extractTo){
 	/**
 	 * 函数调用表达式
-	 * @param {Context} open - 起始标签上下文
+	 * @param {Context} opening - 起始标签上下文
 	 * @param {ECMAScriptStatement} statement - 当前语句
 	 */
-	function CallExpression(open, statement){
-		ExecutableExpression.call(this, open);
+	function CallExpression(opening, statement){
+		ExecutableExpression.call(this, opening);
 
 		this.operand = statement.expression;
 		this.inner = new ListExpression(null, ",");
@@ -100,13 +100,13 @@ this.CallExpression = function(AccessorExpression, BracketAccessorExpression, Un
 			// 追加拓展符编译的方法
 			contentBuilder.appendString(",Rexjs.SpreadItem.combine");
 			// 追加函数调用的起始小括号
-			contentBuilder.appendContext(this.open);
+			contentBuilder.appendContext(this.opening);
 			// 追加 bind 所指定的 this
 			contentBuilder.appendString(this.boundThis + ",");
 			// 提取函数调用参数
 			this.inner.extractTo(contentBuilder);
 			// 追加函数调用的结束小括号
-			contentBuilder.appendContext(this.close);
+			contentBuilder.appendContext(this.closing);
 			// 追加 bind 方法的结束小括号和函数立即执行的小括号（注：bind 方法与 apply 不同，不具有立即执行效果）
 			contentBuilder.appendString("))()");
 		},
@@ -208,23 +208,23 @@ this.CallStatement = function(){
 	return CallStatement;
 }();
 
-this.OpenCallTag = function(OpenParenTag, CallExpression, CallStatement){
+this.OpeningCallTag = function(OpeningParenTag, CallExpression, CallStatement){
 	/**
 	 * 起始函数调用小括号标签
 	 * @param {Number} _type - 标签类型
 	 */
-	function OpenCallTag(_type){
-		OpenParenTag.call(this, _type);
+	function OpeningCallTag(_type){
+		OpeningParenTag.call(this, _type);
 	};
-	OpenCallTag = new Rexjs(OpenCallTag, OpenParenTag);
+	OpeningCallTag = new Rexjs(OpeningCallTag, OpeningParenTag);
 	
-	OpenCallTag.props({
+	OpeningCallTag.props({
 		$class: CLASS_EXPRESSION_CONTEXT,
 		/**
 		 * 获取绑定的标签，该标签一般是用于语句的 try、catch 的返回值
 		 */
 		get binding(){
-			return closeCallTag;
+			return closingCallTag;
 		},
 		/**
 		 * 获取绑定的表达式，一般在子类使用父类逻辑，而不使用父类表达式的情况下使用
@@ -242,7 +242,7 @@ this.OpenCallTag = function(OpenParenTag, CallExpression, CallStatement){
 			return new CallStatement(statements);
 		},
 		// 防止与分组小括号冲突
-		order: ECMAScriptOrders.OPEN_CALL,
+		order: ECMAScriptOrders.OPENING_CALL,
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
@@ -266,9 +266,9 @@ this.OpenCallTag = function(OpenParenTag, CallExpression, CallStatement){
 		visitor: commonVisitor
 	});
 	
-	return OpenCallTag;
+	return OpeningCallTag;
 }(
-	this.OpenParenTag,
+	this.OpeningParenTag,
 	this.CallExpression,
 	this.CallStatement
 );
@@ -310,17 +310,17 @@ this.ParameterSeparatorTag = function(CommaTag, CallStatement){
 	this.CallStatement
 );
 
-this.CloseCallTag = function(CloseParenTag){
+this.ClosingCallTag = function(ClosingParenTag){
 	/**
 	 * 结束函数调用小括号标签
 	 * @param {Number} _type - 标签类型
 	 */
-	function CloseCallTag(_type){
-		CloseParenTag.call(this, _type);
+	function ClosingCallTag(_type){
+		ClosingParenTag.call(this, _type);
 	};
-	CloseCallTag = new Rexjs(CloseCallTag, CloseParenTag);
+	ClosingCallTag = new Rexjs(ClosingCallTag, ClosingParenTag);
 	
-	CloseCallTag.props({
+	ClosingCallTag.props({
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
@@ -336,24 +336,24 @@ this.CloseCallTag = function(CloseParenTag){
 		 * @param {Statements} statements - 当前语句块
 		 */
 		visitor: function(parser, context, statement, statements){
-			// 设置表达式的 close
-			statement.expression.close = context;
+			// 设置表达式的 closing
+			statement.expression.closing = context;
 		}
 	});
 	
-	return CloseCallTag;
+	return ClosingCallTag;
 }(
-	this.CloseParenTag
+	this.ClosingParenTag
 );
 
 parameterSeparatorTag = new this.ParameterSeparatorTag();
-closeCallTag = new this.CloseCallTag();
+closingCallTag = new this.ClosingCallTag();
 
 }.call(
 	this,
 	this.ExecutableExpression,
 	// parameterSeparatorTag
 	null,
-	// closeCallTag
+	// closingCallTag
 	null
 );

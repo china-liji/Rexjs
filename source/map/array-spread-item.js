@@ -4,7 +4,7 @@
 this.ArraySpreadItemExpression = function(SpreadExpression){
 	/**
 	 * 数组拓展项表达式
-	 * @param {Context} open - 起始标签上下文
+	 * @param {Context} context - 标签上下文
 	 */
 	function ArraySpreadItemExpression(context){
 		SpreadExpression.call(this, context);

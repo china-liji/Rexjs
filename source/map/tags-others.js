@@ -39,7 +39,7 @@ this.ArgumentSeparatorContextTags = function(ArgumentNameTag, RestTag){
 	this.RestTag
 );
 
-this.ArrowContextTags = function(OpenArrowFunctionBodyTag){
+this.ArrowContextTags = function(OpeningArrowFunctionBodyTag){
 	/**
 	 * 箭头上下文标签
 	 */
@@ -47,18 +47,18 @@ this.ArrowContextTags = function(OpenArrowFunctionBodyTag){
 		ExpressionTags.call(this);
 
 		this.register(
-			new OpenArrowFunctionBodyTag()
+			new OpeningArrowFunctionBodyTag()
 		);
 	};
 	ArrowContextTags = new Rexjs(ArrowContextTags, ExpressionTags);
 
 	return ArrowContextTags;
 }(
-	this.OpenArrowFunctionBodyTag
+	this.OpeningArrowFunctionBodyTag
 );
 
 
-this.BlockTags = function(OpenBlockTag){
+this.BlockTags = function(OpeningBlockTag){
 	/**
 	 * 语句块标签列表
 	 */
@@ -66,17 +66,17 @@ this.BlockTags = function(OpenBlockTag){
 		IllegalTags.call(this);
 		
 		this.register(
-			new OpenBlockTag()
+			new OpeningBlockTag()
 		);
 	};
 	BlockTags = new Rexjs(BlockTags, IllegalTags);
 
 	return BlockTags;
 }(
-	this.OpenBlockTag
+	this.OpeningBlockTag
 );
 
-this.CatchedExceptionTags = function(OpenCatchedExceptionTag){
+this.CatchedExceptionTags = function(OpeningCatchedExceptionTag){
 	/**
 	 * 被捕获的异常标签列表
 	 */
@@ -84,17 +84,17 @@ this.CatchedExceptionTags = function(OpenCatchedExceptionTag){
 		IllegalTags.call(this);
 		
 		this.register(
-			new OpenCatchedExceptionTag()
+			new OpeningCatchedExceptionTag()
 		);
 	};
 	CatchedExceptionTags = new Rexjs(CatchedExceptionTags, IllegalTags);
 	
 	return CatchedExceptionTags;
 }(
-	this.OpenCatchedExceptionTag
+	this.OpeningCatchedExceptionTag
 );
 
-this.ClassContextTags = function(ClassNameTag, ExtendsTag, OpenClassBodyTag){
+this.ClassContextTags = function(ClassNameTag, ExtendsTag, OpeningClassBodyTag){
 	/**
 	 * 类关键字上下文标签列表
 	 */
@@ -104,7 +104,7 @@ this.ClassContextTags = function(ClassNameTag, ExtendsTag, OpenClassBodyTag){
 		this.register(
 			new ClassNameTag(),
 			new ExtendsTag(),
-			new OpenClassBodyTag()
+			new OpeningClassBodyTag()
 		);
 	};
 	ClassContextTags = new Rexjs(ClassContextTags, IllegalTags);
@@ -113,10 +113,10 @@ this.ClassContextTags = function(ClassNameTag, ExtendsTag, OpenClassBodyTag){
 }(
 	this.ClassNameTag,
 	this.ExtendsTag,
-	this.OpenClassBodyTag
+	this.OpeningClassBodyTag
 );
 
-this.ClassIdentifierPropertyNameContextTags = function(ClassPropertyInitializerTag, OpenShorthandMethodArgumentsTag){
+this.ClassIdentifierPropertyNameContextTags = function(ClassPropertyInitializerTag, OpeningShorthandMethodArgumentsTag){
 	/**
 	 * 类标识符属性名上下文标签列表
 	 */
@@ -125,7 +125,7 @@ this.ClassIdentifierPropertyNameContextTags = function(ClassPropertyInitializerT
 		
 		this.register(
 			new ClassPropertyInitializerTag(),
-			new OpenShorthandMethodArgumentsTag()
+			new OpeningShorthandMethodArgumentsTag()
 		);
 	};
 	ClassIdentifierPropertyNameContextTags = new Rexjs(ClassIdentifierPropertyNameContextTags, IllegalTags);
@@ -133,10 +133,10 @@ this.ClassIdentifierPropertyNameContextTags = function(ClassPropertyInitializerT
 	return ClassIdentifierPropertyNameContextTags;
 }(
 	this.ClassPropertyInitializerTag,
-	this.OpenShorthandMethodArgumentsTag
+	this.OpeningShorthandMethodArgumentsTag
 );
 
-this.ClassNameContextTags = function(ExtendsTag, OpenClassBodyTag){
+this.ClassNameContextTags = function(ExtendsTag, OpeningClassBodyTag){
 	/**
 	 * 类关键字上下文标签列表
 	 */
@@ -145,7 +145,7 @@ this.ClassNameContextTags = function(ExtendsTag, OpenClassBodyTag){
 		
 		this.register(
 			new ExtendsTag(),
-			new OpenClassBodyTag()
+			new OpeningClassBodyTag()
 		);
 	};
 	ClassNameContextTags = new Rexjs(ClassNameContextTags, IllegalTags);
@@ -153,7 +153,7 @@ this.ClassNameContextTags = function(ExtendsTag, OpenClassBodyTag){
 	return ClassNameContextTags;
 }(
 	this.ExtendsTag,
-	this.OpenClassBodyTag
+	this.OpeningClassBodyTag
 );
 
 this.ClassPropertyNameTags = function(list){
@@ -171,7 +171,7 @@ this.ClassPropertyNameTags = function(list){
 }(
 	// list
 	[
-		this.CloseClassBodyTag,
+		this.ClosingClassBodyTag,
 		this.ClassPropertyPlaceholderTag,
 		this.PropertyStarTag,
 		this.ConstructorTag,
@@ -182,7 +182,7 @@ this.ClassPropertyNameTags = function(list){
 		this.ClassBinaryNumberPropertyNameTag,
 		this.ClassOctalNumberPropertyNameTag,
 		this.ClassStringPropertyNameTag,
-		this.OpenClassComputedPropertyNameTag
+		this.OpeningClassComputedPropertyNameTag
 	]
 );
 
@@ -204,16 +204,16 @@ this.ClassVariableTags = function(ClassVariableTag){
 	this.ClassVariableTag
 );
 
-this.CloseArrowFunctionBodyContextTags = function(CommaTag, filter){
+this.ClosingArrowFunctionBodyContextTags = function(CommaTag, filter){
 	/**
 	 * 结束箭头函数主体上下文标签列表
 	 */
-	function CloseArrowFunctionBodyContextTags(){
+	function ClosingArrowFunctionBodyContextTags(){
 		MistakableTags.call(this);
 	};
-	CloseArrowFunctionBodyContextTags = new Rexjs(CloseArrowFunctionBodyContextTags, MistakableTags);
+	ClosingArrowFunctionBodyContextTags = new Rexjs(ClosingArrowFunctionBodyContextTags, MistakableTags);
 	
-	CloseArrowFunctionBodyContextTags.props({
+	ClosingArrowFunctionBodyContextTags.props({
 		/**
 		 * 标签过滤处理
 		 * @param {SyntaxTag} tag - 语法标签
@@ -230,28 +230,28 @@ this.CloseArrowFunctionBodyContextTags = function(CommaTag, filter){
 		}
 	});
 
-	return CloseArrowFunctionBodyContextTags;
+	return ClosingArrowFunctionBodyContextTags;
 }(
 	this.CommaTag,
 	MistakableTags.prototype.filter
 );
 
-this.CloseCatchedExceptionTags = function(CloseCatchedExceptionTag){
+this.ClosingCatchedExceptionTags = function(ClosingCatchedExceptionTag){
 	/**
 	 * 被捕获的异常结束标签标签列表
 	 */
-	function CloseCatchedExceptionTags(){
+	function ClosingCatchedExceptionTags(){
 		IllegalTags.call(this);
 		
 		this.register(
-			new CloseCatchedExceptionTag()
+			new ClosingCatchedExceptionTag()
 		);
 	};
-	CloseCatchedExceptionTags = new Rexjs(CloseCatchedExceptionTags, IllegalTags);
+	ClosingCatchedExceptionTags = new Rexjs(ClosingCatchedExceptionTags, IllegalTags);
 	
-	return CloseCatchedExceptionTags;
+	return ClosingCatchedExceptionTags;
 }(
-	this.CloseCatchedExceptionTag
+	this.ClosingCatchedExceptionTag
 );
 
 this.ClosureVariableContextTags = function(VarDeclarationBreakTag, BasicAssignmentTag, CommaTag){
@@ -295,7 +295,7 @@ this.ClosureVariableContextTags = function(VarDeclarationBreakTag, BasicAssignme
 	this.CommaTag
 );
 
-this.VariableDeclarationTags = function(OpenDeclarationArrayTag, OpenDeclarationObjectTag){
+this.VariableDeclarationTags = function(OpeningDeclarationArrayTag, OpeningDeclarationObjectTag){
 	/**
 	 * 变量声明标签列表
 	 */
@@ -303,16 +303,16 @@ this.VariableDeclarationTags = function(OpenDeclarationArrayTag, OpenDeclaration
 		IllegalTags.call(this);
 		
 		this.register(
-			new OpenDeclarationArrayTag(),
-			new OpenDeclarationObjectTag()
+			new OpeningDeclarationArrayTag(),
+			new OpeningDeclarationObjectTag()
 		);
 	};
 	VariableDeclarationTags = new Rexjs(VariableDeclarationTags, IllegalTags);
 
 	return VariableDeclarationTags;
 }(
-	this.OpenDeclarationArrayTag,
-	this.OpenDeclarationObjectTag
+	this.OpeningDeclarationArrayTag,
+	this.OpeningDeclarationObjectTag
 );
 
 this.ConstContextTags = function(VariableDeclarationTags, ConstVariableTag){
@@ -334,7 +334,7 @@ this.ConstContextTags = function(VariableDeclarationTags, ConstVariableTag){
 	this.ConstVariableTag
 );
 
-this.ConstructorArgumentsTags = function(OpenConstructorArgumentsTag){
+this.ConstructorArgumentsTags = function(OpeningConstructorArgumentsTag){
 	/**
 	 * 类的构造函数参数标签列表
 	 */
@@ -342,17 +342,17 @@ this.ConstructorArgumentsTags = function(OpenConstructorArgumentsTag){
 		IllegalTags.call(this);
 
 		this.register(
-			new OpenConstructorArgumentsTag()
+			new OpeningConstructorArgumentsTag()
 		);
 	};
 	ConstructorArgumentsTags = new Rexjs(ConstructorArgumentsTags, IllegalTags);
 
 	return ConstructorArgumentsTags;
 }(
-	this.OpenConstructorArgumentsTag
+	this.OpeningConstructorArgumentsTag
 );
 
-this.ConstructorBodyTags = function(OpenConstructorBodyTag){
+this.ConstructorBodyTags = function(OpeningConstructorBodyTag){
 	/**
 	 * 类的构造函数主体标签列表
 	 */
@@ -360,17 +360,17 @@ this.ConstructorBodyTags = function(OpenConstructorBodyTag){
 		IllegalTags.call(this);
 
 		this.register(
-			new OpenConstructorBodyTag()
+			new OpeningConstructorBodyTag()
 		);
 	};
 	ConstructorBodyTags = new Rexjs(ConstructorBodyTags, IllegalTags);
 
 	return ConstructorBodyTags;
 }(
-	this.OpenConstructorBodyTag
+	this.OpeningConstructorBodyTag
 );
 
-this.DeclarationArrayItemSeparatorTags = function(DeclarationArrayItemSeparatorTag, CloseDeclarationArrayTag){
+this.DeclarationArrayItemSeparatorTags = function(DeclarationArrayItemSeparatorTag, ClosingDeclarationArrayTag){
 	/**
 	 * 变量声明数组项分隔符列表
 	 */
@@ -379,7 +379,7 @@ this.DeclarationArrayItemSeparatorTags = function(DeclarationArrayItemSeparatorT
 		
 		this.register(
 			new DeclarationArrayItemSeparatorTag(),
-			new CloseDeclarationArrayTag()
+			new ClosingDeclarationArrayTag()
 		);
 	};
 	DeclarationArrayItemSeparatorTags = new Rexjs(DeclarationArrayItemSeparatorTags, IllegalTags);
@@ -387,7 +387,7 @@ this.DeclarationArrayItemSeparatorTags = function(DeclarationArrayItemSeparatorT
 	return DeclarationArrayItemSeparatorTags; 
 }(
 	this.DeclarationArrayItemSeparatorTag,
-	this.CloseDeclarationArrayTag
+	this.ClosingDeclarationArrayTag
 );
 
 this.DeclarationArrayItemContextTags = function(DeclarationArrayItemSeparatorTags, DeclarationArrayItemAssignmentTag){
@@ -485,9 +485,9 @@ this.DeclarationPropertyNameTags = function(list){
 		this.OctalNumberDeclarationPropertyNameTag,
 		this.KeywordDeclarationPropertyNameTag,
 		this.StringDeclarationPropertyNameTag,
-		this.OpenComputedDeclarationPropertyNameTag,
+		this.OpeningComputedDeclarationPropertyNameTag,
 		this.DeclarationPropertyRestTag,
-		this.CloseDeclarationObjectTag
+		this.ClosingDeclarationObjectTag
 	]
 );
 
@@ -509,7 +509,7 @@ this.DeclarationPropertyRestItemTags = function(DeclarationPropertyRestItemTag){
 	this.DeclarationPropertyRestItemTag
 );
 
-this.DeclarationPropertySeparatorTags = function(DeclarationPropertySeparatorTag, CloseDeclarationObjectTag){
+this.DeclarationPropertySeparatorTags = function(DeclarationPropertySeparatorTag, ClosingDeclarationObjectTag){
 	/**
 	 * 变量声明属性分隔符标签列表
 	 */
@@ -518,7 +518,7 @@ this.DeclarationPropertySeparatorTags = function(DeclarationPropertySeparatorTag
 
 		this.register(
 			new DeclarationPropertySeparatorTag(),
-			new CloseDeclarationObjectTag()
+			new ClosingDeclarationObjectTag()
 		);
 	};
 	DeclarationPropertySeparatorTags = new Rexjs(DeclarationPropertySeparatorTags, IllegalTags);
@@ -526,7 +526,7 @@ this.DeclarationPropertySeparatorTags = function(DeclarationPropertySeparatorTag
 	return DeclarationPropertySeparatorTags;
 }(
 	this.DeclarationPropertySeparatorTag,
-	this.CloseDeclarationObjectTag
+	this.ClosingDeclarationObjectTag
 );
 
 this.DeclarationPropertyRestItemContextTags = function(DeclarationPropertySeparatorTags, DeclarationRestItemSeparatorTag){
@@ -567,7 +567,7 @@ this.DeclarationPropertyValueContextTags = function(DeclarationPropertySeparator
 	this.DeclarationPropertyValueInitializerTag
 );
 
-this.DeclarationPropertyValueTags = function(DeclarationPropertyValueTag, OpenArrayDeclarationPropertyValueTag, OpenObjectDeclarationPropertyValueTag){
+this.DeclarationPropertyValueTags = function(DeclarationPropertyValueTag, OpeningArrayDeclarationPropertyValueTag, OpeningObjectDeclarationPropertyValueTag){
 	/**
 	 * 变量声明属性值标签列表
 	 */
@@ -576,8 +576,8 @@ this.DeclarationPropertyValueTags = function(DeclarationPropertyValueTag, OpenAr
 
 		this.register(
 			new DeclarationPropertyValueTag(),
-			new OpenArrayDeclarationPropertyValueTag(),
-			new OpenObjectDeclarationPropertyValueTag()
+			new OpeningArrayDeclarationPropertyValueTag(),
+			new OpeningObjectDeclarationPropertyValueTag()
 		);
 	};
 	DeclarationPropertyValueTags = new Rexjs(DeclarationPropertyValueTags, IllegalTags);
@@ -585,8 +585,8 @@ this.DeclarationPropertyValueTags = function(DeclarationPropertyValueTag, OpenAr
 	return DeclarationPropertyValueTags;
 }(
 	this.DeclarationPropertyValueTag,
-	this.OpenArrayDeclarationPropertyValueTag,
-	this.OpenObjectDeclarationPropertyValueTag
+	this.OpeningArrayDeclarationPropertyValueTag,
+	this.OpeningObjectDeclarationPropertyValueTag
 );
 
 this.DestructibleExpressionContextTags = function(DestructuringAssignmentTag){
@@ -625,7 +625,7 @@ this.DestructuringAssignmentTags = function(DestructuringAssignmentTag){
 	this.DestructuringAssignmentTag
 );
 
-this.DoWhileConditionTags = function(OpenDoWhileConditionTag){
+this.DoWhileConditionTags = function(OpeningDoWhileConditionTag){
 	/**
 	 * do while 条件标签列表
 	 */
@@ -633,14 +633,14 @@ this.DoWhileConditionTags = function(OpenDoWhileConditionTag){
 		IllegalTags.call(this);
 		
 		this.register(
-			new OpenDoWhileConditionTag()
+			new OpeningDoWhileConditionTag()
 		);
 	};
 	DoWhileConditionTags = new Rexjs(DoWhileConditionTags, IllegalTags);
 	
 	return DoWhileConditionTags;
 }(
-	this.OpenDoWhileConditionTag
+	this.OpeningDoWhileConditionTag
 );
 
 this.DotAccessorContextTags = function(PropertyNameTag){
@@ -700,7 +700,7 @@ this.ExportContextTags = function(list){
 		this.FunctionDeclarationTag,
 		this.ClassDeclarationTag,
 		this.DefaultExportTag,
-		this.OpenExportMultipleMembersTag,
+		this.OpeningExportMultipleMembersTag,
 		this.ExportAllMembersTag
 	]
 );
@@ -764,7 +764,7 @@ this.FileStartTags = function(FileStartTag){
 	this.FileStartTag
 );
 
-this.ForConditionTags = function(OpenForConditionTag){
+this.ForConditionTags = function(OpeningForConditionTag){
 	/**
 	 * for 条件标签列表
 	 */
@@ -772,14 +772,14 @@ this.ForConditionTags = function(OpenForConditionTag){
 		IllegalTags.call(this);
 		
 		this.register(
-			new OpenForConditionTag()
+			new OpeningForConditionTag()
 		);
 	};
 	ForConditionTags = new Rexjs(ForConditionTags, IllegalTags);
 
 	return ForConditionTags;
 }(
-	this.OpenForConditionTag
+	this.OpeningForConditionTag
 );
 
 this.ForConditionContextTags = function(VarTag, filter){
@@ -815,7 +815,7 @@ this.ForConditionContextTags = function(VarTag, filter){
 	ExpressionTags.prototype.filter
 );
 
-this.FunctionArgumentTags = function(OpenArgumentsTag){
+this.FunctionArgumentTags = function(OpeningArgumentsTag){
 	/**
 	 * 函数参数标签列表
 	 */
@@ -823,17 +823,17 @@ this.FunctionArgumentTags = function(OpenArgumentsTag){
 		IllegalTags.call(this);
 
 		this.register(
-			new OpenArgumentsTag()
+			new OpeningArgumentsTag()
 		);
 	};
 	FunctionArgumentTags = new Rexjs(FunctionArgumentTags, IllegalTags);
 
 	return FunctionArgumentTags;
 }(
-	this.OpenArgumentsTag
+	this.OpeningArgumentsTag
 );
 
-this.FunctionBodyTags = function(OpenFunctionBodyTag){
+this.FunctionBodyTags = function(OpeningFunctionBodyTag){
 	/**
 	 * 函数主体标签列表
 	 */
@@ -841,17 +841,17 @@ this.FunctionBodyTags = function(OpenFunctionBodyTag){
 		IllegalTags.call(this);
 		
 		this.register(
-			new OpenFunctionBodyTag()
+			new OpeningFunctionBodyTag()
 		);
 	};
 	FunctionBodyTags = new Rexjs(FunctionBodyTags, IllegalTags);
 
 	return FunctionBodyTags;
 }(
-	this.OpenFunctionBodyTag
+	this.OpeningFunctionBodyTag
 );
 
-this.StarContextTags = function(FunctionNameTag, OpenArgumentsTag){
+this.StarContextTags = function(FunctionNameTag, OpeningArgumentsTag){
 	/**
 	 * 生成器星号上下文标签列表
 	 */
@@ -860,7 +860,7 @@ this.StarContextTags = function(FunctionNameTag, OpenArgumentsTag){
 		
 		this.register(
 			new FunctionNameTag(),
-			new OpenArgumentsTag()
+			new OpeningArgumentsTag()
 		);
 	};
 	StarContextTags = new Rexjs(StarContextTags, IllegalTags);
@@ -868,7 +868,7 @@ this.StarContextTags = function(FunctionNameTag, OpenArgumentsTag){
 	return StarContextTags;
 }(
 	this.FunctionNameTag,
-	this.OpenArgumentsTag
+	this.OpeningArgumentsTag
 );
 
 this.FunctionDeclarationStarContextTags = function(FunctionVariableTag){
@@ -927,7 +927,7 @@ this.FunctionDeclarationContextTags = function(FunctionDeclarationStarContextTag
 	this.FunctionDeclarationStarTag
 );
 
-this.IfConditionTags = function(OpenIfConditionTag){
+this.IfConditionTags = function(OpeningIfConditionTag){
 	/**
 	 * if 条件标签列表
 	 */
@@ -935,14 +935,14 @@ this.IfConditionTags = function(OpenIfConditionTag){
 		IllegalTags.call(this);
 		
 		this.register(
-			new OpenIfConditionTag()
+			new OpeningIfConditionTag()
 		);
 	};
 	IfConditionTags = new Rexjs(IfConditionTags, IllegalTags);
 
 	return IfConditionTags;
 }(
-	this.OpenIfConditionTag
+	this.OpeningIfConditionTag
 );
 
 this.LabelContextTags = function(LabelColonTag){
@@ -1020,7 +1020,7 @@ this.MemberContextTags = function(MemberAliasTag, MultipleMembersSeparatorTag){
 	this.MultipleMembersSeparatorTag
 );
 
-this.MemberSeparatorContextTags = function(DefaultMemberTag, AllMembersTag, OpenMultipleMembersTag){
+this.MemberSeparatorContextTags = function(DefaultMemberTag, AllMembersTag, OpeningMultipleMembersTag){
 	/**
 	 * 模块成员分隔符上下文标签列表
 	 */
@@ -1030,7 +1030,7 @@ this.MemberSeparatorContextTags = function(DefaultMemberTag, AllMembersTag, Open
 		this.register(
 			new DefaultMemberTag(),
 			new AllMembersTag(),
-			new OpenMultipleMembersTag()
+			new OpeningMultipleMembersTag()
 		);
 	};
 	MemberSeparatorContextTags = new Rexjs(MemberSeparatorContextTags, IllegalTags);
@@ -1039,7 +1039,7 @@ this.MemberSeparatorContextTags = function(DefaultMemberTag, AllMembersTag, Open
 }(
 	this.DefaultMemberTag,
 	this.AllMembersTag,
-	this.OpenMultipleMembersTag
+	this.OpeningMultipleMembersTag
 );
 
 this.IdentifierDeclarationPropertyNameContextTags = function(DeclarationPropertySeparatorTags, DeclarationPropertyNameInitializerTag, DeclarationPropertyNameSeparatorTag){
@@ -1228,142 +1228,160 @@ this.NewContextTags = function(ExtendsContextTags, TargetAccessorTag, SuperTag, 
 	this.ExtendsContextTags.prototype.filter
 );
 
-this.OpenArgumentsContextTags = function(ArgumentSeparatorContextTags, CloseArgumentsTag){
+this.OpeningArgumentsContextTags = function(ArgumentSeparatorContextTags, ClosingArgumentsTag){
 	/**
 	 * 起始参数上下文标签列表
 	 */
-	function OpenArgumentsContextTags(){
+	function OpeningArgumentsContextTags(){
 		ArgumentSeparatorContextTags.call(this);
 		
 		this.register(
-			new CloseArgumentsTag()
+			new ClosingArgumentsTag()
 		);
 	};
-	OpenArgumentsContextTags = new Rexjs(OpenArgumentsContextTags, ArgumentSeparatorContextTags);
+	OpeningArgumentsContextTags = new Rexjs(OpeningArgumentsContextTags, ArgumentSeparatorContextTags);
 
-	return OpenArgumentsContextTags;
+	return OpeningArgumentsContextTags;
 }(
 	this.ArgumentSeparatorContextTags,
-	this.CloseArgumentsTag
+	this.ClosingArgumentsTag
 );
 
-this.OpenArrayContextTags = function(ArraySpreadTag){
+this.OpeningArrayContextTags = function(ArraySpreadTag){
 	/**
 	 * 起始数组上下文标签列表
 	 */
-	function OpenArrayContextTags(){
+	function OpeningArrayContextTags(){
 		ExpressionTags.call(this);
 
 		this.register(
 			new ArraySpreadTag()
 		);
 	};
-	OpenArrayContextTags = new Rexjs(OpenArrayContextTags, ExpressionTags);
+	OpeningArrayContextTags = new Rexjs(OpeningArrayContextTags, ExpressionTags);
 
-	return OpenArrayContextTags;
+	return OpeningArrayContextTags;
 }(
 	this.ArraySpreadTag
 );
 
-this.OpenMultiLineCommentContextTags = function(CommentContentTag, CloseMultiLineCommentTag){
+this.OpeningMultiLineCommentContextTags = function(CommentContentTag, ClosingMultiLineCommentTag){
 	/**
 	 * 起始多行注释上下文标签列表
 	 */
-	function OpenMultiLineCommentContextTags(){
+	function OpeningMultiLineCommentContextTags(){
 		IllegalTags.call(this);
 
 		this.register(
 			new CommentContentTag(),
-			new CloseMultiLineCommentTag()
+			new ClosingMultiLineCommentTag()
 		);
 	};
-	OpenMultiLineCommentContextTags = new Rexjs(OpenMultiLineCommentContextTags, IllegalTags);
+	OpeningMultiLineCommentContextTags = new Rexjs(OpeningMultiLineCommentContextTags, IllegalTags);
 
-	return OpenMultiLineCommentContextTags;
+	return OpeningMultiLineCommentContextTags;
 }(
 	this.CommentContentTag,
-	this.CloseMultiLineCommentTag
+	this.ClosingMultiLineCommentTag
 );
 
-this.OpenGroupingContextTags = function(IllegibleRestTag){
+this.OpeningGroupingContextTags = function(IllegibleRestTag){
 	/**
 	 * 起始分组小括号上下文标签列表
 	 */
-	function OpenGroupingContextTags(){
+	function OpeningGroupingContextTags(){
 		ExpressionTags.call(this);
 
 		this.register(
 			new IllegibleRestTag()
 		);
 	};
-	OpenGroupingContextTags = new Rexjs(OpenGroupingContextTags, ExpressionTags);
+	OpeningGroupingContextTags = new Rexjs(OpeningGroupingContextTags, ExpressionTags);
 
-	return OpenGroupingContextTags;
+	return OpeningGroupingContextTags;
 }(
 	this.IllegibleRestTag
 );
 
-this.OpenRestrictedCommentContextTags = function(OpenMultiLineCommentContextTags, CommentBreakTag){
+this.OpeningJsxContextTags = function(JSXIdentifierTag){
+	/**
+	 * 起始 JSX 上下文标签列表
+	 */
+	function OpeningJsxContextTags(){
+		IllegalTags.call(this);
+
+		this.register(
+			new JSXIdentifierTag()
+		);
+	};
+	OpeningJsxContextTags = new Rexjs(OpeningJsxContextTags, IllegalTags);
+
+	return OpeningJsxContextTags;
+}(
+	this.JSXIdentifierTag
+);
+
+this.OpeningRestrictedCommentContextTags = function(OpeningMultiLineCommentContextTags, CommentBreakTag){
 	/**
 	 * 起始多行注释上下文标签列表
 	 */
-	function OpenRestrictedCommentContextTags(){
-		OpenMultiLineCommentContextTags.call(this);
+	function OpeningRestrictedCommentContextTags(){
+		OpeningMultiLineCommentContextTags.call(this);
 
 		this.register(
 			new CommentBreakTag()
 		);
 	};
-	OpenRestrictedCommentContextTags = new Rexjs(OpenRestrictedCommentContextTags, OpenMultiLineCommentContextTags);
+	OpeningRestrictedCommentContextTags = new Rexjs(OpeningRestrictedCommentContextTags, OpeningMultiLineCommentContextTags);
 
-	return OpenRestrictedCommentContextTags;
+	return OpeningRestrictedCommentContextTags;
 }(
-	this.OpenMultiLineCommentContextTags,
+	this.OpeningMultiLineCommentContextTags,
 	this.CommentBreakTag
 );
 
-this.OpenSwitchBodyContextTags = function(CaseTag, DefaultTag, CloseSwitchBodyTag){
+this.OpeningSwitchBodyContextTags = function(CaseTag, DefaultTag, ClosingSwitchBodyTag){
 	/**
 	 * switch 语句块起始上下文标签列表
 	 */
-	function OpenSwitchBodyContextTags(){
+	function OpeningSwitchBodyContextTags(){
 		IllegalTags.call(this);
 		
 		this.register(
 			new CaseTag(),
 			new DefaultTag(),
-			new CloseSwitchBodyTag()
+			new ClosingSwitchBodyTag()
 		);
 	};
-	OpenSwitchBodyContextTags = new Rexjs(OpenSwitchBodyContextTags, IllegalTags);
+	OpeningSwitchBodyContextTags = new Rexjs(OpeningSwitchBodyContextTags, IllegalTags);
 
-	return OpenSwitchBodyContextTags;
+	return OpeningSwitchBodyContextTags;
 }(
 	this.CaseTag,
 	this.DefaultTag,
-	this.CloseSwitchBodyTag
+	this.ClosingSwitchBodyTag
 );
 
-this.OpenDeclarationArrayContextTags = function(DeclarationArrayItemSeparatorTags, list){
+this.OpeningDeclarationArrayContextTags = function(DeclarationArrayItemSeparatorTags, list){
 	/**
 	 * 起始变量声明数组上下文标签列表
 	 */
-	function OpenDeclarationArrayContextTags(){
+	function OpeningDeclarationArrayContextTags(){
 		DeclarationArrayItemSeparatorTags.call(this);
 
 		this.delegate(list);
 	};
-	OpenDeclarationArrayContextTags = new Rexjs(OpenDeclarationArrayContextTags, DeclarationArrayItemSeparatorTags);
+	OpeningDeclarationArrayContextTags = new Rexjs(OpeningDeclarationArrayContextTags, DeclarationArrayItemSeparatorTags);
 
-	return OpenDeclarationArrayContextTags; 
+	return OpeningDeclarationArrayContextTags; 
 }(
 	this.DeclarationArrayItemSeparatorTags,
 	// list
 	[
 		this.DeclarationArrayItemTag,
 		this.DeclarationArrayRestTag,
-		this.OpenNestedDeclarationArrayItemTag,
-		this.OpenObjectDeclarationArrayItemTag
+		this.OpeningNestedDeclarationArrayItemTag,
+		this.OpeningObjectDeclarationArrayItemTag
 	]
 );
 
@@ -1405,7 +1423,7 @@ this.PlusContextTags = function(PlusSiblingTag, IncrementSiblingTag){
 	this.IncrementSiblingTag
 );
 
-this.PropertyNameContextTags = function(OpenShorthandMethodArgumentsTag, PropertyNameSeparatorTag, CloseObjectTag, CloseBraceTag){
+this.PropertyNameContextTags = function(OpeningShorthandMethodArgumentsTag, PropertyNameSeparatorTag, ClosingObjectTag, ClosingBraceTag){
 	/**
 	 * 对象名称上下文标签列表
 	 */
@@ -1413,9 +1431,9 @@ this.PropertyNameContextTags = function(OpenShorthandMethodArgumentsTag, Propert
 		ECMAScriptTags.call(this);
 
 		this.register(
-			new OpenShorthandMethodArgumentsTag(),
+			new OpeningShorthandMethodArgumentsTag(),
 			new PropertyNameSeparatorTag(),
-			new CloseObjectTag(TYPE_ILLEGAL)
+			new ClosingObjectTag(TYPE_ILLEGAL)
 		);
 	};
 	PropertyNameContextTags = new Rexjs(PropertyNameContextTags, ECMAScriptTags);
@@ -1427,9 +1445,9 @@ this.PropertyNameContextTags = function(OpenShorthandMethodArgumentsTag, Propert
 		 */
 		filter: function(tag){
 			// 如果是结束大括号
-			if(tag instanceof CloseBraceTag){
+			if(tag instanceof ClosingBraceTag){
 				// 如果是结束对象大括号，则不过滤，否则其他都过滤
-				return !(tag instanceof CloseObjectTag);
+				return !(tag instanceof ClosingObjectTag);
 			}
 			
 			return false;
@@ -1438,13 +1456,13 @@ this.PropertyNameContextTags = function(OpenShorthandMethodArgumentsTag, Propert
 
 	return PropertyNameContextTags;
 }(
-	this.OpenShorthandMethodArgumentsTag,
+	this.OpeningShorthandMethodArgumentsTag,
 	this.PropertyNameSeparatorTag,
-	this.CloseObjectTag,
-	this.CloseBraceTag
+	this.ClosingObjectTag,
+	this.ClosingBraceTag
 );
 
-this.IdentifierPropertyNameContextTags = function(PropertyNameContextTags, PropertySeparatorTag, PropertyInitializerTag, CloseObjectTag){
+this.IdentifierPropertyNameContextTags = function(PropertyNameContextTags, PropertySeparatorTag, PropertyInitializerTag, ClosingObjectTag){
 	/**
 	 * 对象标识符名称上下文标签列表
 	 */
@@ -1454,7 +1472,7 @@ this.IdentifierPropertyNameContextTags = function(PropertyNameContextTags, Prope
 		this.register(
 			new PropertySeparatorTag(),
 			new PropertyInitializerTag(),
-			new CloseObjectTag(TYPE_UNEXPECTED)
+			new ClosingObjectTag(TYPE_UNEXPECTED)
 		);
 	};
 	IdentifierPropertyNameContextTags = new Rexjs(IdentifierPropertyNameContextTags, PropertyNameContextTags);
@@ -1464,23 +1482,23 @@ this.IdentifierPropertyNameContextTags = function(PropertyNameContextTags, Prope
 	this.PropertyNameContextTags,
 	this.PropertySeparatorTag,
 	this.PropertyInitializerTag,
-	this.CloseObjectTag
+	this.ClosingObjectTag
 );
 
-this.OpenClassBodyContextTags = function(ClassPropertyNameTags, StaticModifierTag){
+this.OpeningClassBodyContextTags = function(ClassPropertyNameTags, StaticModifierTag){
 	/**
 	 * 类主体起始上下文标签列表
 	 */
-	function OpenClassBodyContextTags(){
+	function OpeningClassBodyContextTags(){
 		ClassPropertyNameTags.call(this);
 
 		this.register(
 			new StaticModifierTag()
 		);
 	};
-	OpenClassBodyContextTags = new Rexjs(OpenClassBodyContextTags, ClassPropertyNameTags);
+	OpeningClassBodyContextTags = new Rexjs(OpeningClassBodyContextTags, ClassPropertyNameTags);
 
-	return OpenClassBodyContextTags;
+	return OpeningClassBodyContextTags;
 }(
 	this.ClassPropertyNameTags,
 	this.StaticModifierTag
@@ -1501,14 +1519,14 @@ this.PropertyNameTags = function(list){
 }(
 	// list
 	[
-		this.CloseObjectTag,
+		this.ClosingObjectTag,
 		this.IdentifierPropertyNameTag,
 		this.NumberPropertyNameTag,
 		this.BinaryNumberPropertyNameTag,
 		this.OctalNumberPropertyNameTag,
 		this.KeywordPropertyNameTag,
 		this.StringPropertyNameTag,
-		this.OpenComputedPropertyNameTag,
+		this.OpeningComputedPropertyNameTag,
 		this.GetTag,
 		this.SetTag,
 		this.PropertyStarTag,
@@ -1626,7 +1644,7 @@ this.ReturnContextTags = function(OnlyStatementEndTags){
 	this.OnlyStatementEndTags
 );
 
-this.ShorthandMethodArgumentsTags = function(OpenShorthandMethodArgumentsTag){
+this.ShorthandMethodArgumentsTags = function(OpeningShorthandMethodArgumentsTag){
 	/**
 	 * 简写方法参数标签列表
 	 */
@@ -1634,17 +1652,17 @@ this.ShorthandMethodArgumentsTags = function(OpenShorthandMethodArgumentsTag){
 		IllegalTags.call(this);
 
 		this.register(
-			new OpenShorthandMethodArgumentsTag()
+			new OpeningShorthandMethodArgumentsTag()
 		);
 	};
 	ShorthandMethodArgumentsTags = new Rexjs(ShorthandMethodArgumentsTags, IllegalTags);
 
 	return ShorthandMethodArgumentsTags;
 }(
-	this.OpenShorthandMethodArgumentsTag
+	this.OpeningShorthandMethodArgumentsTag
 );
 
-this.ShorthandMethodBodyTags = function(OpenShorthandMethodBodyTag){
+this.ShorthandMethodBodyTags = function(OpeningShorthandMethodBodyTag){
 	/**
 	 * 简写方法主体标签列表
 	 */
@@ -1652,14 +1670,14 @@ this.ShorthandMethodBodyTags = function(OpenShorthandMethodBodyTag){
 		IllegalTags.call(this);
 
 		this.register(
-			new OpenShorthandMethodBodyTag()
+			new OpeningShorthandMethodBodyTag()
 		);
 	};
 	ShorthandMethodBodyTags = new Rexjs(ShorthandMethodBodyTags, IllegalTags);
 
 	return ShorthandMethodBodyTags;
 }(
-	this.OpenShorthandMethodBodyTag
+	this.OpeningShorthandMethodBodyTag
 );
 
 this.ShorthandMethodNameTags = function(list){
@@ -1677,17 +1695,17 @@ this.ShorthandMethodNameTags = function(list){
 }(
 	// list
 	[
-		this.CloseObjectTag,
+		this.ClosingObjectTag,
 		this.IdentifierMethodNameTag,
 		this.NumberMethodNameTag,
 		this.BinaryNumberMethodNameTag,
 		this.OctalNumberMethodNameTag,
 		this.StringMethodNameTag,
-		this.OpenComputedMethodNameTag
+		this.OpeningComputedMethodNameTag
 	]
 );
 
-this.AccessorDescriptorContextTags = function(ShorthandMethodNameTags, ConstructorTag, ClassPropertyInitializerTag, OpenShorthandMethodArgumentsTag, PropertyAccessorTag){
+this.AccessorDescriptorContextTags = function(ShorthandMethodNameTags, ConstructorTag, ClassPropertyInitializerTag, OpeningShorthandMethodArgumentsTag, PropertyAccessorTag){
 	/**
 	 * 访问器描述符上下文签列表
 	 */
@@ -1697,7 +1715,7 @@ this.AccessorDescriptorContextTags = function(ShorthandMethodNameTags, Construct
 		this.register(
 			new ConstructorTag(),
 			new ClassPropertyInitializerTag(),
-			new OpenShorthandMethodArgumentsTag()
+			new OpeningShorthandMethodArgumentsTag()
 		);
 	};
 	AccessorDescriptorContextTags = new Rexjs(AccessorDescriptorContextTags, ShorthandMethodNameTags);
@@ -1717,11 +1735,11 @@ this.AccessorDescriptorContextTags = function(ShorthandMethodNameTags, Construct
 	this.ShorthandMethodNameTags,
 	this.ConstructorTag,
 	this.ClassPropertyInitializerTag,
-	this.OpenShorthandMethodArgumentsTag,
+	this.OpeningShorthandMethodArgumentsTag,
 	this.PropertyAccessorTag
 );
 
-this.PropertyAccessorContextTags = function(ShorthandMethodNameTags, OpenShorthandMethodArgumentsTag, PropertyNameSeparatorTag, PropertySeparatorTag){
+this.PropertyAccessorContextTags = function(ShorthandMethodNameTags, OpeningShorthandMethodArgumentsTag, PropertyNameSeparatorTag, PropertySeparatorTag){
 	/**
 	 * 属性访问器上下文标签列表
 	 */
@@ -1729,7 +1747,7 @@ this.PropertyAccessorContextTags = function(ShorthandMethodNameTags, OpenShortha
 		ShorthandMethodNameTags.call(this);
 		
 		this.register(
-			new OpenShorthandMethodArgumentsTag(),
+			new OpeningShorthandMethodArgumentsTag(),
 			new PropertyNameSeparatorTag(),
 			new PropertySeparatorTag()
 		);
@@ -1739,12 +1757,12 @@ this.PropertyAccessorContextTags = function(ShorthandMethodNameTags, OpenShortha
 	return PropertyAccessorContextTags;
 }(
 	this.ShorthandMethodNameTags,
-	this.OpenShorthandMethodArgumentsTag,
+	this.OpeningShorthandMethodArgumentsTag,
 	this.PropertyNameSeparatorTag,
 	this.PropertySeparatorTag
 );
 
-this.StaticModifierContextTags = function(ClassPropertyNameTags, ConstructorTag, CloseObjectTag, ClassPropertyPlaceholderTag, ClassPropertyInitializerTag, OpenShorthandMethodArgumentsTag){
+this.StaticModifierContextTags = function(ClassPropertyNameTags, ConstructorTag, ClosingObjectTag, ClassPropertyPlaceholderTag, ClassPropertyInitializerTag, OpeningShorthandMethodArgumentsTag){
 	/**
 	 * return 上下文标签列表
 	 */
@@ -1753,7 +1771,7 @@ this.StaticModifierContextTags = function(ClassPropertyNameTags, ConstructorTag,
 		
 		this.register(
 			new ClassPropertyInitializerTag(),
-			new OpenShorthandMethodArgumentsTag()
+			new OpeningShorthandMethodArgumentsTag()
 		);
 	};
 	StaticModifierContextTags = new Rexjs(StaticModifierContextTags, ClassPropertyNameTags);
@@ -1768,7 +1786,7 @@ this.StaticModifierContextTags = function(ClassPropertyNameTags, ConstructorTag,
 				// constructor 不能作为静态属性
 				tag instanceof ConstructorTag ||
 				// 如果是结束大括号
-				tag instanceof CloseObjectTag ||
+				tag instanceof ClosingObjectTag ||
 				// 如果是分号
 				tag instanceof ClassPropertyPlaceholderTag
 			);
@@ -1779,10 +1797,10 @@ this.StaticModifierContextTags = function(ClassPropertyNameTags, ConstructorTag,
 }(
 	this.ClassPropertyNameTags,
 	this.ConstructorTag,
-	this.CloseObjectTag,
+	this.ClosingObjectTag,
 	this.ClassPropertyPlaceholderTag,
 	this.ClassPropertyInitializerTag,
-	this.OpenShorthandMethodArgumentsTag
+	this.OpeningShorthandMethodArgumentsTag
 );
 
 this.SuperAccessorContextTags = function(list){
@@ -1801,7 +1819,7 @@ this.SuperAccessorContextTags = function(list){
 }(
 	// list
 	[
-		this.OpenSuperMethodCallTag,
+		this.OpeningSuperMethodCallTag,
 		this.SuperPropertyBasicAssignmentTag,
 		this.SuperPropertyShorthandAssignmentTag,
 		this.SuperPropertyPostfixIncrementTag,
@@ -1809,7 +1827,7 @@ this.SuperAccessorContextTags = function(list){
 	]
 );
 
-this.SuperContextTags = function(OpenSuperCallTag, SuperDotAccessorTag, OpenSuperBracketAccessorTag){
+this.SuperContextTags = function(OpeningSuperCallTag, SuperDotAccessorTag, OpeningSuperBracketAccessorTag){
 	/**
 	 * super 关键字上下文标签列表
 	 */
@@ -1817,18 +1835,18 @@ this.SuperContextTags = function(OpenSuperCallTag, SuperDotAccessorTag, OpenSupe
 		ECMAScriptTags.call(this);
 		
 		this.register(
-			new OpenSuperCallTag(),
+			new OpeningSuperCallTag(),
 			new SuperDotAccessorTag(),
-			new OpenSuperBracketAccessorTag()
+			new OpeningSuperBracketAccessorTag()
 		);
 	};
 	SuperContextTags = new Rexjs(SuperContextTags, ECMAScriptTags);
 
 	return SuperContextTags;
 }(
-	this.OpenSuperCallTag,
+	this.OpeningSuperCallTag,
 	this.SuperDotAccessorTag,
-	this.OpenSuperBracketAccessorTag
+	this.OpeningSuperBracketAccessorTag
 );
 
 this.SuperPropertyNameTags = function(SuperPropertyNameTag){
@@ -1849,7 +1867,7 @@ this.SuperPropertyNameTags = function(SuperPropertyNameTag){
 	this.SuperPropertyNameTag
 );
 
-this.SwitchBlockTags = function(OpenSwitchBodyTag){
+this.SwitchBlockTags = function(OpeningSwitchBodyTag){
 	/**
 	 * switch 语句块标签列表
 	 */
@@ -1857,17 +1875,17 @@ this.SwitchBlockTags = function(OpenSwitchBodyTag){
 		IllegalTags.call(this);
 		
 		this.register(
-			new OpenSwitchBodyTag()
+			new OpeningSwitchBodyTag()
 		);
 	};
 	SwitchBlockTags = new Rexjs(SwitchBlockTags, IllegalTags);
 
 	return SwitchBlockTags;
 }(
-	this.OpenSwitchBodyTag
+	this.OpeningSwitchBodyTag
 );
 
-this.SwitchConditionTags = function(OpenSwitchConditionTag){
+this.SwitchConditionTags = function(OpeningSwitchConditionTag){
 	/**
 	 * switch 条件标签列表
 	 */
@@ -1875,14 +1893,14 @@ this.SwitchConditionTags = function(OpenSwitchConditionTag){
 		IllegalTags.call(this);
 		
 		this.register(
-			new OpenSwitchConditionTag()
+			new OpeningSwitchConditionTag()
 		);
 	};
 	SwitchConditionTags = new Rexjs(SwitchConditionTags, IllegalTags);
 
 	return SwitchConditionTags;
 }(
-	this.OpenSwitchConditionTag
+	this.OpeningSwitchConditionTag
 );
 
 this.TargetAccessorContextTags = function(TargetTag){
@@ -1903,7 +1921,7 @@ this.TargetAccessorContextTags = function(TargetTag){
 	this.TargetTag
 );
 
-this.TemplateContentTags = function(TemplateContentTag, OpenPlaceHolderTag, TemplateLineTerminatorTag, TemplateQouteTag, CloseTemplateTag){
+this.TemplateContentTags = function(TemplateContentTag, OpeningPlaceHolderTag, TemplateLineTerminatorTag, TemplateQouteTag, ClosingTemplateTag){
 	/**
 	 * 模板内容上下文标签列表
 	 */
@@ -1912,13 +1930,13 @@ this.TemplateContentTags = function(TemplateContentTag, OpenPlaceHolderTag, Temp
 
 		this.register(
 			new TemplateContentTag(),
-			new OpenPlaceHolderTag(),
+			new OpeningPlaceHolderTag(),
 			new TemplateLineTerminatorTag(TemplateLineTerminatorTag.CARRIAGE_RETURN),
 			new TemplateLineTerminatorTag(TemplateLineTerminatorTag.LINE_SEPARATOR),
 			new TemplateLineTerminatorTag(TemplateLineTerminatorTag.LINEFEED),
 			new TemplateLineTerminatorTag(TemplateLineTerminatorTag.PARAGRAPH_SEPARATOR),
 			new TemplateQouteTag(),
-			new CloseTemplateTag()
+			new ClosingTemplateTag()
 		);
 	};
 	TemplateContentTags = new Rexjs(TemplateContentTags, ECMAScriptTags);
@@ -1926,10 +1944,10 @@ this.TemplateContentTags = function(TemplateContentTag, OpenPlaceHolderTag, Temp
 	return TemplateContentTags;
 }(
 	this.TemplateContentTag,
-	this.OpenPlaceHolderTag,
+	this.OpeningPlaceHolderTag,
 	this.TemplateLineTerminatorTag,
 	this.TemplateQouteTag,
-	this.CloseTemplateTag
+	this.ClosingTemplateTag
 );
 
 this.TerminatedBranchFlowContextTags = function(LabelledIdentifierTag){
@@ -1968,7 +1986,7 @@ this.ThrowContextTags = function(ThrowContextLineTerminatorTag){
 	this.ThrowContextLineTerminatorTag
 );
 
-this.TryContextTags = function(ExtendsContextTags, OpenBlockTag, filter){
+this.TryContextTags = function(ExtendsContextTags, OpeningBlockTag, filter){
 	/**
 	 * try 关键字上下文标签
 	 */
@@ -1976,7 +1994,7 @@ this.TryContextTags = function(ExtendsContextTags, OpenBlockTag, filter){
 		ExtendsContextTags.call(this);
 		
 		this.register(
-			new OpenBlockTag()
+			new OpeningBlockTag()
 		);
 	};
 	TryContextTags = new Rexjs(TryContextTags, ExtendsContextTags);
@@ -2005,7 +2023,7 @@ this.TryContextTags = function(ExtendsContextTags, OpenBlockTag, filter){
 	return TryContextTags;
 }(
 	this.ExtendsContextTags,
-	this.OpenBlockTag,
+	this.OpeningBlockTag,
 	this.ExtendsContextTags.prototype.filter
 );
 
@@ -2080,7 +2098,7 @@ this.VarDeclarationBreakContextTags = function(ClosureVariableContextTags, Speci
 	this.ClosureVariableContextTags.prototype.filter
 );
 
-this.WhileConditionTags = function(OpenWhileConditionTag){
+this.WhileConditionTags = function(OpeningWhileConditionTag){
 	/**
 	 * while 条件标签列表
 	 */
@@ -2088,14 +2106,14 @@ this.WhileConditionTags = function(OpenWhileConditionTag){
 		IllegalTags.call(this);
 		
 		this.register(
-			new OpenWhileConditionTag()
+			new OpeningWhileConditionTag()
 		);
 	};
 	WhileConditionTags = new Rexjs(WhileConditionTags, IllegalTags);
 
 	return WhileConditionTags;
 }(
-	this.OpenWhileConditionTag
+	this.OpeningWhileConditionTag
 );
 
 }.call(

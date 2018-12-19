@@ -67,7 +67,7 @@ this.ExtendsStatement = function(){
 	return ExtendsStatement;
 }();
 
-this.ExtendsTag = function(ExtendsExpression, ExtendsStatement, openClassBodyTag){
+this.ExtendsTag = function(ExtendsExpression, ExtendsStatement, openingClassBodyTag){
 	/**
 	 * extends 关键字标签
 	 * @param {Number} _type - 标签类型
@@ -82,7 +82,7 @@ this.ExtendsTag = function(ExtendsExpression, ExtendsStatement, openClassBodyTag
 		 * 获取绑定的标签，该标签一般是用于语句的 try、catch 的返回值
 		 */
 		get binding(){
-			return openClassBodyTag;
+			return openingClassBodyTag;
 		},
 		regexp: /extends/,
 		/**
@@ -119,8 +119,8 @@ this.ExtendsTag = function(ExtendsExpression, ExtendsStatement, openClassBodyTag
 }(
 	this.ExtendsExpression,
 	this.ExtendsStatement,
-	// openClassBodyTag
-	new this.OpenClassBodyTag()
+	// openingClassBodyTag
+	new this.OpeningClassBodyTag()
 );
 
 }.call(

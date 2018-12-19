@@ -1,14 +1,14 @@
 // 模板参数相关
-!function(TemplateExpression, PlaceHolderExpression, OpenTemplateTag){
+!function(TemplateExpression, PlaceHolderExpression, OpeningTemplateTag){
 
 this.TemplateParameterExpression = function(extractTo, compileInner){
 	/**
 	 * 模板参数表达式
-	 * @param {Context} open - 起始标签上下文
+	 * @param {Context} opening - 起始标签上下文
 	 * @param {Expression} operand - 被作为函数调用的表达式
 	 */
-	function TemplateParameterExpression(open, operand){
-		TemplateExpression.call(this, open);
+	function TemplateParameterExpression(opening, operand){
+		TemplateExpression.call(this, opening);
 
 		this.operand = operand;
 	};
@@ -86,17 +86,17 @@ this.TemplateParameterExpression = function(extractTo, compileInner){
 	}
 );
 
-this.OpenTemplateParameterTag = function(TemplateParameterExpression, visitor){
+this.OpeningTemplateParameterTag = function(TemplateParameterExpression, visitor){
 	/**
 	 * 起始模板参数标签
 	 * @param {Number} _type - 标签类型
 	 */
-	function OpenTemplateParameterTag(_type){
-		OpenTemplateTag.call(this, _type);
+	function OpeningTemplateParameterTag(_type){
+		OpeningTemplateTag.call(this, _type);
 	};
-	OpenTemplateParameterTag = new Rexjs(OpenTemplateParameterTag, OpenTemplateTag);
+	OpeningTemplateParameterTag = new Rexjs(OpeningTemplateParameterTag, OpeningTemplateTag);
 
-	OpenTemplateParameterTag.props({
+	OpeningTemplateParameterTag.props({
 		$class: CLASS_EXPRESSION_CONTEXT,
 		/**
 		 * 获取绑定的表达式，一般在子类使用父类逻辑，而不使用父类表达式的情况下使用
@@ -109,15 +109,15 @@ this.OpenTemplateParameterTag = function(TemplateParameterExpression, visitor){
 		order: ECMAScriptOrders.TEMPLATE_PARAMETER
 	});
 
-	return OpenTemplateParameterTag;
+	return OpeningTemplateParameterTag;
 }(
 	this.TemplateParameterExpression,
-	OpenTemplateTag.prototype.visitor
+	OpeningTemplateTag.prototype.visitor
 );
 
 }.call(
 	this,
 	this.TemplateExpression,
 	this.PlaceHolderExpression,
-	this.OpenTemplateTag
+	this.OpeningTemplateTag
 );

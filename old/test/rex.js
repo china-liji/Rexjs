@@ -1995,19 +1995,19 @@ this.GroupingTag = function(SyntaxTag){
 	this.SyntaxTag
 );
 
-this.OpeningTag = function(GroupingTag){
+this.OpeningingTag = function(GroupingTag){
 	/**
 	 * 起始标签，供于语法树匹配
 	 * @param {String} name - 标签名称
 	 * @param {RegExp} regexp - 需要匹配标签的正则
 	 * @param {String} _id - 标签标识符，用于同名标签，默认等于 name
 	 */
-	function OpeningTag(name, regexp, _id){
+	function OpeningingTag(name, regexp, _id){
 		GroupingTag.call(this, name, regexp, _id);
 	};
-	OpeningTag = new Rexjs(OpeningTag, GroupingTag);
+	OpeningingTag = new Rexjs(OpeningingTag, GroupingTag);
 	
-	return OpeningTag;
+	return OpeningingTag;
 }(
 	this.GroupingTag
 );

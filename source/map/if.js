@@ -1,5 +1,5 @@
 // if 语句相关
-!function(closeIfConditionTag, elseTag){
+!function(closingIfConditionTag, elseTag){
 
 this.IfExpression = function(ConditionalExpression){
 	/**
@@ -204,22 +204,22 @@ this.IfTag = function(IfExpression){
 	this.IfExpression
 );
 
-this.OpenIfConditionTag = function(OpenParenTag, ConditionStatement){
+this.OpeningIfConditionTag = function(OpeningParenTag, ConditionStatement){
 	/**
 	 * if 条件起始标签
 	 * @param {Number} _type - 标签类型
 	 */
-	function OpenIfConditionTag(_type){
-		OpenParenTag.call(this, _type);
+	function OpeningIfConditionTag(_type){
+		OpeningParenTag.call(this, _type);
 	};
-	OpenIfConditionTag = new Rexjs(OpenIfConditionTag, OpenParenTag);
+	OpeningIfConditionTag = new Rexjs(OpeningIfConditionTag, OpeningParenTag);
 	
-	OpenIfConditionTag.props({
+	OpeningIfConditionTag.props({
 		/**
 		 * 获取绑定的标签，该标签一般是用于语句的 try、catch 的返回值
 		 */
 		get binding(){
-			return closeIfConditionTag;
+			return closingIfConditionTag;
 		},
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
@@ -243,23 +243,23 @@ this.OpenIfConditionTag = function(OpenParenTag, ConditionStatement){
 		}
 	});
 	
-	return OpenIfConditionTag;
+	return OpeningIfConditionTag;
 }(
-	this.OpenParenTag,
+	this.OpeningParenTag,
 	this.ConditionStatement
 );
 
-this.CloseIfConditionTag = function(CloseParenTag, IfBodyStatement, IfBodyStatements){
+this.ClosingIfConditionTag = function(ClosingParenTag, IfBodyStatement, IfBodyStatements){
 	/**
 	 * if 条件结束标签
 	 * @param {Number} _type - 标签类型
 	 */
-	function CloseIfConditionTag(_type){
-		CloseParenTag.call(this, _type);
+	function ClosingIfConditionTag(_type){
+		ClosingParenTag.call(this, _type);
 	};
-	CloseIfConditionTag = new Rexjs(CloseIfConditionTag, CloseParenTag);
+	ClosingIfConditionTag = new Rexjs(ClosingIfConditionTag, ClosingParenTag);
 	
-	CloseIfConditionTag.props({
+	ClosingIfConditionTag.props({
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
@@ -275,16 +275,16 @@ this.CloseIfConditionTag = function(CloseParenTag, IfBodyStatement, IfBodyStatem
 		 * @param {Statements} statements - 当前语句块
 		 */
 		visitor: function(parser, context, statement, statements){
-			// 设置 if 条件的 close
-			statement.expression.condition.close = context;
+			// 设置 if 条件的 closing
+			statement.expression.condition.closing = context;
 			// 设置当前语句 及 表达式主体语句
 			statements.statement = new IfBodyStatement(statements);
 		}
 	});
 	
-	return CloseIfConditionTag;
+	return ClosingIfConditionTag;
 }(
-	this.CloseParenTag,
+	this.ClosingParenTag,
 	this.IfBodyStatement,
 	this.IfBodyStatements
 );
@@ -329,12 +329,12 @@ this.ElseTag = function(ElseExpression, ElseBodyStatement){
 	this.ElseBodyStatement
 );
 
-closeIfConditionTag = new this.CloseIfConditionTag();
+closingIfConditionTag = new this.ClosingIfConditionTag();
 elseTag = new this.ElseTag();
 
 }.call(
 	this,
-	// closeIfConditionTag
+	// closingIfConditionTag
 	null,
 	// elseTag
 	null

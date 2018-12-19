@@ -1,5 +1,5 @@
 // 中括号属性访问器
-!function(closeBracketAccessorTag){
+!function(closingBracketAccessorTag){
 	
 this.BracketAccessorExpression = function(AccessorExpression){
 	/**
@@ -65,23 +65,23 @@ this.BracketAccessorStatement = function(){
 	return BracketAccessorStatement;
 }();
 
-this.OpenBracketAccessorTag = function(OpenBracketTag, BracketAccessorExpression, BracketAccessorStatement){
+this.OpeningBracketAccessorTag = function(OpeningBracketTag, BracketAccessorExpression, BracketAccessorStatement){
 	/**
 	 * 起始中括号属性访问器标签
 	 * @param {Number} _type - 标签类型
 	 */
-	function OpenBracketAccessorTag(_type){
-		OpenBracketTag.call(this, _type);
+	function OpeningBracketAccessorTag(_type){
+		OpeningBracketTag.call(this, _type);
 	};
-	OpenBracketAccessorTag = new Rexjs(OpenBracketAccessorTag, OpenBracketTag);
+	OpeningBracketAccessorTag = new Rexjs(OpeningBracketAccessorTag, OpeningBracketTag);
 	
-	OpenBracketAccessorTag.props({
+	OpeningBracketAccessorTag.props({
 		$class: CLASS_EXPRESSION_CONTEXT,
 		/**
 		 * 获取绑定的标签，该标签一般是用于语句的 try、catch 的返回值
 		 */
 		get binding(){
-			return closeBracketAccessorTag;
+			return closingBracketAccessorTag;
 		},
 		/**
 		 * 获取绑定的表达式，一般在子类使用父类逻辑，而不使用父类表达式的情况下使用
@@ -99,7 +99,7 @@ this.OpenBracketAccessorTag = function(OpenBracketTag, BracketAccessorExpression
 			return new BracketAccessorStatement(statements);
 		},
 		// 防止与起始数组标签冲突
-		order: ECMAScriptOrders.OPEN_BRACKET_ACCESSOR,
+		order: ECMAScriptOrders.OPENING_BRACKET_ACCESSOR,
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
@@ -117,24 +117,24 @@ this.OpenBracketAccessorTag = function(OpenBracketTag, BracketAccessorExpression
 		visitor: commonVisitor
 	});
 	
-	return OpenBracketAccessorTag;
+	return OpeningBracketAccessorTag;
 }(
-	this.OpenBracketTag,
+	this.OpeningBracketTag,
 	this.BracketAccessorExpression,
 	this.BracketAccessorStatement
 );
 
-this.CloseBracketAccessorTag = function(CloseBracketTag){
+this.ClosingBracketAccessorTag = function(ClosingBracketTag){
 	/**
 	 * 结束中括号属性访问器标签
 	 * @param {Number} _type - 标签类型
 	 */
-	function CloseBracketAccessorTag(_type){
-		CloseBracketTag.call(this, _type);
+	function ClosingBracketAccessorTag(_type){
+		ClosingBracketTag.call(this, _type);
 	};
-	CloseBracketAccessorTag = new Rexjs(CloseBracketAccessorTag, CloseBracketTag);
+	ClosingBracketAccessorTag = new Rexjs(ClosingBracketAccessorTag, ClosingBracketTag);
 	
-	CloseBracketAccessorTag.props({
+	ClosingBracketAccessorTag.props({
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
@@ -151,19 +151,19 @@ this.CloseBracketAccessorTag = function(CloseBracketTag){
 		 */
 		visitor: function(parser, context, statement, statements){
 			// 设置表达式
-			statement.expression.property.close = context;
+			statement.expression.property.closing = context;
 		}
 	});
 	
-	return CloseBracketAccessorTag;
+	return ClosingBracketAccessorTag;
 }(
-	this.CloseBracketTag
+	this.ClosingBracketTag
 );
 
-closeBracketAccessorTag = new this.CloseBracketAccessorTag();
+closingBracketAccessorTag = new this.ClosingBracketAccessorTag();
 	
 }.call(
 	this,
-	// closeBracketAccessorTag
+	// closingBracketAccessorTag
 	null
 );

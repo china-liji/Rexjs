@@ -1,13 +1,13 @@
 // 类主体标签相关
-!function(DefaultConstructorPropertyExpression, BinaryNumberTag, OctalNumberTag, classPropertySeparatorTag, closeClassBodyTag){
+!function(DefaultConstructorPropertyExpression, BinaryNumberTag, OctalNumberTag, classPropertySeparatorTag, closingClassBodyTag){
 
 this.ClassBodyExpression = function(ObjectExpression, extractTo, compileItem){
 	/**
 	 * 对象表达式
-	 * @param {Context} open - 起始标签上下文
+	 * @param {Context} opening - 起始标签上下文
 	 */
-	function ClassBodyExpression(open){
-		ObjectExpression.call(this, open);
+	function ClassBodyExpression(opening){
+		ObjectExpression.call(this, opening);
 	};
 	ClassBodyExpression = new Rexjs(ClassBodyExpression, ObjectExpression);
 
@@ -114,7 +114,7 @@ this.ClassPropertyStatement = function(PropertyStatement, ClassPropertyExpressio
 				
 				// 如果是计算式起始中括号
 				case "[":
-					t = tag.openClassComputedPropertyName;
+					t = tag.openingClassComputedPropertyName;
 					break;
 
 				// 其他
@@ -237,28 +237,28 @@ this.ClassPropertyStatement = function(PropertyStatement, ClassPropertyExpressio
 	}
 );
 
-this.OpenClassBodyTag = function(
-	OpenObjectTag,
+this.OpeningClassBodyTag = function(
+	OpeningObjectTag,
 	ClassBodyExpression, ClassPropertyStatement,
 	classBinaryNumberPropertyNameTag, classIdentifierPropertyNameTag, classNumberPropertyNameTag,
-	classOctalNumberPropertyNameTag, classStringPropertyNameTag, openClassComputedPropertyNameTag,
+	classOctalNumberPropertyNameTag, classStringPropertyNameTag, openingClassComputedPropertyNameTag,
 	constructorTag, getDescriptorTag, setDescriptorTag, staticModifierTag
 ){
 	/**
 	 * 起始函数主体标签
 	 * @param {Number} _type - 标签类型
 	 */
-	function OpenClassBodyTag(_type){
-		OpenObjectTag.call(this, _type);
+	function OpeningClassBodyTag(_type){
+		OpeningObjectTag.call(this, _type);
 	};
-	OpenClassBodyTag = new Rexjs(OpenClassBodyTag, OpenObjectTag);
+	OpeningClassBodyTag = new Rexjs(OpeningClassBodyTag, OpeningObjectTag);
 
-	OpenClassBodyTag.props({
+	OpeningClassBodyTag.props({
 		/**
 		 * 获取绑定的类主体结束标签，该标签一般是用于语句的 try、catch 的返回值
 		 */
 		get binding(){
-			return closeClassBodyTag;
+			return closingClassBodyTag;
 		},
 		/**
 		 * 获取绑定的二进制数字标签，该标签一般是用于语句的 try、catch 的返回值
@@ -305,8 +305,8 @@ this.OpenClassBodyTag = function(
 		/**
 		 * 获取绑定的起始计算式名标签，该标签一般是用于语句的 try、catch 的返回值
 		 */
-		get openClassComputedPropertyName(){
-			return openClassComputedPropertyNameTag;
+		get openingClassComputedPropertyName(){
+			return openingClassComputedPropertyNameTag;
 		},
 		/**
 		 * 获取绑定的分隔符标签，该标签一般是用于语句的 try、catch 的返回值
@@ -331,7 +331,7 @@ this.OpenClassBodyTag = function(
 		 * @param {TagsMap} tagsMap - 标签集合映射
 		 */
 		require: function(tagsMap){
-			return tagsMap.openClassBodyContextTags;
+			return tagsMap.openingClassBodyContextTags;
 		},
 		/**
 		 * 标签访问器
@@ -348,9 +348,9 @@ this.OpenClassBodyTag = function(
 		}
 	});
 
-	return OpenClassBodyTag;
+	return OpeningClassBodyTag;
 }(
-	this.OpenObjectTag,
+	this.OpeningObjectTag,
 	this.ClassBodyExpression,
 	this.ClassPropertyStatement,
 	// classBinaryNumberPropertyNameTag
@@ -363,8 +363,8 @@ this.OpenClassBodyTag = function(
 	new this.ClassOctalNumberPropertyNameTag(),
 	// classStringPropertyNameTag
 	new this.ClassStringPropertyNameTag(),
-	// openClassComputedPropertyNameTag
-	new this.OpenClassComputedPropertyNameTag(),
+	// openingClassComputedPropertyNameTag
+	new this.OpeningClassComputedPropertyNameTag(),
 	// constructorTag
 	new this.ConstructorTag(),
 	// getDescriptorTag
@@ -391,7 +391,7 @@ this.ClassPropertySeparatorTag = function(SemicolonTag, ClassPropertyStatement){
 		 * @param {TagsMap} tagsMap - 标签集合映射
 		 */
 		require: function(tagsMap){
-			return tagsMap.openClassBodyContextTags;
+			return tagsMap.openingClassBodyContextTags;
 		},
 		/**
 		 * 标签访问器
@@ -438,17 +438,17 @@ this.ClassPropertyPlaceholderTag = function(ClassPropertySeparatorTag){
 	this.ClassPropertySeparatorTag
 );
 
-this.CloseClassBodyTag = function(CloseObjectTag){
+this.ClosingClassBodyTag = function(ClosingObjectTag){
 	/**
 	 * 类主体结束标签
 	 * @param {Number} _type - 标签类型
 	 */
-	function CloseClassBodyTag(_type){
-		CloseObjectTag.call(this, _type);
+	function ClosingClassBodyTag(_type){
+		ClosingObjectTag.call(this, _type);
 	};
-	CloseClassBodyTag = new Rexjs(CloseClassBodyTag, CloseObjectTag);
+	ClosingClassBodyTag = new Rexjs(ClosingClassBodyTag, ClosingObjectTag);
 
-	CloseClassBodyTag.props({
+	ClosingClassBodyTag.props({
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
@@ -469,18 +469,18 @@ this.CloseClassBodyTag = function(CloseObjectTag){
 		 * @param {Statements} statements - 当前语句块
 		 */
 		visitor: function(parser, context, statement, statements){
-			// 设置 close
-			statement.expression.body.close = context;
+			// 设置 closing
+			statement.expression.body.closing = context;
 		}
 	});
 
-	return CloseClassBodyTag;
+	return ClosingClassBodyTag;
 }(
-	this.CloseObjectTag
+	this.ClosingObjectTag
 );
 
 classPropertySeparatorTag = new this.ClassPropertySeparatorTag();
-closeClassBodyTag = new this.CloseClassBodyTag();
+closingClassBodyTag = new this.ClosingClassBodyTag();
 
 }.call(
 	this,
@@ -489,6 +489,6 @@ closeClassBodyTag = new this.CloseClassBodyTag();
 	this.OctalNumberTag,
 	// classPropertySeparatorTag
 	null,
-	// closeClassBodyTag
+	// closingClassBodyTag
 	null
 );

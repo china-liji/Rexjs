@@ -1,5 +1,5 @@
 // 模块输出多成员表达式相关
-!function(OpenMultipleMembersTag, CloseMultipleMembersTag, closeExportMultipleMembersTag){
+!function(OpeningMultipleMembersTag, ClosingMultipleMembersTag, closingExportMultipleMembersTag){
 
 this.PseudoImportExpression = function(ImportExpression){
 	/**
@@ -37,22 +37,22 @@ this.PseudoImportExpression = function(ImportExpression){
 	this.ImportExpression
 );
 
-this.OpenExportMultipleMembersTag = function(PseudoImportExpression, visitor){
+this.OpeningExportMultipleMembersTag = function(PseudoImportExpression, visitor){
 	/**
 	 * 多成员输出起始标签
 	 * @param {Number} _type - 标签类型
 	 */
-	function OpenExportMultipleMembersTag(_type){
-		OpenMultipleMembersTag.call(this, _type);
+	function OpeningExportMultipleMembersTag(_type){
+		OpeningMultipleMembersTag.call(this, _type);
 	};
-	OpenExportMultipleMembersTag = new Rexjs(OpenExportMultipleMembersTag, OpenMultipleMembersTag);
+	OpeningExportMultipleMembersTag = new Rexjs(OpeningExportMultipleMembersTag, OpeningMultipleMembersTag);
 
-	OpenExportMultipleMembersTag.props({
+	OpeningExportMultipleMembersTag.props({
 		/**
 		 * 获取绑定的标签，该标签一般是用于语句的 try、catch 的返回值
 		 */
 		get binding(){
-			return closeExportMultipleMembersTag;
+			return closingExportMultipleMembersTag;
 		},
 		/**
 		 * 标签访问器
@@ -78,23 +78,23 @@ this.OpenExportMultipleMembersTag = function(PseudoImportExpression, visitor){
 		}
 	});
 
-	return OpenExportMultipleMembersTag;
+	return OpeningExportMultipleMembersTag;
 }(
 	this.PseudoImportExpression,
-	OpenMultipleMembersTag.prototype.visitor
+	OpeningMultipleMembersTag.prototype.visitor
 );
 
-this.CloseExportMultipleMembersTag = function(visitor){
+this.ClosingExportMultipleMembersTag = function(visitor){
 	/**
 	 * 多成员输出结束标签
 	 * @param {Number} _type - 标签类型
 	 */
-	function CloseExportMultipleMembersTag(_type){
-		CloseMultipleMembersTag.call(this, _type);
+	function ClosingExportMultipleMembersTag(_type){
+		ClosingMultipleMembersTag.call(this, _type);
 	};
-	CloseExportMultipleMembersTag = new Rexjs(CloseExportMultipleMembersTag, CloseMultipleMembersTag);
+	ClosingExportMultipleMembersTag = new Rexjs(ClosingExportMultipleMembersTag, ClosingMultipleMembersTag);
 
-	CloseExportMultipleMembersTag.props({
+	ClosingExportMultipleMembersTag.props({
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
@@ -118,17 +118,17 @@ this.CloseExportMultipleMembersTag = function(visitor){
 		}
 	});
 
-	return CloseExportMultipleMembersTag;
+	return ClosingExportMultipleMembersTag;
 }(
-	CloseMultipleMembersTag.prototype.visitor
+	ClosingMultipleMembersTag.prototype.visitor
 );
 
-closeExportMultipleMembersTag = new this.CloseExportMultipleMembersTag();
+closingExportMultipleMembersTag = new this.ClosingExportMultipleMembersTag();
 
 }.call(
 	this,
-	this.OpenMultipleMembersTag,
-	this.CloseMultipleMembersTag,
-	// closeExportMultipleMembersTag
+	this.OpeningMultipleMembersTag,
+	this.ClosingMultipleMembersTag,
+	// closingExportMultipleMembersTag
 	null
 );

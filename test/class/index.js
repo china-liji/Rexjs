@@ -59,7 +59,7 @@ test.unit(
 			"类声明缺少类名称",
 			"class {}",
 			function(parser, err){
-				return err.context.tag instanceof Rexjs.OpenBlockTag ? "" : "没有找到错误的起始语句块";
+				return err.context.tag instanceof Rexjs.OpeningBlockTag ? "" : "没有找到错误的起始语句块";
 			}
 		);
 
@@ -100,7 +100,7 @@ test.unit(
 			"类声明后面接小括号",
 			"class A {}()",
 			function(parser, err){
-				return err.context.tag instanceof Rexjs.CloseParenTag ? "" : "没有识别出异常的结束分组小括号";
+				return err.context.tag instanceof Rexjs.ClosingParenTag ? "" : "没有识别出异常的结束分组小括号";
 			}
 		);
 

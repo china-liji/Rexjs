@@ -1,5 +1,5 @@
 // 类的属性名相关
-(function(closeClassComputedPropertyNameTag, require){
+(function(closingClassComputedPropertyNameTag, require){
 
 this.ClassIdentifierPropertyNameTag = function(IdentifierPropertyNameTag){
 	/**
@@ -12,7 +12,7 @@ this.ClassIdentifierPropertyNameTag = function(IdentifierPropertyNameTag){
 	ClassIdentifierPropertyNameTag = new Rexjs(ClassIdentifierPropertyNameTag, IdentifierPropertyNameTag);
 
 	ClassIdentifierPropertyNameTag.props({
-		regexp: new RegExp(IDENTIFIER_REGEXP_SOURCE),
+		regexp: new RegExp(IdentifierPropertyNameTag.REGEXP_SOURCE),
 		require: require
 	});
 
@@ -97,54 +97,54 @@ this.ClassStringPropertyNameTag = function(StringPropertyNameTag){
 	this.StringPropertyNameTag
 );
 
-this.OpenClassComputedPropertyNameTag = function(OpenComputedPropertyNameTag){
+this.OpeningClassComputedPropertyNameTag = function(OpeningComputedPropertyNameTag){
 	/**
 	 * 起始类计算式属性名标签
 	 * @param {Number} _type - 标签类型
 	 */
-	function OpenClassComputedPropertyNameTag(context){
-		OpenComputedPropertyNameTag.call(this, context);
+	function OpeningClassComputedPropertyNameTag(context){
+		OpeningComputedPropertyNameTag.call(this, context);
 	};
-	OpenClassComputedPropertyNameTag = new Rexjs(OpenClassComputedPropertyNameTag, OpenComputedPropertyNameTag);
+	OpeningClassComputedPropertyNameTag = new Rexjs(OpeningClassComputedPropertyNameTag, OpeningComputedPropertyNameTag);
 
-	OpenClassComputedPropertyNameTag.props({
+	OpeningClassComputedPropertyNameTag.props({
 		/**
 		 * 获取绑定的标签，该标签一般是用于语句的 try、catch 的返回值
 		 */
 		get binding(){
-			return closeClassComputedPropertyNameTag;
+			return closingClassComputedPropertyNameTag;
 		}
 	});
 
-	return OpenClassComputedPropertyNameTag;
+	return OpeningClassComputedPropertyNameTag;
 }(
-	this.OpenComputedPropertyNameTag
+	this.OpeningComputedPropertyNameTag
 );
 
-this.CloseClassComputedPropertyNameTag = function(CloseComputedPropertyNameTag){
+this.ClosingClassComputedPropertyNameTag = function(ClosingComputedPropertyNameTag){
 	/**
 	 * 结束类计算式方法名标签
 	 * @param {Number} _type - 标签类型
 	 */
-	function CloseClassComputedPropertyNameTag(context){
-		CloseComputedPropertyNameTag.call(this, context);
+	function ClosingClassComputedPropertyNameTag(context){
+		ClosingComputedPropertyNameTag.call(this, context);
 	};
-	CloseClassComputedPropertyNameTag = new Rexjs(CloseClassComputedPropertyNameTag, CloseComputedPropertyNameTag);
+	ClosingClassComputedPropertyNameTag = new Rexjs(ClosingClassComputedPropertyNameTag, ClosingComputedPropertyNameTag);
 
-	CloseClassComputedPropertyNameTag.props({
+	ClosingClassComputedPropertyNameTag.props({
 		require: require
 	});
 
-	return CloseClassComputedPropertyNameTag;
+	return ClosingClassComputedPropertyNameTag;
 }(
-	this.CloseComputedPropertyNameTag
+	this.ClosingComputedPropertyNameTag
 );
 
-closeClassComputedPropertyNameTag = new this.CloseClassComputedPropertyNameTag();
+closingClassComputedPropertyNameTag = new this.ClosingClassComputedPropertyNameTag();
 
 }.call(
 	this,
-	// closeClassComputedPropertyNameTag
+	// closingClassComputedPropertyNameTag
 	null,
 	// require
 	function(tagsMap){

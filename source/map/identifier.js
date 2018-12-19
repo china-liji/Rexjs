@@ -16,7 +16,7 @@ this.IdentifierExpression = function(AssignableExpression){
 	this.AssignableExpression
 );
 
-this.IdentifierTag = function(IdentifierExpression, RegExg, keywords, regexp){
+this.IdentifierTag = function(IdentifierExpression, RegExg, REGEXP_SOURCE, keywords, regexp){
 	/**
 	 * 标识符标签
 	 * @param {Number} _type - 标签类型
@@ -28,10 +28,18 @@ this.IdentifierTag = function(IdentifierExpression, RegExg, keywords, regexp){
 	
 	IdentifierTag.static({
 		/**
+		 * 获取标识符正则的源字符串
+		 */
+		get REGEXP_SOURCE(){
+			return REGEXP_SOURCE;
+		},
+		/**
 		 * 编译该标识符的表达式
 		 * @param {String} exception - 会意外冲突的内容，则正则不会匹配到该内容
 		 */
-		compileRegExp: function(exception){
+		compileRegExp: function(exception, _join){
+			_join = _join || "";
+
 			return new RegExp(
 				"(?:" +
 					// 当 exception = "var"，匹配 var$、var_、vara、var中文 等情况
@@ -41,7 +49,7 @@ this.IdentifierTag = function(IdentifierExpression, RegExg, keywords, regexp){
 					// 匹配 abc、_abc、$abc、中文abc 等情况
 					"(?!" + exception + ")" +
 				")" +
-				IDENTIFIER_REGEXP_SOURCE
+				REGEXP_SOURCE
 			);
 		},
 		/**
@@ -146,6 +154,8 @@ this.IdentifierTag = function(IdentifierExpression, RegExg, keywords, regexp){
 }(
 	this.IdentifierExpression,
 	RegExp,
+	// REGEXP_SOURCE
+	getIdentifierRegExpSource(),
 	// keywords
 	[
 		"break", "case", "catch", "class", "const", "continue",

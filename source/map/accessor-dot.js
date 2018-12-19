@@ -96,7 +96,7 @@ this.PropertyNameTag = function(IdentifierTag, RegExp){
 	PropertyNameTag = new Rexjs(PropertyNameTag, IdentifierTag);
 	
 	PropertyNameTag.props({
-		regexp: new RegExp(IDENTIFIER_REGEXP_SOURCE),
+		regexp: new RegExp(IdentifierTag.REGEXP_SOURCE),
 		/**
 		 * 标签访问器
 		 * @param {SyntaxParser} parser - 语法解析器

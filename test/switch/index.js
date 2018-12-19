@@ -31,7 +31,7 @@ test.unit(
 			"缺少冒号的 switch case 语句",
 			"switch(true){case 1}",
 			function(parser, err){
-				return err.context.tag instanceof Rexjs.CloseBraceTag ? "" : "没有正确的捕获结束大括号";
+				return err.context.tag instanceof Rexjs.ClosingBraceTag ? "" : "没有正确的捕获结束大括号";
 			}
 		);
 
@@ -39,7 +39,7 @@ test.unit(
 			"缺少冒号的 switch default 语句",
 			"switch(true){default}",
 			function(parser, err){
-				return err.context.tag instanceof Rexjs.CloseBraceTag ? "" : "没有正确的捕获结束大括号";
+				return err.context.tag instanceof Rexjs.ClosingBraceTag ? "" : "没有正确的捕获结束大括号";
 			}
 		);
 

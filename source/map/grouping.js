@@ -1,13 +1,13 @@
 // 分组小括号标签相关
-!function(IdentifierExpression, ArgumentExpression, DefaultArgumentExpression, RestArgumentExpression, RestTag, groupingSeparatorTag, closeGroupingTag, collectTo){
+!function(IdentifierExpression, ArgumentExpression, DefaultArgumentExpression, RestArgumentExpression, RestTag, groupingSeparatorTag, closingGroupingTag, collectTo){
 
 this.GroupingExpression = function(){
 	/**
 	 * 分组小括号表达式
-	 * @param {Context} open - 起始标签上下文
+	 * @param {Context} opening - 起始标签上下文
 	 */
-	function GroupingExpression(open){
-		PartnerExpression.call(this, open);
+	function GroupingExpression(opening){
+		PartnerExpression.call(this, opening);
 
 		this.inner = new ListExpression(null, ",");
 	};
@@ -185,7 +185,7 @@ this.GroupingContextStatement = function(ArgumentsExpression, BinaryExpression, 
 				return;
 			}
 
-			var inner = expression.inner, argumentsExpression = new ArgumentsExpression(expression.open);
+			var inner = expression.inner, argumentsExpression = new ArgumentsExpression(expression.opening);
 
 			// 遍历项
 			for(var i = 0, j = inner.length;i < j;i++){
@@ -209,8 +209,8 @@ this.GroupingContextStatement = function(ArgumentsExpression, BinaryExpression, 
 				}
 			}
 
-			// 设置参数表达式的 close
-			argumentsExpression.close = expression.close;
+			// 设置参数表达式的 closing
+			argumentsExpression.closing = expression.closing;
 			// 将分组小括号表达式转化成参数列表表达式，并替换分组小括号表达式
 			this.target.expression = argumentsExpression;
 		}
@@ -292,27 +292,27 @@ this.GroupingContextStatement = function(ArgumentsExpression, BinaryExpression, 
 	function(parser, expression){
 		var restIndex = expression.restIndex;
 
-		parser.error(restIndex > -1 ? expression.inner[restIndex].context : expression.close);
+		parser.error(restIndex > -1 ? expression.inner[restIndex].context : expression.closing);
 	}
 );
 
-this.OpenGroupingTag = function(OpenParenTag, GroupingExpression, GroupingStatement){
+this.OpeningGroupingTag = function(OpeningParenTag, GroupingExpression, GroupingStatement){
 	/**
 	 * 起始分组小括号标签
 	 * @param {Number} _type - 标签类型
 	 */
-	function OpenGroupingTag(_type){
-		OpenParenTag.call(this, _type);
+	function OpeningGroupingTag(_type){
+		OpeningParenTag.call(this, _type);
 	};
-	OpenGroupingTag = new Rexjs(OpenGroupingTag, OpenParenTag);
+	OpeningGroupingTag = new Rexjs(OpeningGroupingTag, OpeningParenTag);
 	
-	OpenGroupingTag.props({
+	OpeningGroupingTag.props({
 		$class: CLASS_EXPRESSION,
 		/**
 		 * 获取绑定的标签，该标签一般是用于语句的 try、catch 的返回值
 		 */
 		get binding(){
-			return closeGroupingTag;
+			return closingGroupingTag;
 		},
 		/**
 		 * 获取绑定的分隔符标签，该标签一般是用于语句的 try、catch 的返回值
@@ -325,7 +325,7 @@ this.OpenGroupingTag = function(OpenParenTag, GroupingExpression, GroupingStatem
 		 * @param {TagsMap} tagsMap - 标签集合映射
 		 */
 		require: function(tagsMap){
-			return tagsMap.openGroupingContextTags;
+			return tagsMap.openingGroupingContextTags;
 		},
 		/**
 		 * 标签访问器
@@ -342,9 +342,9 @@ this.OpenGroupingTag = function(OpenParenTag, GroupingExpression, GroupingStatem
 		}
 	});
 	
-	return OpenGroupingTag;
+	return OpeningGroupingTag;
 }(
-	this.OpenParenTag,
+	this.OpeningParenTag,
 	this.GroupingExpression,
 	this.GroupingStatement
 );
@@ -429,7 +429,7 @@ this.GroupingSeparatorTag = function(CommaTag, GroupingStatement){
 		 * @param {TagsMap} tagsMap - 标签集合映射
 		 */
 		require: function(tagsMap){
-			return tagsMap.openGroupingContextTags;
+			return tagsMap.openingGroupingContextTags;
 		},
 		/**
 		 * 标签访问器
@@ -450,17 +450,17 @@ this.GroupingSeparatorTag = function(CommaTag, GroupingStatement){
 	this.GroupingStatement
 );
 
-this.CloseGroupingTag = function(CloseParenTag, GroupingContextStatement){
+this.ClosingGroupingTag = function(ClosingParenTag, GroupingContextStatement){
 	/**
 	 * 结束分组小括号标签
 	 * @param {Number} _type - 标签类型
 	 */
-	function CloseGroupingTag(_type){
-		CloseParenTag.call(this, _type);
+	function ClosingGroupingTag(_type){
+		ClosingParenTag.call(this, _type);
 	};
-	CloseGroupingTag = new Rexjs(CloseGroupingTag, CloseParenTag);
+	ClosingGroupingTag = new Rexjs(ClosingGroupingTag, ClosingParenTag);
 	
-	CloseGroupingTag.props({
+	ClosingGroupingTag.props({
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
@@ -476,21 +476,21 @@ this.CloseGroupingTag = function(CloseParenTag, GroupingContextStatement){
 		 * @param {Statements} statements - 当前语句块
 		 */
 		visitor: function(parser, context, statement, statements){
-			// 设置表达式的 close
-			statement.expression.close = context;
+			// 设置表达式的 closing
+			statement.expression.closing = context;
 			// 设置当前语句
 			statements.statement = new GroupingContextStatement(statements);
 		}
 	});
 	
-	return CloseGroupingTag;
+	return ClosingGroupingTag;
 }(
-	this.CloseParenTag,
+	this.ClosingParenTag,
 	this.GroupingContextStatement
 );
 
 groupingSeparatorTag = new this.GroupingSeparatorTag();
-closeGroupingTag = new this.CloseGroupingTag();
+closingGroupingTag = new this.ClosingGroupingTag();
 
 }.call(
 	this,
@@ -501,7 +501,7 @@ closeGroupingTag = new this.CloseGroupingTag();
 	this.RestTag,
 	// groupingSeparatorTag
 	null,
-	// closeGroupingTag
+	// closingGroupingTag
 	null,
 	this.ArgumentNameTag.prototype.collectTo
 );

@@ -1,5 +1,5 @@
 // 对象简写方法相关
-!function(OpenArgumentsTag, closeShorthandMethodArgumentsTag, closeShorthandMethodBodyTag){
+!function(OpeningArgumentsTag, closingShorthandMethodArgumentsTag, closingShorthandMethodBodyTag){
 
 this.ShorthandMethodExpression = function(FunctionExpression){
 	/**
@@ -150,11 +150,11 @@ this.ShorthandMethodBodyStatements = function(FunctionBodyStatements){
 		 * 申请父类调用
 		 * @param {SyntaxParser} parser - 语法解析器
 		 * @param {Context} context - super 关键字上下文
-		 * @param {Context} open - 起始父类调用小括号标签上下文
+		 * @param {Context} opening - 起始父类调用小括号标签上下文
 		 */
-		applySuperCall: function(parser, context, open){
+		applySuperCall: function(parser, context, opening){
 			// 报错
-			parser.error(open, ECMAScriptErrors.SUPER_CALL);
+			parser.error(opening, ECMAScriptErrors.SUPER_CALL);
 		}
 	});
 
@@ -199,22 +199,22 @@ this.PropertyStarTag = function(StarTag){
 	this.StarTag
 );
 
-this.OpenShorthandMethodArgumentsTag = function(ShorthandMethodValueExpression, ShorthandMethodValueStatement, visitor){
+this.OpeningShorthandMethodArgumentsTag = function(ShorthandMethodValueExpression, ShorthandMethodValueStatement, visitor){
 	/**
 	 * 对象起始简写方法参数标签
 	 * @param {Number} _type - 标签类型
 	 */
-	function OpenShorthandMethodArgumentsTag(_type){
-		OpenArgumentsTag.call(this, _type);
+	function OpeningShorthandMethodArgumentsTag(_type){
+		OpeningArgumentsTag.call(this, _type);
 	};
-	OpenShorthandMethodArgumentsTag = new Rexjs(OpenShorthandMethodArgumentsTag, OpenArgumentsTag);
+	OpeningShorthandMethodArgumentsTag = new Rexjs(OpeningShorthandMethodArgumentsTag, OpeningArgumentsTag);
 
-	OpenShorthandMethodArgumentsTag.props({
+	OpeningShorthandMethodArgumentsTag.props({
 		/**
 		 * 获取绑定的标签，该标签一般是用于语句的 try、catch 的返回值
 		 */
 		get binding(){
-			return closeShorthandMethodArgumentsTag;
+			return closingShorthandMethodArgumentsTag;
 		},
 		/**
 		 * 标签访问器
@@ -245,24 +245,24 @@ this.OpenShorthandMethodArgumentsTag = function(ShorthandMethodValueExpression, 
 		}
 	});
 
-	return OpenShorthandMethodArgumentsTag;
+	return OpeningShorthandMethodArgumentsTag;
 }(
 	this.ShorthandMethodValueExpression,
 	this.ShorthandMethodValueStatement,
-	OpenArgumentsTag.prototype.visitor
+	OpeningArgumentsTag.prototype.visitor
 );
 
-this.CloseShorthandMethodArgumentsTag = function(CloseArgumentsTag){
+this.ClosingShorthandMethodArgumentsTag = function(ClosingArgumentsTag){
 	/**
 	 * 对象结束简写方法参数标签
 	 * @param {Number} _type - 标签类型
 	 */
-	function CloseShorthandMethodArgumentsTag(_type){
-		CloseArgumentsTag.call(this, _type);
+	function ClosingShorthandMethodArgumentsTag(_type){
+		ClosingArgumentsTag.call(this, _type);
 	};
-	CloseShorthandMethodArgumentsTag = new Rexjs(CloseShorthandMethodArgumentsTag, CloseArgumentsTag);
+	ClosingShorthandMethodArgumentsTag = new Rexjs(ClosingShorthandMethodArgumentsTag, ClosingArgumentsTag);
 
-	CloseShorthandMethodArgumentsTag.props({
+	ClosingShorthandMethodArgumentsTag.props({
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
@@ -272,27 +272,27 @@ this.CloseShorthandMethodArgumentsTag = function(CloseArgumentsTag){
 		}
 	});
 
-	return CloseShorthandMethodArgumentsTag;
+	return ClosingShorthandMethodArgumentsTag;
 }(
-	this.CloseArgumentsTag
+	this.ClosingArgumentsTag
 );
 
-this.OpenShorthandMethodBodyTag = function(OpenFunctionBodyTag, ShorthandMethodBodyStatements){
+this.OpeningShorthandMethodBodyTag = function(OpeningFunctionBodyTag, ShorthandMethodBodyStatements){
 	/**
 	 * 对象简写方法参数起始标签
 	 * @param {Number} _type - 标签类型
 	 */
-	function OpenShorthandMethodBodyTag(_type){
-		OpenFunctionBodyTag.call(this, _type);
+	function OpeningShorthandMethodBodyTag(_type){
+		OpeningFunctionBodyTag.call(this, _type);
 	};
-	OpenShorthandMethodBodyTag = new Rexjs(OpenShorthandMethodBodyTag, OpenFunctionBodyTag);
+	OpeningShorthandMethodBodyTag = new Rexjs(OpeningShorthandMethodBodyTag, OpeningFunctionBodyTag);
 
-	OpenShorthandMethodBodyTag.props({
+	OpeningShorthandMethodBodyTag.props({
 		/**
 		 * 获取绑定的标签，该标签一般是用于语句的 try、catch 的返回值
 		 */
 		get binding(){
-			return closeShorthandMethodBodyTag;
+			return closingShorthandMethodBodyTag;
 		},
 		/**
 		 * 获取绑定的语句块，一般在子类使用父类逻辑，而不使用父类语句块的情况下使用
@@ -303,23 +303,23 @@ this.OpenShorthandMethodBodyTag = function(OpenFunctionBodyTag, ShorthandMethodB
 		}
 	});
 
-	return OpenShorthandMethodBodyTag;
+	return OpeningShorthandMethodBodyTag;
 }(
-	this.OpenFunctionBodyTag,
+	this.OpeningFunctionBodyTag,
 	this.ShorthandMethodBodyStatements
 );
 
-this.CloseShorthandMethodBodyTag = function(CloseFunctionBodyTag){
+this.ClosingShorthandMethodBodyTag = function(ClosingFunctionBodyTag){
 	/**
 	 * 对象简写方法参数结束标签
 	 * @param {Number} _type - 标签类型
 	 */
-	function CloseShorthandMethodBodyTag(_type){
-		CloseFunctionBodyTag.call(this, _type);
+	function ClosingShorthandMethodBodyTag(_type){
+		ClosingFunctionBodyTag.call(this, _type);
 	};
-	CloseShorthandMethodBodyTag = new Rexjs(CloseShorthandMethodBodyTag, CloseFunctionBodyTag);
+	ClosingShorthandMethodBodyTag = new Rexjs(ClosingShorthandMethodBodyTag, ClosingFunctionBodyTag);
 
-	CloseShorthandMethodBodyTag.props({
+	ClosingShorthandMethodBodyTag.props({
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
@@ -329,19 +329,19 @@ this.CloseShorthandMethodBodyTag = function(CloseFunctionBodyTag){
 		}
 	});
 
-	return CloseShorthandMethodBodyTag;
+	return ClosingShorthandMethodBodyTag;
 }(
-	this.CloseFunctionBodyTag
+	this.ClosingFunctionBodyTag
 );
 
-closeShorthandMethodArgumentsTag = new this.CloseShorthandMethodArgumentsTag();
-closeShorthandMethodBodyTag = new this.CloseShorthandMethodBodyTag();
+closingShorthandMethodArgumentsTag = new this.ClosingShorthandMethodArgumentsTag();
+closingShorthandMethodBodyTag = new this.ClosingShorthandMethodBodyTag();
 
 }.call(
 	this,
-	this.OpenArgumentsTag,
-	// closeShorthandMethodArgumentsTag
+	this.OpeningArgumentsTag,
+	// closingShorthandMethodArgumentsTag
 	null,
-	// closeShorthandMethodBodyTag
+	// closingShorthandMethodBodyTag
 	null
 );

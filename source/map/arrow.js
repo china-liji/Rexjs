@@ -1,5 +1,5 @@
 // 箭头函数相关
-!function(FunctionExpression, ArgumentsExpression, OpenFunctionBodyTag, CloseFunctionBodyTag, closeArrowFunctionBodyTag){
+!function(FunctionExpression, ArgumentsExpression, OpeningFunctionBodyTag, ClosingFunctionBodyTag, closingArrowFunctionBodyTag){
 
 this.ArrowFunctionExpression = function(){
 	/**
@@ -236,10 +236,10 @@ this.ArrowFunctionBodyStatements = function(FunctionBodyStatements){
 		 * 申请父类调用
 		 * @param {SyntaxParser} parser - 语法解析器
 		 * @param {Context} context - super 关键字上下文
-		 * @param {Context} open - 起始父类调用小括号标签上下文
+		 * @param {Context} opening - 起始父类调用小括号标签上下文
 		 */
-		applySuperCall: function(parser, context, open){
-			return this.target.closure.applySuperCall(parser, context, open);
+		applySuperCall: function(parser, context, opening){
+			return this.target.closure.applySuperCall(parser, context, opening);
 		},
 		/**
 		 * 申请应用 this 关键字
@@ -345,22 +345,22 @@ this.ArrowTag = function(ExpressionSeparatorTag, ArrowFunctionExpression, Single
 	this.ArrowContextStatement
 );
 
-this.OpenArrowFunctionBodyTag = function(ArrowFunctionBodyStatements, visitor){
+this.OpeningArrowFunctionBodyTag = function(ArrowFunctionBodyStatements, visitor){
 	/**
 	 * 起始箭头函数主体标签
 	 * @param {Number} _type - 标签类型
 	 */
-	function OpenArrowFunctionBodyTag(_type){
-		OpenFunctionBodyTag.call(this, _type);
+	function OpeningArrowFunctionBodyTag(_type){
+		OpeningFunctionBodyTag.call(this, _type);
 	};
-	OpenArrowFunctionBodyTag = new Rexjs(OpenArrowFunctionBodyTag, OpenFunctionBodyTag);
+	OpeningArrowFunctionBodyTag = new Rexjs(OpeningArrowFunctionBodyTag, OpeningFunctionBodyTag);
 
-	OpenArrowFunctionBodyTag.props({
+	OpeningArrowFunctionBodyTag.props({
 		/**
 		 * 获取绑定的标签，该标签一般是用于语句的 try、catch 的返回值
 		 */
 		get binding(){
-			return closeArrowFunctionBodyTag;
+			return closingArrowFunctionBodyTag;
 		},
 		/**
 		 * 获取绑定的语句块，一般在子类使用父类逻辑，而不使用父类语句块的情况下使用
@@ -369,7 +369,7 @@ this.OpenArrowFunctionBodyTag = function(ArrowFunctionBodyStatements, visitor){
 		getBoundStatements: function(statements){
 			return new ArrowFunctionBodyStatements(statements);
 		},
-		order: ECMAScriptOrders.OPEN_ARROW_FUNCTION_BODY,
+		order: ECMAScriptOrders.OPENING_ARROW_FUNCTION_BODY,
 		/**
 		 * 标签访问器
 		 * @param {SyntaxParser} parser - 语法解析器
@@ -385,29 +385,29 @@ this.OpenArrowFunctionBodyTag = function(ArrowFunctionBodyStatements, visitor){
 		}
 	});
 
-	return OpenArrowFunctionBodyTag;
+	return OpeningArrowFunctionBodyTag;
 }(
 	this.ArrowFunctionBodyStatements,
-	OpenFunctionBodyTag.prototype.visitor
+	OpeningFunctionBodyTag.prototype.visitor
 );
 
-this.CloseArrowFunctionBodyTag = function(visitor){
+this.ClosingArrowFunctionBodyTag = function(visitor){
 	/**
 	 * 结束箭头函数主体标签
 	 * @param {Number} _type - 标签类型
 	 */
-	function CloseArrowFunctionBodyTag(_type){
-		CloseFunctionBodyTag.call(this, _type);
+	function ClosingArrowFunctionBodyTag(_type){
+		ClosingFunctionBodyTag.call(this, _type);
 	};
-	CloseArrowFunctionBodyTag = new Rexjs(CloseArrowFunctionBodyTag, CloseFunctionBodyTag);
+	ClosingArrowFunctionBodyTag = new Rexjs(ClosingArrowFunctionBodyTag, ClosingFunctionBodyTag);
 
-	CloseArrowFunctionBodyTag.props({
+	ClosingArrowFunctionBodyTag.props({
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
 		 */
 		require: function(tagsMap){
-			return tagsMap.closeArrowFunctionBodyContextTags;
+			return tagsMap.closingArrowFunctionBodyContextTags;
 		},
 		/**
 		 * 标签访问器
@@ -425,19 +425,19 @@ this.CloseArrowFunctionBodyTag = function(visitor){
 		}
 	});
 
-	return CloseArrowFunctionBodyTag;
+	return ClosingArrowFunctionBodyTag;
 }(
-	CloseFunctionBodyTag.prototype.visitor
+	ClosingFunctionBodyTag.prototype.visitor
 );
 
-closeArrowFunctionBodyTag = new this.CloseArrowFunctionBodyTag();
+closingArrowFunctionBodyTag = new this.ClosingArrowFunctionBodyTag();
 
 }.call(
 	this,
 	this.FunctionExpression,
 	this.ArgumentsExpression,
-	this.OpenFunctionBodyTag,
-	this.CloseFunctionBodyTag,
-	// closeArrowFunctionBodyTag
+	this.OpeningFunctionBodyTag,
+	this.ClosingFunctionBodyTag,
+	// closingArrowFunctionBodyTag
 	null
 );

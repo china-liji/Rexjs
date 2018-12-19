@@ -20,55 +20,55 @@ this.AsTag = function(AsExpression){
 	this.AsExpression
 );
 
-this.CloseBraceTag = function(){
+this.ClosingBraceTag = function(){
 	/**
 	 * 结束大括号标签
 	 * @param {Number} _type - 标签类型
 	 */
-	function CloseBraceTag(_type){
+	function ClosingBraceTag(_type){
 		SyntaxTag.call(this, _type);
 	};
-	CloseBraceTag = new Rexjs(CloseBraceTag, SyntaxTag);
+	ClosingBraceTag = new Rexjs(ClosingBraceTag, SyntaxTag);
 
-	CloseBraceTag.props({
+	ClosingBraceTag.props({
 		regexp: /\}/
 	});
 	
-	return CloseBraceTag;
+	return ClosingBraceTag;
 }();
 
-this.CloseBracketTag = function(){
+this.ClosingBracketTag = function(){
 	/**
 	 * 结束中括号标签
 	 * @param {Number} _type - 标签类型
 	 */
-	function CloseBracketTag(_type){
+	function ClosingBracketTag(_type){
 		SyntaxTag.call(this, _type);
 	};
-	CloseBracketTag = new Rexjs(CloseBracketTag, SyntaxTag);
+	ClosingBracketTag = new Rexjs(ClosingBracketTag, SyntaxTag);
 
-	CloseBracketTag.props({
+	ClosingBracketTag.props({
 		regexp: /\]/
 	});
 	
-	return CloseBracketTag;
+	return ClosingBracketTag;
 }();
 
-this.CloseParenTag = function(){
+this.ClosingParenTag = function(){
 	/**
 	 * 结束小括号标签
 	 * @param {Number} _type - 标签类型
 	 */
-	function CloseParenTag(_type){
+	function ClosingParenTag(_type){
 		SyntaxTag.call(this, _type);
 	};
-	CloseParenTag = new Rexjs(CloseParenTag, SyntaxTag);
+	ClosingParenTag = new Rexjs(ClosingParenTag, SyntaxTag);
 
-	CloseParenTag.props({
+	ClosingParenTag.props({
 		regexp: /\)/
 	});
 	
-	return CloseParenTag;
+	return ClosingParenTag;
 }();
 
 this.CommentTag = function(){
@@ -210,55 +210,55 @@ this.ModuleTag = function(FLOW_MAIN){
 	ECMAScriptStatement.FLOW_MAIN
 );
 
-this.OpenBraceTag = function(){
+this.OpeningBraceTag = function(){
 	/**
 	 * 起始大括号标签
 	 * @param {Number} _type - 标签类型
 	 */
-	function OpenBraceTag(_type){
+	function OpeningBraceTag(_type){
 		SyntaxTag.call(this, _type);
 	};
-	OpenBraceTag = new Rexjs(OpenBraceTag, SyntaxTag);
+	OpeningBraceTag = new Rexjs(OpeningBraceTag, SyntaxTag);
 
-	OpenBraceTag.props({
+	OpeningBraceTag.props({
 		regexp: /\{/
 	});
 	
-	return OpenBraceTag;
+	return OpeningBraceTag;
 }();
 
-this.OpenBracketTag = function(){
+this.OpeningBracketTag = function(){
 	/**
 	 * 起始中括号标签
 	 * @param {Number} _type - 标签类型
 	 */
-	function OpenBracketTag(_type){
+	function OpeningBracketTag(_type){
 		SyntaxTag.call(this, _type);
 	};
-	OpenBracketTag = new Rexjs(OpenBracketTag, SyntaxTag);
+	OpeningBracketTag = new Rexjs(OpeningBracketTag, SyntaxTag);
 
-	OpenBracketTag.props({
+	OpeningBracketTag.props({
 		regexp: /\[/
 	});
 	
-	return OpenBracketTag;
+	return OpeningBracketTag;
 }();
 
-this.OpenParenTag = function(){
+this.OpeningParenTag = function(){
 	/**
 	 * 起始小括号标签
 	 * @param {Number} _type - 标签类型
 	 */
-	function OpenParenTag(_type){
+	function OpeningParenTag(_type){
 		SyntaxTag.call(this, _type);
 	};
-	OpenParenTag = new Rexjs(OpenParenTag, SyntaxTag);
+	OpeningParenTag = new Rexjs(OpeningParenTag, SyntaxTag);
 
-	OpenParenTag.props({
+	OpeningParenTag.props({
 		regexp: /\(/
 	});
 	
-	return OpenParenTag;
+	return OpeningParenTag;
 }();
 
 this.SemicolonTag = function(){

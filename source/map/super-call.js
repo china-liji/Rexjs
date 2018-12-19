@@ -1,14 +1,14 @@
 // 父类调用相关
-!function(CallExpression, OpenCallTag){
+!function(CallExpression, OpeningCallTag){
 
 this.SuperCallExpression = function(extractTo){
 	/**
 	 * 父类调用表达式
-	 * @param {Context} open - 起始标签上下文
+	 * @param {Context} opening - 起始标签上下文
 	 * @param {ECMAScriptStatement} statement - 当前语句
 	 */
-	function SuperCallExpression(open, statement){
-		CallExpression.call(this, open, statement);
+	function SuperCallExpression(opening, statement){
+		CallExpression.call(this, opening, statement);
 
 		this.constructorReference = statement.statements.closure.reference;
 	};
@@ -73,11 +73,11 @@ this.SuperCallExpression = function(extractTo){
 this.SuperMethodCallExpression = function(extractTo){
 	/**
 	 * 父类方法调用表达式
-	 * @param {Context} open - 起始标签上下文
+	 * @param {Context} opening - 起始标签上下文
 	 * @param {ECMAScriptStatement} statement - 当前语句
 	 */
-	function SuperMethodCallExpression(open, statement){
-		CallExpression.call(this, open, statement);
+	function SuperMethodCallExpression(opening, statement){
+		CallExpression.call(this, opening, statement);
 
 		this.boundThis = statement.statements.closure.reference;
 	};
@@ -128,17 +128,17 @@ this.SuperMethodCallExpression = function(extractTo){
 	CallExpression.prototype.extractTo
 );
 
-this.OpenSuperCallTag = function(SuperCallExpression, visitor){
+this.OpeningSuperCallTag = function(SuperCallExpression, visitor){
 	/**
 	 * 起始父类调用小括号标签
 	 * @param {Number} _type - 标签类型
 	 */
-	function OpenSuperCallTag(_type){
-		OpenCallTag.call(this, _type);
+	function OpeningSuperCallTag(_type){
+		OpeningCallTag.call(this, _type);
 	};
-	OpenSuperCallTag = new Rexjs(OpenSuperCallTag, OpenCallTag);
+	OpeningSuperCallTag = new Rexjs(OpeningSuperCallTag, OpeningCallTag);
 	
-	OpenSuperCallTag.props({
+	OpeningSuperCallTag.props({
 		$type: TYPE_MISTAKABLE,
 		/**
 		 * 获取绑定的表达式，一般在子类使用父类逻辑，而不使用父类表达式的情况下使用
@@ -164,23 +164,23 @@ this.OpenSuperCallTag = function(SuperCallExpression, visitor){
 		}
 	});
 	
-	return OpenSuperCallTag;
+	return OpeningSuperCallTag;
 }(
 	this.SuperCallExpression,
-	OpenCallTag.prototype.visitor
+	OpeningCallTag.prototype.visitor
 );
 
-this.OpenSuperMethodCallTag = function(SuperMethodCallExpression){
+this.OpeningSuperMethodCallTag = function(SuperMethodCallExpression){
 	/**
 	 * 起始父类方法调用小括号标签
 	 * @param {Number} _type - 标签类型
 	 */
-	function OpenSuperMethodCallTag(_type){
-		OpenCallTag.call(this, _type);
+	function OpeningSuperMethodCallTag(_type){
+		OpeningCallTag.call(this, _type);
 	};
-	OpenSuperMethodCallTag = new Rexjs(OpenSuperMethodCallTag, OpenCallTag);
+	OpeningSuperMethodCallTag = new Rexjs(OpeningSuperMethodCallTag, OpeningCallTag);
 	
-	OpenSuperMethodCallTag.props({
+	OpeningSuperMethodCallTag.props({
 		$type: TYPE_MISTAKABLE,
 		/**
 		 * 获取绑定的表达式，一般在子类使用父类逻辑，而不使用父类表达式的情况下使用
@@ -190,10 +190,10 @@ this.OpenSuperMethodCallTag = function(SuperMethodCallExpression){
 		getBoundExpression: function(context, statement){
 			return new SuperMethodCallExpression(context, statement);
 		},
-		order: ECMAScriptOrders.OPEN_SUPER_METHOD_CALL
+		order: ECMAScriptOrders.OPENING_SUPER_METHOD_CALL
 	});
 	
-	return OpenSuperMethodCallTag;
+	return OpeningSuperMethodCallTag;
 }(
 	this.SuperMethodCallExpression
 );
@@ -201,5 +201,5 @@ this.OpenSuperMethodCallTag = function(SuperMethodCallExpression){
 }.call(
 	this,
 	this.CallExpression,
-	this.OpenCallTag
+	this.OpeningCallTag
 );

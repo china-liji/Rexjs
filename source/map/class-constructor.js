@@ -1,5 +1,5 @@
 // 构造函数标签相关
-!function(IdentifierPropertyNameExpression, ShorthandMethodBodyStatements, OpenShorthandMethodArgumentsTag, CloseShorthandMethodBodyTag, PHASE_NONE, PHASE_WAITING_CALL, PHASE_CALLED, closeConstructorArgumentsTag, closeConstructorBodyTag){
+!function(IdentifierPropertyNameExpression, ShorthandMethodBodyStatements, OpeningShorthandMethodArgumentsTag, ClosingShorthandMethodBodyTag, PHASE_NONE, PHASE_WAITING_CALL, PHASE_CALLED, closingConstructorArgumentsTag, closingConstructorBodyTag){
 
 this.ConstructorNameExpression = function(){
 	/**
@@ -149,15 +149,15 @@ this.ConstructorBodyStatements = function(extractTo, applyAfterSuperCall){
 		 * 申请父类调用
 		 * @param {SyntaxParser} parser - 语法解析器
 		 * @param {Context} context - super 关键字上下文
-		 * @param {Context} open - 起始父类调用小括号标签上下文
+		 * @param {Context} opening - 起始父类调用小括号标签上下文
 		 */
-		applySuperCall: function(parser, context, open){
+		applySuperCall: function(parser, context, opening){
 			// 判断阶段
 			switch(this.phase){
 				// 如果已经调用过 super
 				case PHASE_CALLED:
 					// 报错
-					parser.error(open, ECMAScriptErrors.SUPER_RECALL);
+					parser.error(opening, ECMAScriptErrors.SUPER_RECALL);
 					return;
 
 				// 如果正在等待调用 super
@@ -166,7 +166,7 @@ this.ConstructorBodyStatements = function(extractTo, applyAfterSuperCall){
 
 				default:
 					// 报错
-					parser.error(open, ECMAScriptErrors.SUPER_CALL_UNEXTEND);
+					parser.error(opening, ECMAScriptErrors.SUPER_CALL_UNEXTEND);
 					return;
 			}
 
@@ -289,22 +289,22 @@ this.ConstructorTag = function(WordPropertyNameTag, ConstructorPropertyExpressio
 	this.ConstructorPropertyExpression
 );
 
-this.OpenConstructorArgumentsTag = function(ConstructorNameExpression, visitor){
+this.OpeningConstructorArgumentsTag = function(ConstructorNameExpression, visitor){
 	/**
 	 * 构造函数参数起始标签
 	 * @param {Number} _type - 标签类型
 	 */
-	function OpenConstructorArgumentsTag(_type){
-		OpenShorthandMethodArgumentsTag.call(this, _type);
+	function OpeningConstructorArgumentsTag(_type){
+		OpeningShorthandMethodArgumentsTag.call(this, _type);
 	};
-	OpenConstructorArgumentsTag = new Rexjs(OpenConstructorArgumentsTag, OpenShorthandMethodArgumentsTag);
+	OpeningConstructorArgumentsTag = new Rexjs(OpeningConstructorArgumentsTag, OpeningShorthandMethodArgumentsTag);
 
-	OpenConstructorArgumentsTag.props({
+	OpeningConstructorArgumentsTag.props({
 		/**
 		 * 获取绑定的标签，该标签一般是用于语句的 try、catch 的返回值
 		 */
 		get binding(){
-			return closeConstructorArgumentsTag;
+			return closingConstructorArgumentsTag;
 		},
 		/**
 		 * 标签访问器
@@ -322,23 +322,23 @@ this.OpenConstructorArgumentsTag = function(ConstructorNameExpression, visitor){
 		}
 	});
 
-	return OpenConstructorArgumentsTag;
+	return OpeningConstructorArgumentsTag;
 }(
 	this.ConstructorNameExpression,
-	OpenShorthandMethodArgumentsTag.prototype.visitor
+	OpeningShorthandMethodArgumentsTag.prototype.visitor
 );
 
-this.CloseConstructorArgumentsTag = function(CloseShorthandMethodArgumentsTag){
+this.ClosingConstructorArgumentsTag = function(ClosingShorthandMethodArgumentsTag){
 	/**
 	 * 构造函数参数结束标签
 	 * @param {Number} _type - 标签类型
 	 */
-	function CloseConstructorArgumentsTag(_type){
-		CloseShorthandMethodArgumentsTag.call(this, _type);
+	function ClosingConstructorArgumentsTag(_type){
+		ClosingShorthandMethodArgumentsTag.call(this, _type);
 	};
-	CloseConstructorArgumentsTag = new Rexjs(CloseConstructorArgumentsTag, CloseShorthandMethodArgumentsTag);
+	ClosingConstructorArgumentsTag = new Rexjs(ClosingConstructorArgumentsTag, ClosingShorthandMethodArgumentsTag);
 
-	CloseConstructorArgumentsTag.props({
+	ClosingConstructorArgumentsTag.props({
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
@@ -348,27 +348,27 @@ this.CloseConstructorArgumentsTag = function(CloseShorthandMethodArgumentsTag){
 		}
 	});
 
-	return CloseConstructorArgumentsTag;
+	return ClosingConstructorArgumentsTag;
 }(
-	this.CloseShorthandMethodArgumentsTag
+	this.ClosingShorthandMethodArgumentsTag
 );
 
-this.OpenConstructorBodyTag = function(OpenShorthandMethodBodyTag, ConstructorBodyStatements){
+this.OpeningConstructorBodyTag = function(OpeningShorthandMethodBodyTag, ConstructorBodyStatements){
 	/**
 	 * 构造函数起始主体标签
 	 * @param {Number} _type - 标签类型
 	 */
-	function OpenConstructorBodyTag(_type){
-		OpenShorthandMethodBodyTag.call(this, _type);
+	function OpeningConstructorBodyTag(_type){
+		OpeningShorthandMethodBodyTag.call(this, _type);
 	};
-	OpenConstructorBodyTag = new Rexjs(OpenConstructorBodyTag, OpenShorthandMethodBodyTag);
+	OpeningConstructorBodyTag = new Rexjs(OpeningConstructorBodyTag, OpeningShorthandMethodBodyTag);
 
-	OpenConstructorBodyTag.props({
+	OpeningConstructorBodyTag.props({
 		/**
 		 * 获取绑定的标签，该标签一般是用于语句的 try、catch 的返回值
 		 */
 		get binding(){
-			return closeConstructorBodyTag;
+			return closingConstructorBodyTag;
 		},
 		/**
 		 * 获取绑定的语句块，一般在子类使用父类逻辑，而不使用父类语句块的情况下使用
@@ -379,23 +379,23 @@ this.OpenConstructorBodyTag = function(OpenShorthandMethodBodyTag, ConstructorBo
 		}
 	});
 
-	return OpenConstructorBodyTag;
+	return OpeningConstructorBodyTag;
 }(
-	this.OpenShorthandMethodBodyTag,
+	this.OpeningShorthandMethodBodyTag,
 	this.ConstructorBodyStatements
 );
 
-this.CloseConstructorBodyTag = function(visitor){
+this.ClosingConstructorBodyTag = function(visitor){
 	/**
 	 * 构造函数起始主体标签
 	 * @param {Number} _type - 标签类型
 	 */
-	function CloseConstructorBodyTag(_type){
-		CloseShorthandMethodBodyTag.call(this, _type);
+	function ClosingConstructorBodyTag(_type){
+		ClosingShorthandMethodBodyTag.call(this, _type);
 	};
-	CloseConstructorBodyTag = new Rexjs(CloseConstructorBodyTag, CloseShorthandMethodBodyTag);
+	ClosingConstructorBodyTag = new Rexjs(ClosingConstructorBodyTag, ClosingShorthandMethodBodyTag);
 
-	CloseConstructorBodyTag.props({
+	ClosingConstructorBodyTag.props({
 		/**
 		 * 标签访问器
 		 * @param {SyntaxParser} parser - 语法解析器
@@ -416,28 +416,28 @@ this.CloseConstructorBodyTag = function(visitor){
 		}
 	});
 
-	return CloseConstructorBodyTag;
+	return ClosingConstructorBodyTag;
 }(
-	CloseShorthandMethodBodyTag.prototype.visitor
+	ClosingShorthandMethodBodyTag.prototype.visitor
 );
 
-closeConstructorArgumentsTag = new this.CloseConstructorArgumentsTag();
-closeConstructorBodyTag = new this.CloseConstructorBodyTag();
+closingConstructorArgumentsTag = new this.ClosingConstructorArgumentsTag();
+closingConstructorBodyTag = new this.ClosingConstructorBodyTag();
 
 }.call(
 	this,
 	this.IdentifierPropertyNameExpression,
 	this.ShorthandMethodBodyStatements,
-	this.OpenShorthandMethodArgumentsTag,
-	this.CloseShorthandMethodBodyTag,
+	this.OpeningShorthandMethodArgumentsTag,
+	this.ClosingShorthandMethodBodyTag,
 	// PHASE_NONE
 	0,
 	// PHASE_WAITING_CALL
 	1,
 	// PHASE_CALLED
 	2,
-	// closeConstructorArgumentsTag
+	// closingConstructorArgumentsTag
 	null,
-	// closeConstructorBodyTag
+	// closingConstructorBodyTag
 	null
 );

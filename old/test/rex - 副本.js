@@ -2032,7 +2032,7 @@ this.GroupingTag = function(SyntaxTag){
 	this.SyntaxTag
 );
 
-this.OpeningTag = function(GroupingTag){
+this.OpeningingTag = function(GroupingTag){
 	/**
 	 * 起始标签，供于语法树匹配
 	 * @param {String} name - 标签名称
@@ -2040,7 +2040,7 @@ this.OpeningTag = function(GroupingTag){
 	 * @param {String} _id - 标签标识符，用于同名标签，默认等于 name
 	 * @param {String} _closingTagId - 如果提供该参数，则当溢出时会自动创建及关闭标签节点，并触该参数事件
 	 */
-	function OpeningTag(name, regexp, _id, _closingTagId){
+	function OpeningingTag(name, regexp, _id, _closingTagId){
 		if(
 			!_closingTagId
 		){
@@ -2052,14 +2052,14 @@ this.OpeningTag = function(GroupingTag){
 			closingTagId : _closingTagId
 		});
 	};
-	OpeningTag = new Class(OpeningTag, GroupingTag);
+	OpeningingTag = new Class(OpeningingTag, GroupingTag);
 	
-	OpeningTag.props({
+	OpeningingTag.props({
 		auto : false,
 		closingTagId : ""
 	});
 
-	return OpeningTag;
+	return OpeningingTag;
 }(
 	this.GroupingTag
 );
@@ -3645,7 +3645,7 @@ this.SyntaxElement = function(SyntaxNode, createElement){
 	}
 );
 
-this.SyntaxTree = function(SyntaxElement, PlainText, TextTag, MultipleTag, OpeningTag, ClosingTag, COMMENT_REGEXP, current, repeat){
+this.SyntaxTree = function(SyntaxElement, PlainText, TextTag, MultipleTag, OpeningingTag, ClosingTag, COMMENT_REGEXP, current, repeat){
 	/**
 	 * 语法树，用于代码解析
 	 * @param {String} code - 需要提供的语法代码
@@ -3713,7 +3713,7 @@ this.SyntaxTree = function(SyntaxElement, PlainText, TextTag, MultipleTag, Openi
 								break;
 								
 							// 如果是起始标签
-							case tag instanceof OpeningTag :
+							case tag instanceof OpeningingTag :
 								this.appendOpening(tag.name, str, tag.id, tag.auto, tag.closingTagId);
 								break;
 							
@@ -3767,7 +3767,7 @@ this.SyntaxTree = function(SyntaxElement, PlainText, TextTag, MultipleTag, Openi
 	this.PlainText,
 	this.TextTag,
 	this.MultipleTag,
-	this.OpeningTag,
+	this.OpeningingTag,
 	this.ClosingTag,
 	// COMMENT_REGEXP
 	/\/\*[\S\s]*?\*\/|\/\/.*/g,
@@ -4250,7 +4250,7 @@ this.Package = function(List, toArray){
 
 
 // 一些基本的解析器
-(function(ECMAScript6Parser, SyntaxTree, SyntaxTag, OperatorTag, OpeningTag, ClosingTag, TextTag, DoubleOperatorTag, DeclarationTag, KeywordTag, EndingTypes){
+(function(ECMAScript6Parser, SyntaxTree, SyntaxTag, OperatorTag, OpeningingTag, ClosingTag, TextTag, DoubleOperatorTag, DeclarationTag, KeywordTag, EndingTypes){
 
 this.ECMAScript6Expression = function(storage){
 	/**
@@ -4639,7 +4639,7 @@ this.ECMAScript6Brace = function(OPENING_BRACE_REGEXP, CLOSING_BRACE_REGEXP){
 		syntaxTree
 			// 起始大括号
 			.add(
-				new OpeningTag(
+				new OpeningingTag(
 					"brace",
 					OPENING_BRACE_REGEXP,
 					"openingBrace"
@@ -4689,7 +4689,7 @@ this.ECMAScript6Bracket = function(OPENING_BRACKET_REGEXP, CLOSING_BRACKET_REGEX
 		syntaxTree
 			// 起始小括号
 			.add(
-				new OpeningTag(
+				new OpeningingTag(
 					"bracket",
 					OPENING_BRACKET_REGEXP,
 					"openingBracket"
@@ -4728,7 +4728,7 @@ this.ECMAScript6Parenthesis = function(OPENING_PARENTHESISI_REGEXP, CLOSING_PARE
 		syntaxTree
 			// 起始小括号
 			.add(
-				new OpeningTag(
+				new OpeningingTag(
 					"parenthesis",
 					OPENING_PARENTHESISI_REGEXP,
 					"openingParenthesis"
@@ -5601,7 +5601,7 @@ this.BasicPackage = function(Package, contents){
 	this.SyntaxTree,
 	this.SyntaxTag,
 	this.OperatorTag,
-	this.OpeningTag,
+	this.OpeningingTag,
 	this.ClosingTag,
 	this.TextTag,
 	this.DoubleOperatorTag,
@@ -6977,7 +6977,7 @@ this.ECMAScript6ArrayDestructuring = function(ClosingTag, ARRAY_DESTRUCTURING_RE
 
 
 // 函数相关解析器
-(function(ECMAScript6Parser, SyntaxTree, SyntaxTag, OpeningTag, KeywordTag, forEach){
+(function(ECMAScript6Parser, SyntaxTree, SyntaxTag, OpeningingTag, KeywordTag, forEach){
 
 this.ECMAScript6DefaultArgument = function(){
 	/**
@@ -7161,7 +7161,7 @@ this.ECMAScript6FunctionContext = function(OPENING_BRACE_WITH_STRING_REGEXP, dep
 	function ECMAScript6FunctionContext(syntaxTree){
 		syntaxTree
 			.add(
-				new OpeningTag(
+				new OpeningingTag(
 					"brace",
 					OPENING_BRACE_WITH_STRING_REGEXP,
 					"openingBraceWithString"
@@ -7624,7 +7624,7 @@ this.FunctionPackage = function(Package, contents){
 	this.ECMAScript6Parser,
 	this.SyntaxTree,
 	this.SyntaxTag,
-	this.OpeningTag,
+	this.OpeningingTag,
 	this.KeywordTag,
 	Array.prototype.forEach
 ));
@@ -11838,7 +11838,7 @@ this.ECMAScript6Of = function(ECMAScript6Expression, OfIterator, KeywordTag, OF_
 // 模板相关
 (function(ECMAScript6Parser, SyntaxTree, SyntaxTag, Array){
 
-this.ECMAScript6Template = function(OpeningTag, BACKTICK_REGEXP, $OPENING_BRACE_REGEXP, plain, withBackslash, protectFragmentBetween){
+this.ECMAScript6Template = function(OpeningingTag, BACKTICK_REGEXP, $OPENING_BRACE_REGEXP, plain, withBackslash, protectFragmentBetween){
 	function ECMAScript6Template(syntaxTree){
 		///	<summary>
 		///	模板解析器。
@@ -11852,7 +11852,7 @@ this.ECMAScript6Template = function(OpeningTag, BACKTICK_REGEXP, $OPENING_BRACE_
 				)
 			)
 			.add(
-				new OpeningTag(
+				new OpeningingTag(
 					"brace",
 					$OPENING_BRACE_REGEXP,
 					"$openingBrace"
@@ -12016,7 +12016,7 @@ this.ECMAScript6Template = function(OpeningTag, BACKTICK_REGEXP, $OPENING_BRACE_
 	
 	return ECMAScript6Template;
 }(
-	this.OpeningTag,
+	this.OpeningingTag,
 	// BACKTICK_REGEXP
 	/`/,
 	// $OPENING_BRACE_REGEXP
