@@ -690,8 +690,8 @@ this.SpreadItem = function(forEach, push){
 	SpreadItem.static({
 		/**
 		 * 给对象赋值，即将另一个对象合并
-		 * @param {Object} object - 需要赋值的对象
-		 * @param {Object} target - 被赋值或合并的对象
+		 * @param {Object} object - 需要被赋值的对象
+		 * @param {Object} target - 用来赋值或合并的对象
 		 */
 		assign: function(object, target){
 			// 遍历
@@ -1404,6 +1404,53 @@ new this.ModuleReady();
 			listener.call(module, _progress);
 		});
 	}
+);
+
+// jsx 相关
+!function(){
+
+this.JSX = function(SpreadItem, toArray){
+	/**
+	 * JSX 模板
+	 * @param {Function, String} type - 元素类型
+	 */
+	function JSX(type){
+		var props = {};
+
+		// 从第二个参数开始遍历
+		for(var i = 1, j = arguments.length;i < j;i += 2){
+			var key = arguments[i];
+
+			// 如果是拓展属性
+			if(key instanceof SpreadItem){
+				SpreadItem.assign(props, key.value);
+				continue;
+			}
+
+			// 设置 props 的键值
+			props[key] = arguments[i + 1];
+		}
+
+		this.type = type;
+		this.props = props;
+	};
+	JSX = new Rexjs(JSX);
+
+	JSX.props({
+		key: null,
+		props: null,
+		ref: null,
+		type: null
+	});
+
+	return JSX;
+}(
+	this.SpreadItem,
+	Rexjs.toArray
+);
+
+}.call(
+	this
 );
 
 Rexjs.static(this);

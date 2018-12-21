@@ -82,7 +82,7 @@ this.ECMAScriptTags = function(DefaultTags, list){
 		this.OpeningArrayTag,
 		this.OpeningBlockTag,
 		this.OpeningGroupingTag,
-		this.OpeningJSXTag,
+		this.OpeningJSXElementTag,
 		this.OpeningMultiLineCommentTag,
 		this.OpeningTemplateTag,
 		this.PlusTag,

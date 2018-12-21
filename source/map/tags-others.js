@@ -945,6 +945,122 @@ this.IfConditionTags = function(OpeningIfConditionTag){
 	this.OpeningIfConditionTag
 );
 
+this.JSXTypeContextTags = function(JSXAttributeNameTag, OpeningJSXSpreadPlaceHolderTag, JSXSelfClosingBackslashTag){
+	/**
+	 * JSX 类型名称上下文标签列表
+	 */
+	function JSXTypeContextTags(){
+		IllegalTags.call(this);
+		
+		this.register(
+			new JSXAttributeNameTag(),
+			new OpeningJSXSpreadPlaceHolderTag(),
+			new JSXSelfClosingBackslashTag()
+		);
+	};
+	JSXTypeContextTags = new Rexjs(JSXTypeContextTags, IllegalTags);
+
+	return JSXTypeContextTags;
+}(
+	this.JSXAttributeNameTag,
+	this.OpeningJSXSpreadPlaceHolderTag,
+	this.JSXSelfClosingBackslashTag
+);
+
+this.JSXAttributeAssginmentContextTags = function(JSXStringTag, OpeningJSXAttributePlaceHolderTag){
+	/**
+	 * JSX 名称上下文标签列表
+	 */
+	function JSXAttributeAssginmentContextTags(){
+		IllegalTags.call(this);
+		
+		this.register(
+			new JSXStringTag(),
+			new OpeningJSXAttributePlaceHolderTag()
+		);
+	};
+	JSXAttributeAssginmentContextTags = new Rexjs(JSXAttributeAssginmentContextTags, IllegalTags);
+
+	return JSXAttributeAssginmentContextTags;
+}(
+	this.JSXStringTag,
+	this.OpeningJSXAttributePlaceHolderTag
+);
+
+this.JSXAttributeNameContextTags = function(JSXTypeContextTags, JSXAttributeAssginmentTag){
+	/**
+	 * JSX 属性名上下文标签列表
+	 */
+	function JSXAttributeNameContextTags(){
+		JSXTypeContextTags.call(this);
+
+		this.register(
+			new JSXAttributeAssginmentTag()
+		);
+	};
+	JSXAttributeNameContextTags = new Rexjs(JSXAttributeNameContextTags, JSXTypeContextTags);
+
+	return JSXAttributeNameContextTags;
+}(
+	this.JSXTypeContextTags,
+	this.JSXAttributeAssginmentTag
+);
+
+this.JSXIdentifierContextTags = function(JSXTypeContextTags, JSXMemberAccessorTag){
+	/**
+	 * JSX 名称标识符上下文标签列表
+	 */
+	function JSXIdentifierContextTags(){
+		JSXTypeContextTags.call(this);
+		
+		this.register(
+			new JSXMemberAccessorTag()
+		);
+	};
+	JSXIdentifierContextTags = new Rexjs(JSXIdentifierContextTags, JSXTypeContextTags);
+
+	return JSXIdentifierContextTags;
+}(
+	this.JSXTypeContextTags,
+	this.JSXMemberAccessorTag
+);
+
+this.JSXSelfClosingBackslashContextTags = function(JSXSelfClosingElementTag){
+	/**
+	 * JSX 斜杠上下文标签列表
+	 */
+	function JSXSelfClosingBackslashContextTags(){
+		IllegalTags.call(this);
+		
+		this.register(
+			new JSXSelfClosingElementTag()
+		);
+	};
+	JSXSelfClosingBackslashContextTags = new Rexjs(JSXSelfClosingBackslashContextTags, IllegalTags);
+
+	return JSXSelfClosingBackslashContextTags;
+}(
+	this.JSXSelfClosingElementTag
+);
+
+this.JSXSpreadTags = function(JSXSpreadTag){
+	/**
+	 * JSX 拓展符标签列表
+	 */
+	function JSXSpreadTags(){
+		IllegalTags.call(this);
+		
+		this.register(
+			new JSXSpreadTag()
+		);
+	};
+	JSXSpreadTags = new Rexjs(JSXSpreadTags, IllegalTags);
+
+	return JSXSpreadTags;
+}(
+	this.JSXSpreadTag
+);
+
 this.LabelContextTags = function(LabelColonTag){
 	/**
 	 * 标记标签上下文列表

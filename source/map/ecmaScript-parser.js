@@ -1,5 +1,5 @@
 // ECMAScript 解析器相关
-!function(SyntaxParser, ECMAScriptTags){
+!function(SyntaxParser, ECMAScriptTags, TAGS_NAME_REGEXP){
 
 this.ECMAScriptTagsMap = function(SyntaxTagsMap, dataArray){
 	/**
@@ -61,8 +61,17 @@ this.ECMAScriptTagsMap = function(SyntaxTagsMap, dataArray){
 		)
 		.map(
 			function(name){
+				var n, result = name.match(TAGS_NAME_REGEXP);
+
+				if(result){
+					n = result[1].toLowerCase() + result[2];
+				}
+				else {
+					n = name[0].toLowerCase() + name.substring(1);
+				}
+
 				return {
-					name: name[0].toLowerCase() + name.substring(1),
+					name: n,
 					tags: this[name]
 				};
 			},
@@ -189,5 +198,7 @@ this.ECMAScriptParser = function(SourceBuilder, MappingBuilder, ECMAScriptTagsMa
 }.call(
 	this,
 	Rexjs.SyntaxParser,
-	this.ECMAScriptTags
+	this.ECMAScriptTags,
+	// TAGS_NAME_REGEXP
+	/^([A-Z]+)([A-Z][^A-Z].*)$/
 );

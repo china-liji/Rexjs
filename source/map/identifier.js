@@ -37,8 +37,8 @@ this.IdentifierTag = function(IdentifierExpression, RegExg, REGEXP_SOURCE, keywo
 		 * 编译该标识符的表达式
 		 * @param {String} exception - 会意外冲突的内容，则正则不会匹配到该内容
 		 */
-		compileRegExp: function(exception, _join){
-			_join = _join || "";
+		compileRegExp: function(exception, _regexpSource){
+			_regexpSource = _regexpSource || REGEXP_SOURCE;
 
 			return new RegExp(
 				"(?:" +
@@ -49,7 +49,7 @@ this.IdentifierTag = function(IdentifierExpression, RegExg, REGEXP_SOURCE, keywo
 					// 匹配 abc、_abc、$abc、中文abc 等情况
 					"(?!" + exception + ")" +
 				")" +
-				REGEXP_SOURCE
+				_regexpSource
 			);
 		},
 		/**
@@ -65,7 +65,7 @@ this.IdentifierTag = function(IdentifierExpression, RegExg, REGEXP_SOURCE, keywo
 		set keywords(value){
 			// 记录值
 			keywords = value;
-			
+
 			// 生成表达式
 			regexp = this.compileRegExp(
 				keywords.join("|")

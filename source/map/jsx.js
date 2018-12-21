@@ -1,47 +1,140 @@
-!function(closingJSXTag){
+// JSX 基本相关
+!function(closingJSXElementTag){
 
 this.JSXExpression = function(){
 	/**
 	 * JSX 表达式
-	 * @param {Context} opening - 起始标签上下文
 	 */
-	function JSXExpression(opening){
-		PartnerExpression.call(this, opening);
+	function JSXExpression(){
+		Expression.call(this, null);
 	};
-	JSXExpression = new Rexjs(JSXExpression, PartnerExpression);
+	JSXExpression = new Rexjs(JSXExpression, Expression);
 
 	JSXExpression.props({
-
+		closingElement: null,
+		/**
+		 * 提取文本内容
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 * @param {ContentBuilder} _anotherBuilder - 另一个内容生成器，一般用于副内容的生成或记录
+		 */
+		extractTo: function(contentBuilder){
+			this.openingElement.extractTo(contentBuilder);
+		},
+		openingElement: null
 	});
 
 	return JSXExpression;
 }();
 
-this.OpeningJSXTag = function(JSXExpression){
+this.JSXElementExpression = function(CHAR_CODE_A, CHAR_CODE_Z, extractAttribute){
+	/**
+	 * JSX 元素表达式
+	 * @param {Context} opening - 起始标签上下文
+	 */
+	function JSXElementExpression(opening){
+		PartnerExpression.call(this, opening);
+
+		this.inner = new ListExpression(null, ",");
+	};
+	JSXElementExpression = new Rexjs(JSXElementExpression, PartnerExpression);
+
+	JSXElementExpression.props({
+		hasJoinChar: false,
+		isAccessorType: false,
+		type: null,
+		/**
+		 * 提取文本内容
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 * @param {ContentBuilder} _anotherBuilder - 另一个内容生成器，一般用于副内容的生成或记录
+		 */
+		extractTo: function(contentBuilder){
+			var type = this.type;
+
+			contentBuilder.appendString("new Rexjs.JSX(");
+
+			if(this.isAccessorType){
+				type.extractTo(contentBuilder);
+			}
+			else {
+				var typeContent = type.content, charCode = typeContent.charCodeAt(0);
+
+				// 如果名称中包含 "-" 符号 或者 首字母属在 a-z 之中
+				if(this.hasJoinChar || (charCode >= CHAR_CODE_A && charCode <= CHAR_CODE_Z)){
+					contentBuilder.appendString('"');
+					contentBuilder.appendContext(type);
+					contentBuilder.appendString('"');
+				}
+				else {
+					contentBuilder.appendContext(type);
+				}
+			}
+
+			this.inner.forEach(extractAttribute, contentBuilder);
+			contentBuilder.appendString(")");
+		}
+	});
+
+	return JSXElementExpression;
+}(
+	// CHAR_CODE_A
+	"a".charCodeAt(0),
+	// CHAR_CODE_Z
+	"z".charCodeAt(0),
+	// extractAttribute
+	function(attribute, contentBuilder){
+		attribute.extractTo(contentBuilder);
+	}
+);
+
+this.JSXStatement = function(){
+	/**
+	 * JSX 语句
+	 * @param {Statements} statements - 该语句将要所处的语句块
+	 */
+	function JSXStatement(statements){
+		ECMAScriptStatement.call(this, statements);
+	};
+	JSXStatement = new Rexjs(JSXStatement, ECMAScriptStatement);
+
+	JSXStatement.props({
+		/**
+		 * 捕获处理异常
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 语法标签上下文
+		 */
+		catch: function(parser, context){
+			debugger
+		}
+	});
+
+	return JSXStatement;
+}();
+
+this.OpeningJSXElementTag = function(JSXElementExpression){
 	/**
 	 * 起始 JSX 标签
 	 * @param {Number} _type - 标签类型
 	 */
-	function OpeningJSXTag(_type){
+	function OpeningJSXElementTag(_type){
 		SyntaxTag.call(this, _type);
 	};
-	OpeningJSXTag = new Rexjs(OpeningJSXTag, SyntaxTag);
+	OpeningJSXElementTag = new Rexjs(OpeningJSXElementTag, SyntaxTag);
 
-	OpeningJSXTag.props({
-		$class: CLASS_STATEMENT_BEGIN,
+	OpeningJSXElementTag.props({
+		$class: CLASS_EXPRESSION,
 		/**
 		 * 获取绑定的标签，该标签一般是用于语句的 try、catch 的返回值
 		 */
 		get binding(){
-			return closingJSXTag;
+			return closingJSXElementTag;
 		},
-		regexp: /\</,
+		regexp: /</,
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
 		 */
 		require: function(tagsMap){
-			// return tagsMap.openingJsxContextTags;
+			return tagsMap.openingJsxContextTags;
 		},
 		/**
 		 * 标签访问器
@@ -51,28 +144,51 @@ this.OpeningJSXTag = function(JSXExpression){
 		 * @param {Statements} statements - 当前语句块
 		 */
 		visitor: function(parser, context, statement, statements){
-			debugger
-			statement.expression = new JSXExpression(context);
+			// 设置当前表达式
+			statement.expression = new JSXElementExpression(context);
 		}
 	});
 
-	return OpeningJSXTag;
+	return OpeningJSXElementTag;
 }(
-	this.JSXExpression
+	this.JSXElementExpression
 );
 
-this.ClosingJSXTag = function(){
+this.JSXSelfClosingBackslashTag = function(){
+	/**
+	 * JSX 元素快速结束斜杠标签
+	 * @param {Number} _type - 标签类型
+	 */
+	function JSXSelfClosingBackslashTag(_type){
+		SyntaxTag.call(this, _type);
+	};
+	JSXSelfClosingBackslashTag = new Rexjs(JSXSelfClosingBackslashTag, SyntaxTag);
+
+	JSXSelfClosingBackslashTag.props({
+		regexp: /\//,
+		/**
+		 * 获取此标签接下来所需匹配的标签列表
+		 * @param {TagsMap} tagsMap - 标签集合映射
+		 */
+		require: function(tagsMap){
+			return tagsMap.jsxSelfClosingBackslashContextTags;
+		}
+	});
+
+	return JSXSelfClosingBackslashTag;
+}();
+
+this.ClosingJSXElementTag = function(){
 	/**
 	 * 起始 JSX 标签
 	 * @param {Number} _type - 标签类型
 	 */
-	function ClosingJSXTag(_type){
+	function ClosingJSXElementTag(_type){
 		SyntaxTag.call(this, _type);
 	};
-	ClosingJSXTag = new Rexjs(ClosingJSXTag, SyntaxTag);
+	ClosingJSXElementTag = new Rexjs(ClosingJSXElementTag, SyntaxTag);
 
-	ClosingJSXTag.props({
-		order: ECMAScriptOrders.JSX,
+	ClosingJSXElementTag.props({
 		regexp: />/,
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
@@ -89,42 +205,48 @@ this.ClosingJSXTag = function(){
 		 * @param {Statements} statements - 当前语句块
 		 */
 		visitor: function(parser, context, statement, statements){
-			debugger
+			// 设置 JSXElementExpression 的 closing 属性
+			statement.expression.closing = context;
+
+			// 跳出 JSXStatement 语句
+			statement.out();
 		}
 	});
 
-	return ClosingJSXTag;
+	return ClosingJSXElementTag;
 }();
 
-this.JSXIdentifierTag = function(IdentifierTag){
+this.JSXSelfClosingElementTag = function(ClosingJSXElementTag){
 	/**
-	 * 属性名标签
+	 * JSX 自结束标签
 	 * @param {Number} _type - 标签类型
 	 */
-	function JSXIdentifierTag(_type){
-		IdentifierTag.call(this, _type);
+	function JSXSelfClosingElementTag(_type){
+		ClosingJSXElementTag.call(this, _type);
 	};
-	JSXIdentifierTag = new Rexjs(JSXIdentifierTag, IdentifierTag);
+	JSXSelfClosingElementTag = new Rexjs(JSXSelfClosingElementTag, ClosingJSXElementTag);
 
-	JSXIdentifierTag.props({
+	JSXSelfClosingElementTag.props({
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
 		 */
 		require: function(tagsMap){
-			return tagsMap.jsxIdentifierContextTags;
+			return tagsMap.expressionContextTags;
 		}
 	});
 
-	return JSXIdentifierTag;
+	return JSXSelfClosingElementTag;
 }(
-	this.IdentifierTag
+	this.ClosingJSXElementTag
 );
 
-closingJSXTag = new this.ClosingJSXTag();
+closingJSXElementTag = new this.ClosingJSXElementTag();
 
 }.call(
 	this,
-	// closingJSXTag
+	// jsxSelfClosingBackslashTag
+	null,
+	// closingJSXElementTag
 	null
 );
