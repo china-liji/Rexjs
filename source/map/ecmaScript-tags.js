@@ -13,6 +13,10 @@ this.ECMAScriptTags = function(DefaultTags, list){
 		this.delegate(list, _type || TYPE_UNEXPECTED);
 	};
 	ECMAScriptTags = new Rexjs(ECMAScriptTags, DefaultTags);
+
+	ECMAScriptTags.static({
+		mappable: true
+	});
 	
 	return ECMAScriptTags;
 }(

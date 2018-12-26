@@ -179,7 +179,7 @@ this.PostfixUnaryAssignmentTag = function(UnaryAssignmentTag, PostfixUnaryExpres
 		 * @param {TagsMap} tagsMap - 标签集合映射
 		 */
 		require: function(tagsMap){
-			return tagsMap.restrictedExpressionContextTags;
+			return tagsMap.expressionContextTags.newlineTags;
 		},
 		/**
 		 * 标签访问器

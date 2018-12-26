@@ -40,7 +40,53 @@ this.ExpressionTags = function(list){
 	]
 );
 
-this.ExpressionContextTags = function(list){
+this.NewlineTags = function(UnaryAssignmentTag, IncrementTag, DecrementTag){
+	/**
+	 * 新行标签列表
+	 */
+	function NewlineTags(){
+		ECMAScriptTags.call(this);
+
+		// 清空列表
+		this.clear();
+
+		// 添加标签
+		this.push(
+			new IncrementTag(TYPE_MISTAKABLE),
+			new DecrementTag(TYPE_MISTAKABLE)
+		);
+	};
+	NewlineTags = new Rexjs(NewlineTags, ECMAScriptTags);
+
+	NewlineTags.static({
+		mappable: false
+	});
+
+	NewlineTags.props({
+		/**
+		 * 标签过滤处理
+		 * @param {SyntaxTag} tag - 语法标签
+		 */
+		filter: function(tag){
+			// 过滤掉一元赋值标签
+			return tag instanceof UnaryAssignmentTag;
+		},
+		/**
+		 * 获取相关的新行标签列表
+		 */
+		get newlineTags(){
+			return this;
+		}
+	});
+
+	return NewlineTags;
+}(
+	this.UnaryAssignmentTag,
+	this.IncrementTag,
+	this.DecrementTag
+);
+
+this.ExpressionContextTags = function(NewlineTags, list, ready){
 	/**
 	 * 表达式上下文标签列表
 	 */
@@ -70,11 +116,29 @@ this.ExpressionContextTags = function(list){
 			}
 
 			return false;
+		},
+		newlineTags: null,
+		/**
+		 * 将所有标签准备就绪，即排序和初始化正则表达式，ps：这是个耗性能的方法
+		 */
+		ready: function(){
+			// 初始化新行标签列表
+			var newlineTags = new NewlineTags();
+
+			this.newlineTags = newlineTags;
+			
+			// 注册当前的标签列表
+			newlineTags.register(this);
+			// 新行标签列表就绪，并编译正则
+			newlineTags.ready();
+			// 调用父类方法
+			ready.call(this);
 		}
 	});
 	
 	return ExpressionContextTags;
 }(
+	this.NewlineTags,
 	// list
 	[
 		this.AdditionTag,
@@ -89,7 +153,8 @@ this.ExpressionContextTags = function(list){
 		this.QuestionAssignmentTag,
 		this.SubtractionTag,
 		this.OpeningTemplateParameterTag
-	]
+	],
+	ECMAScriptTags.prototype.ready
 );
 
 this.StatementTags = function(FileEndTag){

@@ -1,7 +1,7 @@
 // JSX 占位符（参数）相关
 !function(closingJSXPlaceHolderTag){
 
-this.JSXPlaceHolderExpression = function(){
+this.JSXPlaceHolderExpression = function(extractTo){
 	/**
 	 * JSX 占位符（参数）表达式
 	 * @param {Context} opening - 起始标签上下文
@@ -17,14 +17,42 @@ this.JSXPlaceHolderExpression = function(){
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
 		 * @param {ContentBuilder} _anotherBuilder - 另一个内容生成器，一般用于副内容的生成或记录
 		 */
-		extractTo: function(contentBuilder){
-			// 直接提取 inner
-			this.inner.extractTo(contentBuilder);
+		extractTo: function(contentBuilder, _anotherBuilder){
+			// 如果需要编译 jsx
+			if(config.jsx){
+				var inner = this.inner, childrenBuilder = contentBuilder;
+
+				contentBuilder = _anotherBuilder;
+
+				// 追加 childrenBuilder 的内容
+				contentBuilder.appendString(childrenBuilder.result + '",');
+				// 清除 childrenBuilder 的内容
+				childrenBuilder.clear();
+
+				// 如果 inner 不是空表达式
+				if(!inner.empty){
+					// 追加起始小括号（以免逗号表达式造成参数的正确）
+					contentBuilder.appendString("(");
+					// 提取内部表达式
+					inner.extractTo(contentBuilder);
+					// 追加结束小括号与参数分隔符
+					contentBuilder.appendString("),");
+				}
+
+				// 追加字符串起始双引号
+				contentBuilder.appendString('"');
+				return;
+			}
+			
+			// 调用父类方法
+			extractTo.call(this, contentBuilder);
 		}
 	});
 
 	return JSXPlaceHolderExpression;
-}();
+}(
+	PartnerExpression.prototype.extractTo
+);
 
 this.JSXPlaceHolderStatement = function(PlaceHolderStatement){
 	/**
@@ -33,10 +61,12 @@ this.JSXPlaceHolderStatement = function(PlaceHolderStatement){
 	 */
 	function JSXPlaceHolderStatement(statements){
 		PlaceHolderStatement.call(this, statements);
+
+		this.expression = new EmptyExpression(null);
 	};
 	JSXPlaceHolderStatement = new Rexjs(JSXPlaceHolderStatement, PlaceHolderStatement);
 
-	PlaceHolderStatement.props({
+	JSXPlaceHolderStatement.props({
 		/**
 		 * 捕获处理异常
 		 * @param {SyntaxParser} parser - 语法解析器
@@ -57,7 +87,7 @@ this.JSXPlaceHolderStatement = function(PlaceHolderStatement){
 		 * 获取该语句 try、catch 方法中所需使用到的标签，一般是指向实例化该语句的标签
 		 */
 		tagOf: function(){
-			return this.target.expression.inner.latest.value.opening.tag;
+			return this.target.expression.opening.tag;
 		}
 	});
 
@@ -83,7 +113,31 @@ this.OpeningJSXPlaceHolderTag = function(OpeningPlaceHolderTag, JSXPlaceHolderEx
 		get binding(){
 			return closingJSXPlaceHolderTag;
 		},
+		/**
+		 * 获取绑定的表达式，一般在子类使用父类逻辑，而不使用父类表达式的情况下使用
+		 * @param {Context} context - 相关的语法标签上下文
+		 * @param {Statement} statement - 当前语句
+		 */
+		getBoundExpression: function(context, statement){
+			return new JSXPlaceHolderExpression(context);
+		},
+		/**
+		 * 获取绑定的语句，一般在子类使用父类逻辑，而不使用父类表达式的情况下使用
+		 * @param {Statements} statements - 该语句将要所处的语句块
+		 */
+		getBoundStatement: function(statements){
+			return new JSXPlaceHolderStatement(statements);
+		},
 		regexp: /\{/,
+		/**
+		 * 添加表达式到
+		 * @param {Expression} expression - 当前生成的 JSXPlaceHolderExpression 表达式
+		 * @param {Statement} statement - 当前语句
+		 */
+		setJSXPlaceHolderExpressionTo: function(expression, statement){
+			// 添加子表达式
+			statement.expression.children.add(expression);
+		},
 		/**
 		 * 标签访问器
 		 * @param {SyntaxParser} parser - 语法解析器
@@ -92,10 +146,17 @@ this.OpeningJSXPlaceHolderTag = function(OpeningPlaceHolderTag, JSXPlaceHolderEx
 		 * @param {Statements} statements - 当前语句块
 		 */
 		visitor: function(parser, context, statement, statements){
-			// 设置 JSXAttributeExpression 的值
-			statement.expression.inner.latest.value = new JSXPlaceHolderExpression(context);
-			// 设置当前语句
-			statements.statement = new JSXPlaceHolderStatement(statements);
+			var boxStatement = new BoxStatement(statements), expression = this.getBoundExpression(context, statement);
+
+			// 设置 boxStatement 的表达式
+			boxStatement.expression = expression;
+			// 设置当前语句为 boxStatement
+			statements.statement = boxStatement;
+			
+			// 添加表达式到列表中
+			this.setJSXPlaceHolderExpressionTo(expression, statement);
+			// 覆盖当前语句
+			context.setStatementOf(statements);
 		}
 	});
 
@@ -122,7 +183,7 @@ this.ClosingJSXPlaceHolderTag = function(ClosingPlaceHolderTag){
 		 * @param {TagsMap} tagsMap - 标签集合映射
 		 */
 		require: function(tagsMap){
-			return tagsMap.jsxTypeContextTags;
+			return tagsMap.jsxChildTags;
 		},
 		/**
 		 * 标签访问器
@@ -132,12 +193,16 @@ this.ClosingJSXPlaceHolderTag = function(ClosingPlaceHolderTag){
 		 * @param {Statements} statements - 当前语句块
 		 */
 		visitor: function(parser, context, statement, statements){
-			var jsxPlaceHolderExpression = statement.out().inner.latest.value;
+			// 跳出 JSXPlaceHolderStatement 语句
+			var jsxPlaceHolderExpression = statement.out();
 
 			// 设置 JSXPlaceHolderExpression 的 inner 属性
 			jsxPlaceHolderExpression.inner = statement.expression;
 			// 设置 JSXPlaceHolderExpression 的 closing 属性
 			jsxPlaceHolderExpression.closing = context;
+
+			// 跳出 BoxStatement 语句
+			statements.statement.out();
 		}
 	});
 

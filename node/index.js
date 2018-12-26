@@ -258,6 +258,7 @@ module.exports = { DevSource: this.DevSource, Source: this.Source };
 		"jsx-type.js",
 		"jsx-placeholder.js",
 		"jsx-attribute.js",
+		"jsx-children.js",
 		"tags-helper.js",
 		"ecmaScript-tags.js",
 		"tags-base.js",

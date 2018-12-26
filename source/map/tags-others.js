@@ -254,6 +254,24 @@ this.ClosingCatchedExceptionTags = function(ClosingCatchedExceptionTag){
 	this.ClosingCatchedExceptionTag
 );
 
+this.ClosingJSXMatchedElementContextTags = function(OpeningJSXAdjacentElementTag){
+	/**
+	 * 结束 JSX 闭合元素上下文标签列表
+	 */
+	function ClosingJSXMatchedElementContextTags(){
+		ExpressionContextTags.call(this);
+		
+		this.register(
+			new OpeningJSXAdjacentElementTag()
+		);
+	};
+	ClosingJSXMatchedElementContextTags = new Rexjs(ClosingJSXMatchedElementContextTags, ExpressionContextTags);
+	
+	return ClosingJSXMatchedElementContextTags;
+}(
+	this.OpeningJSXAdjacentElementTag
+);
+
 this.ClosureVariableContextTags = function(VarDeclarationBreakTag, BasicAssignmentTag, CommaTag){
 	/**
 	 * 闭包内变量上下文标签列表
@@ -945,7 +963,7 @@ this.IfConditionTags = function(OpeningIfConditionTag){
 	this.OpeningIfConditionTag
 );
 
-this.JSXTypeContextTags = function(JSXAttributeNameTag, OpeningJSXSpreadPlaceHolderTag, JSXSelfClosingBackslashTag){
+this.JSXTypeContextTags = function(JSXAttributeNameTag, OpeningJSXSpreadPlaceHolderTag, SelfClosingJSXBackslashTag, ClosingJSXElementTag){
 	/**
 	 * JSX 类型名称上下文标签列表
 	 */
@@ -955,7 +973,8 @@ this.JSXTypeContextTags = function(JSXAttributeNameTag, OpeningJSXSpreadPlaceHol
 		this.register(
 			new JSXAttributeNameTag(),
 			new OpeningJSXSpreadPlaceHolderTag(),
-			new JSXSelfClosingBackslashTag()
+			new SelfClosingJSXBackslashTag(),
+			new ClosingJSXElementTag(TYPE_UNEXPECTED)
 		);
 	};
 	JSXTypeContextTags = new Rexjs(JSXTypeContextTags, IllegalTags);
@@ -964,7 +983,8 @@ this.JSXTypeContextTags = function(JSXAttributeNameTag, OpeningJSXSpreadPlaceHol
 }(
 	this.JSXAttributeNameTag,
 	this.OpeningJSXSpreadPlaceHolderTag,
-	this.JSXSelfClosingBackslashTag
+	this.SelfClosingJSXBackslashTag,
+	this.ClosingJSXElementTag
 );
 
 this.JSXAttributeAssginmentContextTags = function(JSXStringTag, OpeningJSXAttributePlaceHolderTag){
@@ -1006,6 +1026,50 @@ this.JSXAttributeNameContextTags = function(JSXTypeContextTags, JSXAttributeAssg
 	this.JSXAttributeAssginmentTag
 );
 
+this.JSXChildTags = function(OpeningJSXElementTag, JSXTextChildTag, OpeningJSXPlaceHolderTag, JSXLineTerminatorTag, OpeningJSXMatchedElementTag){
+	/**
+	 * JSX 子节点标签列表
+	 */
+	function JSXChildTags(){
+		IllegalTags.call(this);
+		
+		this.register(
+			new OpeningJSXElementTag(null, true),
+			new JSXTextChildTag(),
+			new OpeningJSXPlaceHolderTag(),
+			new JSXLineTerminatorTag(),
+			new OpeningJSXMatchedElementTag()
+		);
+	};
+	JSXChildTags = new Rexjs(JSXChildTags, IllegalTags);
+
+	return JSXChildTags;
+}(
+	this.OpeningJSXElementTag,
+	this.JSXTextChildTag,
+	this.OpeningJSXPlaceHolderTag,
+	this.JSXLineTerminatorTag,
+	this.OpeningJSXMatchedElementTag
+);
+
+this.JSXMatchedBackslashTags = function(JSXMatchedBackslashTag){
+	/**
+	 * JSX 元素闭合的反斜杠标签列表
+	 */
+	function JSXMatchedBackslashTags(){
+		IllegalTags.call(this);
+		
+		this.register(
+			new JSXMatchedBackslashTag()
+		);
+	};
+	JSXMatchedBackslashTags = new Rexjs(JSXMatchedBackslashTags, IllegalTags);
+
+	return JSXMatchedBackslashTags;
+}(
+	this.JSXMatchedBackslashTag
+);
+
 this.JSXIdentifierContextTags = function(JSXTypeContextTags, JSXMemberAccessorTag){
 	/**
 	 * JSX 名称标识符上下文标签列表
@@ -1025,7 +1089,25 @@ this.JSXIdentifierContextTags = function(JSXTypeContextTags, JSXMemberAccessorTa
 	this.JSXMemberAccessorTag
 );
 
-this.JSXSelfClosingBackslashContextTags = function(JSXSelfClosingElementTag){
+this.JSXPropertyNameTags = function(JSXPropertyNameTag){
+	/**
+	 * JSX 类型属性标签列表
+	 */
+	function JSXPropertyNameTags(){
+		IllegalTags.call(this);
+		
+		this.register(
+			new JSXPropertyNameTag()
+		);
+	};
+	JSXPropertyNameTags = new Rexjs(JSXPropertyNameTags, IllegalTags);
+
+	return JSXPropertyNameTags;
+}(
+	this.JSXPropertyNameTag
+);
+
+this.JSXSelfClosingBackslashContextTags = function(SelfClosingJSXElementTag){
 	/**
 	 * JSX 斜杠上下文标签列表
 	 */
@@ -1033,14 +1115,14 @@ this.JSXSelfClosingBackslashContextTags = function(JSXSelfClosingElementTag){
 		IllegalTags.call(this);
 		
 		this.register(
-			new JSXSelfClosingElementTag()
+			new SelfClosingJSXElementTag()
 		);
 	};
 	JSXSelfClosingBackslashContextTags = new Rexjs(JSXSelfClosingBackslashContextTags, IllegalTags);
 
 	return JSXSelfClosingBackslashContextTags;
 }(
-	this.JSXSelfClosingElementTag
+	this.SelfClosingJSXElementTag
 );
 
 this.JSXSpreadTags = function(JSXSpreadTag){
@@ -1702,44 +1784,6 @@ this.RestArgumentNameContextTags = function(RestArgumentSeparatorTag){
 	return RestArgumentNameContextTags;
 }(
 	this.RestArgumentSeparatorTag
-);
-
-this.RestrictedExpressionContextTags = function(PostfixUnaryAssignmentTag, UnaryAssignmentTag, filter){
-	/**
-	 * 受限制的表达式上下文标签列表
-	 */
-	function RestrictedExpressionContextTags(){
-		ExpressionContextTags.call(this);
-	};
-	RestrictedExpressionContextTags = new Rexjs(RestrictedExpressionContextTags, ExpressionContextTags);
-	
-	RestrictedExpressionContextTags.props({
-		/**
-		 * 标签过滤处理
-		 * @param {SyntaxTag} tag - 语法标签
-		 */
-		filter: function(tag){
-			// 如果是后置一元赋值标签
-			if(tag instanceof PostfixUnaryAssignmentTag){
-				// 过滤掉
-				return true;
-			}
-
-			// 如果是其他的一元赋值标签
-			if(tag instanceof UnaryAssignmentTag){
-				// 设置为可误解的，目的是报错
-				tag.type = new TagType(TYPE_MISTAKABLE);
-			}
-
-			return filter.call(this, tag);
-		}
-	});
-	
-	return RestrictedExpressionContextTags;
-}(
-	this.PostfixUnaryAssignmentTag,
-	this.UnaryAssignmentTag,
-	ExpressionContextTags.prototype.filter
 );
 
 this.ReturnContextTags = function(OnlyStatementEndTags){

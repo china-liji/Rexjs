@@ -10,10 +10,14 @@ this.ECMAScriptTagsMap = function(SyntaxTagsMap, dataArray){
 		
 		dataArray.forEach(
 			function(data){
-				this.map(
-					data.name,
-					new data.tags()
-				);
+				var tags = data.tags;
+
+				if(tags.mappable){
+					this.map(
+						data.name,
+						new tags()
+					);
+				}
 			},
 			this
 		);

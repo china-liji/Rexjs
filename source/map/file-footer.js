@@ -30,7 +30,7 @@ Rexjs.static(this);
 	Rexjs.Expression.STATE_STATEMENT_END,
 	Rexjs.Expression.STATE_STATEMENT_ENDED,
 	// config
-	new Rexjs.SyntaxConfig("es6Base", "es6Module", "rexjs"),
+	new Rexjs.SyntaxConfig("es6Base", "es6Module", "rexjs", "jsx"),
 	// commonVisitor
 	function(parser, context, statement, statements){
 		// 设置当前表达式

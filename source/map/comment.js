@@ -85,10 +85,11 @@ this.CommentBreakTag = function(ExpressionBreakTag){
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
+		 * @param {SyntaxTags} currentTags - 上一个标签所需匹配的标签列表
 		 */
 		require: function(tagsMap, currentTags){
-			// 记录 currentTags
-			tags = tagsMap.restrictedExpressionContextTags;
+			// 记录严格模式的标签列表
+			tags = tags.newlineTags;
 			return currentTags;
 		}
 	});

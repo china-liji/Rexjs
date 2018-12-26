@@ -80,9 +80,10 @@ this.ExpressionBreakTag = function(){
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
+		 * @param {SyntaxTags} currentTags - 上一个标签所需匹配的标签列表
 		 */
-		require: function(tagsMap){
-			return tagsMap.restrictedExpressionContextTags;
+		require: function(tagsMap, currentTags){
+			return currentTags.newlineTags;
 		},
 		/**
 		 * 标签访问器

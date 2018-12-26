@@ -1409,12 +1409,12 @@ new this.ModuleReady();
 // jsx 相关
 !function(){
 
-this.JSX = function(SpreadItem, toArray){
+this.JSXTemplate = function(SpreadItem, toArray, filterEmptyString){
 	/**
 	 * JSX 模板
 	 * @param {Function, String} type - 元素类型
 	 */
-	function JSX(type){
+	function JSXTemplate(type){
 		var props = {};
 
 		// 从第二个参数开始遍历
@@ -1427,26 +1427,49 @@ this.JSX = function(SpreadItem, toArray){
 				continue;
 			}
 
+			var value = arguments[i + 1];
+
+			// 如果 children 属性
+			if(key === "children"){
+				// 过滤空字符串
+				value = value.filter(filterEmptyString);
+
+				switch(value.length){
+					// 如果没有子节点了
+					case 0:
+						continue;
+
+					// 如果只有一个节点
+					case 1:
+						value = value[0];
+						break;
+				}
+			}
+
 			// 设置 props 的键值
-			props[key] = arguments[i + 1];
+			props[key] = value;
 		}
 
 		this.type = type;
 		this.props = props;
 	};
-	JSX = new Rexjs(JSX);
+	JSXTemplate = new Rexjs(JSXTemplate);
 
-	JSX.props({
+	JSXTemplate.props({
 		key: null,
 		props: null,
 		ref: null,
 		type: null
 	});
 
-	return JSX;
+	return JSXTemplate;
 }(
 	this.SpreadItem,
-	Rexjs.toArray
+	Rexjs.toArray,
+	// filterEmptyString
+	function(child){
+		return child !== "";
+	}
 );
 
 }.call(

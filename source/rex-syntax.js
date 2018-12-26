@@ -307,6 +307,12 @@ this.ContentBuilder = function(){
 			this.result += content;
 		},
 		/**
+		 * 清除内容
+		 */
+		clear: function(){
+			this.result = "";
+		},
+		/**
 		 * 完成生成，返回结果
 		 */
 		complete: function(){
@@ -971,7 +977,7 @@ this.SyntaxTag = function(SyntaxElement, TagClass, TagType){
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
-		 * @param {SyntaxTags} currentTags - 之前标签所需匹配的标签列表
+		 * @param {SyntaxTags} currentTags - 上一个标签所需匹配的标签列表
 		 */
 		require: function(tagsMap, currentTags){
 			return currentTags;

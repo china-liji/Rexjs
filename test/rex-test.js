@@ -1,6 +1,6 @@
-new function(Rexjs, File, String){
+new function(Rexjs, String){
 
-this.SimpleTest = function(ECMAScriptParser, XMLHttpRequest, Error, INNER_CONTENT_REGEXP, file, console, toArray, e, catchErrors){
+this.SimpleTest = function(ECMAScriptParser, File, XMLHttpRequest, Error, INNER_CONTENT_REGEXP, index, console, toArray, e, catchErrors){
 	/**
 	 * 解析器测试
 	 */
@@ -28,11 +28,15 @@ this.SimpleTest = function(ECMAScriptParser, XMLHttpRequest, Error, INNER_CONTEN
 			var parser = new ECMAScriptParser();
 			
 			try {
-				// 设置文件源代码
-				file.source = source;
-				
 				// 解析文件
-				parser.parse(file);
+				parser.parse(
+					// 初始化文件
+					new File(
+						new Rexjs.URL("test.js-" + index++),
+						source
+					)
+				);
+				
 				// 如果进入这里，说明上面解析没有报错，而我们是希望报错的，说明解析有 bug
 				console.error("Uncaught Exceptions: " + description);
 			}
@@ -81,11 +85,14 @@ this.SimpleTest = function(ECMAScriptParser, XMLHttpRequest, Error, INNER_CONTEN
 			try {
 				var parser = new ECMAScriptParser(), result = "";
 				
-				// 设置文件源代码
-				file.source = source;
-				
 				// 解析文件
-				parser.parse(file);
+				parser.parse(
+					// 初始化文件
+					new File(
+						new Rexjs.URL("test.js-" + index++),
+						source
+					)
+				);
 				
 				// 如果需要执行
 				if(_eval){
@@ -155,15 +162,13 @@ this.SimpleTest = function(ECMAScriptParser, XMLHttpRequest, Error, INNER_CONTEN
 	return SimpleTest;
 }(
 	Rexjs.ECMAScriptParser,
+	Rexjs.File,
 	XMLHttpRequest,
 	Error,
 	// INNER_CONTENT_REGEXP
 	/\{([\s\S]*)\}\s*$/,
-	// file
-	new File(
-		new Rexjs.URL("test.js"),
-		""
-	),
+	// index
+	0,
 	console,
 	Rexjs.toArray,
 	eval,
@@ -192,6 +197,5 @@ this.SimpleTest = function(ECMAScriptParser, XMLHttpRequest, Error, INNER_CONTEN
 Rexjs.static(this);
 }(
 	Rexjs,
-	Rexjs.File,
 	String
 );

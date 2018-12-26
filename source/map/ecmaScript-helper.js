@@ -19,6 +19,8 @@ this.ECMAScriptErrors = ECMAScriptErrors = function(REGEXP){
 		FOR: "Invalid left-hand side in for-loop",
 		FOR_IN: "Invalid left-hand side in for-in loop: Must have a single binding",
 		GETTER: "Getter must not have any formal parameters",
+		JSX_ADJACENT_ELEMENT: "Adjacent JSX elements must be wrapped in an enclosing tag",
+		JSX_CLOSING_TAG: "Expected corresponding JSX closing tag for <${1}>",
 		ILLEGAL_STATEMENT: "Illegal ${1} statement",
 		KEYWORD: '"${1}" keyword unexpected here',
 		LABEL: 'Undefined ${1} label "${2}"',
@@ -106,6 +108,7 @@ this.ECMAScriptOrders = ECMAScriptOrders = function(){
 		ILLEGAL_SHORTHAND_ASSIGNMENT: 204,
 		SUPER_PROPERTY_SHORTHAND_ASSIGNMENT: 204,
 		SUPER_PROPERTY_POSTFIX_UNARY_ASSIGNMENT: 204,
+		JSX_ADJACENT_ELEMENT: 205,
 		IDENTIFIER: 300,
 		TARGET: 301,
 		VARIABLE: 301,
@@ -121,6 +124,8 @@ this.ECMAScriptOrders = ECMAScriptOrders = function(){
 		TEMPLATE_CONTENT: 500,
 		TEMPLATE_PARAMETER: 501,
 		TEMPLATE_SPECIAL_CONTENT: 501,
+		JSX_TEXT: 502,
+		JSX_LINE_TERMINATOR: 503,
 		FILE_START: 600
 	});
 

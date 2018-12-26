@@ -3,8 +3,8 @@
 ------
 await
 async
+将 Rexjs 改用 Node 原声版的 ES6 来编写，再利用自生将自己编译成 ES5 版的 Rexjs（用于浏览器直接使用）
 
-可省略 super
 可选参数
 目录别名、文件别名
 
