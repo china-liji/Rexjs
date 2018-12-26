@@ -757,7 +757,7 @@ Rexjs.static(this);
 }(
 	Rexjs,
 	// URL_REGEXP
-	/^(?:([^:/?#.]+:)(?:\/+(?:([^/?#]*)@)?([\w\d\-\u0100-\uffff.%]*)(?::([0-9]+))?)?)?(?:([^?#]+?)([^\/]+?(\.[^.?#\/]+))?)?(?:(\?[^#]*))?(?:(#.*))?$/,
+	/^(?:([^:/?#.]+:)(?:\/+(?:([^/?#]*)@)?([\w\d\-\u0100-\uffff.%]*)(?::([0-9]+))?)?)?(?:([^?#]*?)([^\/]+?(\.[^.?#\/]+))?)?(?:(\?[^#]*))?(?:(#.*))?$/,
 	// DIR_SEPARATOR_REGEXP
 	/\/|\\/g,
 	encodeURI,
@@ -1458,8 +1458,8 @@ this.SpreadItem = function(forEach, push){
 	SpreadItem.static({
 		/**
 		 * 给对象赋值，即将另一个对象合并
-		 * @param {Object} object - 需要赋值的对象
-		 * @param {Object} target - 被赋值或合并的对象
+		 * @param {Object} object - 需要被赋值的对象
+		 * @param {Object} target - 用来赋值或合并的对象
 		 */
 		assign: function(object, target){
 			// 遍历
@@ -2172,6 +2172,76 @@ new this.ModuleReady();
 			listener.call(module, _progress);
 		});
 	}
+);
+
+// jsx 相关
+!function(){
+
+this.JSXTemplate = function(SpreadItem, toArray, filterEmptyString){
+	/**
+	 * JSX 模板
+	 * @param {Function, String} type - 元素类型
+	 */
+	function JSXTemplate(type){
+		var props = {};
+
+		// 从第二个参数开始遍历
+		for(var i = 1, j = arguments.length;i < j;i += 2){
+			var key = arguments[i];
+
+			// 如果是拓展属性
+			if(key instanceof SpreadItem){
+				SpreadItem.assign(props, key.value);
+				continue;
+			}
+
+			var value = arguments[i + 1];
+
+			// 如果 children 属性
+			if(key === "children"){
+				// 过滤空字符串
+				value = value.filter(filterEmptyString);
+
+				switch(value.length){
+					// 如果没有子节点了
+					case 0:
+						continue;
+
+					// 如果只有一个节点
+					case 1:
+						value = value[0];
+						break;
+				}
+			}
+
+			// 设置 props 的键值
+			props[key] = value;
+		}
+
+		this.type = type;
+		this.props = props;
+	};
+	JSXTemplate = new Rexjs(JSXTemplate);
+
+	JSXTemplate.props({
+		key: null,
+		props: null,
+		ref: null,
+		type: null
+	});
+
+	return JSXTemplate;
+}(
+	this.SpreadItem,
+	Rexjs.toArray,
+	// filterEmptyString
+	function(child){
+		return child !== "";
+	}
+);
+
+}.call(
+	this
 );
 
 Rexjs.static(this);
