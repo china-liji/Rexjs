@@ -36,10 +36,11 @@ if(e.props.title !== "888"){
 }
 
 let f = (
-	<f>
+	<f ref="r" key="ok" >
 		<x>
 			<y>
 				<C />
+				{<p></p>}
 			</y>
 		</x>
 	</f>
@@ -47,6 +48,10 @@ let f = (
 
 let { children } = f.props;
 
-if(children.type !== "x" || children.props.children.type !== "y" || children.props.children.props.children.type !== C){
+if(children.type !== "x" || children.props.children.type !== "y" || children.props.children.props.children[0].type !== C){
 	throw "嵌套的元素解析不正确";
+}
+
+if(f.ref !== "r" || f.key !== "ok" || f.props.ref !== void 0 || f.props.key !== void 0){
+	throw "ref或key解析错误";
 }

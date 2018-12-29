@@ -2197,25 +2197,41 @@ this.JSXTemplate = function(SpreadItem, toArray, filterEmptyString){
 
 			var value = arguments[i + 1];
 
-			// 如果 children 属性
-			if(key === "children"){
-				// 过滤空字符串
-				value = value.filter(filterEmptyString);
+			switch(key){
+				case "ref":
+					this.ref = value;
+					continue;
 
-				switch(value.length){
-					// 如果没有子节点了
-					case 0:
-						continue;
+				case "key":
+					this.key = value;
+					continue;
 
-					// 如果只有一个节点
-					case 1:
-						value = value[0];
-						break;
-				}
+				case "children":
+					break;
+
+				default:
+					// 设置 props 的键值
+					props[key] = value;
+					continue;
 			}
 
-			// 设置 props 的键值
-			props[key] = value;
+			// 过滤空字符串
+			value = value.filter(filterEmptyString);
+
+			switch(value.length){
+				// 如果没有子节点了
+				case 0:
+					break;
+
+				// 如果只有一个节点
+				case 1:
+					props.children = value[0];
+					break;
+
+				default:
+					props.children = value;
+					break;
+			}
 		}
 
 		this.type = type;
