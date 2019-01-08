@@ -9578,6 +9578,8 @@ this.GroupingContextStatement = function(ArgumentsExpression, BinaryExpression, 
 		try: function(parser, context){
 			var expression = this.out();
 
+			debugger
+
 			// 如果不是箭头符号
 			if(context.content !== "=>"){
 				// 如果要作为参数，即 有省略参数符号 或 空的小括号
@@ -23871,26 +23873,82 @@ this.DestructuringAssignmentTag = function(DestructuringAssignmentExpression, vi
 eval(
 									function(){
 										// 对象声明解构赋值相关
-!function(closingDeclarationArgumentObjectTag){
-	
-this.DeclarationArgumentObjectExpression = function(DestructuringAssignmentExpression, CollectionRangeExpression, extractTo, declareVariable){
-	/**
-	 * 变量声明数组表达式
-	 * @param {SyntaxParser} parser - 语法解析器
-	 * @param {DeclarationObjectExpression} declarationObjectExpression - 变量对象声明表达式
-	 */
-	function DeclarationArgumentObjectExpression(parser, declarationObjectExpression){
-		DestructuringAssignmentExpression.call(this, null);
+!function(ArgumentDestructuringExpression, OpeningDeclarationObjectTag, OpeningDeclarationArrayTag, ClosingDeclarationObjectTag, ClosingDeclarationArrayTag,closingArgumentObjectDestructuringTag, closingArgumentArrayDestructuringTag, openingTagVisitor, closingTagVisitor){
 
-		// 设置左侧表达式
-		this.left = declarationObjectExpression.toDestructuring(parser);
+openingTagVisitor = function(ECMAScriptStatements, Context, varTag){
+	return function(tag, superVisitor, isObjectDestructuring, parser, context, statement, statements){
+		var declarationExpression, argumentsExpression = statement.target.expression.arguments, collections = argumentsExpression.collections;
+
+		// 设置当前语句块
+		parser.statements = statements = new ECMAScriptStatements(statements, collections);
+		// 设置语句块的闭包模式
+		statements.scope = ECMAScriptStatements.SCOPE_CLOSURE;
+
+		// 调用 var 标签，模拟 var 语句情形，以便使用解构声明
+		varTag.visitor(
+			parser,
+			new Context(
+				varTag,
+				argumentsExpression.opening.content,
+				argumentsExpression.opening.position
+			),
+			statements.statement,
+			statements
+		);
+
+		// 调用父类访问器
+		superVisitor.call(tag, parser, context, statements.statement, statements);
+
+		// 获取 declarationExpression
+		declarationExpression = statements.statement.target.expression;
+		
+		// 设置当前语句的表达式
+		(
+			statement.expression = new ArgumentDestructuringExpression(parser, declarationExpression)
+		)
+		.isObjectDestructuring = isObjectDestructuring;
+
+		// 取消声明模式，而且必须在最后设置，避免 rex 变量名以 var 声明的形式出现
+		declarationExpression.declaration = false;
+	};
+}(
+	this.ECMAScriptStatements,
+	Rexjs.Context,
+	// varTag
+	new this.VarTag()
+);
+
+closingTagVisitor = function(){
+	return function(tag, superVisitor, parser, context, statement, statements){
+		// 调用父类方法
+		superVisitor.call(tag, parser, context, statement, statements);
+
+		(
+			// 设置当前语句块
+			parser.statements = statements.target
+		)
+		.statement
+		.expression
+		// 关闭所有变量名范围
+		.closeAllRanges();
+	};
+}();
+	
+this.ArgumentDestructuringExpression = ArgumentDestructuringExpression = function(DestructuringAssignmentExpression, CollectionRangeExpression, extractTo, declareVariable){
+	/**
+	 * 函数参数解构赋值表达式
+	 * @param {SyntaxParser} parser - 语法解析器
+	 * @param {Expression} declarationExpression - 解构变量声明表达式
+	 */
+	function ArgumentDestructuringExpression(parser, declarationExpression){
+		DestructuringAssignmentExpression.call(this, null);
 
 		// 如果需要解析 es6
 		if(config.es6Base){
 			var statements = parser.statements, collections = statements.collections, argumentsExpression = statements.target.statement.target.expression.arguments;
 
 			// 设置变量名
-			declarationObjectExpression.setVariableOf(this, statements);
+			declarationExpression.setVariableOf(this, statements);
 
 			// 添加普通变量名声明范围
 			argumentsExpression.ranges.add(
@@ -23902,10 +23960,13 @@ this.DeclarationArgumentObjectExpression = function(DestructuringAssignmentExpre
 				this.rexRange = collections.rex.range()
 			);
 		}
-	};
-	DeclarationArgumentObjectExpression = new Rexjs(DeclarationArgumentObjectExpression, DestructuringAssignmentExpression);
 
-	DeclarationArgumentObjectExpression.props({
+		// 设置左侧表达式
+		this.left = declarationExpression.toDestructuring(parser);
+	};
+	ArgumentDestructuringExpression = new Rexjs(ArgumentDestructuringExpression, DestructuringAssignmentExpression);
+
+	ArgumentDestructuringExpression.props({
 		/**
 		 * 闭合相关变量区间
 		 */
@@ -23923,16 +23984,26 @@ this.DeclarationArgumentObjectExpression = function(DestructuringAssignmentExpre
 		 * @param {ContentBuilder} anotherBuilder - 另一个内容生成器，一般用于副内容的生成或记录
 		 */
 		extractTo: function(contentBuilder, anotherBuilder){
+			// 如果需要解析 es6
 			if(config.es6Base){
 				var variable = this.variable, builder = new ContentBuilder();
 
+				// 追加函数参数变量名
 				contentBuilder.appendString(variable);
+				// 追加后续提取中用到的变量名
 				builder.appendString(variable);
-				anotherBuilder.appendString(variable + "=new Rexjs.ObjectDestructuringTarget(" + variable + ")");
+				// 向另一个内容生成器追加变量名
+				anotherBuilder.appendString(variable);
 
-				// 提取并编译表达式文本内容
+				// 如果是对象解构
+				if(this.isObjectDestructuring){
+					// 追加解构方法
+					anotherBuilder.appendString("=new Rexjs.ObjectDestructuringTarget(" + variable + ")");
+				}
+				
+				// 提取并编译左侧表达式
 				this.left.compileTo(anotherBuilder, builder);
-
+				// 追加分号
 				anotherBuilder.appendString(";");
 				return;
 			}
@@ -23940,10 +24011,11 @@ this.DeclarationArgumentObjectExpression = function(DestructuringAssignmentExpre
 			// 提取左侧表达式
 			this.left.extractTo(contentBuilder, anotherBuilder);
 		},
+		isObjectDestructuring: false,
 		rexRange: null
 	});
 
-	return DeclarationArgumentObjectExpression;
+	return ArgumentDestructuringExpression;
 }(
 	this.DestructuringAssignmentExpression,
 	Rexjs.CollectionRangeExpression,
@@ -23954,34 +24026,23 @@ this.DeclarationArgumentObjectExpression = function(DestructuringAssignmentExpre
 	}
 );
 
-this.OpeningDeclarationArgumentObjectTag = function(OpeningDeclarationObjectTag, DeclarationArgumentObjectExpression, ECMAScriptStatements, Context, varTag, visitor){
+this.OpeningArgumentObjectDestructuringTag = function(visitor){
 	/**
-	 * 变量声明对象起始标签
+	 * 函数参数对象解构起始标签
 	 * @param {Number} _type - 标签类型
 	 */
-	function OpeningDeclarationArgumentObjectTag(_type){
+	function OpeningArgumentObjectDestructuringTag(_type){
 		OpeningDeclarationObjectTag.call(this, _type);
 	};
-	OpeningDeclarationArgumentObjectTag = new Rexjs(OpeningDeclarationArgumentObjectTag, OpeningDeclarationObjectTag);
+	OpeningArgumentObjectDestructuringTag = new Rexjs(OpeningArgumentObjectDestructuringTag, OpeningDeclarationObjectTag);
 
-	OpeningDeclarationArgumentObjectTag.props({
+	OpeningArgumentObjectDestructuringTag.props({
 		/**
 		 * 获取绑定的标签，该标签一般是用于语句的 try、catch 的返回值
 		 */
 		get binding(){
-			return closingDeclarationArgumentObjectTag;
+			return closingArgumentObjectDestructuringTag;
 		},
-		// /**
-		//  * 获取绑定的表达式，一般在子类使用父类逻辑，而不使用父类表达式的情况下使用
-		//  * @param {Context} context - 相关的语法标签上下文
-		//  * @param {Statement} statement - 当前语句
-		//  */
-		// getBoundExpression: function(context, statement){
-		// 	return new DeclarationArgumentObjectExpression(
-		// 		context,
-		// 		this.getObjectOf(statement)
-		// 	);
-		// },
 		/**
 		 * 标签访问器
 		 * @param {SyntaxParser} parser - 语法解析器
@@ -23990,53 +24051,26 @@ this.OpeningDeclarationArgumentObjectTag = function(OpeningDeclarationObjectTag,
 		 * @param {Statements} statements - 当前语句块
 		 */
 		visitor: function(parser, context, statement, statements){
-			var declarationObjectExpression, argumentsExpression = statement.target.expression.arguments, collections = argumentsExpression.collections;
-
-			parser.statements = statements = new ECMAScriptStatements(statements, collections);
-
-			statements.scope = ECMAScriptStatements.SCOPE_CLOSURE;
-
-			varTag.visitor(
-				parser,
-				new Context(
-					varTag,
-					argumentsExpression.opening.content,
-					argumentsExpression.opening.position
-				),
-				statements.statement,
-				statements
-			);
-
-			visitor.call(this, parser, context, statements.statement, statements);
-
-			declarationObjectExpression = statements.statement.target.expression;
-			statement.expression = new DeclarationArgumentObjectExpression(parser, declarationObjectExpression);
-			declarationObjectExpression.declaration = false;
+			openingTagVisitor(this, visitor, true, parser, context, statement, statements);
 		}
 	});
 
-	return OpeningDeclarationArgumentObjectTag;
+	return OpeningArgumentObjectDestructuringTag;
 }(
-	this.OpeningDeclarationObjectTag,
-	this.DeclarationArgumentObjectExpression,
-	this.ECMAScriptStatements,
-	Rexjs.Context,
-	// varTag
-	new this.VarTag(),
-	this.OpeningDeclarationObjectTag.prototype.visitor
+	OpeningDeclarationObjectTag.prototype.visitor
 );
 
-this.ClosingDeclarationArgumentObjectTag = function(ClosingDeclarationObjectTag, visitor){
+this.ClosingArgumentObjectDestructuringTag = function(visitor){
 	/**
-	 * 结束变量声明对象标签
+	 * 函数参数对象解构结束标签
 	 * @param {Number} _type - 标签类型
 	 */
-	function ClosingDeclarationArgumentObjectTag(_type){
+	function ClosingArgumentObjectDestructuringTag(_type){
 		ClosingDeclarationObjectTag.call(this, _type);
 	};
-	ClosingDeclarationArgumentObjectTag = new Rexjs(ClosingDeclarationArgumentObjectTag, ClosingDeclarationObjectTag);
+	ClosingArgumentObjectDestructuringTag = new Rexjs(ClosingArgumentObjectDestructuringTag, ClosingDeclarationObjectTag);
 
-	ClosingDeclarationArgumentObjectTag.props({
+	ClosingArgumentObjectDestructuringTag.props({
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
@@ -24052,28 +24086,102 @@ this.ClosingDeclarationArgumentObjectTag = function(ClosingDeclarationObjectTag,
 		 * @param {Statements} statements - 当前语句块
 		 */
 		visitor: function(parser, context, statement, statements){
-			visitor.call(this, parser, context, statement, statements);
-
-			(
-				parser.statements = statements.target
-			)
-			.statement
-			.expression
-			.closeAllRanges();
+			closingTagVisitor(this, visitor, parser, context, statement, statements);
 		}
 	});
 
-	return ClosingDeclarationArgumentObjectTag;
+	return ClosingArgumentObjectDestructuringTag;
 }(
-	this.ClosingDeclarationObjectTag,
-	this.ClosingDeclarationObjectTag.prototype.visitor
+	ClosingDeclarationObjectTag.prototype.visitor
 );
 
-closingDeclarationArgumentObjectTag = new this.ClosingDeclarationArgumentObjectTag();
+this.OpeningArgumentArrayDestructuringTag = function(visitor){
+	/**
+	 * 函数参数数组解构起始标签
+	 * @param {Number} _type - 标签类型
+	 */
+	function OpeningArgumentArrayDestructuringTag(_type){
+		OpeningDeclarationArrayTag.call(this, _type);
+	};
+	OpeningArgumentArrayDestructuringTag = new Rexjs(OpeningArgumentArrayDestructuringTag, OpeningDeclarationArrayTag);
+
+	OpeningArgumentArrayDestructuringTag.props({
+		/**
+		 * 获取绑定的标签，该标签一般是用于语句的 try、catch 的返回值
+		 */
+		get binding(){
+			return closingArgumentArrayDestructuringTag;
+		},
+		/**
+		 * 标签访问器
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 标签上下文
+		 * @param {Statement} statement - 当前语句
+		 * @param {Statements} statements - 当前语句块
+		 */
+		visitor: function(parser, context, statement, statements){
+			openingTagVisitor(this, visitor, false, parser, context, statement, statements);
+		}
+	});
+
+	return OpeningArgumentArrayDestructuringTag;
+}(
+	OpeningDeclarationArrayTag.prototype.visitor
+);
+
+this.ClosingArgumentArrayDestructuringTag = function(visitor){
+	/**
+	 * 函数参数数组解构结束标签
+	 * @param {Number} _type - 标签类型
+	 */
+	function ClosingArgumentArrayDestructuringTag(_type){
+		ClosingDeclarationArrayTag.call(this, _type);
+	};
+	ClosingArgumentArrayDestructuringTag = new Rexjs(ClosingArgumentArrayDestructuringTag, ClosingDeclarationArrayTag);
+
+	ClosingArgumentArrayDestructuringTag.props({
+		/**
+		 * 获取此标签接下来所需匹配的标签列表
+		 * @param {TagsMap} tagsMap - 标签集合映射
+		 */
+		require: function(tagsMap){
+			return tagsMap.expressionContextTags;
+		},
+		/**
+		 * 标签访问器
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 标签上下文
+		 * @param {Statement} statement - 当前语句
+		 * @param {Statements} statements - 当前语句块
+		 */
+		visitor: function(parser, context, statement, statements){
+			closingTagVisitor(this, visitor, parser, context, statement, statements);
+		}
+	});
+
+	return ClosingArgumentArrayDestructuringTag;
+}(
+	ClosingDeclarationArrayTag.prototype.visitor
+);
+
+closingArgumentObjectDestructuringTag = new this.ClosingArgumentObjectDestructuringTag();
+closingArgumentArrayDestructuringTag = new this.ClosingArgumentArrayDestructuringTag();
 
 }.call(
 	this,
-	// closingDeclarationArgumentObjectTag
+	// ArgumentDestructuringExpression
+	null,
+	this.OpeningDeclarationObjectTag,
+	this.OpeningDeclarationArrayTag,
+	this.ClosingDeclarationObjectTag,
+	this.ClosingDeclarationArrayTag,
+	// closingArgumentObjectDestructuringTag
+	null,
+	// closingArgumentArrayDestructuringTag
+	null,
+	// openingTagVisitor
+	null,
+	// closingTagVisitor
 	null
 );
 									}
@@ -24081,19 +24189,7 @@ closingDeclarationArgumentObjectTag = new this.ClosingDeclarationArgumentObjectT
 									.match(
 										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
 									)[1] +
-									"\n//# sourceURL=http://rexjs/maps/declaration-argument-object.js"
-								);
-
-
-eval(
-									function(){
-										
-									}
-									.toString()
-									.match(
-										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-									)[1] +
-									"\n//# sourceURL=http://rexjs/maps/declaration-argument-array.js"
+									"\n//# sourceURL=http://rexjs/maps/argument-destructuring.js"
 								);
 
 
@@ -27814,7 +27910,7 @@ this.NewContextTags = function(ExtendsContextTags, TargetAccessorTag, SuperTag, 
 	this.ExtendsContextTags.prototype.filter
 );
 
-this.OpeningArgumentsContextTags = function(ArgumentNameTag, OpeningDeclarationArgumentObjectTag, RestTag, ClosingArgumentsTag){
+this.OpeningArgumentsContextTags = function(ArgumentNameTag, OpeningArgumentObjectDestructuringTag, OpeningArgumentArrayDestructuringTag, RestTag, ClosingArgumentsTag){
 	/**
 	 * 起始参数上下文标签列表
 	 */
@@ -27823,7 +27919,8 @@ this.OpeningArgumentsContextTags = function(ArgumentNameTag, OpeningDeclarationA
 		
 		this.register(
 			new ArgumentNameTag(),
-			new OpeningDeclarationArgumentObjectTag(),
+			new OpeningArgumentObjectDestructuringTag(),
+			new OpeningArgumentArrayDestructuringTag(),
 			new RestTag(),
 			new ClosingArgumentsTag()
 		);
@@ -27833,7 +27930,8 @@ this.OpeningArgumentsContextTags = function(ArgumentNameTag, OpeningDeclarationA
 	return OpeningArgumentsContextTags;
 }(
 	this.ArgumentNameTag,
-	this.OpeningDeclarationArgumentObjectTag,
+	this.OpeningArgumentObjectDestructuringTag,
+	this.OpeningArgumentArrayDestructuringTag,
 	this.RestTag,
 	this.ClosingArgumentsTag
 );

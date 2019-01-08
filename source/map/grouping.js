@@ -174,6 +174,8 @@ this.GroupingContextStatement = function(ArgumentsExpression, BinaryExpression, 
 		try: function(parser, context){
 			var expression = this.out();
 
+			debugger
+
 			// 如果不是箭头符号
 			if(context.content !== "=>"){
 				// 如果要作为参数，即 有省略参数符号 或 空的小括号

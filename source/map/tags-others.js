@@ -1406,7 +1406,7 @@ this.NewContextTags = function(ExtendsContextTags, TargetAccessorTag, SuperTag, 
 	this.ExtendsContextTags.prototype.filter
 );
 
-this.OpeningArgumentsContextTags = function(ArgumentNameTag, OpeningDeclarationArgumentObjectTag, RestTag, ClosingArgumentsTag){
+this.OpeningArgumentsContextTags = function(ArgumentNameTag, OpeningArgumentObjectDestructuringTag, OpeningArgumentArrayDestructuringTag, RestTag, ClosingArgumentsTag){
 	/**
 	 * 起始参数上下文标签列表
 	 */
@@ -1415,7 +1415,8 @@ this.OpeningArgumentsContextTags = function(ArgumentNameTag, OpeningDeclarationA
 		
 		this.register(
 			new ArgumentNameTag(),
-			new OpeningDeclarationArgumentObjectTag(),
+			new OpeningArgumentObjectDestructuringTag(),
+			new OpeningArgumentArrayDestructuringTag(),
 			new RestTag(),
 			new ClosingArgumentsTag()
 		);
@@ -1425,7 +1426,8 @@ this.OpeningArgumentsContextTags = function(ArgumentNameTag, OpeningDeclarationA
 	return OpeningArgumentsContextTags;
 }(
 	this.ArgumentNameTag,
-	this.OpeningDeclarationArgumentObjectTag,
+	this.OpeningArgumentObjectDestructuringTag,
+	this.OpeningArgumentArrayDestructuringTag,
 	this.RestTag,
 	this.ClosingArgumentsTag
 );
