@@ -3,7 +3,7 @@
 	
 this.DeclarationObjectExpression = function(ObjectExpression){
 	/**
-	 * 变量声明数组表达式
+	 * 变量对象声明表达式
 	 * @param {Context} opening - 起始标签上下文
 	 * @param {Expression} objectOf - 该对象声明所处语句的表达式
 	 */

@@ -70,9 +70,10 @@ this.SingleArgumentExpression = function(ArgumentsExpression, ArgumentExpression
 	/**
 	 * 单参数表达式
 	 * @param {Context} argumentContext - 参数上下文
+	 * @param {Statements} statements - 当前语句块
 	 */
-	function SingleArgumentExpression(argumentContext){
-		ArgumentsExpression.call(this, null);
+	function SingleArgumentExpression(argumentContext, statements){
+		ArgumentsExpression.call(this, null, statements);
 
 		// 添加参数表达式
 		this.inner.add(
@@ -307,7 +308,7 @@ this.ArrowTag = function(ExpressionSeparatorTag, ArrowFunctionExpression, Single
 					// 设置当前表达式
 					statement.expression = new ArrowFunctionExpression(
 						context,
-						new SingleArgumentExpression(expression.context)
+						new SingleArgumentExpression(expression.context, statements)
 					);
 					break;
 

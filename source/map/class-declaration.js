@@ -125,7 +125,7 @@ this.ClassVariableTag = function(visitor){
 				// 收集变量名
 				this.collectTo(parser, context, statements);
 				// 范围结束
-				range.end();
+				range.close();
 
 				// 设置 undeclaredIfCompile 属性，表示已经被提出到生成器之前声明过
 				statement.expression.undeclaredIfCompile = false;

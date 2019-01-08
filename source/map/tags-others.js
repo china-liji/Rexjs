@@ -19,26 +19,6 @@ this.ArgumentNameContextTags = function(ArgumentAssignmentTag){
 	this.ArgumentAssignmentTag
 );
 
-this.ArgumentSeparatorContextTags = function(ArgumentNameTag, RestTag){
-	/**
-	 * 参数分隔符上下文标签列表
-	 */
-	function ArgumentSeparatorContextTags(){
-		IllegalTags.call(this);
-		
-		this.register(
-			new ArgumentNameTag(),
-			new RestTag()
-		);
-	};
-	ArgumentSeparatorContextTags = new Rexjs(ArgumentSeparatorContextTags, IllegalTags);
-
-	return ArgumentSeparatorContextTags;
-}(
-	this.ArgumentNameTag,
-	this.RestTag
-);
-
 this.ArrowContextTags = function(OpeningArrowFunctionBodyTag){
 	/**
 	 * 箭头上下文标签
@@ -1426,22 +1406,27 @@ this.NewContextTags = function(ExtendsContextTags, TargetAccessorTag, SuperTag, 
 	this.ExtendsContextTags.prototype.filter
 );
 
-this.OpeningArgumentsContextTags = function(ArgumentSeparatorContextTags, ClosingArgumentsTag){
+this.OpeningArgumentsContextTags = function(ArgumentNameTag, OpeningDeclarationArgumentObjectTag, RestTag, ClosingArgumentsTag){
 	/**
 	 * 起始参数上下文标签列表
 	 */
 	function OpeningArgumentsContextTags(){
-		ArgumentSeparatorContextTags.call(this);
+		IllegalTags.call(this);
 		
 		this.register(
+			new ArgumentNameTag(),
+			new OpeningDeclarationArgumentObjectTag(),
+			new RestTag(),
 			new ClosingArgumentsTag()
 		);
 	};
-	OpeningArgumentsContextTags = new Rexjs(OpeningArgumentsContextTags, ArgumentSeparatorContextTags);
+	OpeningArgumentsContextTags = new Rexjs(OpeningArgumentsContextTags, IllegalTags);
 
 	return OpeningArgumentsContextTags;
 }(
-	this.ArgumentSeparatorContextTags,
+	this.ArgumentNameTag,
+	this.OpeningDeclarationArgumentObjectTag,
+	this.RestTag,
 	this.ClosingArgumentsTag
 );
 

@@ -31,7 +31,7 @@ this.ECMAScriptVariableCollections = function(VariableCollections, VariableColle
 			return variable;
 		},
 		/**
-		 * 初始化黑名单变量名
+		 * 初始化黑名单变量名，即使用 let、const 的声明变量，var 声明的不在此内，因为 var 可以重复声明
 		 * @param {ECMAScriptVariableCollections} _prevCollections - 可参考上一个收集器集合
 		 */
 		initBlackList: function(){

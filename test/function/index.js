@@ -19,6 +19,7 @@ test.unit(
 		this.true("带单个省略参数的函数表达式", "!function a(...a){}");
 		this.true("带所有情况的参数的函数表达式", "!function a(a, b = 2, c, d = 4, ...e){}");
 		this.true("函数表达式换行后接其他语句", "!function (){}\nvar b = 1");
+		this.true("函数参数以逗号结束", "!function (a,b,c,){}");
 
 		this.true(
 			"函数声明后面接表达式",
@@ -60,6 +61,22 @@ test.unit(
 			"function (){}",
 			function(parser, err){
 				return err.context.tag instanceof Rexjs.OpeningGroupingTag ? "" : "没有识别出小括号";
+			}
+		);
+
+		this.false(
+			"省略参数出现连续的逗号，并以逗号结束",
+			"function a(a, b, c,,){}",
+			function(parser, err){
+				return err.context.content !== "," || err.context.position.column !== 19;
+			}
+		);
+
+		this.false(
+			"无参数带逗号分隔符",
+			"function a(,){}",
+			function(parser, err){
+				return err.context.content !== ",";
 			}
 		);
 

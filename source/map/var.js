@@ -77,7 +77,7 @@ this.VarStatement = function(){
 			// 跳出语句并添加表达式
 			this.out().list.add(this.expression);
 			// 结束 var 表达式的变量名范围
-			this.target.expression.range.end();
+			this.target.expression.range.close();
 		},
 		/**
 		 * 尝试处理异常

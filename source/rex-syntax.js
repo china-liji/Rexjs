@@ -3,7 +3,7 @@ new function(Rexjs, forEach){
 "use strict";
 
 // 变量名集合相关
-!function(){
+!function(collectionToString){
 
 this.VariableIndex = function(){
 	/**
@@ -33,18 +33,24 @@ this.CollectionRange = function(){
 	function CollectionRange(collection){
 		this.collection = collection;
 
-		this.start();
+		this.open();
 	};
 	CollectionRange = new Rexjs(CollectionRange);
 
 	CollectionRange.props({
-		collection: null,
 		/**
-		 * 记录结束点（范围包括该点）
+		 * 是否闭合
 		 */
-		end: function(){
-			this.to = this.collection.length - 1;
+		get collapsed(){
+			return this.from >= this.to;
 		},
+		/**
+		 * 记录结束点（范围不包括该点）
+		 */
+		close: function(){
+			this.to = this.collection.length;
+		},
+		collection: null,
 		/**
 		 * 根据该范围执行回调，并传入对应变量名作为参数
 		 * @param {Function} callback - 回调函数
@@ -54,19 +60,28 @@ this.CollectionRange = function(){
 		forEach: function(callback, _contentBuilder, _anotherBuilder){
 			var collection = this.collection;
 
-			for(var i = this.from, j = this.to + 1;i < j;i++){
+			for(var i = this.from, j = this.to;i < j;i++){
 				// 执行回调
 				callback(collection[i], _contentBuilder, _anotherBuilder);
 			}
 		},
-		from: -1,
+		from: 0,
 		/**
 		 * 记录起始点（范围包括该点）
 		 */
-		start: function(){
+		open: function(){
 			this.from = this.collection.length;
 		},
-		to: -1
+		to: 0,
+		/**
+		 * 转化为字符串
+		 * @param {String} before - 变量之前的字符串
+		 * @param {String} join - 变量连接字符串
+		 * @param {String} after - 变量之后的字符串
+		 */
+		toString: function(before, join, after){
+			return collectionToString(this.collection, before, join, after, this.from, this.to);
+		}
 	});
 
 	return CollectionRange;
@@ -115,23 +130,7 @@ this.VariableCollection = function(CollectionRange){
 		 * @param {String} after - 变量之后的字符串
 		 */
 		toString: function(before, join, after){
-			var length = this.length;
-
-			// 如果有效长度是 0
-			if(length === 0){
-				return "";
-			}
-
-			var result = before + this[0];
-
-			for(var i = 1;i < length;i++){
-				// 拼接连接符
-				result += join;
-				// 拼接变量名
-				result += this[i];
-			}
-
-			return result + after;
+			return collectionToString(this, before, join, after, 0, this.length);
 		}
 	});
 
@@ -186,7 +185,27 @@ this.VariableCollections = function(PREFIX){
 );
 
 }.call(
-	this
+	this,
+	// collectionToString
+	function(collection, before, join, after, start, end){
+		var i = start + 1;
+
+		// 如果长度不够
+		if(end < i){
+			return "";
+		}
+
+		var result = before + collection[start];
+
+		for(;i < end;i++){
+			// 拼接连接符
+			result += join;
+			// 拼接变量名
+			result += collection[i];
+		}
+
+		return result + after;
+	}
 );
 
 

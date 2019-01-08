@@ -411,7 +411,7 @@ this.ExceptionVariableTag = function(VariableDeclarationTag){
 				// 收集变量名
 				this.collectTo(parser, context, statements);
 				// 范围结束
-				range.end();
+				range.close();
 			}
 			else {
 				// 仅仅只收集变量名

@@ -1,26 +1,76 @@
 // 函数参数表达式相关
 !function(argumentSeparatorTag, closingArgumentsTag){
 
-this.ArgumentsExpression = function(VariableCollection){
+this.ArgumentsExpression = function(ECMAScriptVariableCollections, extractTo, extractRange){
 	/**
 	 * 函数参数列表表达式
 	 * @param {Context} opening - 起始标签上下文
+	 * @param {Statements} statements - 当前语句块
 	 */
-	function ArgumentsExpression(opening){
+	function ArgumentsExpression(opening, statements){
 		PartnerExpression.call(this, opening);
+		
+		this.collections = new ECMAScriptVariableCollections(
+			statements.collections.index
+		);
 
 		this.inner = new ListExpression(null, ",");
-		this.collection = new VariableCollection();
+		this.ranges = new ListExpression(null, ",");
 	};
 	ArgumentsExpression = new Rexjs(ArgumentsExpression, PartnerExpression);
 
 	ArgumentsExpression.props({
-		collection: null
+		get collection(){
+			return this.collections.declaration;
+		},
+		collections: null,
+		ranges: null,
+		/**
+		 * 提取表达式文本内容
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 * @param {ContentBuilder} anotherBuilder - 另一个内容生成器，一般用于副内容的生成或记录
+		 */
+		extractTo: function(contentBuilder, anotherBuilder){
+			// 遍历变量名收集器区域
+			this.ranges.forEach(extractRange, anotherBuilder);
+
+			// 如果有变量名
+			if(anotherBuilder.result.length > 0){
+				// 追加分号
+				anotherBuilder.appendString(";");
+			}
+
+			// 调用父类方法
+			extractTo.call(this, contentBuilder, anotherBuilder);
+		}
 	});
 
 	return ArgumentsExpression;
 }(
-	Rexjs.VariableCollection
+	this.ECMAScriptVariableCollections,
+	PartnerExpression.prototype.extractTo,
+	// extractRange
+	function(range, anotherBuilder){
+		var variableString = range.toString("", ",", "");
+
+		// 如果没有变量
+		if(variableString.length === 0){
+			return;
+		}
+
+		// 如果已经有内容
+		if(anotherBuilder.result.length > 0){
+			// 追加变量分号
+			anotherBuilder.appendString(",");
+		}
+		else {
+			// 追加 var 声明
+			anotherBuilder.appendString("var ");
+		}
+
+		// 追加变量名
+		anotherBuilder.appendString(variableString);
+	}
 );
 
 this.ArgumentExpression = function(IdentifierExpression){
@@ -145,7 +195,7 @@ this.OpeningArgumentsTag = function(OpeningParenTag, ArgumentsExpression, Argume
 		 */
 		visitor: function(parser, context, statement, statements){
 			// 设置函数表达式的的参数
-			statement.expression.arguments = new ArgumentsExpression(context);
+			statement.expression.arguments = new ArgumentsExpression(context, statements);
 			// 设置当前语句
 			statements.statement = new ArgumentStatement(statements);
 		}
@@ -233,7 +283,7 @@ this.ArgumentSeparatorTag = function(CommaTag, ArgumentStatement){
 		 * @param {TagsMap} tagsMap - 标签集合映射
 		 */
 		require: function(tagsMap){
-			return tagsMap.argumentSeparatorContextTags;
+			return tagsMap.openingArgumentsContextTags;
 		},
 		/**
 		 * 标签访问器

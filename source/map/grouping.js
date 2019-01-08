@@ -185,7 +185,7 @@ this.GroupingContextStatement = function(ArgumentsExpression, BinaryExpression, 
 				return;
 			}
 
-			var inner = expression.inner, argumentsExpression = new ArgumentsExpression(expression.opening);
+			var inner = expression.inner, argumentsExpression = new ArgumentsExpression(expression.opening, parser.statements);
 
 			// 遍历项
 			for(var i = 0, j = inner.length;i < j;i++){
