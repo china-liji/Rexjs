@@ -66,9 +66,9 @@ this.ObjectExpression = function(
 	DestructibleExpression, ObjectDestructuringExpression, ObjectDestructuringItemExpression,
 	PropertyDestructuringItemExpression, PropertyDestructuringRestItemExpression, PropertyDestructuringDefaultItemExpression,
 	LiteralPropertyNameExpression, ComputedPropertyNameExpression, ShorthandMethodExpression, PropertyInitializerExpression,
-	IdentifierExpression, AssignableExpression, BinaryExpression, SpreadExpression,
+	AssignableExpression, BinaryExpression, SpreadExpression,
 	BasicAssignmentTag,
-	extractTo, compileItem, collected, error
+	extractTo, compileItem
 ){
 	/**
 	 * 对象表达式
@@ -83,8 +83,9 @@ this.ObjectExpression = function(
 		/**
 		 * 将对象每一项转换为解构项表达式
 		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {VarTag} _varTag - 声明标签，一旦提供该参数，如果是声明解构且变量名没有被收集，那么会自动进行收集
 		 */
-		convert: function(parser){
+		convert: function(parser, _varTag){
 			var inner = this.inner;
 
 			// 遍历
@@ -95,22 +96,19 @@ this.ObjectExpression = function(
 				switch(true){
 					// 如果是字面量属性名
 					case name instanceof LiteralPropertyNameExpression:
-						// 如果是简写属性
-						if(!operand){
+						// 如果是简写属性 或者 如果是简写属性默认值表达式
+						if(!operand || value instanceof PropertyInitializerExpression){
 							// 如果已经被收集到常量内
-							if(collected(parser, name, true)){
+							if(this.collectedBy(parser, name, _varTag, true)){
 								return;
 							}
 
 							// 转化表达式
-							expression = new PropertyDestructuringItemExpression(expression);
-							break;
-						}
-
-						// 如果是简写属性默认值表达式
-						if(value instanceof PropertyInitializerExpression){
-							// 转化表达式
-							expression = new PropertyDestructuringDefaultItemExpression(expression, expression, parser.statements);
+							expression = (
+								operand ?
+									new PropertyDestructuringDefaultItemExpression(expression, expression, parser.statements) :
+									new PropertyDestructuringItemExpression(expression)
+							);
 							break;
 						}
 
@@ -121,7 +119,7 @@ this.ObjectExpression = function(
 							// 如果是可赋值的属性值
 							case operand instanceof AssignableExpression:
 								// 如果已经被收集到常量内
-								if(collected(parser, operand, operand instanceof IdentifierExpression)){
+								if(this.collectedBy(parser, operand, _varTag)){
 									return;
 								}
 
@@ -142,7 +140,7 @@ this.ObjectExpression = function(
 								}
 
 								// 报错
-								error(parser, operand);
+								this.throwError(parser, operand);
 								return;
 
 							// 如果是可解构的表达式
@@ -150,7 +148,7 @@ this.ObjectExpression = function(
 								// 表明是嵌套解构子项
 								value.destructuringItem = true;
 								// 转化为解构子项
-								value.operand = operand.toDestructuringItem(parser);
+								value.operand = operand.toDestructuringItem(parser, _varTag);
 
 								// 转化表达式
 								expression = new PropertyDestructuringItemExpression(expression);
@@ -159,12 +157,12 @@ this.ObjectExpression = function(
 							// 如果是简写表达式
 							case operand instanceof ShorthandMethodExpression:
 								// 报错
-								error(parser, expression.accessible ? name : operand.arguments);
+								this.throwError(parser, expression.accessible ? name : operand.arguments);
 								return;
 
 							default:
 								// 报错
-								error(parser, operand);
+								this.throwError(parser, operand);
 								return;
 						}
 
@@ -175,14 +173,14 @@ this.ObjectExpression = function(
 						// 如果不是对象最后一项
 						if(i !== j - 1){
 							// 报错
-							error(parser, expression, "REST_ELEMENT");
+							this.throwError(parser, expression, "REST_ELEMENT");
 							return;
 						}
 
 						// 如果是可赋值的属性值
 						if(operand instanceof AssignableExpression){
 							// 如果已经被收集到常量内
-							if(collected(parser, operand, operand instanceof IdentifierExpression)){
+							if(this.collectedBy(parser, operand, _varTag)){
 								return;
 							}
 
@@ -192,12 +190,12 @@ this.ObjectExpression = function(
 						}
 
 						// 报错
-						error(parser, operand);
+						this.throwError(parser, operand);
 						return;
 
 					default:
 						// 报错
-						error(parser, name);
+						this.throwError(parser, name);
 						return;
 				}
 
@@ -246,16 +244,16 @@ this.ObjectExpression = function(
 		 * 转换为解构表达式
 		 * @param {SyntaxParser} parser - 语法解析器
 		 */
-		toDestructuring: function(parser){
+		toDestructuring: function(parser, _varTag){
 			// 转换内部表达式
-			this.convert(parser, this.inner);
+			this.convert(parser, _varTag);
 			return new ObjectDestructuringExpression(this);
 		},
 		/**
 		 * 转换为解构项表达式
 		 * @param {SyntaxParser} parser - 语法解析器
 		 */
-		toDestructuringItem: function(parser){
+		toDestructuringItem: function(parser, _varTag){
 			var inner = this.inner, expression = new ObjectDestructuringItemExpression(this);
 
 			// 如果需要解析 而且 长度大于 1（长度为 0 不解析，长度为 1，只需取一次对象，所以都不需要生成变量名）
@@ -265,7 +263,7 @@ this.ObjectExpression = function(
 			}
 
 			// 转换内部表达式
-			this.convert(parser, this.inner);
+			this.convert(parser, _varTag);
 			return expression;
 		},
 		variable: ""
@@ -283,7 +281,6 @@ this.ObjectExpression = function(
 	this.ComputedPropertyNameExpression,
 	this.ShorthandMethodExpression,
 	this.PropertyInitializerExpression,
-	this.IdentifierExpression,
 	this.AssignableExpression,
 	this.BinaryExpression,
 	this.SpreadExpression,
@@ -292,25 +289,6 @@ this.ObjectExpression = function(
 	// compileItem
 	function(item, contentBuilder, anotherBuilder){
 		item.compileTo(contentBuilder, anotherBuilder);
-	},
-	// collected
-	function(parser, expression, identifier){
-		// 如果是标识符表达式
-		if(identifier){
-			var context = expression.context;
-
-			// 判断是否收集到常量中
-			return context.tag.collected(parser, context, parser.statements);
-		}
-
-		return false;
-	},
-	// error
-	function(parser, expression, _errorName){
-		parser.error(
-			expression.context,
-			_errorName ? ECMAScriptErrors[_errorName] : null
-		);
 	}
 );
 

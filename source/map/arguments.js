@@ -232,11 +232,12 @@ this.ArgumentNameTag = function(VariableDeclarationTag, ArgumentExpression){
 			if(collection.contains(content)){
 				// 报错
 				parser.error(context, ECMAScriptErrors.DUPLICATE_PARAMETER_NAME);
-				return;
+				return false;
 			}
 
 			// 参数列表收集变量名
 			collection.collect(content);
+			return true;
 		},
 		/**
 		 * 获取此标签接下来所需匹配的标签列表

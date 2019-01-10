@@ -141,7 +141,7 @@ this.IllegibleRestArgumentStatement = function(){
 	return IllegibleRestArgumentStatement;
 }();
 
-this.GroupingContextStatement = function(ArgumentsExpression, BinaryExpression, ifIdentifier, ifBinary, error){
+this.GroupingContextStatement = function(ArgumentsExpression, BinaryExpression, DestructibleExpression, ArgumentDestructuringExpression, ArgumentsDestructuringStatements, ifIdentifier, ifBinary, error){
 	/**
 	 * 分组小括号上下文语句
 	 * @param {Statements} statements - 该语句将要所处的语句块
@@ -174,8 +174,6 @@ this.GroupingContextStatement = function(ArgumentsExpression, BinaryExpression, 
 		try: function(parser, context){
 			var expression = this.out();
 
-			debugger
-
 			// 如果不是箭头符号
 			if(context.content !== "=>"){
 				// 如果要作为参数，即 有省略参数符号 或 空的小括号
@@ -187,7 +185,9 @@ this.GroupingContextStatement = function(ArgumentsExpression, BinaryExpression, 
 				return;
 			}
 
-			var inner = expression.inner, argumentsExpression = new ArgumentsExpression(expression.opening, parser.statements);
+			var statements = parser.statements, inner = expression.inner, argumentsExpression = new ArgumentsExpression(expression.opening, statements);
+
+			parser.statements = new ArgumentsDestructuringStatements(statements, argumentsExpression);
 
 			// 遍历项
 			for(var i = 0, j = inner.length;i < j;i++){
@@ -204,6 +204,12 @@ this.GroupingContextStatement = function(ArgumentsExpression, BinaryExpression, 
 						i = ifBinary(parser, exp, argumentsExpression, i, j);
 						break;
 
+					case exp instanceof DestructibleExpression:
+						argumentsExpression.inner.add(
+							new ArgumentDestructuringExpression(parser, argumentsExpression, exp)
+						);
+						break;
+
 					default:
 						// 报错
 						parser.error(exp.context);
@@ -215,6 +221,7 @@ this.GroupingContextStatement = function(ArgumentsExpression, BinaryExpression, 
 			argumentsExpression.closing = expression.closing;
 			// 将分组小括号表达式转化成参数列表表达式，并替换分组小括号表达式
 			this.target.expression = argumentsExpression;
+			parser.statements = statements;
 		}
 	});
 
@@ -222,6 +229,9 @@ this.GroupingContextStatement = function(ArgumentsExpression, BinaryExpression, 
 }(
 	this.ArgumentsExpression,
 	this.BinaryExpression,
+	this.DestructibleExpression,
+	this.ArgumentDestructuringExpression,
+	this.ArgumentsDestructuringStatements,
 	// ifIdentifier
 	function(parser, expression, argumentsExpression, i, j){
 		var context;

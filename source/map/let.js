@@ -67,9 +67,13 @@ this.LocalVariableTag = function(collectTo){
 		 */
 		collectTo: function(parser, context, statements){
 			// 调用父类方法
-			collectTo.call(this, parser, context, statements);
-			// 收集变量名
-			statements.collections.blacklist.collect(context.content);
+			if(collectTo.call(this, parser, context, statements)){
+				// 收集变量名
+				statements.collections.blacklist.collect(context.content);
+				return true;
+			}
+			
+			return false;
 		},
 		/**
 		 * 判断变量名，是否包含于指定收集器内

@@ -1,7 +1,64 @@
 // 对象字面量属性名相关
-!function(require, requireOfMethodName, visitor, visitorOfMathematicalNumeral){
+!function(LiteralPropertyNameExpression, require, requireOfMethodName, visitor, visitorOfMathematicalNumeral){
 
-this.LiteralPropertyNameExpression = function(){
+require = function(){
+	/**
+	 * 获取此标签接下来所需匹配的标签列表
+	 * @param {TagsMap} tagsMap - 标签集合映射
+	 */
+	return function(tagsMap){
+		return tagsMap.propertyNameContextTags;
+	};
+}();
+
+requireOfMethodName = function(){
+	/**
+	 * 获取此标签接下来所需匹配的标签列表
+	 * @param {TagsMap} tagsMap - 标签集合映射
+	 */
+	return function(tagsMap){
+		return tagsMap.shorthandMethodArgumentsTags;
+	};
+}();
+
+visitor = function(){
+	/**
+	 * 标签访问器
+	 * @param {SyntaxParser} parser - 语法解析器
+	 * @param {Context} context - 标签上下文
+	 * @param {Statement} statement - 当前语句
+	 * @param {Statements} statements - 当前语句块
+	 */
+	return function(parser, context, statement){
+		// 设置表达式的 name 属性
+		statement.expression.name = new LiteralPropertyNameExpression(context);
+	};
+}();
+
+visitorOfMathematicalNumeral = function(){
+	/**
+	 * 标签访问器
+	 * @param {SyntaxParser} parser - 语法解析器
+	 * @param {Context} context - 标签上下文
+	 * @param {Statement} statement - 当前语句
+	 * @param {Statements} statements - 当前语句块
+	 */
+	return function(parser, context, statement, statements){
+		// 如果需要编译
+		if(config.es6Base){
+			// 给对象表达式设置临时变量名
+			statement.expression.setCompiledVariableTo(
+				statements,
+				statement.target.expression
+			);
+		}
+		
+		// 调用 visitor 方法
+		visitor.call(this, parser, context, statement, statements);
+	};
+}();
+
+this.LiteralPropertyNameExpression = LiteralPropertyNameExpression = function(){
 	/**
 	 * 对象字面量属性名表达式
 	 * @param {Context} context - 语法标签上下文
@@ -35,65 +92,6 @@ this.LiteralPropertyNameExpression = function(){
 	});
 
 	return LiteralPropertyNameExpression;
-}();
-
-require = function(){
-	/**
-	 * 获取此标签接下来所需匹配的标签列表
-	 * @param {TagsMap} tagsMap - 标签集合映射
-	 */
-	return function(tagsMap){
-		return tagsMap.propertyNameContextTags;
-	};
-}();
-
-requireOfMethodName = function(){
-	/**
-	 * 获取此标签接下来所需匹配的标签列表
-	 * @param {TagsMap} tagsMap - 标签集合映射
-	 */
-	return function(tagsMap){
-		return tagsMap.shorthandMethodArgumentsTags;
-	};
-}();
-
-visitor = function(LiteralPropertyNameExpression){
-	/**
-	 * 标签访问器
-	 * @param {SyntaxParser} parser - 语法解析器
-	 * @param {Context} context - 标签上下文
-	 * @param {Statement} statement - 当前语句
-	 * @param {Statements} statements - 当前语句块
-	 */
-	return function(parser, context, statement){
-		// 设置表达式的 name 属性
-		statement.expression.name = new LiteralPropertyNameExpression(context);
-	};
-}(
-	this.LiteralPropertyNameExpression
-);
-
-visitorOfMathematicalNumeral = function(){
-	/**
-	 * 标签访问器
-	 * @param {SyntaxParser} parser - 语法解析器
-	 * @param {Context} context - 标签上下文
-	 * @param {Statement} statement - 当前语句
-	 * @param {Statements} statements - 当前语句块
-	 */
-	return function(parser, context, statement, statements){
-		// 如果需要编译
-		if(config.es6Base){
-			// 给对象表达式设置临时变量名
-			statement.expression.setCompiledVariableTo(
-				statements,
-				statement.target.expression
-			);
-		}
-		
-		// 调用 visitor 方法
-		visitor.call(this, parser, context, statement, statements);
-	};
 }();
 
 this.StringPropertyNameTag = function(StringTag){
@@ -254,6 +252,8 @@ this.OctalNumberMethodNameTag = function(OctalNumberPropertyNameTag){
 
 }.call(
 	this,
+	// LiteralPropertyNameExpression
+	null,
 	// require
 	null,
 	// requireOfMethodName

@@ -50,7 +50,7 @@ this.ArrowFunctionExpression = function(){
 				// 提取并编译函数主体
 				this.body.compileTo(contentBuilder, defaultArgumentBuilder);
 				// 追加两层函数的尾部代码
-				contentBuilder.appendString(".apply(this[0],this[1])}.bind([this, arguments]))");
+				contentBuilder.appendString(".apply(this[0],this[1]);}.bind([this, arguments]))");
 				return;
 			}
 			

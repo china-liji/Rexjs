@@ -1,7 +1,7 @@
 // 解构表达式相关
 !function(){
 
-this.DestructibleExpression = function(){
+this.DestructibleExpression = function(IdentifierExpression, Context){
 	/**
 	 * 可解构的表达式
 	 * @param {Context} opening - 起始标签上下文
@@ -19,6 +19,37 @@ this.DestructibleExpression = function(){
 		 * @param {SyntaxParser} parser - 语法解析器
 		 */
 		convert: function(){},
+		/**
+		 * 判断表达式变量名是否已经被收集
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Expression} expression - 需要判断变量名的表达式
+		 * @param {VarTag} _varTag - 声明标签，一旦提供该参数，如果是声明解构且变量名没有被收集，那么会自动进行收集
+		 * @param {Boolean} _asIdentifier - 是否将表达式作为标识符表达式处理
+		 */
+		collectedBy: function(parser, expression, _varTag, _asIdentifier){
+			// 如果是标识符表达式
+			if(_asIdentifier || expression instanceof IdentifierExpression){
+				var context = expression.context;
+
+				// 如果是声明解构且提供了声明标签
+				if(this.declaration && _varTag){
+					// 初始化替代的标签上下文
+					context = new Context(
+						_varTag,
+						context.content,
+						context.position
+					);
+
+					// 返回是否收集成功的对立结果（如果当前被搜集成功，那么说明之前没有被搜集）
+					return !_varTag.variable.collectTo(parser, context, parser.statements);
+				}
+
+				// 判断是否收集到常量中
+				return context.tag.collected(parser, context, parser.statements);
+			}
+
+			return false;
+		},
 		declaration: false,
 		/**
 		 * 根据语句块上下文给指定表达式设置变量名
@@ -38,6 +69,18 @@ this.DestructibleExpression = function(){
 			);
 		},
 		/**
+		 * 抛出错误
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Expression} expression - 相关表达式
+		 * @param {String} _errorName - 指定的错误名称
+		 */
+		throwError: function(parser, expression, _errorName){
+			parser.error(
+				expression.context,
+				_errorName ? ECMAScriptErrors[_errorName] : null
+			);
+		},
+		/**
 		 * 转换为解构表达式
 		 * @param {SyntaxParser} parser - 语法解析器
 		 */
@@ -50,7 +93,10 @@ this.DestructibleExpression = function(){
 	});
 
 	return DestructibleExpression;
-}();
+}(
+	this.IdentifierExpression,
+	Rexjs.Context
+);
 
 this.DestructuringExpression = function(AssignableExpression){
 	/**

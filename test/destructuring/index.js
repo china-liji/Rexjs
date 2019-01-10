@@ -496,6 +496,17 @@ test.unit(
 		);
 
 		this.false(
+			"对象解构 - 简写常量变量名作为对象解构项 - 默认值方式",
+			"const a = 1;({ a = 5 } = {});",
+			function(parser, err){
+				return err.context.content === "a" ? "" : "没有识别出重复定义的 a";
+			},
+			function(parser, err){
+				return err.context.position.column === 15 ? "" : "没有找到正确的错误地方";
+			}
+		);
+
+		this.false(
 			"对象解构 - 键值对常量变量名作为对象解构项",
 			"const a = 1;({ 1: a } = {});",
 			function(parser, err){

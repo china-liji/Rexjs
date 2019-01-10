@@ -1,24 +1,25 @@
 // 函数参数解构赋值相关
-!function(ArgumentDestructuringExpression, OpeningDeclarationObjectTag, OpeningDeclarationArrayTag, ClosingDeclarationObjectTag, ClosingDeclarationArrayTag,closingArgumentObjectDestructuringTag, closingArgumentArrayDestructuringTag, openingTagVisitor, closingTagVisitor){
+!function(
+	ArgumentDestructuringExpression, ArgumentsDestructuringStatements, OpeningDeclarationObjectTag, OpeningDeclarationArrayTag, ClosingDeclarationObjectTag, ClosingDeclarationArrayTag,
+	varTag, closingArgumentObjectDestructuringTag, closingArgumentArrayDestructuringTag,
+	openingTagVisitor, closingTagVisitor
+){
 
-openingTagVisitor = function(ECMAScriptStatements, Context, varTag){
+openingTagVisitor = function(Context){
 	/**
 	 * 函数参数起始标签访问器
 	 * @param {SyntaxTag} tag - 语法标签
 	 * @param {Function} superVisitor - 语法标签的父类访问器函数
-	 * @param {Boolean} isObjectDestructuring - 是否为对象结构
 	 * @param {SyntaxParser} parser - 语法解析器
 	 * @param {Context} context - 标签上下文
 	 * @param {Statement} statement - 当前语句
 	 * @param {Statements} statements - 当前语句块
 	 */
-	return function(tag, superVisitor, isObjectDestructuring, parser, context, statement, statements){
-		var declarationExpression, argumentsExpression = statement.target.expression.arguments, collections = argumentsExpression.collections;
+	return function(tag, superVisitor, parser, context, statement, statements){
+		var destructibleExpression, argumentsExpression = statement.target.expression.arguments;
 
 		// 设置当前语句块
-		parser.statements = statements = new ECMAScriptStatements(statements, collections);
-		// 设置语句块的闭包模式
-		statements.scope = ECMAScriptStatements.SCOPE_CLOSURE;
+		parser.statements = statements = new ArgumentsDestructuringStatements(statements, argumentsExpression);
 
 		// 调用 var 标签，模拟 var 语句情形，以便使用解构声明
 		varTag.visitor(
@@ -35,23 +36,13 @@ openingTagVisitor = function(ECMAScriptStatements, Context, varTag){
 		// 调用父类访问器
 		superVisitor.call(tag, parser, context, statements.statement, statements);
 
-		// 获取 declarationExpression
-		declarationExpression = statements.statement.target.expression;
-		
+		// 获取 destructibleExpression
+		destructibleExpression = statements.statement.target.expression;
 		// 设置当前语句的表达式
-		(
-			statement.expression = new ArgumentDestructuringExpression(parser, declarationExpression)
-		)
-		.isObjectDestructuring = isObjectDestructuring;
-
-		// 取消声明模式，而且必须在最后设置，避免 rex 变量名以 var 声明的形式出现
-		declarationExpression.declaration = false;
+		statement.expression = new ArgumentDestructuringExpression(parser, argumentsExpression, destructibleExpression);
 	};
 }(
-	this.ECMAScriptStatements,
-	Rexjs.Context,
-	// varTag
-	new this.VarTag()
+	Rexjs.Context
 );
 
 closingTagVisitor = function(){
@@ -79,21 +70,22 @@ closingTagVisitor = function(){
 	};
 }();
 	
-this.ArgumentDestructuringExpression = ArgumentDestructuringExpression = function(DestructuringAssignmentExpression, CollectionRangeExpression, extractTo, declareVariable){
+this.ArgumentDestructuringExpression = ArgumentDestructuringExpression = function(DestructuringAssignmentExpression, ObjectExpression, DeclarationObjectExpression, CollectionRangeExpression, extractTo, declareVariable){
 	/**
 	 * 函数参数解构赋值表达式
 	 * @param {SyntaxParser} parser - 语法解析器
-	 * @param {Expression} declarationExpression - 解构变量声明表达式
+	 * @param {ArgumentsExpression} argumentsExpression - 函数参数列表表达式
+	 * @param {Expression} destructibleExpression - 可解构变量声明表达式
 	 */
-	function ArgumentDestructuringExpression(parser, declarationExpression){
+	function ArgumentDestructuringExpression(parser, argumentsExpression, destructibleExpression){
 		DestructuringAssignmentExpression.call(this, null);
 
 		// 如果需要解析 es6
 		if(config.es6Base){
-			var statements = parser.statements, collections = statements.collections, argumentsExpression = statements.target.statement.target.expression.arguments;
+			var collections = argumentsExpression.collections;
 
 			// 设置变量名
-			declarationExpression.setVariableOf(this, statements);
+			destructibleExpression.setVariableOf(this, parser.statements);
 
 			// 添加普通变量名声明范围
 			argumentsExpression.ranges.add(
@@ -106,8 +98,16 @@ this.ArgumentDestructuringExpression = ArgumentDestructuringExpression = functio
 			);
 		}
 
+		// 将表达式设置为声明形式，因为箭头函数参数里的对象、数组解构当前并不是以声明形式存在的
+		destructibleExpression.declaration = true;
 		// 设置左侧表达式
-		this.left = declarationExpression.toDestructuring(parser);
+		this.left = destructibleExpression.toDestructuring(parser, varTag);
+		// 判断是否为对象解构
+		this.isObjectDestructuring = destructibleExpression instanceof ObjectExpression;
+		// 取消声明模式，而且必须在最后设置，避免 rex 变量名以 var 声明的形式出现
+		destructibleExpression.declaration = false;
+
+		this.closeAllRanges();
 	};
 	ArgumentDestructuringExpression = new Rexjs(ArgumentDestructuringExpression, DestructuringAssignmentExpression);
 
@@ -163,12 +163,33 @@ this.ArgumentDestructuringExpression = ArgumentDestructuringExpression = functio
 	return ArgumentDestructuringExpression;
 }(
 	this.DestructuringAssignmentExpression,
+	this.ObjectExpression,
+	this.DeclarationObjectExpression,
 	Rexjs.CollectionRangeExpression,
 	this.DestructuringAssignmentExpression.prototype.extractTo,
 	// declareVariable
 	function(variable, anotherBuilder){
 		anotherBuilder.appendString(variable);
 	}
+);
+
+this.ArgumentsDestructuringStatements = ArgumentsDestructuringStatements = function(ECMAScriptStatements){
+	/**
+	 * 函数参数列表解构语句块
+	 * @param {Statements} target - 目标语句块，即上一层语句块
+	 */
+	function ArgumentsDestructuringStatements(target, argumentsExpression){
+		ECMAScriptStatements.call(this, target, argumentsExpression.collections);
+	};
+	ArgumentsDestructuringStatements = new Rexjs(ArgumentsDestructuringStatements, ECMAScriptStatements);
+	
+	ArgumentsDestructuringStatements.props({
+		scope: ECMAScriptStatements.SCOPE_CLOSURE
+	});
+
+	return ArgumentsDestructuringStatements;
+}(
+	this.ECMAScriptStatements
 );
 
 this.OpeningArgumentObjectDestructuringTag = function(visitor){
@@ -196,7 +217,7 @@ this.OpeningArgumentObjectDestructuringTag = function(visitor){
 		 * @param {Statements} statements - 当前语句块
 		 */
 		visitor: function(parser, context, statement, statements){
-			openingTagVisitor(this, visitor, true, parser, context, statement, statements);
+			openingTagVisitor(this, visitor, parser, context, statement, statements);
 		}
 	});
 
@@ -265,7 +286,7 @@ this.OpeningArgumentArrayDestructuringTag = function(visitor){
 		 * @param {Statements} statements - 当前语句块
 		 */
 		visitor: function(parser, context, statement, statements){
-			openingTagVisitor(this, visitor, false, parser, context, statement, statements);
+			openingTagVisitor(this, visitor, parser, context, statement, statements);
 		}
 	});
 
@@ -316,10 +337,14 @@ closingArgumentArrayDestructuringTag = new this.ClosingArgumentArrayDestructurin
 	this,
 	// ArgumentDestructuringExpression
 	null,
+	// ArgumentsDestructuringStatements
+	null,
 	this.OpeningDeclarationObjectTag,
 	this.OpeningDeclarationArrayTag,
 	this.ClosingDeclarationObjectTag,
 	this.ClosingDeclarationArrayTag,
+	// varTag
+	new this.VarTag(),
 	// closingArgumentObjectDestructuringTag
 	null,
 	// closingArgumentArrayDestructuringTag

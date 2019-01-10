@@ -85,7 +85,7 @@ this.ArrayDestructuringRestItemExpression = function(){
 	return ArrayDestructuringRestItemExpression;
 }();
 
-this.ArrayExpression = function(ArrayDestructuringExpression, ArrayDestructuringItemExpression, ArrayDestructuringRestItemExpression, SpreadExpression, extractTo, collected, error){
+this.ArrayExpression = function(ArrayDestructuringExpression, ArrayDestructuringItemExpression, ArrayDestructuringRestItemExpression, SpreadExpression, extractTo){
 	/**
 	 * 数组表达式
 	 * @param {Context} opening - 起始标签上下文
@@ -99,8 +99,9 @@ this.ArrayExpression = function(ArrayDestructuringExpression, ArrayDestructuring
 		/**
 		 * 将数组每一项转换为解构项表达式
 		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {VarTag} _varTag - 声明标签，一旦提供该参数，如果是声明解构且变量名没有被收集，那么会自动进行收集
 		 */
-		convert: function(parser){
+		convert: function(parser, _varTag){
 			var inner = this.inner;
 
 			// 遍历
@@ -111,8 +112,7 @@ this.ArrayExpression = function(ArrayDestructuringExpression, ArrayDestructuring
 					// 如果是可赋值的表达式，即 标识符 或 属性访问器
 					case expression instanceof AssignableExpression:
 						// 如果已经被收集到常量内
-						if(collected(parser, expression)){
-							// collected 方法内已经报错
+						if(this.collectedBy(parser, expression, _varTag)){
 							return;
 						}
 
@@ -122,7 +122,7 @@ this.ArrayExpression = function(ArrayDestructuringExpression, ArrayDestructuring
 
 					// 如果是可解构的表达式
 					case expression instanceof DestructibleExpression:
-						expression = expression.toDestructuringItem(parser);
+						expression = expression.toDestructuringItem(parser, _varTag);
 						break;
 
 					// 如果是空表达式
@@ -142,7 +142,7 @@ this.ArrayExpression = function(ArrayDestructuringExpression, ArrayDestructuring
 						}
 
 						// 报错
-						error(parser, expression);
+						this.throwError(parser, expression);
 						return;
 
 					// 如果是拓展表达式
@@ -150,15 +150,14 @@ this.ArrayExpression = function(ArrayDestructuringExpression, ArrayDestructuring
 						// 如果不是数组最后一项
 						if(i !== j - 1){
 							// 报错
-							error(parser, expression, "REST_ELEMENT");
+							this.throwError(parser, expression, "REST_ELEMENT");
 							return;
 						}
 
 						// 如果是可赋值的表达式，即 标识符 或 属性访问器
 						if(expression.operand instanceof AssignableExpression){
 							// 如果已经被收集到常量内
-							if(collected(parser, expression.operand)){
-								// collected 方法内已经报错
+							if(this.collectedBy(parser, expression.operand, _varTag)){
 								return;
 							}
 
@@ -168,12 +167,12 @@ this.ArrayExpression = function(ArrayDestructuringExpression, ArrayDestructuring
 						}
 
 						// 报错
-						error(parser, expression.operand);
+						this.throwError(parser, expression.operand);
 						return;
 
 					default:
 						// 报错
-						error(parser, expression);
+						this.throwError(parser, expression);
 						return;
 				}
 
@@ -210,17 +209,19 @@ this.ArrayExpression = function(ArrayDestructuringExpression, ArrayDestructuring
 		/**
 		 * 转换为解构表达式
 		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {VarTag} _varTag - 声明标签，一旦提供该参数，如果是声明解构且变量名没有被收集，那么会自动进行收集
 		 */
-		toDestructuring: function(parser){
+		toDestructuring: function(parser, _varTag){
 			// 转换内部表达式
-			this.convert(parser, this.inner);
+			this.convert(parser, _varTag);
 			return new ArrayDestructuringExpression(this);
 		},
 		/**
 		 * 转换为解构项表达式
 		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {VarTag} _varTag - 声明标签，一旦提供该参数，如果是声明解构且变量名没有被收集，那么会自动进行收集
 		 */
-		toDestructuringItem: function(parser){
+		toDestructuringItem: function(parser, _varTag){
 			var inner = this.inner, expression = new ArrayDestructuringItemExpression(this);
 
 			// 如果需要编译 而且 长度大于 1（长度为 0 不解析，长度为 1，只需取一次对象，所以都不需要生成变量名）
@@ -230,7 +231,7 @@ this.ArrayExpression = function(ArrayDestructuringExpression, ArrayDestructuring
 			}
 
 			// 转换内部表达式
-			this.convert(parser, this.inner);
+			this.convert(parser, _varTag);
 			return expression;
 		}
 	});
@@ -241,26 +242,7 @@ this.ArrayExpression = function(ArrayDestructuringExpression, ArrayDestructuring
 	this.ArrayDestructuringItemExpression,
 	this.ArrayDestructuringRestItemExpression,
 	this.SpreadExpression,
-	DestructibleExpression.prototype.extractTo,
-	// collected
-	function(parser, expression){
-		// 如果是标识符表达式
-		if(expression instanceof IdentifierExpression){
-			var context = expression.context;
-
-			// 判断是否收集到常量中
-			return context.tag.collected(parser, context, parser.statements);
-		}
-
-		return false;
-	},
-	// error
-	function(parser, expression, _errorName){
-		parser.error(
-			expression.context,
-			_errorName ? ECMAScriptErrors[_errorName] : null
-		);
-	}
+	DestructibleExpression.prototype.extractTo
 );
 
 this.ArrayStatement = function(){

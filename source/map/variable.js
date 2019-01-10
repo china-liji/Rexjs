@@ -42,11 +42,12 @@ this.VariableDeclarationTag = function(VariableTag, SCOPE_CLOSURE, visitor){
 
 			// 如果已被收集
 			if(this.collected(parser, context, statements)){
-				return;
+				return false;
 			}
 			
 			// 收集变量名
 			statements.collections.declaration.collect(content);
+			return true;
 		},
 		/**
 		 * 判断变量名，是否包含于指定收集器内
