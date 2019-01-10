@@ -5,6 +5,9 @@ test.unit(
 
 		// 自闭合语句测试
 		this.true("最简单 jsx 自闭合语句", "<a/>");
+		this.true("带关键字属性名的 jsx 自闭合语句", "<a var/>");
+		this.true("带关键字属性名且带值的 jsx 自闭合语句", "<a var='true' />");
+		this.true("关键字类型名称的 jsx 自闭合语句", "<var />");
 		this.true("最简单带空格的 jsx 自闭合语句", "< \n   a \n  /  \n  >");
 		this.true("带单个连接符的 jsx 自闭合语句", "<a-b />");
 		this.true("带多个连接符的 jsx 自闭合语句", "<a-b-c />");
@@ -13,6 +16,7 @@ test.unit(
 		this.true("$起始元素名的 jsx 自闭合语句", "<$A />");
 		this.true("_起始元素名的 jsx 自闭合语句", "<_A />");
 		this.true("组合元素名的 jsx 自闭合语句", "<$A_b-x_ii-d$d />");
+		this.true("关键字类型名称的 jsx 闭合语句", "<var></var>");
 		this.true("带单个连接符的 jsx 闭合语句", "<a-b></a-b>");
 		this.true("带多个连接符的 jsx 闭合语句", "<a-b-c></a-b-c>");
 		this.true("带访问器的 jsx 闭合语句", "<a.b.c></a.b.c>");
@@ -24,10 +28,13 @@ test.unit(
 		this.true("带单个字符串属性的 jsx 自闭合语句", '<a title="hello" />');
 		this.true("带单个参数属性的 jsx 自闭合语句", '<a title={window.document.title + "hello"} />');
 		this.true("带单个拓展属性的 jsx 自闭合语句", '<a {...window.location} />');
-		this.true("带多个属性的 jsx 自闭合语句", '<a title  = \n "hello" \n href\n =  \'world\' target =  {"blank"} {\n...window.location\n} {...window.location} className="link" />');
+		this.true("带多个属性的 jsx 自闭合语句", '<a var title  = \n "hello" \n this="true" \n href\n =  \'world\' target =  {"blank"} {\n...window.location\n} {...window.location} className="link" />');
 		
 		// 自闭合表达式测试
 		this.true("最简单 jsx 自闭合表达式", "let a = <a/>");
+		this.true("带关键字属性名的 jsx 自闭合表达式", "let a = <a var/>");
+		this.true("关键字类型名称的 jsx 自闭合表达式", "let a = <var />");
+		this.true("带关键字属性名且带值的 jsx 自闭合表达式", "let a = <a var='true' />");
 		this.true("最简单带空格的 jsx 自闭合表达式", "let a = \n< \n   a \n  /  \n  >");
 		this.true("带单个连接符的 jsx 自闭合表达式", "let a = <a-b />");
 		this.true("带多个连接符的 jsx 自闭合表达式", "let a = <a-b-c />");
@@ -36,6 +43,7 @@ test.unit(
 		this.true("$起始元素名的 jsx 自闭合表达式", "let a = <$A />");
 		this.true("_起始元素名的 jsx 自闭合表达式", "let a = <_A />");
 		this.true("组合元素名的 jsx 自闭合表达式", "let a = <$A_b-x_ii-d$d />");
+		this.true("关键字类型名称的 jsx 闭合表达式", "let a = <var></var>");
 		this.true("带单个连接符的 jsx 闭合表达式", "let a = <a-b></a-b>");
 		this.true("带多个连接符的 jsx 闭合表达式", "let a = <a-b-c></a-b-c>");
 		this.true("带访问器的 jsx 闭合表达式", "let a = <a.b.c></a.b.c>");
@@ -47,7 +55,7 @@ test.unit(
 		this.true("带单个字符串属性的 jsx 自闭合表达式", 'let a = <a title="hello" />');
 		this.true("带单个参数属性的 jsx 自闭合表达式", 'let a = <a title={window.document.title + "hello"} />');
 		this.true("带单个拓展属性的 jsx 自闭合表达式", 'let a = <a {...window.location} />');
-		this.true("带多个属性的 jsx 自闭合表达式", 'let a = <a title  = \n "hello" \n href\n =  \'world\' target =  {"blank"} {\n...window.location\n} {...window.location} className="link" />');
+		this.true("带多个属性的 jsx 自闭合表达式", 'let a = <a var title  = \n "hello" \n this="true" \n href\n =  \'world\' target =  {"blank"} {\n...window.location\n} {...window.location} className="link" />');
 
 		// 带子节点的语句
 		this.true("最简单带文本子节点的 jsx 语句", "<a>hello</a>");

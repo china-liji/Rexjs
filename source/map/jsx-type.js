@@ -76,8 +76,7 @@ this.JSXIdentifierTag = function(IdentifierTag, JSXElementExpression){
 	JSXIdentifierTag = new Rexjs(JSXIdentifierTag, IdentifierTag);
 
 	JSXIdentifierTag.props({
-		regexp: IdentifierTag.compileRegExp(
-			IdentifierTag.keywords.join("|"),
+		regexp: new RegExp(
 			getIdentifierRegExpSource("-")
 		),
 		/**

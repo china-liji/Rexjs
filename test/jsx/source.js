@@ -4,6 +4,20 @@ if(a.type !== "a"){
 	throw "字符串元素名解析错误";
 }
 
+let varElement = <var this for="123" />;
+
+if(varElement.type !== "var"){
+	throw "关键字字符串元素名解析错误";
+}
+
+if(varElement.props.this !== true){
+	throw "关键字属性名解析错误";
+}
+
+if(varElement.props.for !== "123"){
+	throw "带值的关键字属性名解析错误";
+}
+
 let b = <window.self.window.atob></window.self.window.atob>;
 
 if(b.type !== window.self.window.atob){

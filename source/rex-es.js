@@ -24043,8 +24043,7 @@ this.JSXIdentifierTag = function(IdentifierTag, JSXElementExpression){
 	JSXIdentifierTag = new Rexjs(JSXIdentifierTag, IdentifierTag);
 
 	JSXIdentifierTag.props({
-		regexp: IdentifierTag.compileRegExp(
-			IdentifierTag.keywords.join("|"),
+		regexp: new RegExp(
 			getIdentifierRegExpSource("-")
 		),
 		/**
@@ -24062,7 +24061,6 @@ this.JSXIdentifierTag = function(IdentifierTag, JSXElementExpression){
 		 * @param {Statements} statements - 当前语句块
 		 */
 		visitor: function(parser, context, statement, statements){
-			debugger
 			var jsxElementExpression = statement.expression;
 
 			// 设置 type
