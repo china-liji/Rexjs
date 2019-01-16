@@ -139,7 +139,7 @@ this.ClassPropertyStatement = function(PropertyStatement, ClassPropertyExpressio
 							break;
 						
 						// 如果是关键字标签
-						case IdentifierTag.keywords.indexOf(content) > -1:
+						case IdentifierTag.exceptions.indexOf(content) > -1:
 							t = tag.classIdentifierPropertyNameTag;
 							break;
 

@@ -481,7 +481,7 @@ this.DeclarationPropertyNameTags = function(list){
 		this.NumberDeclarationPropertyNameTag,
 		this.BinaryNumberDeclarationPropertyNameTag,
 		this.OctalNumberDeclarationPropertyNameTag,
-		this.KeywordDeclarationPropertyNameTag,
+		this.WordDeclarationPropertyNameTag,
 		this.StringDeclarationPropertyNameTag,
 		this.OpeningComputedDeclarationPropertyNameTag,
 		this.DeclarationPropertyRestTag,
@@ -1706,6 +1706,7 @@ this.PropertyNameTags = function(list){
 	[
 		this.ClosingObjectTag,
 		this.IdentifierPropertyNameTag,
+		this.ConstantPropertyNameTag,
 		this.NumberPropertyNameTag,
 		this.BinaryNumberPropertyNameTag,
 		this.OctalNumberPropertyNameTag,
@@ -1909,7 +1910,7 @@ this.PropertyAccessorContextTags = function(ShorthandMethodNameTags, OpeningShor
 	this.PropertySeparatorTag
 );
 
-this.StaticModifierContextTags = function(ClassPropertyNameTags, ConstructorTag, ClosingObjectTag, ClassPropertyPlaceholderTag, ClassPropertyInitializerTag, OpeningShorthandMethodArgumentsTag){
+this.StaticModifierContextTags = function(ClassPropertyNameTags, ClassStaticIdentifierPropertyNameTag, ClassPropertyInitializerTag, OpeningShorthandMethodArgumentsTag, ClassIdentifierPropertyNameTag, ConstructorTag, ClosingObjectTag, ClassPropertyPlaceholderTag){
 	/**
 	 * return 上下文标签列表
 	 */
@@ -1917,6 +1918,7 @@ this.StaticModifierContextTags = function(ClassPropertyNameTags, ConstructorTag,
 		ClassPropertyNameTags.call(this);
 		
 		this.register(
+			new ClassStaticIdentifierPropertyNameTag(),
 			new ClassPropertyInitializerTag(),
 			new OpeningShorthandMethodArgumentsTag()
 		);
@@ -1929,8 +1931,15 @@ this.StaticModifierContextTags = function(ClassPropertyNameTags, ConstructorTag,
 		 * @param {SyntaxTag} tag - 语法标签
 		 */
 		filter: function(tag){
+			// 如果是类的静态标识符属性名
+			if(tag instanceof ClassStaticIdentifierPropertyNameTag){
+				return false;
+			}
+
 			return (
-				// constructor 不能作为静态属性
+				// 如果是类标识符属性名
+				tag instanceof ClassIdentifierPropertyNameTag ||
+				// 如果是构造函数
 				tag instanceof ConstructorTag ||
 				// 如果是结束大括号
 				tag instanceof ClosingObjectTag ||
@@ -1943,11 +1952,13 @@ this.StaticModifierContextTags = function(ClassPropertyNameTags, ConstructorTag,
 	return StaticModifierContextTags;
 }(
 	this.ClassPropertyNameTags,
+	this.ClassStaticIdentifierPropertyNameTag,
+	this.ClassPropertyInitializerTag,
+	this.OpeningShorthandMethodArgumentsTag,
+	this.ClassIdentifierPropertyNameTag,
 	this.ConstructorTag,
 	this.ClosingObjectTag,
-	this.ClassPropertyPlaceholderTag,
-	this.ClassPropertyInitializerTag,
-	this.OpeningShorthandMethodArgumentsTag
+	this.ClassPropertyPlaceholderTag
 );
 
 this.SuperAccessorContextTags = function(list){

@@ -75,6 +75,9 @@ this.IdentifierDeclarationPropertyNameTag = function(IdentifierDeclarationProper
 	IdentifierDeclarationPropertyNameTag = new Rexjs(IdentifierDeclarationPropertyNameTag, IdentifierPropertyNameTag);
 
 	IdentifierDeclarationPropertyNameTag.props({
+		regexp: IdentifierPropertyNameTag.compileRegExp(
+			IdentifierPropertyNameTag.exceptions.join("|")
+		),
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
@@ -161,23 +164,23 @@ this.OctalNumberDeclarationPropertyNameTag = function(OctalNumberPropertyNameTag
 	this.OctalNumberPropertyNameTag
 );
 
-this.KeywordDeclarationPropertyNameTag = function(KeywordPropertyNameTag){
+this.WordDeclarationPropertyNameTag = function(WordPropertyNameTag){
 	/**
-	 * 关键字声明属性名称标签
+	 * 词组（即其他非标识符）属性名称标签
 	 * @param {Number} _type - 标签类型
 	 */
-	function KeywordDeclarationPropertyNameTag(_type){
-		KeywordPropertyNameTag.call(this, _type);
+	function WordDeclarationPropertyNameTag(_type){
+		WordPropertyNameTag.call(this, _type);
 	};
-	KeywordDeclarationPropertyNameTag = new Rexjs(KeywordDeclarationPropertyNameTag, KeywordPropertyNameTag);
+	WordDeclarationPropertyNameTag = new Rexjs(WordDeclarationPropertyNameTag, WordPropertyNameTag);
 
-	KeywordDeclarationPropertyNameTag.props({
+	WordDeclarationPropertyNameTag.props({
 		require: require
 	});
 
-	return KeywordDeclarationPropertyNameTag;
+	return WordDeclarationPropertyNameTag;
 }(
-	this.KeywordPropertyNameTag
+	this.WordPropertyNameTag
 );
 
 this.StringDeclarationPropertyNameTag = function(StringPropertyNameTag){

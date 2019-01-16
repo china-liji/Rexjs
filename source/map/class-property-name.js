@@ -12,13 +12,36 @@ this.ClassIdentifierPropertyNameTag = function(IdentifierPropertyNameTag){
 	ClassIdentifierPropertyNameTag = new Rexjs(ClassIdentifierPropertyNameTag, IdentifierPropertyNameTag);
 
 	ClassIdentifierPropertyNameTag.props({
-		regexp: new RegExp(IdentifierPropertyNameTag.REGEXP_SOURCE),
+		regexp: IdentifierPropertyNameTag.compileRegExp(
+			["constructor", "get", "set", "static"].join("|")
+		),
 		require: require
 	});
 
 	return ClassIdentifierPropertyNameTag;
 }(
 	this.IdentifierPropertyNameTag
+);
+
+this.ClassStaticIdentifierPropertyNameTag = function(ClassIdentifierPropertyNameTag){
+	/**
+	 * 类静态标识符属性名标签
+	 * @param {Number} _type - 标签类型
+	 */
+	function ClassStaticIdentifierPropertyNameTag(_type){
+		ClassIdentifierPropertyNameTag.call(this, _type);
+	};
+	ClassStaticIdentifierPropertyNameTag = new Rexjs(ClassStaticIdentifierPropertyNameTag, ClassIdentifierPropertyNameTag);
+
+	ClassStaticIdentifierPropertyNameTag.props({
+		regexp: ClassIdentifierPropertyNameTag.compileRegExp(
+			["get", "set"].join("|")
+		)
+	});
+
+	return ClassStaticIdentifierPropertyNameTag;
+}(
+	this.ClassIdentifierPropertyNameTag
 );
 
 this.ClassNumberPropertyNameTag = function(NumberPropertyNameTag){

@@ -16,7 +16,7 @@ this.IdentifierExpression = function(AssignableExpression){
 	this.AssignableExpression
 );
 
-this.IdentifierTag = function(IdentifierExpression, RegExg, REGEXP_SOURCE, keywords, regexp){
+this.IdentifierTag = function(IdentifierExpression, RegExg, REGEXP_SOURCE, exceptions, constantIdentifiers, constantKeywords, nonconstantKeywords, regexp){
 	/**
 	 * 标识符标签
 	 * @param {Number} _type - 标签类型
@@ -36,6 +36,7 @@ this.IdentifierTag = function(IdentifierExpression, RegExg, REGEXP_SOURCE, keywo
 		/**
 		 * 编译该标识符的表达式
 		 * @param {String} exception - 会意外冲突的内容，则正则不会匹配到该内容
+		 * @param {String} exception - 会意外冲突的内容，则正则不会匹配到该内容
 		 */
 		compileRegExp: function(exception, _regexpSource){
 			_regexpSource = _regexpSource || REGEXP_SOURCE;
@@ -53,23 +54,53 @@ this.IdentifierTag = function(IdentifierExpression, RegExg, REGEXP_SOURCE, keywo
 			);
 		},
 		/**
-		 * 获取所有关键字
+		 * 获取所有非关键字系统默认常量
 		 */
-		get keywords(){
-			return keywords;
+		get constantIdentifiers(){
+			return constantIdentifiers.slice();
 		},
 		/**
-		 * 设置所有关键字，并根据关键字重新编译该类的正则表达式
+		 * 获取所有常量关键字
+		 */
+		get constantKeywords(){
+			return constantKeywords.slice();
+		},
+		/**
+		 * 获取所有常量
+		 */
+		get constants(){
+			return constantIdentifiers.concat(constantKeywords);
+		},
+		/**
+		 * 非标识符的词组
+		 */
+		get exceptions(){
+			return exceptions.slice();
+		},
+		/**
+		 * 设置非标识符的词组，并根据关键字重新编译该类的正则表达式
 		 * @param {Array} value - 包含所有关键字的数组
 		 */
-		set keywords(value){
+		set exceptions(value){
 			// 记录值
-			keywords = value;
+			exceptions = value;
 
 			// 生成表达式
 			regexp = this.compileRegExp(
-				keywords.join("|")
+				exceptions.join("|")
 			);
+		},
+		/**
+		 * 获取所有关键字
+		 */
+		get keywords(){
+			return constantKeywords.concat(nonconstantKeywords);
+		},
+		/**
+		 * 获取所有非常量关键字
+		 */
+		get nonconstantKeywords(){
+			return nonconstantKeywords.slice();
 		}
 	});
 
@@ -148,22 +179,29 @@ this.IdentifierTag = function(IdentifierExpression, RegExg, REGEXP_SOURCE, keywo
 		}
 	});
 
-	// 设置 keywords，虽然值一样，但目的是编译正则
-	IdentifierTag.keywords = keywords;
+	// 设置 exceptions，并触发编译正则
+	IdentifierTag.exceptions = constantIdentifiers.concat(IdentifierTag.keywords);
 	return IdentifierTag;
 }(
 	this.IdentifierExpression,
 	RegExp,
 	// REGEXP_SOURCE
 	getIdentifierRegExpSource(),
-	// keywords
+	// exceptions
+	null,
+	// constantIdentifiers
+	["eval", "arguments"],
+	// constantKeywords
+	[
+		"false", "null", "this", "true"
+	],
+	// nonconstantKeywords
 	[
 		"break", "case", "catch", "class", "const", "continue",
-		"debugger", "default", "delete", "do", "else", "enum", "export", "extends",
-		"false", "finally", "for", "function", "if", "import", "in(?!stanceof)", "instanceof",
-		"let", "new", "null", "return", "static", "super", "switch",
-		"this", "throw", "true", "try", "typeof",
-		"var", "void", "while", "with", "yield"
+		"debugger", "default", "delete", "do", "else", "export", "extends",
+		"finally", "for", "function", "if", "import", "in(?!stanceof)", "instanceof",
+		"let", "new", "return", "static", "super", "switch",
+		"throw", "try", "typeof", "var", "void", "while", "with", "yield"
 	],
 	// regexp
 	null

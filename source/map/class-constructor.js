@@ -239,7 +239,7 @@ this.ConstructorTag = function(WordPropertyNameTag, ConstructorPropertyExpressio
 	ConstructorTag = new Rexjs(ConstructorTag, WordPropertyNameTag);
 
 	ConstructorTag.props({
-		regexp: WordPropertyNameTag.compileRegExp("constructor"),
+		regexp: /constructor/,
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射

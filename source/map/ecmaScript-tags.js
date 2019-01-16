@@ -23,6 +23,7 @@ this.ECMAScriptTags = function(DefaultTags, list){
 	Rexjs.DefaultTags,
 	// list
 	[
+		this.ArgumentsTag,
 		this.ArrowTag,
 		this.BasicAssignmentTag,
 		this.BinaryNumberTag,
@@ -55,6 +56,7 @@ this.ECMAScriptTags = function(DefaultTags, list){
 		this.ExponentiationTag,
 		this.ExportTag,
 		this.ExtendsTag,
+		this.EvalTag,
 		this.FileEndTag,
 		this.FinallyTag,
 		this.ForTag,

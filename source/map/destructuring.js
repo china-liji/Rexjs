@@ -1,7 +1,7 @@
 // 解构表达式相关
 !function(){
 
-this.DestructibleExpression = function(IdentifierExpression, Context){
+this.DestructibleExpression = function(IdentifierExpression, EnvConstantTag, Context){
 	/**
 	 * 可解构的表达式
 	 * @param {Context} opening - 起始标签上下文
@@ -30,6 +30,13 @@ this.DestructibleExpression = function(IdentifierExpression, Context){
 			// 如果是标识符表达式
 			if(_asIdentifier || expression instanceof IdentifierExpression){
 				var context = expression.context;
+
+				// 如果是环境常量
+				if(context.tag instanceof EnvConstantTag){
+					// 报错
+					parser.error(context);
+					return false;
+				}
 
 				// 如果是声明解构且提供了声明标签
 				if(this.declaration && _varTag){
@@ -95,6 +102,7 @@ this.DestructibleExpression = function(IdentifierExpression, Context){
 	return DestructibleExpression;
 }(
 	this.IdentifierExpression,
+	this.EnvConstantTag,
 	Rexjs.Context
 );
 

@@ -12,6 +12,7 @@ this.PropertyAccessorTag = function(FunctionExpression, AccessorStatement, visit
 	PropertyAccessorTag = new Rexjs(PropertyAccessorTag, WordPropertyNameTag);
 
 	PropertyAccessorTag.props({
+		order: ECMAScriptOrders.ACCESSOR_PROPERTY_NAME,
 		/**
 		 * 核对表达式是否为满足条件的函数表达式
 		 * @param {SyntaxParser} parser - 语法解析器
@@ -104,7 +105,7 @@ this.GetTag = function(PropertyAccessorTag){
 
 	GetTag.props({
 		errorType: "GETTER",
-		regexp: PropertyAccessorTag.compileRegExp("get")
+		regexp: /get/
 	});
 
 	return GetTag;
@@ -126,7 +127,7 @@ this.SetTag = function(PropertyAccessorTag){
 		errorType: "SETTER",
 		maxArgs: 1,
 		minArgs: 1,
-		regexp: PropertyAccessorTag.compileRegExp("set")
+		regexp: /set/
 	});
 
 	return SetTag;

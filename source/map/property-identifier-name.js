@@ -1,7 +1,35 @@
 // 对象标识符属性名相关
-!function(IdentifierTag, PropertySeparatorTag, RegExp){
+!function(IdentifierPropertyNameExpression, ShorthandPropertyValueExpression, IdentifierTag, PropertySeparatorTag, require, visitor){
 
-this.IdentifierPropertyNameExpression = function(LiteralPropertyNameExpression){
+require = function(){
+	/**
+	 * 获取此标签接下来所需匹配的标签列表
+	 * @param {TagsMap} tagsMap - 标签集合映射
+	 */
+	return function(tagsMap){
+		return tagsMap.identifierPropertyNameContextTags;
+	};
+}();
+
+visitor = function(){
+	/**
+	 * 标签访问器
+	 * @param {SyntaxParser} parser - 语法解析器
+	 * @param {Context} context - 标签上下文
+	 * @param {Statement} statement - 当前语句
+	 * @param {Statements} statements - 当前语句块
+	 */
+	return function(parser, context, statement, statements){
+		var expression = statement.expression;
+
+		// 设置表达式的 name 属性
+		expression.name = new IdentifierPropertyNameExpression(context);
+		// 设置当前语句
+		expression.value = new ShorthandPropertyValueExpression(context);
+	};
+}();
+
+this.IdentifierPropertyNameExpression = IdentifierPropertyNameExpression = function(LiteralPropertyNameExpression){
 	/**
 	 * 对象标识符属性名表达式
 	 * @param {Context} context - 语法标签上下文
@@ -41,7 +69,7 @@ this.IdentifierPropertyNameExpression = function(LiteralPropertyNameExpression){
 	this.LiteralPropertyNameExpression
 );
 
-this.ShorthandPropertyValueExpression = function(PropertyValueExpression){
+this.ShorthandPropertyValueExpression = ShorthandPropertyValueExpression = function(PropertyValueExpression){
 	/**
 	 * 简写属性值表达式
 	 * @param {Context} context - 语法标签上下文
@@ -133,7 +161,7 @@ this.IdentifierPropertyValueStatement = function(PropertyValueStatement, Shortha
 	this.ShorthandPropertyValueExpression
 );
 
-this.IdentifierPropertyNameTag = function(IdentifierPropertyNameExpression, ShorthandPropertyValueExpression){
+this.IdentifierPropertyNameTag = function(){
 	/**
 	 * 标识符属性名称标签
 	 * @param {Number} _type - 标签类型
@@ -144,35 +172,39 @@ this.IdentifierPropertyNameTag = function(IdentifierPropertyNameExpression, Shor
 	IdentifierPropertyNameTag = new Rexjs(IdentifierPropertyNameTag, IdentifierTag);
 
 	IdentifierPropertyNameTag.props({
-		order: ECMAScriptOrders.IDENTIFIER_PROPERTY_NAME,
-		/**
-		 * 获取此标签接下来所需匹配的标签列表
-		 * @param {TagsMap} tagsMap - 标签集合映射
-		 */
-		require: function(tagsMap){
-			return tagsMap.identifierPropertyNameContextTags;
-		},
-		/**
-		 * 标签访问器
-		 * @param {SyntaxParser} parser - 语法解析器
-		 * @param {Context} context - 标签上下文
-		 * @param {Statement} statement - 当前语句
-		 * @param {Statements} statements - 当前语句块
-		 */
-		visitor: function(parser, context, statement, statements){
-			var expression = statement.expression;
-
-			// 设置表达式的 name 属性
-			expression.name = new IdentifierPropertyNameExpression(context);
-			// 设置当前语句
-			expression.value = new ShorthandPropertyValueExpression(context);
-		}
+		order: ECMAScriptOrders.PROPERTY_NAME,
+		regexp: IdentifierTag.compileRegExp(
+			["get", "set"].concat(IdentifierTag.exceptions).join("|")
+		),
+		require: require,
+		visitor: visitor
 	});
 
 	return IdentifierPropertyNameTag;
+}();
+
+this.ConstantPropertyNameTag = function(EnvConstantTag){
+	/**
+	 * 常量属性名称标签
+	 * @param {Number} _type - 标签类型
+	 */
+	function ConstantPropertyNameTag(context){
+		EnvConstantTag.call(this, context);
+	};
+	ConstantPropertyNameTag = new Rexjs(ConstantPropertyNameTag, EnvConstantTag);
+
+	ConstantPropertyNameTag.props({
+		order: ECMAScriptOrders.PROPERTY_NAME,
+		regexp: new RegExp(
+			IdentifierTag.constants.join("|")
+		),
+		require: require,
+		visitor: visitor
+	});
+
+	return ConstantPropertyNameTag;
 }(
-	this.IdentifierPropertyNameExpression,
-	this.ShorthandPropertyValueExpression
+	this.EnvConstantTag
 );
 
 this.IdentifierMethodNameTag = function(IdentifierPropertyNameTag){
@@ -201,25 +233,15 @@ this.IdentifierMethodNameTag = function(IdentifierPropertyNameTag){
 	this.IdentifierPropertyNameTag
 );
 
-this.WordPropertyNameTag = function(IdentifierPropertyNameTag, POSTFIX_REGEXP_SOURCE){
+this.WordPropertyNameTag = function(IdentifierPropertyNameTag){
 	/**
-	 * 词组属性名称标签
+	 * 词组属性名称（非标识符）标签
 	 * @param {Number} _type - 标签类型
 	 */
 	function WordPropertyNameTag(_type){
 		IdentifierPropertyNameTag.call(this, _type);
 	};
 	WordPropertyNameTag = new Rexjs(WordPropertyNameTag, IdentifierPropertyNameTag);
-
-	WordPropertyNameTag.static({
-		/**
-		 * 编译该标识符的表达式
-		 * @param {String} identifier - 需提供的标识符，并该正则只匹配该标识符
-		 */
-		compileRegExp: function(identifier){
-			return new RegExp(identifier + POSTFIX_REGEXP_SOURCE);
-		}
-	});
 
 	WordPropertyNameTag.props({
 		order: ECMAScriptOrders.WORD_PROPERTY_NAME,
@@ -228,9 +250,7 @@ this.WordPropertyNameTag = function(IdentifierPropertyNameTag, POSTFIX_REGEXP_SO
 
 	return WordPropertyNameTag;
 }(
-	this.IdentifierPropertyNameTag,
-	// POSTFIX_REGEXP_SOURCE
-	"(?!\\d+|\\d*" + IdentifierTag.REGEXP_SOURCE + ")"
+	this.IdentifierPropertyNameTag
 );
 
 this.KeywordPropertyNameTag = function(WordPropertyNameTag, IdentifierPropertyNameExpression){
@@ -244,24 +264,12 @@ this.KeywordPropertyNameTag = function(WordPropertyNameTag, IdentifierPropertyNa
 	KeywordPropertyNameTag = new Rexjs(KeywordPropertyNameTag, WordPropertyNameTag);
 
 	KeywordPropertyNameTag.props({
-		order: ECMAScriptOrders.KEYWORD_PROPERTY_NAME,
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
 		 */
 		require: function(tagsMap){
 			return tagsMap.propertyNameContextTags;
-		},
-		/**
-		 * 标签访问器
-		 * @param {SyntaxParser} parser - 语法解析器
-		 * @param {Context} context - 标签上下文
-		 * @param {Statement} statement - 当前语句
-		 * @param {Statements} statements - 当前语句块
-		 */
-		visitor: function(parser, context, statement, statements){
-			// 设置表达式的 name 属性
-			statement.expression.name = new IdentifierPropertyNameExpression(context); 
 		}
 	});
 
@@ -273,7 +281,14 @@ this.KeywordPropertyNameTag = function(WordPropertyNameTag, IdentifierPropertyNa
 
 }.call(
 	this,
+	// IdentifierPropertyNameExpression
+	null,
+	// ShorthandPropertyValueExpression
+	null,
 	this.IdentifierTag,
 	this.PropertySeparatorTag,
-	RegExp
+	// require
+	null,
+	// visitor
+	null
 );

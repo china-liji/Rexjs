@@ -155,6 +155,8 @@ module.exports = { DevSource: this.DevSource, Source: this.Source };
 		"literal-extension.js",
 		"mathematical-number.js",
 		"identifier.js",
+		"env-constant.js",
+		"eval.js",
 		"variable.js",
 		"semicolon.js",
 		"line-terminator.js",

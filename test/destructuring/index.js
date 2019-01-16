@@ -87,6 +87,90 @@ test.unit(
 
 		this.true("对象声明解构 - 多项对象解构", "var { a, 2: b = 99, c, 'x': x = 1, ['y']: [{y}], null: value = 1, 3: { c: [d = 100] }, ...x } = obj");
 
+
+		this.true("空的数组解构", "[] = arr");
+		this.true("单项数组解构", "[a] = arr");
+		this.true("默认值数组解构", "[,a = 1,,, b = 2 + 3 + window.c, c = 100, ] = arr");
+		this.true("访问器项数组解构", "[function(){}.a, window.b] = arr");
+		this.true("多项数组解构", "[a, b, c, d] = arr");
+		this.true("带空项的数组解构", "[, a, , b, c, ,] = arr");
+		this.true("全空项的数组解构", "[,,,,] = arr");
+		this.true("省略项解构", "[a, b, , c, ...d] = arr");
+		this.true("多层数组解构", "[a, [window.b, [c], ], window.d, ] = arr");
+		this.true("嵌套对象解构的数组解构", "[ { a, b: [c] }, x, { y } ] = arr");
+		this.true("连等解构", "[] = [a, [window.b, [c = 100,], ], window.d, ] = $ = [x, [y, ], , z, ] = arr");
+
+		
+		this.true("函数声明参数对象解构 - 空的对象解构", "function a({}){}");
+		this.true("函数声明参数对象解构 - 简写单项对象解构", "function a({ a }){}");
+		this.true("函数声明参数对象解构 - 省略项解构", "function a({ a, b, c, ...d }){}");
+
+		this.true("函数声明参数对象解构 - 键值对单项对象解构 - 标识符名称", "function a({ a: b, }){}");
+		this.true("函数声明参数对象解构 - 键值对单项对象解构 - 字符串名称", "function a({ 'a': b }){}");
+		this.true("函数声明参数对象解构 - 键值对单项对象解构 - 数字名称", "function a({ 1: b }){}");
+		this.true("函数声明参数对象解构 - 键值对单项对象解构 - 关键字名称", "function a({ null: b }){}");
+		this.true("函数声明参数对象解构 - 键值对单项对象解构 - 计算式名称", "function a({ ['hello']: b }){}");
+		
+		this.true("函数声明参数对象解构 - 键值对单项对象解构 - 进制名称", "function a({ 0b10101: b }){}");
+		
+		this.true("函数声明参数对象解构 - 简写属性默认值对象解构", "function a({ a = 5, b = c = d = 5, }){}");
+
+		this.true("函数声明参数对象解构 - 默认值键值对单项对象解构 - 标识符名称", "function a({ a: b = 5 }){}");
+		this.true("函数声明参数对象解构 - 默认值键值对单项对象解构 - 字符串名称", "function a({ 'a': b = 5 }){}");
+		this.true("函数声明参数对象解构 - 默认值键值对单项对象解构 - 数字名称", "function a({ 1: b = 5 }){}");
+		this.true("函数声明参数对象解构 - 默认值键值对单项对象解构 - 关键字名称", "function a({ null: b = 5 }){}");
+		this.true("函数声明参数对象解构 - 默认值键值对单项对象解构 - 计算式名称", "function a({ ['hello']: b = 5 }){}");
+		this.true("函数声明参数对象解构 - 默认值键值对单项对象解构 - 进制名称", "function a({ 0b10101: b = 5 }){}");
+		
+		this.true("函数声明参数对象解构 - 多项对象解构", "function a({ a, 2: b = 99, c, 'x': x = 1, ['y']: [{y}], null: value = 1, 3: { c: [d = 100] }, ...x }){}");
+		
+
+		this.true("函数表达式对象解构 - 空的对象解构", "var a = function a({}){}");
+		this.true("函数表达式对象解构 - 简写单项对象解构", "var a = function a({ a }){}");
+		this.true("函数表达式对象解构 - 省略项解构", "var a = function a({ a, b, c, ...d }){}");
+
+		this.true("函数表达式对象解构 - 键值对单项对象解构 - 标识符名称", "var a = function a({ a: b, }){}");
+		this.true("函数表达式对象解构 - 键值对单项对象解构 - 字符串名称", "var a = function a({ 'a': b }){}");
+		this.true("函数表达式对象解构 - 键值对单项对象解构 - 数字名称", "var a = function a({ 1: b }){}");
+		this.true("函数表达式对象解构 - 键值对单项对象解构 - 关键字名称", "var a = function a({ null: b }){}");
+		this.true("函数表达式对象解构 - 键值对单项对象解构 - 计算式名称", "var a = function a({ ['hello']: b }){}");
+		
+		this.true("函数表达式对象解构 - 键值对单项对象解构 - 进制名称", "var a = function a({ 0b10101: b }){}");
+		this.true("函数表达式对象解构 - 简写属性默认值对象解构", "var a = function a({ a = 5, b = c = d = 5, }){}");
+
+		this.true("函数表达式对象解构 - 默认值键值对单项对象解构 - 标识符名称", "var a = function a({ a: b = 5 }){}");
+		this.true("函数表达式对象解构 - 默认值键值对单项对象解构 - 字符串名称", "var a = function a({ 'a': b = 5 }){}");
+		this.true("函数表达式对象解构 - 默认值键值对单项对象解构 - 数字名称", "var a = function a({ 1: b = 5 }){}");
+		this.true("函数表达式对象解构 - 默认值键值对单项对象解构 - 关键字名称", "var a = function a({ null: b = 5 }){}");
+		this.true("函数表达式对象解构 - 默认值键值对单项对象解构 - 计算式名称", "var a = function a({ ['hello']: b = 5 }){}");
+		this.true("函数表达式对象解构 - 默认值键值对单项对象解构 - 进制名称", "var a = function a({ 0b10101: b = 5 }){}");
+		
+		this.true("函数表达式对象解构 - 多项对象解构", "var a = function a({ a, 2: b = 99, c, 'x': x = 1, ['y']: [{y}], null: value = 1, 3: { c: [d = 100] }, ...x }){}");
+
+		
+		this.true("箭头函数对象解构 - 空的对象解构", "var a = ({}) => {}");
+		this.true("箭头函数对象解构 - 简写单项对象解构", "var a = ({ a }) => {}");
+		this.true("箭头函数对象解构 - 省略项解构", "var a = ({ a, b, c, ...d }) => {}");
+
+		this.true("箭头函数对象解构 - 键值对单项对象解构 - 标识符名称", "var a = ({ a: b, }) => {}");
+		this.true("箭头函数对象解构 - 键值对单项对象解构 - 字符串名称", "var a = ({ 'a': b }) => {}");
+		this.true("箭头函数对象解构 - 键值对单项对象解构 - 数字名称", "var a = ({ 1: b }) => {}");
+		this.true("箭头函数对象解构 - 键值对单项对象解构 - 关键字名称", "var a = ({ null: b }) => {}");
+		this.true("箭头函数对象解构 - 键值对单项对象解构 - 计算式名称", "var a = ({ ['hello']: b }) => {}");
+		
+		this.true("箭头函数对象解构 - 键值对单项对象解构 - 进制名称", "var a = ({ 0b10101: b }) => {}");
+		this.true("箭头函数对象解构 - 简写属性默认值对象解构", "var a = ({ a = 5, b = c = d = 5, }) => {}");
+
+		this.true("箭头函数对象解构 - 默认值键值对单项对象解构 - 标识符名称", "var a = ({ a: b = 5 }) => {}");
+		this.true("箭头函数对象解构 - 默认值键值对单项对象解构 - 字符串名称", "var a = ({ 'a': b = 5 }) => {}");
+		this.true("箭头函数对象解构 - 默认值键值对单项对象解构 - 数字名称", "var a = ({ 1: b = 5 }) => {}");
+		this.true("箭头函数对象解构 - 默认值键值对单项对象解构 - 关键字名称", "var a = ({ null: b = 5 }) => {}");
+		this.true("箭头函数对象解构 - 默认值键值对单项对象解构 - 计算式名称", "var a = ({ ['hello']: b = 5 }) => {}");
+		this.true("箭头函数对象解构 - 默认值键值对单项对象解构 - 进制名称", "var a = ({ 0b10101: b = 5 }) => {}");
+		
+		this.true("箭头函数对象解构 - 多项对象解构", "var a = ({ a, 2: b = 99, c, 'x': x = 1, ['y']: [{y}], null: value = 1, 3: { c: [d = 100] }, ...x }) => {}");
+
+
 		this.true("运算结果测试", source, true);
 
 		this.false(
@@ -408,7 +492,23 @@ test.unit(
 			"对象解构 - 简写的属性 - 关键字",
 			"({ null } = obj)",
 			function(parser, err){
-				return err.context.content === "}" ? "" : "没有识别出结束大括号";
+				return err.context.content !== "null";
+			}
+		);
+
+		this.false(
+			"对象解构 - 简写的属性 - arguments",
+			"({ arguments } = obj)",
+			function(parser, err){
+				return err.context.content !== "arguments";
+			}
+		);
+
+		this.false(
+			"对象解构 - 简写的属性 - eval",
+			"({ eval } = obj)",
+			function(parser, err){
+				return err.context.content !== "eval";
 			}
 		);
 

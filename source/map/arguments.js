@@ -156,6 +156,25 @@ this.ArgumentStatement = function(){
 	return ArgumentStatement;
 }();
 
+this.ArgumentsTag = function(EnvConstantTag){
+	/**
+	 * arguments 标识符标签
+	 * @param {Number} _type - 标签类型
+	 */
+	function ArgumentsTag(_type){
+		EnvConstantTag.call(this, _type);
+	};
+	ArgumentsTag = new Rexjs(ArgumentsTag, EnvConstantTag);
+
+	ArgumentsTag.props({
+		regexp: /arguments/
+	});
+
+	return ArgumentsTag;
+}(
+	this.EnvConstantTag
+);
+
 this.OpeningArgumentsTag = function(OpeningParenTag, ArgumentsExpression, ArgumentStatement){
 	/**
 	 * 起始函数参数标签

@@ -11,6 +11,8 @@ test.unit(
 		this.true("多个关键字属性名", "!{ var: 1, switch: 2 + 3 / 4 * (7), throw: 99 }");
 		this.true("多个关键字属性名并带有一一对应的逗号", "!{ var: 1, switch: 2 + 3 / 4 * (7), throw: 99, }");
 		this.true("单个简写属性名", "!{ a }");
+		this.true("常量标识符简写属性默认值", "!{ arguments, eval }");
+		this.true("常量关键字简写属性默认值", "!{ null, this, true, false }");
 		this.true("多个简写属性名", "!{ a, b, c }");
 		this.true("多个简写属性名并带有一一对应的逗号", "!{ a, b, c, }");
 		this.true("单个字符串属性名", "!{ 'a': 1 }");
@@ -159,8 +161,8 @@ test.unit(
 		);
 		
 		this.false(
-			"关键字默认值",
-			"!{ null = 5 }",
+			"非常量关键字默认值",
+			"!{ var = 5 }",
 			function(parser, err){
 				return err.context.content === "=" ? "" : "关键字属性不能设置默认值";
 			}
