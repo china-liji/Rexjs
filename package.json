@@ -1,20 +1,21 @@
 {
 	"name": "rexjs-api",
 	"version": "1.7.2",
+	"compiler-version": "1.7.2",
 	"description": "Rexjs is a faster and smaller JavaScript(ES6+) compiler!",
 	"scripts": {
 		"start": "node ./node/dev.js",
 		"build": "node ./node/uglify.js",
-		"read-me": "node ./bin/rex-node.js ./node/read-me.js",
+		"read-me": "node ./bin/rex-api.node.js ./node/read-me.js",
 		"pretest-node": "npm run build",
-		"test-node": "node ./bin/rex-node.js ./bin/test/a.js",
+		"test-node": "node ./bin/rex-api.node.js ./bin/test/a.js",
 		"posttest-node": "npm run read-me",
 		"prepublish": "npm run test-node"
 	},
 	"main": "./dist/rex-api.bundle.js",
 	"bin": {
-		"rexjs": "./bin/rex-node.js",
-		"rexjs-api": "./bin/rex-node.js"
+		"rexjs": "./bin/rex-api.node.js",
+		"rexjs-api": "./bin/rex-api.node.js"
 	},
 	"repository": {
 		"type": "git",

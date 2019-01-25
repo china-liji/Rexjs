@@ -928,7 +928,119 @@ this.JSONCompiler = function(ModuleCompiler, parse){
 // 模块相关
 !function(STATUS_NONE, STATUS_LOADING, STATUS_COMPILING, STATUS_READY, STATUS_ENDED, STATUS_COMPLETED, STATUS_ERROR, moduleReady, trigger){
 
-this.Module = Module = function(ModuleCompiler, cache, stack, create, defineProperty, readFile, importedByDep){
+this.ModuleCache = function(cache, disabled, hasOwnProperty, getModuleHref, getCachedModule, deleteCachedModule){
+	/**
+	 * 模块缓存
+	 * @param {String} name - 模块名称
+	 * @param {String, Function} _code - 模块代码
+	 * @param {Boolean} _sync - 是否同步
+	 */
+	function ModuleCache(){};
+	ModuleCache = new Rexjs(ModuleCache);
+
+	ModuleCache.static({
+		/**
+		 * 缓存模块
+		 * @param {Module} module - 需要缓存的模块
+		 */
+		cache: function(module){
+			// 如果禁用缓存了
+			if(disabled){
+				return;
+			}
+
+			// 进行缓存
+			cache[module.name.href] = module;
+		},
+		/**
+		 * 判断指定模块是否已经被缓存
+		 * @param {Module} module - 需要判断的模块
+		 */
+		cached: function(module){
+			return getModuleHref(module, hasOwnProperty, cache);
+		},
+		/**
+		 * 清空缓存
+		 */
+		clear: function(){
+			cache = {};
+		},
+		/**
+		 * 删除一项缓存
+		 * @param {Module} module - 需要判断的模块
+		 */
+		delete: function(module){
+			return getModuleHref(module, deleteCachedModule, cache);
+		},
+		/**
+		 * 获取是否禁用了缓存
+		 */
+		get disabled(){
+			return disabled;
+		},
+		/**
+		 * 设置是否禁用缓存
+		 * @param {Boolean} value - 是否禁用缓存
+		 */
+		set disabled(value){
+			// 如果是禁用
+			if(value){
+				// 清空缓存
+				this.clear();
+			}
+			
+			disabled = !!value;
+		},
+		/**
+		 * 获取被缓存的模块
+		 * @param {Module} module - 需要判断的模块
+		 */
+		item: function(module){
+			return getModuleHref(module, getCachedModule, cache);
+		}
+	});
+
+	return ModuleCache;
+}(
+	// cache
+	{},
+	// disabled
+	false,
+	Object.prototype.hasOwnProperty,
+	// getModuleHref
+	function(module, callback, _this){
+		var href;
+
+		// 如果是模块对象
+		if(module instanceof Module){
+			href = module.name.href;
+		}
+		// 如果是模块地址，视为模块名称处理
+		else if(module instanceof URL){
+			href = module.href;
+		}
+		// 如果是字符串
+		else if(typeof module === "string"){
+			href = module;
+		}
+		else {
+			return false;
+		}
+
+		return callback.call(_this, href);
+	},
+	// getCachedModule
+	function(href){
+		return this[href];
+	},
+	// deleteCachedModule
+	function(href){
+		delete this[href];
+		return true;
+	}
+);
+
+this.Module = Module = function(ModuleCache, ModuleCompiler, stack, create, defineProperty, readFile, importedByDep){
 	/**
 	 * 模块
 	 * @param {String} name - 模块名称
@@ -939,8 +1051,8 @@ this.Module = Module = function(ModuleCompiler, cache, stack, create, defineProp
 		var moduleName = moduleReady.parseName(name), href = moduleName.href;
 
 		// 如果缓存里已经存在该模块
-		if(cache.hasOwnProperty(href)){
-			var module = cache[href];
+		if(ModuleCache.cached(href)){
+			var module = ModuleCache.item(href);
 
 			// 如果是函数而且没有结束（没有执行）
 			if(typeof _code === "function" && !this.ended){
@@ -959,7 +1071,7 @@ this.Module = Module = function(ModuleCompiler, cache, stack, create, defineProp
 		this.status = STATUS_LOADING;
 		this.targets = [];
 
-		cache[href] = this;
+		ModuleCache.cache(this);
 
 		// 判断代码类型
 		switch(typeof _code){
@@ -989,12 +1101,6 @@ this.Module = Module = function(ModuleCompiler, cache, stack, create, defineProp
 		STATUS_ENDED: STATUS_ENDED,
 		STATUS_COMPLETED: STATUS_COMPLETED,
 		STATUS_ERROR: STATUS_ERROR,
-		/**
-		 * 获取模块缓存信息
-		 */
-		get cache(){
-			return cache;
-		},
 		/**
 		 * 获取指定模块的默认输出
 		 * @param {String} name - 模块名称
@@ -1078,10 +1184,11 @@ this.Module = Module = function(ModuleCompiler, cache, stack, create, defineProp
 		 */
 		import: function(name, _baseUrlString){
 			return (
-				cache[
-					moduleReady.parseName(name, _baseUrlString).href
-				]
-				.exports
+				ModuleCache
+					.item(
+						moduleReady.parseName(name, _baseUrlString).href
+					)
+					.exports
 			);
 		},
 		/**
@@ -1236,7 +1343,7 @@ this.Module = Module = function(ModuleCompiler, cache, stack, create, defineProp
 			// 遍历依赖
 			compiler.deps.forEach(
 				function(dep){
-					var href = moduleReady.parseName(dep, name.href).href, module = cache.hasOwnProperty(href) ? cache[href] : new Module(href, null, _sync);
+					var href = moduleReady.parseName(dep, name.href).href, module = ModuleCache.cached(href) ? ModuleCache.item(href) : new Module(href, null, _sync);
 
 					// 如果是重复导入
 					if(imports.indexOf(module) > -1){
@@ -1262,9 +1369,8 @@ this.Module = Module = function(ModuleCompiler, cache, stack, create, defineProp
 
 	return Module;
 }(
+	this.ModuleCache,
 	this.ModuleCompiler,
-	// cache
-	{},
 	// stack
 	[],
 	Object.create,

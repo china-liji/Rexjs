@@ -1,3 +1,67 @@
+eval(
+					function(){
+						new Rexjs.Module("http://localhost:9090/source/map/a.js",function(Rexjs){
+"use strict";
+Rexjs.Module.export("default",(Rexjs.Class.create(void 0,[new Rexjs.ClassProperty("constructor",function Car(){})], 0)));
+});
+//# sourceURL=http://sourceURL/source/map/a.js
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImh0dHA6Ly9sb2NhbGhvc3Q6OTA5MC9zb3VyY2UvbWFwL2EuanMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6Ijs7OyJ9
+					}
+					.toString()
+					.match(
+						/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+					)[1]
+				);
+
+
+eval(
+					function(){
+						new Rexjs.Module("http://localhost:9090/source/map/a.js",function(Rexjs){
+"use strict";
+Rexjs.Module.export("default",(Rexjs.Class.create(void 0,[new Rexjs.ClassProperty("constructor",function Car(){})], 0)));
+});
+//# sourceURL=http://sourceURL/source/map/a.js
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImh0dHA6Ly9sb2NhbGhvc3Q6OTA5MC9zb3VyY2UvbWFwL2EuanMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6Ijs7OyJ9
+					}
+					.toString()
+					.match(
+						/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+					)[1]
+				);
+
+
+eval(
+					function(){
+						new Rexjs.Module("http://localhost:9090/source/map/a.js",function(Rexjs){
+"use strict";
+Rexjs.Module.export("default",(Rexjs.Class.create(void 0,[new Rexjs.ClassProperty("constructor",function Car(){})], 0)));
+});
+//# sourceURL=http://sourceURL/source/map/a.js
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImh0dHA6Ly9sb2NhbGhvc3Q6OTA5MC9zb3VyY2UvbWFwL2EuanMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6Ijs7OyJ9
+					}
+					.toString()
+					.match(
+						/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+					)[1]
+				);
+
+
+eval(
+					function(){
+						new Rexjs.Module("http://localhost:9090/source/map/index.js",function(Rexjs){
+"use strict";
+var a=1;var Car=Rexjs.Module.defaultOf("./a","http://localhost:9090/source/map/index.js");var Car1=Rexjs.Module.defaultOf("./a","http://localhost:9090/source/map/index.js");var Car2=Rexjs.Module.defaultOf("./a","http://localhost:9090/source/map/index.js");var c=3333;debugger;
+});
+//# sourceURL=http://sourceURL/source/map/index.js
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImh0dHA6Ly9sb2NhbGhvc3Q6OTA5MC9zb3VyY2UvbWFwL2luZGV4LmpzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiI7O0FBQUEsR0FBQSxBQUFHLENBQUMsQ0FBQSxBQUFDLEFBQUMsQ0FBQSxBQUFDLEFBQUMsQ0FBQSxBQUFDLHlQQU1ULEdBQUEsQUFBRyxDQUFDLENBQUEsQUFBQyxBQUFDLENBQUEsQUFBQyxBQUFDLElBQUEsQUFBSSxDQUVaLFFBQUEsQUFBUTsifQ==
+					}
+					.toString()
+					.match(
+						/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+					)[1]
+				);
+
+
 new function(
 	Rexjs,
 	// 内容提取相关
@@ -23,8 +87,8 @@ new function(
 
 
 eval(
-									function(){
-										//ECMAScript 辅助类
+								function(){
+									//ECMAScript 辅助类
 !function(){
 
 this.ECMAScriptErrors = ECMAScriptErrors = function(REGEXP){
@@ -162,18 +226,18 @@ this.ECMAScriptOrders = ECMAScriptOrders = function(){
 }.call(
 	this
 );
-									}
-									.toString()
-									.match(
-										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-									)[1] +
-									"\n//# sourceURL=http://rexjs/maps/ecmaScript-helper.js"
-								);
+								}
+								.toString()
+								.match(
+									/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+								)[1] +
+								"\n//# sourceURL=http://localhost:9090/source/map1/ecmaScript-helper.js"
+							);
 
 
 eval(
-									function(){
-										// 公用的表达式
+								function(){
+									// 公用的表达式
 !function(){
 
 this.AssignableExpression = function(){
@@ -351,18 +415,18 @@ this.ConditionalExpression = function(GenerableExpression, DEFAULT_INDEX, genera
 }.call(
 	this
 );
-									}
-									.toString()
-									.match(
-										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-									)[1] +
-									"\n//# sourceURL=http://rexjs/maps/common-expression.js"
-								);
+								}
+								.toString()
+								.match(
+									/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+								)[1] +
+								"\n//# sourceURL=http://localhost:9090/source/map1/common-expression.js"
+							);
 
 
 eval(
-									function(){
-										// 语句相关
+								function(){
+									// 语句相关
 !function(){
 
 this.ECMAScriptStatement = ECMAScriptStatement = function(Statement){
@@ -508,18 +572,18 @@ this.SingleStatement = function(){
 }.call(
 	this
 );
-									}
-									.toString()
-									.match(
-										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-									)[1] +
-									"\n//# sourceURL=http://rexjs/maps/ecmaScript-statement.js"
-								);
+								}
+								.toString()
+								.match(
+									/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+								)[1] +
+								"\n//# sourceURL=http://localhost:9090/source/map1/ecmaScript-statement.js"
+							);
 
 
 eval(
-									function(){
-										// 语句块相关
+								function(){
+									// 语句块相关
 !function(Statements){
 
 this.ECMAScriptVariableCollections = function(VariableCollections, VariableCollection){
@@ -698,18 +762,18 @@ this.GlobalStatements = function(ECMAScriptStatements, ECMAScriptVariableCollect
 	this,
 	Rexjs.Statements
 );
-									}
-									.toString()
-									.match(
-										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-									)[1] +
-									"\n//# sourceURL=http://rexjs/maps/ecmaScript-statements.js"
-								);
+								}
+								.toString()
+								.match(
+									/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+								)[1] +
+								"\n//# sourceURL=http://localhost:9090/source/map1/ecmaScript-statements.js"
+							);
 
 
 eval(
-									function(){
-										// 大括号主体相关
+								function(){
+									// 大括号主体相关
 !function(){
 
 this.DefaultBraceBodyExpression = function(){
@@ -794,18 +858,18 @@ this.BraceBodyStatement = function(DefaultBraceBodyExpression){
 }.call(
 	this
 );
-									}
-									.toString()
-									.match(
-										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-									)[1] +
-									"\n//# sourceURL=http://rexjs/maps/brace-body.js"
-								);
+								}
+								.toString()
+								.match(
+									/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+								)[1] +
+								"\n//# sourceURL=http://localhost:9090/source/map1/brace-body.js"
+							);
 
 
 eval(
-									function(){
-										// 一些 基类 或 独立的 标签
+								function(){
+									// 一些 基类 或 独立的 标签
 !function(RegExp){
 	
 this.AsTag = function(AsExpression){
@@ -1136,18 +1200,18 @@ this.WithTag = function(){
 	this,
 	RegExp
 );
-									}
-									.toString()
-									.match(
-										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-									)[1] +
-									"\n//# sourceURL=http://rexjs/maps/basic-tag.js"
-								);
+								}
+								.toString()
+								.match(
+									/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+								)[1] +
+								"\n//# sourceURL=http://localhost:9090/source/map1/basic-tag.js"
+							);
 
 
 eval(
-									function(){
-										// 文件位置标签相关
+								function(){
+									// 文件位置标签相关
 !function(FilePositionTag){
 
 this.FileStartTag = function(FileStartExpression){
@@ -1240,18 +1304,18 @@ this.FileEndTag = function(FileEndExpression, GlobalStatements){
 	this,
 	Rexjs.FilePositionTag
 );
-									}
-									.toString()
-									.match(
-										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-									)[1] +
-									"\n//# sourceURL=http://rexjs/maps/file-position.js"
-								);
+								}
+								.toString()
+								.match(
+									/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+								)[1] +
+								"\n//# sourceURL=http://localhost:9090/source/map1/file-position.js"
+							);
 
 
 eval(
-									function(){
-										// 字面量标签相关
+								function(){
+									// 字面量标签相关
 !function(){
 
 this.LiteralExpression = function(){
@@ -1308,18 +1372,18 @@ this.LiteralTag = function(LiteralExpression){
 }.call(
 	this
 );
-									}
-									.toString()
-									.match(
-										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-									)[1] +
-									"\n//# sourceURL=http://rexjs/maps/literal-base.js"
-								);
+								}
+								.toString()
+								.match(
+									/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+								)[1] +
+								"\n//# sourceURL=http://localhost:9090/source/map1/literal-base.js"
+							);
 
 
 eval(
-									function(){
-										// 字面量子类标签相关
+								function(){
+									// 字面量子类标签相关
 !function(LiteralTag){
 
 this.BooleanTag = function(){
@@ -1514,18 +1578,18 @@ this.StringTag = function(){
 	this,
 	this.LiteralTag
 );
-									}
-									.toString()
-									.match(
-										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-									)[1] +
-									"\n//# sourceURL=http://rexjs/maps/literal-extension.js"
-								);
+								}
+								.toString()
+								.match(
+									/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+								)[1] +
+								"\n//# sourceURL=http://localhost:9090/source/map1/literal-extension.js"
+							);
 
 
 eval(
-									function(){
-										// 算数标签相关
+								function(){
+									// 算数标签相关
 !function(){
 
 this.MathematicalNumberTag = function(NumberTag){
@@ -1606,18 +1670,18 @@ this.OctalNumberTag = function(MathematicalNumberTag){
 }.call(
 	this
 );
-									}
-									.toString()
-									.match(
-										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-									)[1] +
-									"\n//# sourceURL=http://rexjs/maps/mathematical-number.js"
-								);
+								}
+								.toString()
+								.match(
+									/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+								)[1] +
+								"\n//# sourceURL=http://localhost:9090/source/map1/mathematical-number.js"
+							);
 
 
 eval(
-									function(){
-										// 标识符标签相关
+								function(){
+									// 标识符标签相关
 !function(){
 
 this.IdentifierExpression = function(AssignableExpression){
@@ -1829,18 +1893,18 @@ this.IdentifierTag = function(IdentifierExpression, RegExg, REGEXP_SOURCE, excep
 }.call(
 	this
 );
-									}
-									.toString()
-									.match(
-										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-									)[1] +
-									"\n//# sourceURL=http://rexjs/maps/identifier.js"
-								);
+								}
+								.toString()
+								.match(
+									/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+								)[1] +
+								"\n//# sourceURL=http://localhost:9090/source/map1/identifier.js"
+							);
 
 
 eval(
-									function(){
-										// 运行环境常量（arguments、eval）相关
+								function(){
+									// 运行环境常量（arguments、eval）相关
 !function(){
 
 this.EnvConstantExpression = function(){
@@ -1898,18 +1962,18 @@ this.EnvConstantTag = function(EnvConstantExpression){
 }.call(
 	this
 );
-									}
-									.toString()
-									.match(
-										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-									)[1] +
-									"\n//# sourceURL=http://rexjs/maps/env-constant.js"
-								);
+								}
+								.toString()
+								.match(
+									/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+								)[1] +
+								"\n//# sourceURL=http://localhost:9090/source/map1/env-constant.js"
+							);
 
 
 eval(
-									function(){
-										// eval 标识符相关
+								function(){
+									// eval 标识符相关
 !function(){
 
 this.EvalTag = function(EnvConstantTag){
@@ -1934,18 +1998,18 @@ this.EvalTag = function(EnvConstantTag){
 }.call(
 	this
 );
-									}
-									.toString()
-									.match(
-										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-									)[1] +
-									"\n//# sourceURL=http://rexjs/maps/eval.js"
-								);
+								}
+								.toString()
+								.match(
+									/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+								)[1] +
+								"\n//# sourceURL=http://localhost:9090/source/map1/eval.js"
+							);
 
 
 eval(
-									function(){
-										// 变量标签相关
+								function(){
+									// 变量标签相关
 !function(){
 
 this.VariableTag = function(IdentifierTag){
@@ -2038,18 +2102,18 @@ this.VariableDeclarationTag = function(VariableTag, SCOPE_CLOSURE, visitor){
 }.call(
 	this
 );
-									}
-									.toString()
-									.match(
-										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-									)[1] +
-									"\n//# sourceURL=http://rexjs/maps/variable.js"
-								);
+								}
+								.toString()
+								.match(
+									/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+								)[1] +
+								"\n//# sourceURL=http://localhost:9090/source/map1/variable.js"
+							);
 
 
 eval(
-									function(){
-										// 分号标签
+								function(){
+									// 分号标签
 !function(SemicolonTag){
 
 this.EmptyStatementTag = function(){
@@ -2154,18 +2218,18 @@ this.LastStatementEndTag = function(StatementEndTag){
 	this,
 	this.SemicolonTag
 );
-									}
-									.toString()
-									.match(
-										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-									)[1] +
-									"\n//# sourceURL=http://rexjs/maps/semicolon.js"
-								);
+								}
+								.toString()
+								.match(
+									/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+								)[1] +
+								"\n//# sourceURL=http://localhost:9090/source/map1/semicolon.js"
+							);
 
 
 eval(
-									function(){
-										// 行结束符标签
+								function(){
+									// 行结束符标签
 !function(SpecialLineTerminatorTag, visitor){
 
 this.IllegalLineTerminatorTag = function(){
@@ -2275,18 +2339,18 @@ this.ExpressionBreakTag = function(){
 	this.SpecialLineTerminatorTag,
 	this.SpecialLineTerminatorTag.prototype.visitor
 );
-									}
-									.toString()
-									.match(
-										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-									)[1] +
-									"\n//# sourceURL=http://rexjs/maps/line-terminator.js"
-								);
+								}
+								.toString()
+								.match(
+									/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+								)[1] +
+								"\n//# sourceURL=http://localhost:9090/source/map1/line-terminator.js"
+							);
 
 
 eval(
-									function(){
-										// 注释标签
+								function(){
+									// 注释标签
 !function(CommentTag, tags){
 
 this.SingleLineCommentTag = function(){
@@ -2443,18 +2507,18 @@ this.ClosingMultiLineCommentTag = function(){
 	// tags
 	null
 );
-									}
-									.toString()
-									.match(
-										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-									)[1] +
-									"\n//# sourceURL=http://rexjs/maps/comment.js"
-								);
+								}
+								.toString()
+								.match(
+									/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+								)[1] +
+								"\n//# sourceURL=http://localhost:9090/source/map1/comment.js"
+							);
 
 
 eval(
-									function(){
-										// 点属性访问器相关
+								function(){
+									// 点属性访问器相关
 !function(){
 
 this.AccessorExpression = function(AssignableExpression){
@@ -2574,18 +2638,18 @@ this.PropertyNameTag = function(IdentifierTag, RegExp){
 }.call(
 	this
 );
-									}
-									.toString()
-									.match(
-										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-									)[1] +
-									"\n//# sourceURL=http://rexjs/maps/accessor-dot.js"
-								);
+								}
+								.toString()
+								.match(
+									/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+								)[1] +
+								"\n//# sourceURL=http://localhost:9090/source/map1/accessor-dot.js"
+							);
 
 
 eval(
-									function(){
-										// 中括号属性访问器
+								function(){
+									// 中括号属性访问器
 !function(closingBracketAccessorTag){
 	
 this.BracketAccessorExpression = function(AccessorExpression){
@@ -2754,18 +2818,18 @@ closingBracketAccessorTag = new this.ClosingBracketAccessorTag();
 	// closingBracketAccessorTag
 	null
 );
-									}
-									.toString()
-									.match(
-										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-									)[1] +
-									"\n//# sourceURL=http://rexjs/maps/accessor-bracket.js"
-								);
+								}
+								.toString()
+								.match(
+									/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+								)[1] +
+								"\n//# sourceURL=http://localhost:9090/source/map1/accessor-bracket.js"
+							);
 
 
 eval(
-									function(){
-										// 逗号相关
+								function(){
+									// 逗号相关
 !function(commaSiblingTag){
 
 this.CommaExpression = function(){
@@ -2920,18 +2984,18 @@ commaSiblingTag = new this.CommaSiblingTag();
 	// commaSiblingTag
 	null
 );
-									}
-									.toString()
-									.match(
-										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-									)[1] +
-									"\n//# sourceURL=http://rexjs/maps/comma.js"
-								);
+								}
+								.toString()
+								.match(
+									/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+								)[1] +
+								"\n//# sourceURL=http://localhost:9090/source/map1/comma.js"
+							);
 
 
 eval(
-									function(){
-										// 一元标签基类
+								function(){
+									// 一元标签基类
 !function(){
 	
 this.UnaryExpression = function(){
@@ -3091,18 +3155,18 @@ this.UnaryKeywordTag = function(UnaryTag){
 }.call(
 	this
 );
-									}
-									.toString()
-									.match(
-										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-									)[1] +
-									"\n//# sourceURL=http://rexjs/maps/unary-base.js"
-								);
+								}
+								.toString()
+								.match(
+									/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+								)[1] +
+								"\n//# sourceURL=http://localhost:9090/source/map1/unary-base.js"
+							);
 
 
 eval(
-									function(){
-										// 执行函数的一元操作符相关
+								function(){
+									// 执行函数的一元操作符相关
 !function(UnaryKeywordTag){
 
 this.ExecutableExpression = function(){
@@ -3153,18 +3217,18 @@ this.ExecTag = function(ExecutableExpression, isSeparator){
 	this,
 	this.UnaryKeywordTag
 );
-									}
-									.toString()
-									.match(
-										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-									)[1] +
-									"\n//# sourceURL=http://rexjs/maps/unary-exec.js"
-								);
+								}
+								.toString()
+								.match(
+									/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+								)[1] +
+								"\n//# sourceURL=http://localhost:9090/source/map1/unary-exec.js"
+							);
 
 
 eval(
-									function(){
-										// 非赋值一元标签
+								function(){
+									// 非赋值一元标签
 !function(UnaryTag, UnaryKeywordTag){
 
 this.DeleteTag = function(){
@@ -3391,18 +3455,18 @@ this.LogicalNOTTag = function(){
 	this.UnaryTag,
 	this.UnaryKeywordTag
 );
-									}
-									.toString()
-									.match(
-										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-									)[1] +
-									"\n//# sourceURL=http://rexjs/maps/unary-non-assginment.js"
-								);
+								}
+								.toString()
+								.match(
+									/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+								)[1] +
+								"\n//# sourceURL=http://localhost:9090/source/map1/unary-non-assginment.js"
+							);
 
 
 eval(
-									function(){
-										// 一元赋值标签
+								function(){
+									// 一元赋值标签
 !function(VariableTag){
 
 this.PostfixUnaryExpression = function(UnaryExpression){
@@ -3615,18 +3679,18 @@ this.PostfixUnaryAssignmentTag = function(UnaryAssignmentTag, PostfixUnaryExpres
 	this,
 	this.VariableTag
 );
-									}
-									.toString()
-									.match(
-										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-									)[1] +
-									"\n//# sourceURL=http://rexjs/maps/unary-assginment.js"
-								);
+								}
+								.toString()
+								.match(
+									/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+								)[1] +
+								"\n//# sourceURL=http://localhost:9090/source/map1/unary-assginment.js"
+							);
 
 
 eval(
-									function(){
-										// 递增和递减标签
+								function(){
+									// 递增和递减标签
 !function(UnaryAssignmentTag, PostfixUnaryAssignmentTag){
 
 this.IncrementTag = function(){
@@ -3774,18 +3838,18 @@ this.PostfixDecrementTag = function(){
 	this.UnaryAssignmentTag,
 	this.PostfixUnaryAssignmentTag
 );
-									}
-									.toString()
-									.match(
-										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-									)[1] +
-									"\n//# sourceURL=http://rexjs/maps/unary-assginment-extension.js"
-								);
+								}
+								.toString()
+								.match(
+									/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+								)[1] +
+								"\n//# sourceURL=http://localhost:9090/source/map1/unary-assginment-extension.js"
+							);
 
 
 eval(
-									function(){
-										// 二元标签基类
+								function(){
+									// 二元标签基类
 !function(){
 
 this.BinaryExpression = function(){
@@ -3964,18 +4028,18 @@ this.BinaryTag = function(ExpressionSeparatorTag, BinaryExpression, BinaryStatem
 }.call(
 	this
 );
-									}
-									.toString()
-									.match(
-										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-									)[1] +
-									"\n//# sourceURL=http://rexjs/maps/binary-base.js"
-								);
+								}
+								.toString()
+								.match(
+									/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+								)[1] +
+								"\n//# sourceURL=http://localhost:9090/source/map1/binary-base.js"
+							);
 
 
 eval(
-									function(){
-										// 二元标签子类
+								function(){
+									// 二元标签子类
 !function(BinaryTag, AssignableExpression, IdentifierExpression, VariableDeclarationTag){
 
 this.AssignmentTag = function(BinaryExpression, isSeparator, assignable){
@@ -4113,18 +4177,18 @@ this.BinaryKeywordTag = function(){
 	this.IdentifierExpression,
 	this.VariableDeclarationTag
 );
-									}
-									.toString()
-									.match(
-										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-									)[1] +
-									"\n//# sourceURL=http://rexjs/maps/binary-extension.js"
-								);
+								}
+								.toString()
+								.match(
+									/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+								)[1] +
+								"\n//# sourceURL=http://localhost:9090/source/map1/binary-extension.js"
+							);
 
 
 eval(
-									function(){
-										// 所有具体的二元标签
+								function(){
+									// 所有具体的二元标签
 !function(BinaryTag, AssignmentTag, BinaryKeywordTag){
 
 this.BasicAssignmentTag = function(){
@@ -4613,18 +4677,18 @@ this.RemainderTag = function(){
 	this.AssignmentTag,
 	this.BinaryKeywordTag
 );
-									}
-									.toString()
-									.match(
-										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-									)[1] +
-									"\n//# sourceURL=http://rexjs/maps/binary-all.js"
-								);
+								}
+								.toString()
+								.match(
+									/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+								)[1] +
+								"\n//# sourceURL=http://localhost:9090/source/map1/binary-all.js"
+							);
 
 
 eval(
-									function(){
-										// 疑问赋值表达式
+								function(){
+									// 疑问赋值表达式
 !function(ShorthandAssignmentTag){
 
 this.QuestionAssignmentExpression = function(BinaryExpression){
@@ -4721,18 +4785,18 @@ this.QuestionAssignmentTag = function(QuestionAssignmentExpression, visitor){
 	this,
 	this.ShorthandAssignmentTag
 );
-									}
-									.toString()
-									.match(
-										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-									)[1] +
-									"\n//# sourceURL=http://rexjs/maps/question-assignment.js"
-								);
+								}
+								.toString()
+								.match(
+									/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+								)[1] +
+								"\n//# sourceURL=http://localhost:9090/source/map1/question-assignment.js"
+							);
 
 
 eval(
-									function(){
-										// 幂运算表达式相关
+								function(){
+									// 幂运算表达式相关
 !function(BinaryExpression){
 
 this.ExponentiationExpression = function(extractTo){
@@ -4811,18 +4875,18 @@ this.ExponentiationTag = function(BinaryTag, ExponentiationExpression){
 	this,
 	this.BinaryExpression
 );
-									}
-									.toString()
-									.match(
-										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-									)[1] +
-									"\n//# sourceURL=http://rexjs/maps/exponentiation.js"
-								);
+								}
+								.toString()
+								.match(
+									/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+								)[1] +
+								"\n//# sourceURL=http://localhost:9090/source/map1/exponentiation.js"
+							);
 
 
 eval(
-									function(){
-										// 三元表达式相关
+								function(){
+									// 三元表达式相关
 !function(colonTag){
 
 this.TernaryExpression = function(){
@@ -5040,18 +5104,18 @@ colonTag = new this.ColonTag();
 	// colonTag
 	null
 );
-									}
-									.toString()
-									.match(
-										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-									)[1] +
-									"\n//# sourceURL=http://rexjs/maps/ternary.js"
-								);
+								}
+								.toString()
+								.match(
+									/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+								)[1] +
+								"\n//# sourceURL=http://localhost:9090/source/map1/ternary.js"
+							);
 
 
 eval(
-									function(){
-										// 函数调用相关
+								function(){
+									// 函数调用相关
 !function(ExecutableExpression, parameterSeparatorTag, closingCallTag){
 
 this.CallExpression = function(AccessorExpression, BracketAccessorExpression, UnaryStatement, extractTo){
@@ -5410,18 +5474,18 @@ closingCallTag = new this.ClosingCallTag();
 	// closingCallTag
 	null
 );
-									}
-									.toString()
-									.match(
-										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-									)[1] +
-									"\n//# sourceURL=http://rexjs/maps/call.js"
-								);
+								}
+								.toString()
+								.match(
+									/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+								)[1] +
+								"\n//# sourceURL=http://localhost:9090/source/map1/call.js"
+							);
 
 
 eval(
-									function(){
-										// 拓展参数相关
+								function(){
+									// 拓展参数相关
 !function(){
 
 this.SpreadExpression = function(){
@@ -5559,18 +5623,18 @@ this.SpreadTag = function(SpreadExpression, SpreadStatement, AccessorExpression,
 }.call(
 	this
 );
-									}
-									.toString()
-									.match(
-										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-									)[1] +
-									"\n//# sourceURL=http://rexjs/maps/spread.js"
-								);
+								}
+								.toString()
+								.match(
+									/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+								)[1] +
+								"\n//# sourceURL=http://localhost:9090/source/map1/spread.js"
+							);
 
 
 eval(
-									function(){
-										// 解构表达式相关
+								function(){
+									// 解构表达式相关
 !function(){
 
 this.DestructibleExpression = function(IdentifierExpression, EnvConstantTag, Context){
@@ -5962,18 +6026,18 @@ this.PropertyDestructuringDefaultItemExpression = function(DestructuringDefaultI
 }.call(
 	this
 );
-									}
-									.toString()
-									.match(
-										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-									)[1] +
-									"\n//# sourceURL=http://rexjs/maps/destructuring.js"
-								);
+								}
+								.toString()
+								.match(
+									/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+								)[1] +
+								"\n//# sourceURL=http://localhost:9090/source/map1/destructuring.js"
+							);
 
 
 eval(
-									function(){
-										// 声明数组省略项相关
+								function(){
+									// 声明数组省略项相关
 !function(SpreadStatement){
 
 this.DeclarationRestStatement = function(out){
@@ -6034,18 +6098,18 @@ this.DeclarationRestItemSeparatorTag = function(CommaTag){
 	this,
 	this.SpreadStatement
 );
-									}
-									.toString()
-									.match(
-										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-									)[1] +
-									"\n//# sourceURL=http://rexjs/maps/declaration-rest-item.js"
-								);
+								}
+								.toString()
+								.match(
+									/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+								)[1] +
+								"\n//# sourceURL=http://localhost:9090/source/map1/declaration-rest-item.js"
+							);
 
 
 eval(
-									function(){
-										// 数组相关
+								function(){
+									// 数组相关
 !function(DestructibleExpression, DestructuringExpression, DestructuringItemExpression, DestructuringDefaultItemExpression, IdentifierExpression, AssignableExpression, BinaryExpression, BasicAssignmentTag, closingArrayTag, arrayItemSeparatorTag, destructItem){
 
 this.ArrayDestructuringExpression = function(){
@@ -6528,18 +6592,18 @@ closingArrayTag = new this.ClosingArrayTag();
 		expression.compileTo(contentBuilder, builder);
 	}
 );
-									}
-									.toString()
-									.match(
-										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-									)[1] +
-									"\n//# sourceURL=http://rexjs/maps/array.js"
-								);
+								}
+								.toString()
+								.match(
+									/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+								)[1] +
+								"\n//# sourceURL=http://localhost:9090/source/map1/array.js"
+							);
 
 
 eval(
-									function(){
-										// 数组拓展项相关
+								function(){
+									// 数组拓展项相关
 !function(){
 
 this.ArraySpreadItemExpression = function(SpreadExpression){
@@ -6614,18 +6678,18 @@ this.ArraySpreadTag = function(SpreadTag, ArraySpreadItemExpression){
 }.call(
 	this
 );
-									}
-									.toString()
-									.match(
-										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-									)[1] +
-									"\n//# sourceURL=http://rexjs/maps/array-spread-item.js"
-								);
+								}
+								.toString()
+								.match(
+									/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+								)[1] +
+								"\n//# sourceURL=http://localhost:9090/source/map1/array-spread-item.js"
+							);
 
 
 eval(
-									function(){
-										// 数组解构赋值相关
+								function(){
+									// 数组解构赋值相关
 !function(OpeningArrayTag, BasicAssignmentTag, variableDeclarationArrayItemSeparatorTag, closingDeclarationArrayTag){
 
 this.DeclarationArrayExpression = function(ArrayExpression){
@@ -6925,18 +6989,18 @@ closingDeclarationArrayTag = new this.ClosingDeclarationArrayTag();
 	// closingDeclarationArrayTag
 	null
 );
-									}
-									.toString()
-									.match(
-										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-									)[1] +
-									"\n//# sourceURL=http://rexjs/maps/declaration-array.js"
-								);
+								}
+								.toString()
+								.match(
+									/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+								)[1] +
+								"\n//# sourceURL=http://localhost:9090/source/map1/declaration-array.js"
+							);
 
 
 eval(
-									function(){
-										// 声明数组省略项相关
+								function(){
+									// 声明数组省略项相关
 !function(){
 
 this.DeclarationArrayRestItemTag = function(DeclarationArrayItemTag, IdentifierExpression){
@@ -7026,18 +7090,18 @@ this.DeclarationArrayRestTag = function(ArraySpreadTag, ArrayDestructuringRestIt
 }.call(
 	this
 );
-									}
-									.toString()
-									.match(
-										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-									)[1] +
-									"\n//# sourceURL=http://rexjs/maps/declaration-array-rest-item.js"
-								);
+								}
+								.toString()
+								.match(
+									/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+								)[1] +
+								"\n//# sourceURL=http://localhost:9090/source/map1/declaration-array-rest-item.js"
+							);
 
 
 eval(
-									function(){
-										// 变量声明数组项标签相关
+								function(){
+									// 变量声明数组项标签相关
 !function(ClosingDeclarationArrayTag, closingNestedDeclarationArrayItemTag){
 
 this.OpeningNestedDeclarationArrayItemTag = function(OpeningDeclarationArrayTag){
@@ -7118,18 +7182,18 @@ closingNestedDeclarationArrayItemTag = new this.ClosingNestedDeclarationArrayIte
 	// closingNestedDeclarationArrayItemTag
 	null
 );
-									}
-									.toString()
-									.match(
-										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-									)[1] +
-									"\n//# sourceURL=http://rexjs/maps/nested-declaration-array-item.js"
-								);
+								}
+								.toString()
+								.match(
+									/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+								)[1] +
+								"\n//# sourceURL=http://localhost:9090/source/map1/nested-declaration-array-item.js"
+							);
 
 
 eval(
-									function(){
-										// 语句块相关
+								function(){
+									// 语句块相关
 !function(closingBlockTag){
 
 this.BlockVariableCollections = function(ECMAScriptVariableCollections){
@@ -7348,18 +7412,18 @@ closingBlockTag = new this.ClosingBlockTag();
 	// closingBlockTag
 	null
 );
-									}
-									.toString()
-									.match(
-										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-									)[1] +
-									"\n//# sourceURL=http://rexjs/maps/block.js"
-								);
+								}
+								.toString()
+								.match(
+									/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+								)[1] +
+								"\n//# sourceURL=http://localhost:9090/source/map1/block.js"
+							);
 
 
 eval(
-									function(){
-										// var 语句相关
+								function(){
+									// var 语句相关
 !function(VariableDeclarationTag, closureVariableTag, varDeclarationSeparatorTag){
 
 this.VarExpression = function(GenerableExpression){
@@ -7627,18 +7691,18 @@ varDeclarationSeparatorTag = new this.VarDeclarationSeparatorTag();
 	// varDeclarationSeparatorTag
 	null
 );
-									}
-									.toString()
-									.match(
-										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-									)[1] +
-									"\n//# sourceURL=http://rexjs/maps/var.js"
-								);
+								}
+								.toString()
+								.match(
+									/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+								)[1] +
+								"\n//# sourceURL=http://localhost:9090/source/map1/var.js"
+							);
 
 
 eval(
-									function(){
-										// let 语句相关
+								function(){
+									// let 语句相关
 !function(ClosureVariableTag, localVariableTag, letDeclarationSeparatorTag){
 
 this.LetTag = function(VarTag){
@@ -7766,18 +7830,18 @@ letDeclarationSeparatorTag = new this.LetDeclarationSeparatorTag();
 	// letDeclarationSeparatorTag
 	null
 );
-									}
-									.toString()
-									.match(
-										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-									)[1] +
-									"\n//# sourceURL=http://rexjs/maps/let.js"
-								);
+								}
+								.toString()
+								.match(
+									/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+								)[1] +
+								"\n//# sourceURL=http://localhost:9090/source/map1/let.js"
+							);
 
 
 eval(
-									function(){
-										// const 语句相关
+								function(){
+									// const 语句相关
 !function(VarExpression, IdentifierExpression, VarStatement, LocalVariableTag, constVariableTag, constDeclarationSeparatorTag){
 
 this.ConstStatement = function(catchMethod, tryMethod){
@@ -7967,18 +8031,18 @@ constDeclarationSeparatorTag = new this.ConstDeclarationSeparatorTag();
 	// constDeclarationSeparatorTag
 	null
 );
-									}
-									.toString()
-									.match(
-										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-									)[1] +
-									"\n//# sourceURL=http://rexjs/maps/const.js"
-								);
+								}
+								.toString()
+								.match(
+									/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+								)[1] +
+								"\n//# sourceURL=http://localhost:9090/source/map1/const.js"
+							);
 
 
 eval(
-									function(){
-										// 函数表达式相关
+								function(){
+									// 函数表达式相关
 !function(extractTo, appendVariable){
 
 this.FunctionExpression = function(appendRange, appendHoisting, compileBody){
@@ -8248,18 +8312,18 @@ this.FunctionNameTag = function(VariableDeclarationTag, FunctionDeclarationExpre
 		contentBuilder.appendString("," + variable);
 	}
 );
-									}
-									.toString()
-									.match(
-										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-									)[1] +
-									"\n//# sourceURL=http://rexjs/maps/function.js"
-								);
+								}
+								.toString()
+								.match(
+									/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+								)[1] +
+								"\n//# sourceURL=http://localhost:9090/source/map1/function.js"
+							);
 
 
 eval(
-									function(){
-										// 函数声明标签相关
+								function(){
+									// 函数声明标签相关
 !function(FunctionNameTag){
 
 this.FunctionDeclarationExpression = function(FunctionExpression){
@@ -8414,18 +8478,18 @@ this.FunctionVariableTag = function(visitor){
 	this,
 	this.FunctionNameTag
 );
-									}
-									.toString()
-									.match(
-										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-									)[1] +
-									"\n//# sourceURL=http://rexjs/maps/function-declaration.js"
-								);
+								}
+								.toString()
+								.match(
+									/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+								)[1] +
+								"\n//# sourceURL=http://localhost:9090/source/map1/function-declaration.js"
+							);
 
 
 eval(
-									function(){
-										// 函数参数表达式相关
+								function(){
+									// 函数参数表达式相关
 !function(argumentSeparatorTag, closingArgumentsTag){
 
 this.ArgumentsExpression = function(ECMAScriptVariableCollections, extractTo, extractRange){
@@ -8798,18 +8862,18 @@ closingArgumentsTag = new this.ClosingArgumentsTag();
 	// closingArgumentsTag
 	null
 );
-									}
-									.toString()
-									.match(
-										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-									)[1] +
-									"\n//# sourceURL=http://rexjs/maps/arguments.js"
-								);
+								}
+								.toString()
+								.match(
+									/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+								)[1] +
+								"\n//# sourceURL=http://localhost:9090/source/map1/arguments.js"
+							);
 
 
 eval(
-									function(){
-										// 默认函数参数相关
+								function(){
+									// 默认函数参数相关
 !function(BasicAssignmentTag){
 
 this.DefaultArgumentExpression = function(ArgumentExpression){
@@ -8943,18 +9007,18 @@ this.ArgumentAssignmentTag = function(DefaultArgumentExpression, ArgumentAssignm
 	this,
 	this.BasicAssignmentTag
 );
-									}
-									.toString()
-									.match(
-										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-									)[1] +
-									"\n//# sourceURL=http://rexjs/maps/argument-default.js"
-								);
+								}
+								.toString()
+								.match(
+									/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+								)[1] +
+								"\n//# sourceURL=http://localhost:9090/source/map1/argument-default.js"
+							);
 
 
 eval(
-									function(){
-										// 函数省略参数相关
+								function(){
+									// 函数省略参数相关
 !function(){
 
 this.RestArgumentExpression = function(ArgumentExpression){
@@ -9121,18 +9185,18 @@ this.RestArgumentSeparatorTag = function(ArgumentSeparatorTag){
 }.call(
 	this
 );
-									}
-									.toString()
-									.match(
-										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-									)[1] +
-									"\n//# sourceURL=http://rexjs/maps/argument-rest.js"
-								);
+								}
+								.toString()
+								.match(
+									/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+								)[1] +
+								"\n//# sourceURL=http://localhost:9090/source/map1/argument-rest.js"
+							);
 
 
 eval(
-									function(){
-										// 函数主体表达式相关
+								function(){
+									// 函数主体表达式相关
 !function(closingFunctionBodyTag){
 
 this.FunctionVariableCollections = function(ECMAScriptVariableCollections){
@@ -9442,18 +9506,18 @@ closingFunctionBodyTag = new this.ClosingFunctionBodyTag();
 	// closingFunctionBodyTag
 	null
 );
-									}
-									.toString()
-									.match(
-										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-									)[1] +
-									"\n//# sourceURL=http://rexjs/maps/function-body.js"
-								);
+								}
+								.toString()
+								.match(
+									/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+								)[1] +
+								"\n//# sourceURL=http://localhost:9090/source/map1/function-body.js"
+							);
 
 
 eval(
-									function(){
-										// new.target 表达式相关
+								function(){
+									// new.target 表达式相关
 !function(ECMAScriptStatements, DotAccessorTag, PropertyNameTag){
 
 this.TargetExpression = function(AccessorExpression){
@@ -9600,18 +9664,18 @@ this.TargetTag = function(SCOPE_CLOSURE, SCOPE_LAZY, visitor){
 	this.DotAccessorTag,
 	this.PropertyNameTag
 );
-									}
-									.toString()
-									.match(
-										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-									)[1] +
-									"\n//# sourceURL=http://rexjs/maps/target.js"
-								);
+								}
+								.toString()
+								.match(
+									/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+								)[1] +
+								"\n//# sourceURL=http://localhost:9090/source/map1/target.js"
+							);
 
 
 eval(
-									function(){
-										// 箭头函数相关
+								function(){
+									// 箭头函数相关
 !function(FunctionExpression, ArgumentsExpression, OpeningFunctionBodyTag, ClosingFunctionBodyTag, closingArrowFunctionBodyTag){
 
 this.ArrowFunctionExpression = function(){
@@ -10055,18 +10119,18 @@ closingArrowFunctionBodyTag = new this.ClosingArrowFunctionBodyTag();
 	// closingArrowFunctionBodyTag
 	null
 );
-									}
-									.toString()
-									.match(
-										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-									)[1] +
-									"\n//# sourceURL=http://rexjs/maps/arrow.js"
-								);
+								}
+								.toString()
+								.match(
+									/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+								)[1] +
+								"\n//# sourceURL=http://localhost:9090/source/map1/arrow.js"
+							);
 
 
 eval(
-									function(){
-										// 对象属性相关
+								function(){
+									// 对象属性相关
 !function(){
 
 this.PropertyExpression = function(BinaryExpression){
@@ -10515,18 +10579,18 @@ this.PropertyNameSeparatorTag = function(ColonTag, PropertyValueExpression, Prop
 }.call(
 	this
 );
-									}
-									.toString()
-									.match(
-										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-									)[1] +
-									"\n//# sourceURL=http://rexjs/maps/property.js"
-								);
+								}
+								.toString()
+								.match(
+									/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+								)[1] +
+								"\n//# sourceURL=http://localhost:9090/source/map1/property.js"
+							);
 
 
 eval(
-									function(){
-										// 对象字面量属性名相关
+								function(){
+									// 对象字面量属性名相关
 !function(LiteralPropertyNameExpression, require, requireOfMethodName, visitor, visitorOfMathematicalNumeral){
 
 require = function(){
@@ -10791,18 +10855,18 @@ this.OctalNumberMethodNameTag = function(OctalNumberPropertyNameTag){
 	// visitorOfMathematicalNumeral
 	null
 );
-									}
-									.toString()
-									.match(
-										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-									)[1] +
-									"\n//# sourceURL=http://rexjs/maps/property-iteral-name.js"
-								);
+								}
+								.toString()
+								.match(
+									/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+								)[1] +
+								"\n//# sourceURL=http://localhost:9090/source/map1/property-iteral-name.js"
+							);
 
 
 eval(
-									function(){
-										// 对象标识符属性名相关
+								function(){
+									// 对象标识符属性名相关
 !function(IdentifierPropertyNameExpression, ShorthandPropertyValueExpression, IdentifierTag, PropertySeparatorTag, require, visitor){
 
 require = function(){
@@ -11096,18 +11160,18 @@ this.KeywordPropertyNameTag = function(WordPropertyNameTag, IdentifierPropertyNa
 	// visitor
 	null
 );
-									}
-									.toString()
-									.match(
-										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-									)[1] +
-									"\n//# sourceURL=http://rexjs/maps/property-identifier-name.js"
-								);
+								}
+								.toString()
+								.match(
+									/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+								)[1] +
+								"\n//# sourceURL=http://localhost:9090/source/map1/property-identifier-name.js"
+							);
 
 
 eval(
-									function(){
-										// 属性初始值标签相关
+								function(){
+									// 属性初始值标签相关
 !function(PropertyValueExpression){
 
 this.PropertyInitializerExpression = function(extractTo, toTernary){
@@ -11217,18 +11281,18 @@ this.PropertyInitializerTag = function(BasicAssignmentTag, PropertyInitializerEx
 	this,
 	this.PropertyValueExpression
 );
-									}
-									.toString()
-									.match(
-										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-									)[1] +
-									"\n//# sourceURL=http://rexjs/maps/property-initializer.js"
-								);
+								}
+								.toString()
+								.match(
+									/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+								)[1] +
+								"\n//# sourceURL=http://localhost:9090/source/map1/property-initializer.js"
+							);
 
 
 eval(
-									function(){
-										// 对象计算式属性相关
+								function(){
+									// 对象计算式属性相关
 !function(closingComputedPropertyNameTag, closingComputedMethodNameTag){
 
 this.ComputedPropertyNameExpression = function(){
@@ -11463,18 +11527,18 @@ closingComputedMethodNameTag = new this.ClosingComputedMethodNameTag();
 	// closingComputedMethodNameTag
 	null
 );
-									}
-									.toString()
-									.match(
-										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-									)[1] +
-									"\n//# sourceURL=http://rexjs/maps/property-computed-name.js"
-								);
+								}
+								.toString()
+								.match(
+									/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+								)[1] +
+								"\n//# sourceURL=http://localhost:9090/source/map1/property-computed-name.js"
+							);
 
 
 eval(
-									function(){
-										// 对象简写方法相关
+								function(){
+									// 对象简写方法相关
 !function(OpeningArgumentsTag, closingShorthandMethodArgumentsTag, closingShorthandMethodBodyTag){
 
 this.ShorthandMethodExpression = function(FunctionExpression){
@@ -11821,18 +11885,18 @@ closingShorthandMethodBodyTag = new this.ClosingShorthandMethodBodyTag();
 	// closingShorthandMethodBodyTag
 	null
 );
-									}
-									.toString()
-									.match(
-										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-									)[1] +
-									"\n//# sourceURL=http://rexjs/maps/property-shorthand-method.js"
-								);
+								}
+								.toString()
+								.match(
+									/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+								)[1] +
+								"\n//# sourceURL=http://localhost:9090/source/map1/property-shorthand-method.js"
+							);
 
 
 eval(
-									function(){
-										// 对象属性访问器相关
+								function(){
+									// 对象属性访问器相关
 !function(WordPropertyNameTag){
 
 this.PropertyAccessorTag = function(FunctionExpression, AccessorStatement, visitor){
@@ -11973,18 +12037,18 @@ this.SetTag = function(PropertyAccessorTag){
 	this,
 	this.WordPropertyNameTag
 );
-									}
-									.toString()
-									.match(
-										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-									)[1] +
-									"\n//# sourceURL=http://rexjs/maps/property-accessor.js"
-								);
+								}
+								.toString()
+								.match(
+									/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+								)[1] +
+								"\n//# sourceURL=http://localhost:9090/source/map1/property-accessor.js"
+							);
 
 
 eval(
-									function(){
-										// 对象属性拓展项相关
+								function(){
+									// 对象属性拓展项相关
 !function(){
 
 this.PropertySpreadExpression = function(PropertyExpression, SpreadExpression){
@@ -12082,18 +12146,18 @@ this.PropertySpreadTag = function(SpreadTag, PropertySpreadExpression, SpreadSta
 }.call(
 	this
 );
-									}
-									.toString()
-									.match(
-										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-									)[1] +
-									"\n//# sourceURL=http://rexjs/maps/property-spread-item.js"
-								);
+								}
+								.toString()
+								.match(
+									/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+								)[1] +
+								"\n//# sourceURL=http://localhost:9090/source/map1/property-spread-item.js"
+							);
 
 
 eval(
-									function(){
-										// 对象相关
+								function(){
+									// 对象相关
 !function(DestructuringExpression, propertySeparatorTag, closingObjectTag, destructItem){
 
 this.ObjectDestructuringExpression = function(){
@@ -12545,18 +12609,18 @@ closingObjectTag = new this.ClosingObjectTag();
 		expression.compileTo(contentBuilder, anotherBuilder);
 	}
 );
-									}
-									.toString()
-									.match(
-										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-									)[1] +
-									"\n//# sourceURL=http://rexjs/maps/object.js"
-								);
+								}
+								.toString()
+								.match(
+									/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+								)[1] +
+								"\n//# sourceURL=http://localhost:9090/source/map1/object.js"
+							);
 
 
 eval(
-									function(){
-										// 对象声明解构赋值相关
+								function(){
+									// 对象声明解构赋值相关
 !function(PropertyDestructuringItemExpression, PropertyStatement, OpeningObjectTag, variableDeclarationPropertySeparatorTag, closingDeclarationObjectTag){
 	
 this.DeclarationObjectExpression = function(ObjectExpression){
@@ -12778,18 +12842,18 @@ closingDeclarationObjectTag = new this.ClosingDeclarationObjectTag();
 	// closingDeclarationObjectTag
 	null
 );
-									}
-									.toString()
-									.match(
-										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-									)[1] +
-									"\n//# sourceURL=http://rexjs/maps/declaration-object.js"
-								);
+								}
+								.toString()
+								.match(
+									/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+								)[1] +
+								"\n//# sourceURL=http://localhost:9090/source/map1/declaration-object.js"
+							);
 
 
 eval(
-									function(){
-										// 对象解构声明的属性名相关
+								function(){
+									// 对象解构声明的属性名相关
 !function(IdentifierPropertyNameTag, PropertyDestructuringItemExpression, closingComputedDeclarationPropertyNameTag, require){
 
 this.IdentifierDeclarationPropertyNameStatement = function(both){
@@ -13049,18 +13113,18 @@ closingComputedDeclarationPropertyNameTag = new this.ClosingComputedDeclarationP
 		return tagsMap.declarationPropertyNameSeparatorTags;
 	}
 );
-									}
-									.toString()
-									.match(
-										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-									)[1] +
-									"\n//# sourceURL=http://rexjs/maps/declaration-property-name.js"
-								);
+								}
+								.toString()
+								.match(
+									/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+								)[1] +
+								"\n//# sourceURL=http://localhost:9090/source/map1/declaration-property-name.js"
+							);
 
 
 eval(
-									function(){
-										// 对象解构声明的属性名分隔符相关
+								function(){
+									// 对象解构声明的属性名分隔符相关
 !function(PropertyInitializerTag, PropertyNameSeparatorTag){
 
 this.DeclarationPropertyNameInitializerTag = function(PropertyDestructuringDefaultItemExpression, visitor){
@@ -13135,18 +13199,18 @@ this.DeclarationPropertyNameSeparatorTag = function(visitor){
 	this.PropertyInitializerTag,
 	this.PropertyNameSeparatorTag
 );
-									}
-									.toString()
-									.match(
-										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-									)[1] +
-									"\n//# sourceURL=http://rexjs/maps/declaration-property-name-separator.js"
-								);
+								}
+								.toString()
+								.match(
+									/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+								)[1] +
+								"\n//# sourceURL=http://localhost:9090/source/map1/declaration-property-name-separator.js"
+							);
 
 
 eval(
-									function(){
-										// 对象解构声明的属性值相关
+								function(){
+									// 对象解构声明的属性值相关
 !function(PropertyDestructuringItemExpression, OpeningDeclarationObjectTag, ClosingDeclarationObjectTag, OpeningNestedDeclarationArrayItemTag, VariableDeclarationTag, BasicAssignmentTag, closingArrayDeclarationPropertyValueTag, closingObjectDeclarationPropertyValueTag){
 
 this.OpeningObjectDeclarationPropertyValueTag = function(DeclarationObjectExpression, visitor){
@@ -13408,18 +13472,18 @@ closingObjectDeclarationPropertyValueTag = new this.ClosingObjectDeclarationProp
 	// closingObjectDeclarationPropertyValueTag
 	null
 );
-									}
-									.toString()
-									.match(
-										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-									)[1] +
-									"\n//# sourceURL=http://rexjs/maps/declaration-property-value.js"
-								);
+								}
+								.toString()
+								.match(
+									/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+								)[1] +
+								"\n//# sourceURL=http://localhost:9090/source/map1/declaration-property-value.js"
+							);
 
 
 eval(
-									function(){
-										// 对象解构声明的省略属性相关
+								function(){
+									// 对象解构声明的省略属性相关
 !function(SpreadStatement){
 
 this.DeclarationPropertyRestStatement = function(out){
@@ -13539,18 +13603,18 @@ this.DeclarationPropertyRestTag = function(PropertySpreadTag, PropertyDestructur
 	this,
 	this.SpreadStatement
 );
-									}
-									.toString()
-									.match(
-										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-									)[1] +
-									"\n//# sourceURL=http://rexjs/maps/declaration-property-rest-item.js"
-								);
+								}
+								.toString()
+								.match(
+									/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+								)[1] +
+								"\n//# sourceURL=http://localhost:9090/source/map1/declaration-property-rest-item.js"
+							);
 
 
 eval(
-									function(){
-										// 数组声明解构内的对象解构相关
+								function(){
+									// 数组声明解构内的对象解构相关
 !function(ClosingDeclarationObjectTag, closingObjectDeclarationArrayItemTag){
 
 this.OpeningObjectDeclarationArrayItemTag = function(OpeningDeclarationObjectTag){
@@ -13631,18 +13695,18 @@ closingObjectDeclarationArrayItemTag = new this.ClosingObjectDeclarationArrayIte
 	// closingObjectDeclarationArrayItemTag
 	null
 );
-									}
-									.toString()
-									.match(
-										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-									)[1] +
-									"\n//# sourceURL=http://rexjs/maps/declaration-array-object-item.js"
-								);
+								}
+								.toString()
+								.match(
+									/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+								)[1] +
+								"\n//# sourceURL=http://localhost:9090/source/map1/declaration-array-object-item.js"
+							);
 
 
 eval(
-									function(){
-										// 标记标签相关
+								function(){
+									// 标记标签相关
 !function(){
 
 this.LabelledExpression = function(GenerableExpression){
@@ -13779,18 +13843,18 @@ this.LabelColonTag = function(ColonTag, LabelledExpression, LabelledStatement){
 }.call(
 	this
 );
-									}
-									.toString()
-									.match(
-										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-									)[1] +
-									"\n//# sourceURL=http://rexjs/maps/label.js"
-								);
+								}
+								.toString()
+								.match(
+									/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+								)[1] +
+								"\n//# sourceURL=http://localhost:9090/source/map1/label.js"
+							);
 
 
 eval(
-									function(){
-										// 中断流相关
+								function(){
+									// 中断流相关
 !function(){
 
 this.TerminatedFlowExpression = function(GenerableExpression){
@@ -13945,18 +14009,18 @@ this.TerminatedFlowTag = function(TerminatedFlowExpression, TerminatedFlowStatem
 }.call(
 	this
 );
-									}
-									.toString()
-									.match(
-										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-									)[1] +
-									"\n//# sourceURL=http://rexjs/maps/terminated-flow.js"
-								);
+								}
+								.toString()
+								.match(
+									/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+								)[1] +
+								"\n//# sourceURL=http://localhost:9090/source/map1/terminated-flow.js"
+							);
 
 
 eval(
-									function(){
-										// 中断流标签子类相关
+								function(){
+									// 中断流标签子类相关
 !function(TerminatedFlowTag){
 
 this.ReturnTag = function(SCOPE_CLOSURE, visitor){
@@ -14017,18 +14081,18 @@ this.ReturnTag = function(SCOPE_CLOSURE, visitor){
 	this.TerminatedFlowTag,
 	this.ECMAScriptStatements
 );
-									}
-									.toString()
-									.match(
-										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-									)[1] +
-									"\n//# sourceURL=http://rexjs/maps/return.js"
-								);
+								}
+								.toString()
+								.match(
+									/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+								)[1] +
+								"\n//# sourceURL=http://localhost:9090/source/map1/return.js"
+							);
 
 
 eval(
-									function(){
-										// 中断流标签子类相关
+								function(){
+									// 中断流标签子类相关
 !function(){
 
 this.ThrowTag = function(TerminatedFlowTag){
@@ -14090,18 +14154,18 @@ this.ThrowContextLineTerminatorTag = function(IllegalLineTerminatorTag){
 }.call(
 	this
 );
-									}
-									.toString()
-									.match(
-										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-									)[1] +
-									"\n//# sourceURL=http://rexjs/maps/throw.js"
-								);
+								}
+								.toString()
+								.match(
+									/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+								)[1] +
+								"\n//# sourceURL=http://localhost:9090/source/map1/throw.js"
+							);
 
 
 eval(
-									function(){
-										// 迭代中断流类相关
+								function(){
+									// 迭代中断流类相关
 !function(TerminatedFlowExpression, TerminatedFlowStatement, SCOPE_CLOSURE){
 
 this.TerminatedBranchFlowExpression = function(emptyExpression, generateTo){
@@ -14359,18 +14423,18 @@ this.LabelledIdentifierTag = function(LabelTag, withoutAnyFlow){
 	this.TerminatedFlowStatement,
 	this.ECMAScriptStatements.SCOPE_CLOSURE
 );
-									}
-									.toString()
-									.match(
-										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-									)[1] +
-									"\n//# sourceURL=http://rexjs/maps/terminated-brach-flow.js"
-								);
+								}
+								.toString()
+								.match(
+									/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+								)[1] +
+								"\n//# sourceURL=http://localhost:9090/source/map1/terminated-brach-flow.js"
+							);
 
 
 eval(
-									function(){
-										// 迭代中断流子类相关
+								function(){
+									// 迭代中断流子类相关
 !function(TerminatedBranchFlowTag){
 
 this.BreakTag = function(){
@@ -14447,18 +14511,18 @@ this.ContinueTag = function(FLOW_CIRCULAR, checkLabelledStatement){
 	this,
 	this.TerminatedBranchFlowTag
 );
-									}
-									.toString()
-									.match(
-										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-									)[1] +
-									"\n//# sourceURL=http://rexjs/maps/break-continue.js"
-								);
+								}
+								.toString()
+								.match(
+									/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+								)[1] +
+								"\n//# sourceURL=http://localhost:9090/source/map1/break-continue.js"
+							);
 
 
 eval(
-									function(){
-										// if 语句相关
+								function(){
+									// if 语句相关
 !function(closingIfConditionTag, elseTag){
 
 this.IfExpression = function(ConditionalExpression){
@@ -14799,18 +14863,18 @@ elseTag = new this.ElseTag();
 	// elseTag
 	null
 );
-									}
-									.toString()
-									.match(
-										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-									)[1] +
-									"\n//# sourceURL=http://rexjs/maps/if.js"
-								);
+								}
+								.toString()
+								.match(
+									/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+								)[1] +
+								"\n//# sourceURL=http://localhost:9090/source/map1/if.js"
+							);
 
 
 eval(
-									function(){
-										// while 语句相关
+								function(){
+									// while 语句相关
 !function(closingWhileConditionTag){
 
 this.WhileExpression = function(ConditionalExpression){
@@ -15013,18 +15077,18 @@ closingWhileConditionTag = new this.ClosingWhileConditionTag();
 	// closingWhileConditionTag
 	null
 );
-									}
-									.toString()
-									.match(
-										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-									)[1] +
-									"\n//# sourceURL=http://rexjs/maps/while.js"
-								);
+								}
+								.toString()
+								.match(
+									/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+								)[1] +
+								"\n//# sourceURL=http://localhost:9090/source/map1/while.js"
+							);
 
 
 eval(
-									function(){
-										// do while 语句相关
+								function(){
+									// do while 语句相关
 !function(doWhileTag, closingDoWhileConditionTag){
 	
 this.DoExpression = function(ConditionalExpression){
@@ -15307,18 +15371,18 @@ closingDoWhileConditionTag = new this.ClosingDoWhileConditionTag();
 	// closingDoWhileConditionTag
 	null
 );
-									}
-									.toString()
-									.match(
-										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-									)[1] +
-									"\n//# sourceURL=http://rexjs/maps/do-while.js"
-								);
+								}
+								.toString()
+								.match(
+									/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+								)[1] +
+								"\n//# sourceURL=http://localhost:9090/source/map1/do-while.js"
+							);
 
 
 eval(
-									function(){
-										// for 语句相关
+								function(){
+									// for 语句相关
 !function(CompiledExpression){
 
 this.ForExpression = function(ConditionalExpression, compileOf, compileIteratorWithGenerator, compileWithGenerator){
@@ -15565,18 +15629,18 @@ this.ForTag = function(ForExpression){
 	this,
 	Rexjs.CompiledExpression
 );
-									}
-									.toString()
-									.match(
-										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-									)[1] +
-									"\n//# sourceURL=http://rexjs/maps/for.js"
-								);
+								}
+								.toString()
+								.match(
+									/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+								)[1] +
+								"\n//# sourceURL=http://localhost:9090/source/map1/for.js"
+							);
 
 
 eval(
-									function(){
-										// for 循环迭代符表达式相关
+								function(){
+									// for 循环迭代符表达式相关
 !function(){
 
 this.IterationStatement = function(BinaryStatement){
@@ -15722,18 +15786,18 @@ this.ForOfTag = function(IteratorTag, hasVariable){
 }.call(
 	this
 );
-									}
-									.toString()
-									.match(
-										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-									)[1] +
-									"\n//# sourceURL=http://rexjs/maps/for-iterator.js"
-								);
+								}
+								.toString()
+								.match(
+									/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+								)[1] +
+								"\n//# sourceURL=http://localhost:9090/source/map1/for-iterator.js"
+							);
 
 
 eval(
-									function(){
-										// for 循环条件表达式相关
+								function(){
+									// for 循环条件表达式相关
 !function(IdentifierExpression, VarExpression, CommaStatement, closingForConditionTag, forInitConditionItemSeparatorTag, forInTag, forOfTag, forInitConditionSeparatorTag, forLogicConditionSeparatorTag, getOpeningConditionTag){
 
 this.ForConditionInnerStatement = function(){
@@ -16250,18 +16314,18 @@ forLogicConditionSeparatorTag = new this.ForLogicConditionSeparatorTag();
 		return statement.target.target.expression.condition.opening.tag;
 	}
 );
-									}
-									.toString()
-									.match(
-										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-									)[1] +
-									"\n//# sourceURL=http://rexjs/maps/for-condition.js"
-								);
+								}
+								.toString()
+								.match(
+									/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+								)[1] +
+								"\n//# sourceURL=http://localhost:9090/source/map1/for-condition.js"
+							);
 
 
 eval(
-									function(){
-										!function(UnaryExpression, CallExpression, FunctionConvertorExpression){
+								function(){
+									!function(UnaryExpression, CallExpression, FunctionConvertorExpression){
 
 this.TryFunctionExpression = function(extractTo){
 	/**
@@ -16477,18 +16541,18 @@ this.TryFunctionTag = function(ExecTag, TryFunctionExpression, TryFunctionStatem
 	// FunctionConvertorExpression
 	null
 );
-									}
-									.toString()
-									.match(
-										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-									)[1] +
-									"\n//# sourceURL=http://rexjs/maps/try-function.js"
-								);
+								}
+								.toString()
+								.match(
+									/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+								)[1] +
+								"\n//# sourceURL=http://localhost:9090/source/map1/try-function.js"
+							);
 
 
 eval(
-									function(){
-										// try catch 语句相关
+								function(){
+									// try catch 语句相关
 !function(TryFunctionExpression, TryFunctionStatement, tryFunctionTag, catchTag, finallyTag){
 	
 this.TryExpression = function(GenerableExpression){
@@ -17006,18 +17070,18 @@ finallyTag = new this.FinallyTag();
 	// finallyTag
 	null
 );
-									}
-									.toString()
-									.match(
-										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-									)[1] +
-									"\n//# sourceURL=http://rexjs/maps/try-catch.js"
-								);
+								}
+								.toString()
+								.match(
+									/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+								)[1] +
+								"\n//# sourceURL=http://localhost:9090/source/map1/try-catch.js"
+							);
 
 
 eval(
-									function(){
-										// switch 语句相关
+								function(){
+									// switch 语句相关
 !function(OpeningBlockTag, ClosingBlockTag, closingSwitchConditionTag, closingSwitchBodyTag, generateCase){
 
 this.SwitchExpression = function(ConditionalExpression, generateBody){
@@ -17487,18 +17551,18 @@ closingSwitchBodyTag = new this.ClosingSwitchBodyTag();
 		switchExpression.negativeIndex = generator.nextIndex();
 	}
 );
-									}
-									.toString()
-									.match(
-										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-									)[1] +
-									"\n//# sourceURL=http://rexjs/maps/switch.js"
-								);
+								}
+								.toString()
+								.match(
+									/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+								)[1] +
+								"\n//# sourceURL=http://localhost:9090/source/map1/switch.js"
+							);
 
 
 eval(
-									function(){
-										// case 表达式相关
+								function(){
+									// case 表达式相关
 !function(caseTag, defaultTag, caseValueSeparatorTag){
 
 this.CaseExpression = function(){
@@ -17892,18 +17956,18 @@ caseValueSeparatorTag = new this.CaseValueSeparatorTag();
 	// caseValueSeparatorTag
 	null
 );
-									}
-									.toString()
-									.match(
-										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-									)[1] +
-									"\n//# sourceURL=http://rexjs/maps/case.js"
-								);
+								}
+								.toString()
+								.match(
+									/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+								)[1] +
+								"\n//# sourceURL=http://localhost:9090/source/map1/case.js"
+							);
 
 
 eval(
-									function(){
-										// yield 表达式相关
+								function(){
+									// yield 表达式相关
 !function(TerminatedFlowExpression, SingleStatement, ReturnTag){
 
 this.YieldTag = function(visitor){
@@ -17977,18 +18041,18 @@ this.YieldTag = function(visitor){
 	this.SingleStatement,
 	this.ReturnTag
 );
-									}
-									.toString()
-									.match(
-										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-									)[1] +
-									"\n//# sourceURL=http://rexjs/maps/yield.js"
-								);
+								}
+								.toString()
+								.match(
+									/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+								)[1] +
+								"\n//# sourceURL=http://localhost:9090/source/map1/yield.js"
+							);
 
 
 eval(
-									function(){
-										// 模板相关
+								function(){
+									// 模板相关
 !function(closingTemplateTag){
 
 this.TemplateExpression = function(extractTo, compileItem){
@@ -18174,18 +18238,18 @@ closingTemplateTag = new this.ClosingTemplateTag();
 	// closingTemplateTag
 	null
 );
-									}
-									.toString()
-									.match(
-										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-									)[1] +
-									"\n//# sourceURL=http://rexjs/maps/template.js"
-								);
+								}
+								.toString()
+								.match(
+									/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+								)[1] +
+								"\n//# sourceURL=http://localhost:9090/source/map1/template.js"
+							);
 
 
 eval(
-									function(){
-										// 模板内容标签相关
+								function(){
+									// 模板内容标签相关
 !function(LineTerminatorTag, getUnicode){
 
 this.TemplateUnicodeExpression = function(){
@@ -18341,18 +18405,18 @@ this.TemplateQouteTag = function(TemplateUnicodeExpression, UNICODE){
 		return unicode;
 	}
 );
-									}
-									.toString()
-									.match(
-										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-									)[1] +
-									"\n//# sourceURL=http://rexjs/maps/template-content.js"
-								);
+								}
+								.toString()
+								.match(
+									/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+								)[1] +
+								"\n//# sourceURL=http://localhost:9090/source/map1/template-content.js"
+							);
 
 
 eval(
-									function(){
-										// 模板占位符（模板参数）标签相关
+								function(){
+									// 模板占位符（模板参数）标签相关
 !function(closingPlaceHolderTag){
 
 this.PlaceHolderExpression = function(){
@@ -18538,18 +18602,18 @@ closingPlaceHolderTag = new this.ClosingPlaceHolderTag();
 	// closingPlaceHolderTag
 	null
 );
-									}
-									.toString()
-									.match(
-										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-									)[1] +
-									"\n//# sourceURL=http://rexjs/maps/template-placeholder.js"
-								);
+								}
+								.toString()
+								.match(
+									/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+								)[1] +
+								"\n//# sourceURL=http://localhost:9090/source/map1/template-placeholder.js"
+							);
 
 
 eval(
-									function(){
-										// 模板参数相关
+								function(){
+									// 模板参数相关
 !function(TemplateExpression, PlaceHolderExpression, OpeningTemplateTag){
 
 this.TemplateParameterExpression = function(extractTo, compileInner){
@@ -18672,18 +18736,18 @@ this.OpeningTemplateParameterTag = function(TemplateParameterExpression, visitor
 	this.PlaceHolderExpression,
 	this.OpeningTemplateTag
 );
-									}
-									.toString()
-									.match(
-										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-									)[1] +
-									"\n//# sourceURL=http://rexjs/maps/template-parameter.js"
-								);
+								}
+								.toString()
+								.match(
+									/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+								)[1] +
+								"\n//# sourceURL=http://localhost:9090/source/map1/template-parameter.js"
+							);
 
 
 eval(
-									function(){
-										// 静态标签相关
+								function(){
+									// 静态标签相关
 !function(){
 
 this.StaticTag = function(){
@@ -18748,18 +18812,18 @@ this.StaticModifierTag = function(StaticTag, IdentifierPropertyNameExpression){
 }.call(
 	this
 );
-									}
-									.toString()
-									.match(
-										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-									)[1] +
-									"\n//# sourceURL=http://rexjs/maps/static.js"
-								);
+								}
+								.toString()
+								.match(
+									/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+								)[1] +
+								"\n//# sourceURL=http://localhost:9090/source/map1/static.js"
+							);
 
 
 eval(
-									function(){
-										// 一些类的辅助表达式相关
+								function(){
+									// 一些类的辅助表达式相关
 !function(PropertyExpression){
 
 this.ExtendsExpression = function(){
@@ -18923,18 +18987,18 @@ this.ClassPropertyExpression = function(extractTo, requestVariableOf){
 	this,
 	this.PropertyExpression
 );
-									}
-									.toString()
-									.match(
-										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-									)[1] +
-									"\n//# sourceURL=http://rexjs/maps/class-helper-expression.js"
-								);
+								}
+								.toString()
+								.match(
+									/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+								)[1] +
+								"\n//# sourceURL=http://localhost:9090/source/map1/class-helper-expression.js"
+							);
 
 
 eval(
-									function(){
-										// 类标签相关
+								function(){
+									// 类标签相关
 !function(){
 
 this.ClassExpression = function(DefaultExtendsExpression){
@@ -19102,18 +19166,18 @@ this.ClassNameTag = function(VariableDeclarationTag){
 }.call(
 	this
 );
-									}
-									.toString()
-									.match(
-										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-									)[1] +
-									"\n//# sourceURL=http://rexjs/maps/class.js"
-								);
+								}
+								.toString()
+								.match(
+									/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+								)[1] +
+								"\n//# sourceURL=http://localhost:9090/source/map1/class.js"
+							);
 
 
 eval(
-									function(){
-										// 类声明标签相关
+								function(){
+									// 类声明标签相关
 !function(ClassExpression, ClassNameTag){
 
 this.ClassDeclarationExpression = function(extractTo){
@@ -19265,18 +19329,18 @@ this.ClassVariableTag = function(visitor){
 	this.ClassExpression,
 	this.ClassNameTag
 );
-									}
-									.toString()
-									.match(
-										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-									)[1] +
-									"\n//# sourceURL=http://rexjs/maps/class-declaration.js"
-								);
+								}
+								.toString()
+								.match(
+									/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+								)[1] +
+								"\n//# sourceURL=http://localhost:9090/source/map1/class-declaration.js"
+							);
 
 
 eval(
-									function(){
-										// 构造函数标签相关
+								function(){
+									// 构造函数标签相关
 !function(IdentifierPropertyNameExpression, ShorthandMethodBodyStatements, OpeningShorthandMethodArgumentsTag, ClosingShorthandMethodBodyTag, PHASE_NONE, PHASE_WAITING_CALL, PHASE_CALLED, closingConstructorArgumentsTag, closingConstructorBodyTag){
 
 this.ConstructorNameExpression = function(){
@@ -19719,18 +19783,18 @@ closingConstructorBodyTag = new this.ClosingConstructorBodyTag();
 	// closingConstructorBodyTag
 	null
 );
-									}
-									.toString()
-									.match(
-										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-									)[1] +
-									"\n//# sourceURL=http://rexjs/maps/class-constructor.js"
-								);
+								}
+								.toString()
+								.match(
+									/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+								)[1] +
+								"\n//# sourceURL=http://localhost:9090/source/map1/class-constructor.js"
+							);
 
 
 eval(
-									function(){
-										// 类的属性名相关
+								function(){
+									// 类的属性名相关
 (function(closingClassComputedPropertyNameTag, require){
 
 this.ClassIdentifierPropertyNameTag = function(IdentifierPropertyNameTag){
@@ -19906,18 +19970,18 @@ closingClassComputedPropertyNameTag = new this.ClosingClassComputedPropertyNameT
 		return tagsMap.classIdentifierPropertyNameContextTags;
 	}
 ));
-									}
-									.toString()
-									.match(
-										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-									)[1] +
-									"\n//# sourceURL=http://rexjs/maps/class-property-name.js"
-								);
+								}
+								.toString()
+								.match(
+									/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+								)[1] +
+								"\n//# sourceURL=http://localhost:9090/source/map1/class-property-name.js"
+							);
 
 
 eval(
-									function(){
-										// 类的属性初始化表达式相关
+								function(){
+									// 类的属性初始化表达式相关
 (function(){
 
 this.ClassPropertyInitializerExpression = function(PropertyInitializerExpression){
@@ -20001,18 +20065,18 @@ this.ClassPropertyInitializerTag = function(PropertyInitializerTag, ClassPropert
 }.call(
 	this
 ));
-									}
-									.toString()
-									.match(
-										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-									)[1] +
-									"\n//# sourceURL=http://rexjs/maps/class-property-initializer.js"
-								);
+								}
+								.toString()
+								.match(
+									/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+								)[1] +
+								"\n//# sourceURL=http://localhost:9090/source/map1/class-property-initializer.js"
+							);
 
 
 eval(
-									function(){
-										// 类属性访问器标签相关
+								function(){
+									// 类属性访问器标签相关
 !function(require){
 
 this.GetDescriptorTag = function(GetTag){
@@ -20060,18 +20124,18 @@ this.SetDescriptorTag = function(SetTag){
 		return tagsMap.accessorDescriptorContextTags;
 	}
 );
-									}
-									.toString()
-									.match(
-										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-									)[1] +
-									"\n//# sourceURL=http://rexjs/maps/class-accessor.js"
-								);
+								}
+								.toString()
+								.match(
+									/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+								)[1] +
+								"\n//# sourceURL=http://localhost:9090/source/map1/class-accessor.js"
+							);
 
 
 eval(
-									function(){
-										// 类主体标签相关
+								function(){
+									// 类主体标签相关
 !function(DefaultConstructorPropertyExpression, BinaryNumberTag, OctalNumberTag, classPropertySeparatorTag, closingClassBodyTag){
 
 this.ClassBodyExpression = function(ObjectExpression, extractTo, compileItem){
@@ -20565,18 +20629,18 @@ closingClassBodyTag = new this.ClosingClassBodyTag();
 	// closingClassBodyTag
 	null
 );
-									}
-									.toString()
-									.match(
-										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-									)[1] +
-									"\n//# sourceURL=http://rexjs/maps/class-body.js"
-								);
+								}
+								.toString()
+								.match(
+									/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+								)[1] +
+								"\n//# sourceURL=http://localhost:9090/source/map1/class-body.js"
+							);
 
 
 eval(
-									function(){
-										// 继承标签相关
+								function(){
+									// 继承标签相关
 !function(){
 
 this.ExtendsStatement = function(){
@@ -20704,18 +20768,18 @@ this.ExtendsTag = function(ExtendsExpression, ExtendsStatement, openingClassBody
 }.call(
 	this
 );
-									}
-									.toString()
-									.match(
-										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-									)[1] +
-									"\n//# sourceURL=http://rexjs/maps/class-extends.js"
-								);
+								}
+								.toString()
+								.match(
+									/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+								)[1] +
+								"\n//# sourceURL=http://localhost:9090/source/map1/class-extends.js"
+							);
 
 
 eval(
-									function(){
-										// 父类属性相关
+								function(){
+									// 父类属性相关
 !function(AccessorExpression, BracketAccessorExpression, OpeningBracketAccessorTag, DotAccessorTag, closingSuperBracketAccessorTag, compileSuperAccessor){
 
 this.SuperBracketAccessorExpression = function(extractTo){
@@ -20993,18 +21057,18 @@ closingSuperBracketAccessorTag = new this.ClosingSuperBracketAccessorTag();
 		contentBuilder.appendString("))");
 	}
 );
-									}
-									.toString()
-									.match(
-										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-									)[1] +
-									"\n//# sourceURL=http://rexjs/maps/super-property.js"
-								);
+								}
+								.toString()
+								.match(
+									/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+								)[1] +
+								"\n//# sourceURL=http://localhost:9090/source/map1/super-property.js"
+							);
 
 
 eval(
-									function(){
-										// 父类属性赋值相关
+								function(){
+									// 父类属性赋值相关
 !function(UnaryExpression, PostfixUnaryExpression, BinaryExpression, UnaryAssignmentStatement, SUPER_PROPERTY_POSTFIX_UNARY_ASSIGNMENT, extractTo, getBoundPostfixExpression, compileHead){
 
 this.SuperPropertyBasicAssignmentExpression = function(){
@@ -21393,18 +21457,18 @@ this.SuperPropertyPostfixDecrementTag = function(PostfixDecrementTag){
 		);
 	}
 );
-									}
-									.toString()
-									.match(
-										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-									)[1] +
-									"\n//# sourceURL=http://rexjs/maps/super-property-assignment.js"
-								);
+								}
+								.toString()
+								.match(
+									/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+								)[1] +
+								"\n//# sourceURL=http://localhost:9090/source/map1/super-property-assignment.js"
+							);
 
 
 eval(
-									function(){
-										// 父类调用相关
+								function(){
+									// 父类调用相关
 !function(CallExpression, OpeningCallTag){
 
 this.SuperCallExpression = function(extractTo){
@@ -21609,18 +21673,18 @@ this.OpeningSuperMethodCallTag = function(SuperMethodCallExpression){
 	this.CallExpression,
 	this.OpeningCallTag
 );
-									}
-									.toString()
-									.match(
-										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-									)[1] +
-									"\n//# sourceURL=http://rexjs/maps/super-call.js"
-								);
+								}
+								.toString()
+								.match(
+									/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+								)[1] +
+								"\n//# sourceURL=http://localhost:9090/source/map1/super-call.js"
+							);
 
 
 eval(
-									function(){
-										// 父类相关
+								function(){
+									// 父类相关
 !function(){
 
 this.SuperExpression = function(LiteralExpression){
@@ -21797,18 +21861,18 @@ this.SuperTag = function(SuperExpression, SuperStatement, UnaryAssignmentStateme
 }.call(
 	this
 );
-									}
-									.toString()
-									.match(
-										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-									)[1] +
-									"\n//# sourceURL=http://rexjs/maps/super.js"
-								);
+								}
+								.toString()
+								.match(
+									/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+								)[1] +
+								"\n//# sourceURL=http://localhost:9090/source/map1/super.js"
+							);
 
 
 eval(
-									function(){
-										// import 关键字相关
+								function(){
+									// import 关键字相关
 !function(){
 
 this.ImportExpression = function(compileMember){
@@ -22052,18 +22116,18 @@ this.ModuleNameTag = function(StringTag){
 }.call(
 	this
 );
-									}
-									.toString()
-									.match(
-										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-									)[1] +
-									"\n//# sourceURL=http://rexjs/maps/import.js"
-								);
+								}
+								.toString()
+								.match(
+									/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+								)[1] +
+								"\n//# sourceURL=http://localhost:9090/source/map1/import.js"
+							);
 
 
 eval(
-									function(){
-										// 模块多成员表达式相关
+								function(){
+									// 模块多成员表达式相关
 !function(multipleMembersSeparatorTag, closingMultipleMembersTag){
 
 this.MultipleMembersExpression = function(importMember, exportMember, exportMemberAs){
@@ -22565,18 +22629,18 @@ closingMultipleMembersTag = new this.ClosingMultipleMembersTag();
 	// closingMultipleMembersTag
 	null
 );
-									}
-									.toString()
-									.match(
-										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-									)[1] +
-									"\n//# sourceURL=http://rexjs/maps/import-multiple.js"
-								);
+								}
+								.toString()
+								.match(
+									/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+								)[1] +
+								"\n//# sourceURL=http://localhost:9090/source/map1/import-multiple.js"
+							);
 
 
 eval(
-									function(){
-										// 模块默认成员标签相关
+								function(){
+									// 模块默认成员标签相关
 !function(){
 
 this.DefaultMemberExpression = function(MemberExpression){
@@ -22658,18 +22722,18 @@ this.DefaultMemberTag = function(MemberVariableTag, DefaultMemberExpression){
 }.call(
 	this
 );
-									}
-									.toString()
-									.match(
-										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-									)[1] +
-									"\n//# sourceURL=http://rexjs/maps/import-default.js"
-								);
+								}
+								.toString()
+								.match(
+									/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+								)[1] +
+								"\n//# sourceURL=http://localhost:9090/source/map1/import-default.js"
+							);
 
 
 eval(
-									function(){
-										// 所有模块成员表达式相关
+								function(){
+									// 所有模块成员表达式相关
 !function(){
 
 this.AllMembersExpression = function(MemberAliasExpression){
@@ -22822,18 +22886,18 @@ this.ModuleVariableTag = function(ConstVariableTag){
 }.call(
 	this
 );
-									}
-									.toString()
-									.match(
-										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-									)[1] +
-									"\n//# sourceURL=http://rexjs/maps/import-all.js"
-								);
+								}
+								.toString()
+								.match(
+									/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+								)[1] +
+								"\n//# sourceURL=http://localhost:9090/source/map1/import-all.js"
+							);
 
 
 eval(
-									function(){
-										// export 标签相关
+								function(){
+									// export 标签相关
 !function(VarExpression, FunctionDeclarationExpression, ClassDeclarationExpression, exportVariable){
 
 this.ExportExpression = function(compile){
@@ -23029,18 +23093,18 @@ this.ExportTag = function(ModuleTag, ExportExpression, ExportStatement, fromTag)
 		contentBuilder.appendString(str);
 	}
 );
-									}
-									.toString()
-									.match(
-										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-									)[1] +
-									"\n//# sourceURL=http://rexjs/maps/export.js"
-								);
+								}
+								.toString()
+								.match(
+									/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+								)[1] +
+								"\n//# sourceURL=http://localhost:9090/source/map1/export.js"
+							);
 
 
 eval(
-									function(){
-										// export default 标签相关
+								function(){
+									// export default 标签相关
 !function(){
 
 this.DefaultExportExpression = function(ExportExpression){
@@ -23162,18 +23226,18 @@ this.DefaultExportTag = function(DefaultTag, DefaultExportExpression, DefaultExp
 }.call(
 	this
 );
-									}
-									.toString()
-									.match(
-										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-									)[1] +
-									"\n//# sourceURL=http://rexjs/maps/export-default.js"
-								);
+								}
+								.toString()
+								.match(
+									/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+								)[1] +
+								"\n//# sourceURL=http://localhost:9090/source/map1/export-default.js"
+							);
 
 
 eval(
-									function(){
-										// 模块输出多成员表达式相关
+								function(){
+									// 模块输出多成员表达式相关
 !function(OpeningMultipleMembersTag, ClosingMultipleMembersTag, closingExportMultipleMembersTag){
 
 this.PseudoImportExpression = function(ImportExpression){
@@ -23307,18 +23371,18 @@ closingExportMultipleMembersTag = new this.ClosingExportMultipleMembersTag();
 	// closingExportMultipleMembersTag
 	null
 );
-									}
-									.toString()
-									.match(
-										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-									)[1] +
-									"\n//# sourceURL=http://rexjs/maps/export-multiple.js"
-								);
+								}
+								.toString()
+								.match(
+									/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+								)[1] +
+								"\n//# sourceURL=http://localhost:9090/source/map1/export-multiple.js"
+							);
 
 
 eval(
-									function(){
-										// 输出所有成员符号标签相关
+								function(){
+									// 输出所有成员符号标签相关
 !function(){
 
 this.ExportAllMembersExpression = function(){
@@ -23398,18 +23462,18 @@ this.ExportAllMembersTag = function(AllMembersTag, ExportAllMembersExpression){
 }.call(
 	this
 );
-									}
-									.toString()
-									.match(
-										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-									)[1] +
-									"\n//# sourceURL=http://rexjs/maps/export-all.js"
-								);
+								}
+								.toString()
+								.match(
+									/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+								)[1] +
+								"\n//# sourceURL=http://localhost:9090/source/map1/export-all.js"
+							);
 
 
 eval(
-									function(){
-										// 解构赋值表达式相关
+								function(){
+									// 解构赋值表达式相关
 !function(BinaryExpression, ArrayExpression, ObjectExpression, ObjectDestructuringExpression, BasicAssignmentTag){
 
 this.DestructuringAssignmentExpression = function(extractTo, extractRight){
@@ -23570,18 +23634,18 @@ this.DestructuringAssignmentTag = function(DestructuringAssignmentExpression, vi
 	this.ObjectDestructuringExpression,
 	this.BasicAssignmentTag
 );
-									}
-									.toString()
-									.match(
-										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-									)[1] +
-									"\n//# sourceURL=http://rexjs/maps/destructuring-assginment.js"
-								);
+								}
+								.toString()
+								.match(
+									/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+								)[1] +
+								"\n//# sourceURL=http://localhost:9090/source/map1/destructuring-assginment.js"
+							);
 
 
 eval(
-									function(){
-										// 函数参数解构赋值相关
+								function(){
+									// 函数参数解构赋值相关
 !function(
 	ArgumentDestructuringExpression, ArgumentsDestructuringStatements, OpeningDeclarationObjectTag, OpeningDeclarationArrayTag, ClosingDeclarationObjectTag, ClosingDeclarationArrayTag,
 	varTag, closingArgumentObjectDestructuringTag, closingArgumentArrayDestructuringTag,
@@ -23937,18 +24001,18 @@ closingArgumentArrayDestructuringTag = new this.ClosingArgumentArrayDestructurin
 	// closingTagVisitor
 	null
 );
-									}
-									.toString()
-									.match(
-										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-									)[1] +
-									"\n//# sourceURL=http://rexjs/maps/argument-destructuring.js"
-								);
+								}
+								.toString()
+								.match(
+									/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+								)[1] +
+								"\n//# sourceURL=http://localhost:9090/source/map1/argument-destructuring.js"
+							);
 
 
 eval(
-									function(){
-										// 分组小括号标签相关
+								function(){
+									// 分组小括号标签相关
 !function(IdentifierExpression, ArgumentExpression, DefaultArgumentExpression, RestArgumentExpression, RestTag, groupingSeparatorTag, closingGroupingTag, collectTo){
 
 this.GroupingExpression = function(){
@@ -24467,18 +24531,18 @@ closingGroupingTag = new this.ClosingGroupingTag();
 	null,
 	this.ArgumentNameTag.prototype.collectTo
 );
-									}
-									.toString()
-									.match(
-										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-									)[1] +
-									"\n//# sourceURL=http://rexjs/maps/grouping.js"
-								);
+								}
+								.toString()
+								.match(
+									/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+								)[1] +
+								"\n//# sourceURL=http://localhost:9090/source/map1/grouping.js"
+							);
 
 
 eval(
-									function(){
-										// JSX 基本相关
+								function(){
+									// JSX 基本相关
 !function(selfClosingJSXBackslashTag, closingJSXElementTag, closingJSXMatchedElementTag){
 
 this.JSXExpression = function(){
@@ -25177,18 +25241,18 @@ closingJSXMatchedElementTag = new this.ClosingJSXMatchedElementTag();
 	// closingJSXMatchedElementTag
 	null
 );
-									}
-									.toString()
-									.match(
-										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-									)[1] +
-									"\n//# sourceURL=http://rexjs/maps/jsx.js"
-								);
+								}
+								.toString()
+								.match(
+									/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+								)[1] +
+								"\n//# sourceURL=http://localhost:9090/source/map1/jsx.js"
+							);
 
 
 eval(
-									function(){
-										// JSX 类型名称相关
+								function(){
+									// JSX 类型名称相关
 !function(DotAccessorTag, PropertyNameTag){
 
 this.JSXMemberAccessorStatement = function(){
@@ -25407,18 +25471,18 @@ this.JSXPropertyNameTag = function(visitor){
 	this.DotAccessorTag,
 	this.PropertyNameTag
 );
-									}
-									.toString()
-									.match(
-										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-									)[1] +
-									"\n//# sourceURL=http://rexjs/maps/jsx-type.js"
-								);
+								}
+								.toString()
+								.match(
+									/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+								)[1] +
+								"\n//# sourceURL=http://localhost:9090/source/map1/jsx-type.js"
+							);
 
 
 eval(
-									function(){
-										// JSX 占位符（参数）相关
+								function(){
+									// JSX 占位符（参数）相关
 !function(closingJSXPlaceHolderTag){
 
 this.JSXPlaceHolderExpression = function(extractTo){
@@ -25638,18 +25702,18 @@ closingJSXPlaceHolderTag = new this.ClosingJSXPlaceHolderTag();
 	// closingJSXPlaceHolderTag
 	null
 );
-									}
-									.toString()
-									.match(
-										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-									)[1] +
-									"\n//# sourceURL=http://rexjs/maps/jsx-placeholder.js"
-								);
+								}
+								.toString()
+								.match(
+									/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+								)[1] +
+								"\n//# sourceURL=http://localhost:9090/source/map1/jsx-placeholder.js"
+							);
 
 
 eval(
-									function(){
-										// JSX 属性相关
+								function(){
+									// JSX 属性相关
 !function(JSXPlaceHolderExpression, closingJSXAttributePlaceHolderTag, closingJSXSpreadPlaceHolderTag){
 
 this.JSXAttributeExpression = function(CompiledExpression){
@@ -26152,18 +26216,18 @@ closingJSXSpreadPlaceHolderTag = new this.ClosingJSXSpreadPlaceHolderTag();
 	// closingJSXSpreadPlaceHolderTag
 	null
 );
-									}
-									.toString()
-									.match(
-										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-									)[1] +
-									"\n//# sourceURL=http://rexjs/maps/jsx-attribute.js"
-								);
+								}
+								.toString()
+								.match(
+									/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+								)[1] +
+								"\n//# sourceURL=http://localhost:9090/source/map1/jsx-attribute.js"
+							);
 
 
 eval(
-									function(){
-										// JSX 子节点相关
+								function(){
+									// JSX 子节点相关
 !function(LineTerminatorTag){
 
 this.JSXTextExpression = function(QOUTE_REGEXP){
@@ -26336,18 +26400,18 @@ this.JSXLineTerminatorTag = function(JSXLineTerminatorExpression, visitor){
 	this,
 	Rexjs.LineTerminatorTag
 );
-									}
-									.toString()
-									.match(
-										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-									)[1] +
-									"\n//# sourceURL=http://rexjs/maps/jsx-children.js"
-								);
+								}
+								.toString()
+								.match(
+									/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+								)[1] +
+								"\n//# sourceURL=http://localhost:9090/source/map1/jsx-children.js"
+							);
 
 
 eval(
-									function(){
-										// 辅助性的标签列表相关
+								function(){
+									// 辅助性的标签列表相关
 !function(SyntaxTags){
 
 this.OnlyStatementEndTags = function(LastStatementEndTag, StatementBreakTag, StatementEndTag){
@@ -26376,18 +26440,18 @@ this.OnlyStatementEndTags = function(LastStatementEndTag, StatementBreakTag, Sta
 	this,
 	Rexjs.SyntaxTags
 );
-									}
-									.toString()
-									.match(
-										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-									)[1] +
-									"\n//# sourceURL=http://rexjs/maps/tags-helper.js"
-								);
+								}
+								.toString()
+								.match(
+									/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+								)[1] +
+								"\n//# sourceURL=http://localhost:9090/source/map1/tags-helper.js"
+							);
 
 
 eval(
-									function(){
-										// ECMAScript 标签列表相关
+								function(){
+									// ECMAScript 标签列表相关
 !function(){
 
 this.ECMAScriptTags = function(DefaultTags, list){
@@ -26510,18 +26574,18 @@ this.ECMAScriptTags = function(DefaultTags, list){
 }.call(
 	this
 );
-									}
-									.toString()
-									.match(
-										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-									)[1] +
-									"\n//# sourceURL=http://rexjs/maps/ecmaScript-tags.js"
-								);
+								}
+								.toString()
+								.match(
+									/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+								)[1] +
+								"\n//# sourceURL=http://localhost:9090/source/map1/ecmaScript-tags.js"
+							);
 
 
 eval(
-									function(){
-										// 基类标签列表相关
+								function(){
+									// 基类标签列表相关
 !function(ECMAScriptTags, OnlyStatementEndTags){
 
 this.ExpressionTags = function(list){
@@ -26775,18 +26839,18 @@ this.IllegalTags = function(){
 	this.ECMAScriptTags,
 	this.OnlyStatementEndTags
 );
-									}
-									.toString()
-									.match(
-										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-									)[1] +
-									"\n//# sourceURL=http://rexjs/maps/tags-base.js"
-								);
+								}
+								.toString()
+								.match(
+									/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+								)[1] +
+								"\n//# sourceURL=http://localhost:9090/source/map1/tags-base.js"
+							);
 
 
 eval(
-									function(){
-										// 其他标签列表
+								function(){
+									// 其他标签列表
 !function(ECMAScriptTags, ExpressionTags, ExpressionContextTags, MistakableTags, StatementTags, StatementEndTags, IllegalTags){
 
 this.ArgumentNameContextTags = function(ArgumentAssignmentTag){
@@ -29072,18 +29136,18 @@ this.WhileConditionTags = function(OpeningWhileConditionTag){
 	this.StatementEndTags,
 	this.IllegalTags
 );
-									}
-									.toString()
-									.match(
-										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-									)[1] +
-									"\n//# sourceURL=http://rexjs/maps/tags-others.js"
-								);
+								}
+								.toString()
+								.match(
+									/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+								)[1] +
+								"\n//# sourceURL=http://localhost:9090/source/map1/tags-others.js"
+							);
 
 
 eval(
-									function(){
-										// ECMAScript 解析器相关
+								function(){
+									// ECMAScript 解析器相关
 !function(SyntaxParser, ECMAScriptTags, TAGS_NAME_REGEXP){
 
 this.ECMAScriptTagsMap = function(SyntaxTagsMap, dataArray){
@@ -29291,13 +29355,13 @@ this.ECMAScriptParser = function(SourceBuilder, MappingBuilder, ECMAScriptTagsMa
 	// TAGS_NAME_REGEXP
 	/^([A-Z]+)([A-Z][^A-Z].*)$/
 );
-									}
-									.toString()
-									.match(
-										/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-									)[1] +
-									"\n//# sourceURL=http://rexjs/maps/ecmaScript-parser.js"
-								);
+								}
+								.toString()
+								.match(
+									/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+								)[1] +
+								"\n//# sourceURL=http://localhost:9090/source/map1/ecmaScript-parser.js"
+							);
 
 
 Rexjs.static(this);
@@ -29357,3 +29421,4 @@ Rexjs.static(this);
 		)
 	}
 );
+ //# sourceURL=http://localhost:9090/source/rex-es.js

@@ -1,1 +1,0 @@
-[详见](http://rexjs.org/#!/book/theory/version.md)

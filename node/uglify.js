@@ -1,11 +1,22 @@
 new function(PROJECT_PATH){
 
-this.Uglify = function(Source, Date, SOURCE_PATH, CHARSET, uglifyJs, fs, console, getConfig){
+this.Uglify = function(Source, Date, SOURCE_PATH, CHARSET, uglifyJs, fs, { version, repository, homepage }, console, getConfig){
 	return class Uglify {
 		constructor(){
-			var files, result, path = `${PROJECT_PATH}/dist`;
+			var files, result, info, path = `${PROJECT_PATH}/dist`;
 
-			console.log(`正在合并 maps 文件至：${SOURCE_PATH}/rex-es.js`)
+			console.log(`正在合并 maps 文件至：${SOURCE_PATH}/rex-es.js`);
+
+			info = `
+				/*
+				 * Rexjs
+				 * version: ${version}
+				 * homepage: ${homepage}
+				 * GitHub: ${repository.url}
+				 */
+			`;
+
+			info = info.replace(/(?:^\s*)|(?:[^\S\n]*$)/g, "").replace(/\n\s+/g, "\n ");
 
 			// 先生成 rex-es.js 文件
 			new Source().generate();
@@ -46,9 +57,9 @@ this.Uglify = function(Source, Date, SOURCE_PATH, CHARSET, uglifyJs, fs, console
 				}
 
 				// 写入非压缩文件
-				fs.writeFileSync(fullname + ".bundle.js", code, CHARSET);
+				fs.writeFileSync(fullname + ".bundle.js", info + code, CHARSET);
 				// 写入压缩文件
-				fs.writeFileSync(fullname + ".min.js", result.code, CHARSET);
+				fs.writeFileSync(fullname + ".min.js", info + result.code, CHARSET);
 			});
 		};
 	};
@@ -63,6 +74,7 @@ this.Uglify = function(Source, Date, SOURCE_PATH, CHARSET, uglifyJs, fs, console
 	require("uglify-js"),
 	// fs
 	require("fs"),
+	require("../package.json"),
 	console,
 	// getConfig
 	function(filename, files, minimize = false){

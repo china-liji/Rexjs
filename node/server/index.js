@@ -1,54 +1,29 @@
-new function(DevSource, fs, path, contentTypes, success, error){
+new function(fs, path, contentTypes, success, error){
 
-this.ParserHelper = function({ ECMAScriptParser, File, URL, Base64 }, Buffer, parser){
-	return class ParserHelper {
-		static init(){
-			// 绑定 base64 的编译方法
-			Base64.bindBtoa(function(string){
-				return Buffer.from(string).toString("base64");
-			});
-
-			ECMAScriptParser.sourceMaps = true;
-
-			parser = new ECMAScriptParser();
-		};
-
-		static parse(pathInfo, source){
-			parser.parse(
-				// 初始化文件
-				new File(
-					new URL(
-						"http://localhost:9090/" + path.format(pathInfo)
-					),
-					source
-				)
-			);
-
-			return parser.build();
-		};
-	};
-}(
-	// Rexjs
-	require("./rex-api.bundle.js"),
-	Buffer,
-	// parser
-	null
-);
-
-this.Server = function(ParserHelper, DIR_NAME, MAP_PATH, http, testPath, readFile){
+this.Server = function(DIR_NAME, EXT_REGEXP, http, readFile){
 	/**
 	 * 服务器
 	 */
 	return class Server {
-		constructor(){
-			let server = http.createServer((incomingMessage, serverResponse) => {
+		constructor(port, staticDirs){
+			let server, staticDirRegExp;
+
+			if(!Array.isArray(staticDirs)){
+				staticDirs = [staticDirs];
+			}
+
+			staticDirRegExp = new RegExp(`^(?:${staticDirs.join("|")})/`, "ig");
+			
+			server = http.createServer((incomingMessage, serverResponse) => {
 				let url = incomingMessage.url, pathInfo = path.parse(url);
 
 				// 设置编码
 				serverResponse.setHeader("charset", "utf8");
 
+				staticDirRegExp.lastIndex = EXT_REGEXP.lastIndex = 0;
+
 				// 如果不是可访问的文件类型
-				if(!testPath(pathInfo)){
+				if(!staticDirRegExp.test(url) || !EXT_REGEXP.test(pathInfo.ext)){
 					// 报错
 					error(serverResponse);
 					return;
@@ -67,19 +42,8 @@ this.Server = function(ParserHelper, DIR_NAME, MAP_PATH, http, testPath, readFil
 							return;
 						}
 
-						// 如果不 rex-es.js 文件
-						if(pathInfo.base !== "rex-es.js"){
-							// 直接读取文件并返回
-							readFile(fullPath, pathInfo, serverResponse);
-							return;
-						}
-
-						success(
-							serverResponse,
-							// 生成开发源码
-							new DevSource(`http://${incomingMessage.headers.host}/source`).generate(),
-							contentTypes[pathInfo.ext]
-						);
+						// 直接读取文件并返回
+						readFile(fullPath, pathInfo, serverResponse);
 					}
 				);
 			});
@@ -93,32 +57,22 @@ this.Server = function(ParserHelper, DIR_NAME, MAP_PATH, http, testPath, readFil
 				}
 			);
 
-			// 监听 9090 端口
+			// 监听端口
 			server.listen(
-				"9090",
+				port,
 				() => {
 					// 打印信息
-					console.log("服务器开启，端口：9090");
+					console.log(`服务器开启，端口：${port}`);
 				}
 			);
-
-			ParserHelper.init();
 		};
 	};
 }(
-	this.ParserHelper,
 	// DIR_NAME
-	path.resolve(__dirname, "../"),
-	// MAP_PATH
-	"/dev/map/",
+	path.resolve(__dirname, "../../"),
+	// EXT_REGEXP
+	/^(?:\.js|\.css|\.html|\.json|\.txt|\.xml|\.md)$/,
 	require("http"),
-	// testPath
-	(pathInfo) => {
-		return (
-			/^\/(?:dev|test|source)(?:\/|$)/.test(pathInfo.dir) &&
-			/^(?:\.js|\.css|\.html|\.json|\.txt|\.xml|\.md)$/.test(pathInfo.ext)
-		);
-	},
 	// readFile
 	(fullPath, pathInfo, serverResponse) => {
 		fs.readFile(
@@ -136,10 +90,9 @@ this.Server = function(ParserHelper, DIR_NAME, MAP_PATH, http, testPath, readFil
 	}
 );
 
-new this.Server();
+module.exports = this;
 
 }(
-	require("./index").DevSource,
 	require("fs"),
 	require("path"),
 	// contentTypes

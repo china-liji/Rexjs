@@ -27,9 +27,9 @@ this.Config = function(Lang, BROWSER_SUPPORT, GIT_HUB_USER_CONTENT, REXJS_FILE_S
 
 		static FASTER_IMAGE_URL = getImageURL("../image/compare.jpg");
 
-		static GIT_HUB = "https://github.com/china-liji/Rexjs";
+		static GIT_HUB = packageJson.repository.url;
 
-		static HOME_PAGE_URL = "https://china-liji.github.io/Rexjs.org";
+		static HOME_PAGE_URL = packageJson.homepage;
 
 		static GIT_HUB_USER_CONTENT = GIT_HUB_USER_CONTENT;
 

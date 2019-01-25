@@ -1,4 +1,4 @@
-new function({ Module, ModuleCache, ECMAScriptParser, JavaScriptCompiler, ModuleReady, URL, Base64 }, MAP_PATH, source, dev, baseURL, defaultList){
+new function(MAP_PATH, dev, defaultList){
 
 this.File = function(fs, DIR_NAME){
 	/**
@@ -10,7 +10,7 @@ this.File = function(fs, DIR_NAME){
 		 * @param {String} filepath - 文件路径
 		 */
 		static read(filepath){
-			return fs.readFileSync(filepath, "utf8");
+			return fs.readFileSync(`${DIR_NAME}/${filepath}`, "utf8");
 		};
 
 		/**
@@ -28,118 +28,37 @@ this.File = function(fs, DIR_NAME){
 	__dirname
 );
 
-this.SourceCompiler = function(defaultLoader){
-	return class SourceCompiler extends JavaScriptCompiler {
-		exec(module){
-			// 触发事件
-			source.contents.push(this.result);
-			module.load(defaultLoader);
-		}
-	};
-}(
-	// defaultLoader
-	() => {}
-);
-
-this.SourceModuleReady = function(SourceCompiler, File, Buffer, MAP_PATH){
-	return class SourceModuleReady extends ModuleReady {
-		constructor(){
-			super();
-
-			// 绑定 base64 的编译方法
-			Base64.bindBtoa(function(string){
-				return Buffer.from(string).toString("base64");
-			});
-
-			this.compilers[".js"] = SourceCompiler;
-		};
-
-		parseName(moduleName, _baseUrlString){
-			let url = new URL(
-				moduleName,
-				_baseUrlString ? new URL(_baseUrlString, baseURL).href : baseURL
-			);
-
-			// 如果文件名不存在
-			if(url.filename === ""){
-				let pathname = url.pathname;
-
-				return new URL(url.origin + (pathname ? pathname : "/index") + ".js" + url.search + url.hash);
-			}
-
-			return url;
-		};
-
-		/**
-		 * 读取文件内容
-		 * @param {ModuleName} moduleName - 文件路径
-		 * @param {Function} success - 成功回调
-		 * @param {Function} fail - 失败回调
-		 */
-		readFile(moduleName, success, fail){
-			try {
-				success(
-					File.read(`${MAP_PATH}/${moduleName.filename}`)
-				);
-			}
-			catch(e){
-				fail(e);
-			}
-		}	
-	};
-}(
-	this.SourceCompiler,
-	this.File,
-	Buffer,
-	// MAP_PATH
-	`${__dirname}/${MAP_PATH}`
-);
-
-this.Source = function(SourceModuleReady, File, EventEmitter, inited){
+this.Source = function(File, EventEmitter){
 	/**
 	 * 源码
 	 */
 	return class Source extends EventEmitter {
-		constructor(){
-			super();
-
-			this.contents = [];
-		};
-		
 		/**
 		 * 根据文件列表生成源码
+		 * @param {Array} list - 文件列表
 		 */
-		generate(_sourceMaps){
-			let content, contents = this.contents = [];
+		generate(list = defaultList){
+			var content = list.map((filename) => {
+					// 读取内容
+					var content = File.read(`${MAP_PATH}1/${filename}`);
 
-			if(!inited){
-				inited = true;
+					// 触发事件
+					this.emit("read", content, filename);
+					return content;
+				})
+				// 每个文件内容之间插入 3 个换行符，便于阅读代码
+				.join(
+					"\n".repeat(3)
+				);
 
-				new SourceModuleReady();
-			}
-
-			ModuleCache.disabled = true;
-			ECMAScriptParser.sourceMaps = !!_sourceMaps;
-			source = this;
-
-			new Module("./index.js");
-
-			source = null;
-
-			content = contents.join(
-				"\n".repeat(3)
-			);
-
+			// 写入文件
 			File.write("../source/rex-es.js", content);
 			return content;
 		};
 	};
 }(
-	this.SourceModuleReady,
 	this.File,
-	require("events").EventEmitter,
-	// inited
-	false
+	require("events").EventEmitter
 );
 
 this.DevSource = function(Source, File, FUNCTION_BODY_REGEXP_SOURCE){
@@ -147,73 +66,61 @@ this.DevSource = function(Source, File, FUNCTION_BODY_REGEXP_SOURCE){
 	 * 开发源码，将会根据文件生成 sourceURL
 	 */
 	return class DevSource extends Source {
-		constructor(sourceURL){
+		constructor(){
+			var contents = [];
+
 			super();
 
-			baseURL = `${sourceURL}/map`;
+			// 监听事件
+			this.on(
+				"read",
+				(content, filename) => {
+					switch(filename){
+						// 如果文件头部
+						case "file-header.js":
+							break;
+
+						// 如果是文件末部
+						case "file-footer.js":
+							break;
+
+						default:
+							// 添加 eval 用于生成 sourceURL
+							contents.push(
+								`eval(
+									function(){
+										${content}
+									}
+									.toString()
+									.match(
+										/${FUNCTION_BODY_REGEXP_SOURCE}/
+									)[1] +
+									"\\n//# sourceURL=http://rexjs/maps/${filename}"
+								);`
+							);
+							return;
+					}
+
+					contents.push(content);
+				}
+			);
+
+			this.contents = contents;
 		};
 
 		/**
 		 * 根据文件列表生成源码
 		 * @param {Array} list - 文件列表
 		 */
-		generate(){
-			let content;
+		generate(list = defaultList){
+			var content; 
 
 			// 生成文件
-			super.generate(true);
+			super.generate(list);
 
-			this.contents = this.contents.map((content) => {
-				return `eval(
-					function(){
-						${content}
-					}
-					.toString()
-					.match(
-						/${FUNCTION_BODY_REGEXP_SOURCE}/
-					)[1]
-				);`
-			});
-
-			defaultList.map((filename) => {
-				// 读取内容
-				let content = File.read(`${__dirname}/${MAP_PATH}1/${filename}`);
-
-				switch(filename){
-					// 如果文件头部
-					case "file-header.js":
-						break;
-
-					// 如果是文件末部
-					case "file-footer.js":
-						break;
-
-					default:
-						// 添加 eval 用于生成 sourceURL
-						content = (
-							`eval(
-								function(){
-									${content}
-								}
-								.toString()
-								.match(
-									/${FUNCTION_BODY_REGEXP_SOURCE}/
-								)[1] +
-								"\\n//# sourceURL=http://localhost:9090/source/map1/${filename}"
-							);`
-						);
-						break;
-				}
-
-				this.contents.push(content);
-			});
-
-			content = (
-				this.contents
-					.join(
-						"\n".repeat(3)
-					) +
-					`\n //# sourceURL=${new URL(`${baseURL}/..`).href}/rex-es.js`
+			// 获取文件内容
+			content = this.contents.join(
+				"\n".repeat(3)
 			);
 
 			// 写入文件
@@ -230,16 +137,10 @@ this.DevSource = function(Source, File, FUNCTION_BODY_REGEXP_SOURCE){
 
 module.exports = { DevSource: this.DevSource, Source: this.Source };
 }(
-	// Rexjs
-	require("./rex-api.bundle.js"),
 	// MAP_PATH
 	"../source/map",
-	// source
-	null,
 	// dev
 	process.argv.indexOf("-dev") > -1,
-	// baseURL
-	null,
 	// defaultList
 	[
 		"file-header.js",

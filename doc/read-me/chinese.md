@@ -23,7 +23,7 @@ git clone https://github.com/china-liji/Rexjs.git
 
 [Zip](https://github.com/china-liji/Rexjs/archive/master.zip)
 
-[rex.min.js](https://raw.githubusercontent.com/china-liji/Rexjs/master/./dist/rex.min.js) - 255KB
+[rex.min.js](https://raw.githubusercontent.com/china-liji/Rexjs/master/./dist/rex.min.js) - 256KB
 
 [rex-api.min.js](https://raw.githubusercontent.com/china-liji/Rexjs/master/./dist/rex-api.min.js) - 252KB
 
@@ -34,7 +34,7 @@ git clone https://github.com/china-liji/Rexjs.git
 #### 更小且更快
 ![](https://raw.githubusercontent.com/china-liji/Rexjs/master/doc/image/compare.jpg)
 
-`./dist/rex.min.js`[1.7.2] 仅仅只有 255KB，比其他解析器更小。
+`./dist/rex.min.js`[1.7.2] 仅仅只有 256KB，比其他解析器更小。
 
 -----
 
