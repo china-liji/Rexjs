@@ -1,10 +1,10 @@
 eval(
 					function(){
-						new Rexjs.Module("http://localhost:9090/source/map/a.js",function(Rexjs){
+						new Rexjs.Module("rexjs://source/map/a.js",function(Rexjs){
 "use strict";
 Rexjs.Module.export("default",(Rexjs.Class.create(void 0,[new Rexjs.ClassProperty("constructor",function Car(){})], 0)));
 });
-//# sourceURL=http://sourceURL/source/map/a.js
+//# sourceURL=http://sourceurl/source/map/a.js
 //# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImh0dHA6Ly9sb2NhbGhvc3Q6OTA5MC9zb3VyY2UvbWFwL2EuanMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6Ijs7OyJ9
 					}
 					.toString()
@@ -16,11 +16,11 @@ Rexjs.Module.export("default",(Rexjs.Class.create(void 0,[new Rexjs.ClassPropert
 
 eval(
 					function(){
-						new Rexjs.Module("http://localhost:9090/source/map/a.js",function(Rexjs){
+						new Rexjs.Module("rexjs://source/map/a.js",function(Rexjs){
 "use strict";
 Rexjs.Module.export("default",(Rexjs.Class.create(void 0,[new Rexjs.ClassProperty("constructor",function Car(){})], 0)));
 });
-//# sourceURL=http://sourceURL/source/map/a.js
+//# sourceURL=http://sourceurl/source/map/a.js
 //# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImh0dHA6Ly9sb2NhbGhvc3Q6OTA5MC9zb3VyY2UvbWFwL2EuanMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6Ijs7OyJ9
 					}
 					.toString()
@@ -32,11 +32,11 @@ Rexjs.Module.export("default",(Rexjs.Class.create(void 0,[new Rexjs.ClassPropert
 
 eval(
 					function(){
-						new Rexjs.Module("http://localhost:9090/source/map/a.js",function(Rexjs){
+						new Rexjs.Module("rexjs://source/map/a.js",function(Rexjs){
 "use strict";
 Rexjs.Module.export("default",(Rexjs.Class.create(void 0,[new Rexjs.ClassProperty("constructor",function Car(){})], 0)));
 });
-//# sourceURL=http://sourceURL/source/map/a.js
+//# sourceURL=http://sourceurl/source/map/a.js
 //# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImh0dHA6Ly9sb2NhbGhvc3Q6OTA5MC9zb3VyY2UvbWFwL2EuanMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6Ijs7OyJ9
 					}
 					.toString()
@@ -48,12 +48,12 @@ Rexjs.Module.export("default",(Rexjs.Class.create(void 0,[new Rexjs.ClassPropert
 
 eval(
 					function(){
-						new Rexjs.Module("http://localhost:9090/source/map/index.js",function(Rexjs){
+						new Rexjs.Module("rexjs://source/map/index.js",function(Rexjs){
 "use strict";
-var a=1;var Car=Rexjs.Module.defaultOf("./a","http://localhost:9090/source/map/index.js");var Car1=Rexjs.Module.defaultOf("./a","http://localhost:9090/source/map/index.js");var Car2=Rexjs.Module.defaultOf("./a","http://localhost:9090/source/map/index.js");var c=3333;debugger;
+var a=1;var Car=Rexjs.Module.defaultOf("./a","rexjs://source/map/index.js");var Car1=Rexjs.Module.defaultOf("./a","rexjs://source/map/index.js");var Car2=Rexjs.Module.defaultOf("./a","rexjs://source/map/index.js");var c=3333;
 });
-//# sourceURL=http://sourceURL/source/map/index.js
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImh0dHA6Ly9sb2NhbGhvc3Q6OTA5MC9zb3VyY2UvbWFwL2luZGV4LmpzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiI7O0FBQUEsR0FBQSxBQUFHLENBQUMsQ0FBQSxBQUFDLEFBQUMsQ0FBQSxBQUFDLEFBQUMsQ0FBQSxBQUFDLHlQQU1ULEdBQUEsQUFBRyxDQUFDLENBQUEsQUFBQyxBQUFDLENBQUEsQUFBQyxBQUFDLElBQUEsQUFBSSxDQUVaLFFBQUEsQUFBUTsifQ==
+//# sourceURL=http://sourceurl/source/map/index.js
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImh0dHA6Ly9sb2NhbGhvc3Q6OTA5MC9zb3VyY2UvbWFwL2luZGV4LmpzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiI7O0FBQUEsR0FBQSxBQUFHLENBQUMsQ0FBQSxBQUFDLEFBQUMsQ0FBQSxBQUFDLEFBQUMsQ0FBQSxBQUFDLCtNQU1ULEdBQUEsQUFBRyxDQUFDLENBQUEsQUFBQyxBQUFDLENBQUEsQUFBQyxBQUFDLElBQUEsQUFBSTsifQ==
 					}
 					.toString()
 					.match(
@@ -21911,7 +21911,7 @@ this.ImportExpression = function(compileMember){
 				if(this.from){
 					// 追加模块名称
 					anotherBuilder.appendString(
-						this.name.content + ',"' + this.file.url.href + '"'
+						this.name.content + ',"' + this.file.alias.href + '"'
 					);
 				}
 
@@ -22962,7 +22962,7 @@ this.ExportExpression = function(compile){
 		// 如果有 from
 		if(from){
 			// 追加模块名称
-			anotherBuilder.appendString(name.content + ',"' + file.url.href + '"');
+			anotherBuilder.appendString(name.content + ',"' + file.alias.href + '"');
 		}
 
 		// 先编译成员
@@ -29277,11 +29277,11 @@ this.ECMAScriptParser = function(SourceBuilder, MappingBuilder, ECMAScriptTagsMa
 		 * @param {Boolean} _withoutModule - 不采用模块形式的入口
 		 */
 		build: function(_contentBuilder, _withoutModule){
-			var file = this.file, url = file.url;
+			var file = this.file, aliasUrl = file.alias;
 
 			_contentBuilder = _contentBuilder || (
 				// 如果提供了文件路径
-				url.href ?
+				aliasUrl.href ?
 					(
 						sourceMaps ? new MappingBuilder(file) : new SourceBuilder(file)
 					) :
@@ -29291,7 +29291,7 @@ this.ECMAScriptParser = function(SourceBuilder, MappingBuilder, ECMAScriptTagsMa
 
 			// 追加闭包函数起始部分
 			_contentBuilder.appendString(
-				(_withoutModule ? "!" : 'new Rexjs.Module("' + url.href + '",') + "function(Rexjs){"
+				(_withoutModule ? "!" : 'new Rexjs.Module("' + aliasUrl.href + '",') + "function(Rexjs){"
 			);
 
 			// 创建新行

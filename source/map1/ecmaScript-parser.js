@@ -128,11 +128,11 @@ this.ECMAScriptParser = function(SourceBuilder, MappingBuilder, ECMAScriptTagsMa
 		 * @param {Boolean} _withoutModule - 不采用模块形式的入口
 		 */
 		build: function(_contentBuilder, _withoutModule){
-			var file = this.file, url = file.url;
+			var file = this.file, aliasUrl = file.alias;
 
 			_contentBuilder = _contentBuilder || (
 				// 如果提供了文件路径
-				url.href ?
+				aliasUrl.href ?
 					(
 						sourceMaps ? new MappingBuilder(file) : new SourceBuilder(file)
 					) :
@@ -142,7 +142,7 @@ this.ECMAScriptParser = function(SourceBuilder, MappingBuilder, ECMAScriptTagsMa
 
 			// 追加闭包函数起始部分
 			_contentBuilder.appendString(
-				(_withoutModule ? "!" : 'new Rexjs.Module("' + url.href + '",') + "function(Rexjs){"
+				(_withoutModule ? "!" : 'new Rexjs.Module("' + aliasUrl.href + '",') + "function(Rexjs){"
 			);
 
 			// 创建新行

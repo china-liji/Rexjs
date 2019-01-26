@@ -1,4 +1,4 @@
-new function({ Module, ModuleCache, ECMAScriptParser, JavaScriptCompiler, ModuleReady, URL, Base64 }, MAP_PATH, source, dev, baseURL, defaultList){
+new function({ Module, ModuleCache, File, ECMAScriptParser, JavaScriptCompiler, ModuleReady, URL, Base64 }, MAP_PATH, source, dev, baseURL, defaultList){
 
 this.File = function(fs, DIR_NAME){
 	/**
@@ -29,7 +29,38 @@ this.File = function(fs, DIR_NAME){
 );
 
 this.SourceCompiler = function(defaultLoader){
+	/**
+	 * Rexjs 源码模块编译器
+	 */
 	return class SourceCompiler extends JavaScriptCompiler {
+		/**
+		 * 编译模块
+		 * @param {Module} module - 编译的模块
+		 */
+		compile({ name, origin }){
+			// 初始化解析器
+			let parser = new ECMAScriptParser();
+			
+			// 解析代码
+			parser.parse(
+				// 初始化文件
+				new File(
+					name,
+					origin,
+					new URL(`rexjs://${name.pathname}`)
+				)
+			);
+			
+			// 设置模块解析结果
+			this.result = parser.build();
+			// 设置依赖
+			this.deps = parser.deps;
+		};
+
+		/**
+		 * 执行模块编译结果
+		 * @param {Module} module - 编译的模块
+		 */
 		exec(module){
 			// 触发事件
 			source.contents.push(this.result);
@@ -46,12 +77,13 @@ this.SourceModuleReady = function(SourceCompiler, File, Buffer, MAP_PATH){
 		constructor(){
 			super();
 
+			ModuleCache.disabled = true;
+			this.compilers[".js"] = SourceCompiler;
+			
 			// 绑定 base64 的编译方法
 			Base64.bindBtoa(function(string){
 				return Buffer.from(string).toString("base64");
 			});
-
-			this.compilers[".js"] = SourceCompiler;
 		};
 
 		parseName(moduleName, _baseUrlString){
@@ -118,7 +150,6 @@ this.Source = function(SourceModuleReady, File, EventEmitter, inited){
 				new SourceModuleReady();
 			}
 
-			ModuleCache.disabled = true;
 			ECMAScriptParser.sourceMaps = !!_sourceMaps;
 			source = this;
 

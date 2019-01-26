@@ -406,7 +406,9 @@ this.BrowserReady = function(HTMLCompiler, CSSCompiler, XMLHttpRequest, BASE_URL
 			if(url.filename === ""){
 				var pathname = url.pathname;
 
-				return new URL(url.origin + (pathname ? pathname : "/index") + ".js" + url.search + url.hash);
+				return new URL(
+					url.protocal + "//" + url.host + (pathname ? pathname : "/index") + ".js" + url.search + url.hash
+				);
 			}
 
 			return url;

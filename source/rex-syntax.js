@@ -217,14 +217,17 @@ this.File = function(){
 	 * 文件信息
 	 * @param {Url} url - 文件路径
 	 * @param {String} source - 源文件内容
+	 * @param {Url} _alias - 文件路径别名
 	 */
-	function File(url, source){
+	function File(url, source, _alias){
 		this.url = url;
 		this.source = source;
+		this.alias = _alias || url;
 	};
 	File = new Rexjs(File);
 	
 	File.props({
+		alias: null,
 		source: "",
 		url: null
 	});

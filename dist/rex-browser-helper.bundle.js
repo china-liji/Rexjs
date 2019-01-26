@@ -517,7 +517,7 @@ this.URL = function(toString, parse){
 		parse(
 			this,
 			(
-				baseURL.origin +
+				baseURL.protocal + "//" + baseURL.host +
 				// 如果是根目录路径，则忽略 dirname
 				(urlString[0] === "/" ? "" : baseURL.dirname + "/") +
 				urlString
@@ -636,22 +636,16 @@ this.URL = function(toString, parse){
 		
 		var dirnameArray = [],
 
-			protocal = getUrlInfo(result, 1),
-
-			username = getUrlInfo(result, 2),
-
-			hostname = getUrlInfo(result, 3),
-
-			port = getUrlInfo(result, 4),
+			protocal = getUrlInfo(result, 1).toLowerCase(),
 
 			dirname = getUrlInfo(result, 5),
 
 			filename = getUrlInfo(result, 6);
 
 		url.protocal = protocal;
-		url.hostname = hostname;
-		url.username = username;
-		url.port = port;
+		url.hostname = getUrlInfo(result, 3).toLowerCase();
+		url.username = getUrlInfo(result, 2);
+		url.port = getUrlInfo(result, 4);
 		url.filename = filename;
 		url.ext = getUrlInfo(result, 7);
 		url.search = getUrlInfo(result, 8);
@@ -2788,7 +2782,9 @@ this.BrowserReady = function(HTMLCompiler, CSSCompiler, XMLHttpRequest, BASE_URL
 			if(url.filename === ""){
 				var pathname = url.pathname;
 
-				return new URL(url.origin + (pathname ? pathname : "/index") + ".js" + url.search + url.hash);
+				return new URL(
+					url.protocal + "//" + url.host + (pathname ? pathname : "/index") + ".js" + url.search + url.hash
+				);
 			}
 
 			return url;

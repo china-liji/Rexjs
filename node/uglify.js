@@ -64,7 +64,7 @@ this.Uglify = function(Source, Date, SOURCE_PATH, CHARSET, uglifyJs, fs, { versi
 		};
 	};
 }(
-	require("./index").Source,
+	require("./index2").Source,
 	Date,
 	// SOURCE_PATH
 	`${PROJECT_PATH}/source`,

@@ -37,7 +37,7 @@ this.ImportExpression = function(compileMember){
 				if(this.from){
 					// 追加模块名称
 					anotherBuilder.appendString(
-						this.name.content + ',"' + this.file.url.href + '"'
+						this.name.content + ',"' + this.file.alias.href + '"'
 					);
 				}
 

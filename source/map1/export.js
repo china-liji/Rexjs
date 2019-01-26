@@ -63,7 +63,7 @@ this.ExportExpression = function(compile){
 		// 如果有 from
 		if(from){
 			// 追加模块名称
-			anotherBuilder.appendString(name.content + ',"' + file.url.href + '"');
+			anotherBuilder.appendString(name.content + ',"' + file.alias.href + '"');
 		}
 
 		// 先编译成员

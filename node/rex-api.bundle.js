@@ -517,7 +517,7 @@ this.URL = function(toString, parse){
 		parse(
 			this,
 			(
-				baseURL.origin +
+				baseURL.protocal + "//" + baseURL.host +
 				// 如果是根目录路径，则忽略 dirname
 				(urlString[0] === "/" ? "" : baseURL.dirname + "/") +
 				urlString
@@ -636,22 +636,16 @@ this.URL = function(toString, parse){
 		
 		var dirnameArray = [],
 
-			protocal = getUrlInfo(result, 1),
-
-			username = getUrlInfo(result, 2),
-
-			hostname = getUrlInfo(result, 3),
-
-			port = getUrlInfo(result, 4),
+			protocal = getUrlInfo(result, 1).toLowerCase(),
 
 			dirname = getUrlInfo(result, 5),
 
 			filename = getUrlInfo(result, 6);
 
 		url.protocal = protocal;
-		url.hostname = hostname;
-		url.username = username;
-		url.port = port;
+		url.hostname = getUrlInfo(result, 3).toLowerCase();
+		url.username = getUrlInfo(result, 2);
+		url.port = getUrlInfo(result, 4);
 		url.filename = filename;
 		url.ext = getUrlInfo(result, 7);
 		url.search = getUrlInfo(result, 8);
@@ -991,14 +985,17 @@ this.File = function(){
 	 * 文件信息
 	 * @param {Url} url - 文件路径
 	 * @param {String} source - 源文件内容
+	 * @param {Url} _alias - 文件路径别名
 	 */
-	function File(url, source){
+	function File(url, source, _alias){
 		this.url = url;
 		this.source = source;
+		this.alias = _alias || url;
 	};
 	File = new Rexjs(File);
 	
 	File.props({
+		alias: null,
 		source: "",
 		url: null
 	});
@@ -23956,7 +23953,7 @@ this.ImportExpression = function(compileMember){
 				if(this.from){
 					// 追加模块名称
 					anotherBuilder.appendString(
-						this.name.content + ',"' + this.file.url.href + '"'
+						this.name.content + ',"' + this.file.alias.href + '"'
 					);
 				}
 
@@ -24971,7 +24968,7 @@ this.ExportExpression = function(compile){
 		// 如果有 from
 		if(from){
 			// 追加模块名称
-			anotherBuilder.appendString(name.content + ',"' + file.url.href + '"');
+			anotherBuilder.appendString(name.content + ',"' + file.alias.href + '"');
 		}
 
 		// 先编译成员
@@ -31142,11 +31139,11 @@ this.ECMAScriptParser = function(SourceBuilder, MappingBuilder, ECMAScriptTagsMa
 		 * @param {Boolean} _withoutModule - 不采用模块形式的入口
 		 */
 		build: function(_contentBuilder, _withoutModule){
-			var file = this.file, url = file.url;
+			var file = this.file, aliasUrl = file.alias;
 
 			_contentBuilder = _contentBuilder || (
 				// 如果提供了文件路径
-				url.href ?
+				aliasUrl.href ?
 					(
 						sourceMaps ? new MappingBuilder(file) : new SourceBuilder(file)
 					) :
@@ -31156,7 +31153,7 @@ this.ECMAScriptParser = function(SourceBuilder, MappingBuilder, ECMAScriptTagsMa
 
 			// 追加闭包函数起始部分
 			_contentBuilder.appendString(
-				(_withoutModule ? "!" : 'new Rexjs.Module("' + url.href + '",') + "function(Rexjs){"
+				(_withoutModule ? "!" : 'new Rexjs.Module("' + aliasUrl.href + '",') + "function(Rexjs){"
 			);
 
 			// 创建新行

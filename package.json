@@ -35,7 +35,8 @@
 		"name": "李骥",
 		"email": "hello_zaizi@163.com"
 	},
-	"dependencies": {
+	"dependencies": {},
+	"devDependencies": {
 		"uglify-js": "^3.3.12"
 	}
 }
