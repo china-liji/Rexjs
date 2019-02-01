@@ -1,5 +1,5 @@
 // 基础依赖类
-new function(Rexjs, URL_REGEXP, DIR_SEPARATOR_REGEXP, encodeURI, getUrlInfo){
+new function(Rexjs, URL_REGEXP, DATA_URL_DIR_NAME_REGEXP, UNKNOWN_PROTOCAL_DIR_NAME_REGEXP, DIR_SEPARATOR_REGEXP, encodeURI, getUrlInfo){
 
 this.List = function(Array, Object, toArray){
 	/**
@@ -220,29 +220,26 @@ this.URL = function(toString, parse){
 	function(url, urlString){
 		// 匹配地址
 		var result = urlString.match(URL_REGEXP);
-		
+
 		// 如果没有匹配结果
 		if(!result){
 			// 报错
 			throw "Invalid URL: " + urlString;
 		}
 		
-		var dirnameArray = [],
-
-			protocal = getUrlInfo(result, 1).toLowerCase(),
-
+		var protocal = getUrlInfo(result, 1).toLowerCase(),
+		
 			dirname = getUrlInfo(result, 5),
+			
+			filename = getUrlInfo(result, 6),
 
-			filename = getUrlInfo(result, 6);
+			ext = getUrlInfo(result, 7),
+			
+			search = getUrlInfo(result, 8),
+			
+			hash = getUrlInfo(result, 9);
 
 		url.protocal = protocal;
-		url.hostname = getUrlInfo(result, 3).toLowerCase();
-		url.username = getUrlInfo(result, 2);
-		url.port = getUrlInfo(result, 4);
-		url.filename = filename;
-		url.ext = getUrlInfo(result, 7);
-		url.search = getUrlInfo(result, 8);
-		url.hash = getUrlInfo(result, 9);
 
 		// 判断协议
 		switch(protocal){
@@ -250,63 +247,43 @@ this.URL = function(toString, parse){
 			case "http:":
 			// 如果是 https
 			case "https:":
+				var hostname = getUrlInfo(result, 3).toLowerCase();
+
 				// 如果主机名不存在
-				if(!url.hostname){
+				if(!hostname){
 					return false;
 				}
 
+				url.hostname = hostname;
+				url.username = getUrlInfo(result, 2);
+				url.port = getUrlInfo(result, 4);
 				break;
-			
+
+			// 如果是 dataURL
+			case "data:":
+				url.dirname = urlString.match(DATA_URL_DIR_NAME_REGEXP)[1];
+				return true;
+
 			// 如果没有 protocal
 			case "":
 				break;
-
-			default: {
-				var index;
-		
-				// 还原链接字符串
-				urlString = decodeURI(urlString);
-				
-				switch(true){
-					// 如果存在 search
-					case url.search.length > 0 :
-						// 设置 index
-						index = urlString.indexOf("?");
-						break;
-					
-					// 如果存在 hash
-					case url.hash.length > 0 :
-						// 设置 index
-						index = urlString.indexOf("#");
-						break;
-
-					default :
-						// 设置 index
-						index = urlString.length;
-						break;
-				}
-
-				// 清空 host 与 port
-				url.hostname = url.port = "";
-
-				// 如果是 dataURL
-				if(protocal === "data:"){
-					// 直接设置 dirname
-					url.dirname = urlString.substring(protocal.length, index);
-					// 清空 filename 与 ext
-					url.filename = url.ext = "";
-					return true;
-				}
-				
-				// 重置 url 部分属性
-				dirname = urlString.substring(protocal.length, index - filename.length);
-				// 解码 search
-				url.search = decodeURI(url.search);
-				// 解码 hash
-				url.hash = decodeURI(url.hash);
+			
+			default:
+				result = decodeURI(urlString).match(UNKNOWN_PROTOCAL_DIR_NAME_REGEXP);
+				dirname = getUrlInfo(result, 1);
+				filename = getUrlInfo(result, 2);
+				ext = getUrlInfo(result, 3);
+				search = decodeURI(search);
+				hash = decodeURI(hash);
 				break;
-			}
 		}
+		
+		var dirnameArray = [];
+
+		url.filename = filename;
+		url.ext = ext;
+		url.search = search;
+		url.hash = hash;
 		
 		// 分割路径
 		dirname
@@ -350,7 +327,11 @@ Rexjs.static(this);
 }(
 	Rexjs,
 	// URL_REGEXP
-	/^(?:([^:/?#.]+:)(?:\/+(?:([^/?#]*)@)?([\w\d\-\u0100-\uffff.%]*)(?::([0-9]+))?)?)?(?:([^?#]*?)([^\/]+?(\.[^.?#\/]+))?)?(?:(\?[^#]*))?(?:(#.*))?$/,
+	/^(?:([^:/?#.]+:)(?:\/+(?:([^/?#]*)@)?([\w\d\-\u0100-\uffff.%]*)(?::([0-9]+))?)?)?(?:([^?#]*?)([^\/?#]+?(\.[^.?#\/]+))?)?(?:(\?[^#]*))?(?:(#.*))?$/,
+	// DATA_URL_DIR_NAME_REGEXP
+	/^data:([^?#]*)/,
+	// UNKNOWN_PROTOCAL_DIR_NAME_REGEXP
+	/^[^:/?#.]+:\/*([^?#]*?)([^/?#]+\.([^/?#]+))?(?=[?#].*$|$)/,
 	// DIR_SEPARATOR_REGEXP
 	/\/|\\/g,
 	encodeURI,

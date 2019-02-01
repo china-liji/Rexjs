@@ -406,7 +406,7 @@ this.forEach(
 	Object.getPrototypeOf
 );
 // 基础依赖类
-new function(Rexjs, URL_REGEXP, DIR_SEPARATOR_REGEXP, encodeURI, getUrlInfo){
+new function(Rexjs, URL_REGEXP, DATA_URL_DIR_NAME_REGEXP, UNKNOWN_PROTOCAL_DIR_NAME_REGEXP, DIR_SEPARATOR_REGEXP, encodeURI, getUrlInfo){
 
 this.List = function(Array, Object, toArray){
 	/**
@@ -627,29 +627,26 @@ this.URL = function(toString, parse){
 	function(url, urlString){
 		// 匹配地址
 		var result = urlString.match(URL_REGEXP);
-		
+
 		// 如果没有匹配结果
 		if(!result){
 			// 报错
 			throw "Invalid URL: " + urlString;
 		}
 		
-		var dirnameArray = [],
-
-			protocal = getUrlInfo(result, 1).toLowerCase(),
-
+		var protocal = getUrlInfo(result, 1).toLowerCase(),
+		
 			dirname = getUrlInfo(result, 5),
+			
+			filename = getUrlInfo(result, 6),
 
-			filename = getUrlInfo(result, 6);
+			ext = getUrlInfo(result, 7),
+			
+			search = getUrlInfo(result, 8),
+			
+			hash = getUrlInfo(result, 9);
 
 		url.protocal = protocal;
-		url.hostname = getUrlInfo(result, 3).toLowerCase();
-		url.username = getUrlInfo(result, 2);
-		url.port = getUrlInfo(result, 4);
-		url.filename = filename;
-		url.ext = getUrlInfo(result, 7);
-		url.search = getUrlInfo(result, 8);
-		url.hash = getUrlInfo(result, 9);
 
 		// 判断协议
 		switch(protocal){
@@ -657,63 +654,43 @@ this.URL = function(toString, parse){
 			case "http:":
 			// 如果是 https
 			case "https:":
+				var hostname = getUrlInfo(result, 3).toLowerCase();
+
 				// 如果主机名不存在
-				if(!url.hostname){
+				if(!hostname){
 					return false;
 				}
 
+				url.hostname = hostname;
+				url.username = getUrlInfo(result, 2);
+				url.port = getUrlInfo(result, 4);
 				break;
-			
+
+			// 如果是 dataURL
+			case "data:":
+				url.dirname = urlString.match(DATA_URL_DIR_NAME_REGEXP)[1];
+				return true;
+
 			// 如果没有 protocal
 			case "":
 				break;
-
-			default: {
-				var index;
-		
-				// 还原链接字符串
-				urlString = decodeURI(urlString);
-				
-				switch(true){
-					// 如果存在 search
-					case url.search.length > 0 :
-						// 设置 index
-						index = urlString.indexOf("?");
-						break;
-					
-					// 如果存在 hash
-					case url.hash.length > 0 :
-						// 设置 index
-						index = urlString.indexOf("#");
-						break;
-
-					default :
-						// 设置 index
-						index = urlString.length;
-						break;
-				}
-
-				// 清空 host 与 port
-				url.hostname = url.port = "";
-
-				// 如果是 dataURL
-				if(protocal === "data:"){
-					// 直接设置 dirname
-					url.dirname = urlString.substring(protocal.length, index);
-					// 清空 filename 与 ext
-					url.filename = url.ext = "";
-					return true;
-				}
-				
-				// 重置 url 部分属性
-				dirname = urlString.substring(protocal.length, index - filename.length);
-				// 解码 search
-				url.search = decodeURI(url.search);
-				// 解码 hash
-				url.hash = decodeURI(url.hash);
+			
+			default:
+				result = decodeURI(urlString).match(UNKNOWN_PROTOCAL_DIR_NAME_REGEXP);
+				dirname = getUrlInfo(result, 1);
+				filename = getUrlInfo(result, 2);
+				ext = getUrlInfo(result, 3);
+				search = decodeURI(search);
+				hash = decodeURI(hash);
 				break;
-			}
 		}
+		
+		var dirnameArray = [];
+
+		url.filename = filename;
+		url.ext = ext;
+		url.search = search;
+		url.hash = hash;
 		
 		// 分割路径
 		dirname
@@ -757,7 +734,11 @@ Rexjs.static(this);
 }(
 	Rexjs,
 	// URL_REGEXP
-	/^(?:([^:/?#.]+:)(?:\/+(?:([^/?#]*)@)?([\w\d\-\u0100-\uffff.%]*)(?::([0-9]+))?)?)?(?:([^?#]*?)([^\/]+?(\.[^.?#\/]+))?)?(?:(\?[^#]*))?(?:(#.*))?$/,
+	/^(?:([^:/?#.]+:)(?:\/+(?:([^/?#]*)@)?([\w\d\-\u0100-\uffff.%]*)(?::([0-9]+))?)?)?(?:([^?#]*?)([^\/?#]+?(\.[^.?#\/]+))?)?(?:(\?[^#]*))?(?:(#.*))?$/,
+	// DATA_URL_DIR_NAME_REGEXP
+	/^data:([^?#]*)/,
+	// UNKNOWN_PROTOCAL_DIR_NAME_REGEXP
+	/^[^:/?#.]+:\/*([^?#]*?)([^/?#]+\.([^/?#]+))?(?=[?#].*$|$)/,
 	// DIR_SEPARATOR_REGEXP
 	/\/|\\/g,
 	encodeURI,
@@ -1696,7 +1677,7 @@ this.JSONCompiler = function(ModuleCompiler, parse){
 // 模块相关
 !function(STATUS_NONE, STATUS_LOADING, STATUS_COMPILING, STATUS_READY, STATUS_ENDED, STATUS_COMPLETED, STATUS_ERROR, moduleReady, trigger){
 
-this.ModuleCache = function(cache, disabled, hasOwnProperty, getModuleHref, getCachedModule, deleteCachedModule){
+this.ModuleCache = function(cache, hasOwnProperty, getModuleHref, getCachedModule, deleteCachedModule){
 	/**
 	 * 模块缓存
 	 * @param {String} name - 模块名称
@@ -1708,15 +1689,16 @@ this.ModuleCache = function(cache, disabled, hasOwnProperty, getModuleHref, getC
 
 	ModuleCache.static({
 		/**
+		 * 获取所有被缓存的模块
+		 */
+		get all(){
+			return this.names.map(this.item, this);
+		},
+		/**
 		 * 缓存模块
 		 * @param {Module} module - 需要缓存的模块
 		 */
 		cache: function(module){
-			// 如果禁用缓存了
-			if(disabled){
-				return;
-			}
-
 			// 进行缓存
 			cache[module.name.href] = module;
 		},
@@ -1741,23 +1723,17 @@ this.ModuleCache = function(cache, disabled, hasOwnProperty, getModuleHref, getC
 			return getModuleHref(module, deleteCachedModule, cache);
 		},
 		/**
-		 * 获取是否禁用了缓存
+		 * 获取所有被缓存的模块名称
 		 */
-		get disabled(){
-			return disabled;
-		},
-		/**
-		 * 设置是否禁用缓存
-		 * @param {Boolean} value - 是否禁用缓存
-		 */
-		set disabled(value){
-			// 如果是禁用
-			if(value){
-				// 清空缓存
-				this.clear();
+		get names(){
+			var names = [];
+
+			// 遍历缓存对象
+			for(var name in cache){
+				names.push(name);
 			}
-			
-			disabled = !!value;
+
+			return names;
 		},
 		/**
 		 * 获取被缓存的模块
@@ -1772,8 +1748,6 @@ this.ModuleCache = function(cache, disabled, hasOwnProperty, getModuleHref, getC
 }(
 	// cache
 	{},
-	// disabled
-	false,
 	Object.prototype.hasOwnProperty,
 	// getModuleHref
 	function(module, callback, _this){
@@ -2157,7 +2131,7 @@ this.Module = Module = function(ModuleCache, ModuleCompiler, stack, create, defi
 				module.origin = error;
 
 				// 提示错误信息
-				console.error('加载模块 "' + module.name.href + '" 错误：' + error + "。");
+				console.error('Load module "' + module.name.href + '" error: ' + error + ".");
 				// 触发监听器
 				trigger(module);
 			},
@@ -2782,8 +2756,10 @@ this.BrowserReady = function(HTMLCompiler, CSSCompiler, XMLHttpRequest, BASE_URL
 			if(url.filename === ""){
 				var pathname = url.pathname;
 
+				console.log(url.href, moduleName, _baseUrlString);
+
 				return new URL(
-					url.protocal + "//" + url.host + (pathname ? pathname : "/index") + ".js" + url.search + url.hash
+					url.protocal + "//" + url.host + (pathname ? pathname : "/index") + (url.ext ? "" : ".js") + url.search + url.hash
 				);
 			}
 

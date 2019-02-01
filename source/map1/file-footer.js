@@ -13,9 +13,9 @@ Rexjs.static(this);
 	// BoxStatement
 	null,
 	// ECMAScriptErrors
-	null,
+	Rexjs.ECMAScriptErrors,
 	// ECMAScriptOrders
-	null,
+	Rexjs.ECMAScriptOrders,
 	Rexjs.SyntaxTag,
 	Rexjs.TagType,
 	Rexjs.TagClass.CLASS_STATEMENT_BEGIN,

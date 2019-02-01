@@ -407,7 +407,7 @@ this.BrowserReady = function(HTMLCompiler, CSSCompiler, XMLHttpRequest, BASE_URL
 				var pathname = url.pathname;
 
 				return new URL(
-					url.protocal + "//" + url.host + (pathname ? pathname : "/index") + ".js" + url.search + url.hash
+					url.protocal + "//" + url.host + (pathname ? pathname : "/index") + (url.ext ? "" : ".js") + url.search + url.hash
 				);
 			}
 
@@ -462,7 +462,7 @@ this.BrowserReady = function(HTMLCompiler, CSSCompiler, XMLHttpRequest, BASE_URL
 					// 如果要生成 sourceMaps
 					if(script.hasAttribute("data-sourcemaps")){
 						// 开启 sourceMaps
-						ECMAScriptParser.sourceMaps = true;
+						Rexjs.ECMAScriptParser.sourceMaps = true;
 					}
 
 					// 初始化模块

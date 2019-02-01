@@ -1,7 +1,7 @@
 let a = 1;
 
-import Car from "./a";
-import Car1 from "./a";
-import Car2 from "./a";
+import Rexjs from "./base/index"
 
-let c = 3333;
+import * as xx from "./ecmaScript/index";
+
+Rexjs.static(xx);

@@ -32206,7 +32206,7 @@ this.JSONCompiler = function(ModuleCompiler, parse){
 // 模块相关
 !function(STATUS_NONE, STATUS_LOADING, STATUS_COMPILING, STATUS_READY, STATUS_ENDED, STATUS_COMPLETED, STATUS_ERROR, moduleReady, trigger){
 
-this.ModuleCache = function(cache, disabled, hasOwnProperty, getModuleHref, getCachedModule, deleteCachedModule){
+this.ModuleCache = function(cache, hasOwnProperty, getModuleHref, getCachedModule, deleteCachedModule){
 	/**
 	 * 模块缓存
 	 * @param {String} name - 模块名称
@@ -32222,11 +32222,6 @@ this.ModuleCache = function(cache, disabled, hasOwnProperty, getModuleHref, getC
 		 * @param {Module} module - 需要缓存的模块
 		 */
 		cache: function(module){
-			// 如果禁用缓存了
-			if(disabled){
-				return;
-			}
-
 			// 进行缓存
 			cache[module.name.href] = module;
 		},
@@ -32251,25 +32246,6 @@ this.ModuleCache = function(cache, disabled, hasOwnProperty, getModuleHref, getC
 			return getModuleHref(module, deleteCachedModule, cache);
 		},
 		/**
-		 * 获取是否禁用了缓存
-		 */
-		get disabled(){
-			return disabled;
-		},
-		/**
-		 * 设置是否禁用缓存
-		 * @param {Boolean} value - 是否禁用缓存
-		 */
-		set disabled(value){
-			// 如果是禁用
-			if(value){
-				// 清空缓存
-				this.clear();
-			}
-			
-			disabled = !!value;
-		},
-		/**
 		 * 获取被缓存的模块
 		 * @param {Module} module - 需要判断的模块
 		 */
@@ -32282,8 +32258,6 @@ this.ModuleCache = function(cache, disabled, hasOwnProperty, getModuleHref, getC
 }(
 	// cache
 	{},
-	// disabled
-	false,
 	Object.prototype.hasOwnProperty,
 	// getModuleHref
 	function(module, callback, _this){

@@ -1,6 +1,6 @@
 new function({ Module, ModuleCache, File, ECMAScriptParser, JavaScriptCompiler, ModuleReady, URL, Base64 }, MAP_PATH, source, dev, baseURL, defaultList){
 
-this.File = function(fs, DIR_NAME){
+this.File = function(fs){
 	/**
 	 * 文件
 	 */
@@ -19,13 +19,11 @@ this.File = function(fs, DIR_NAME){
 		 * @param {String} content - 需要写入的文件内容
 		 */
 		static write(filepath, content){
-			fs.writeFileSync(`${DIR_NAME}/${filepath}`, content, "utf8");
+			fs.writeFileSync(filepath, content, "utf8");
 		};
 	};
 }(
-	require("fs"),
-	// DIR_NAME
-	__dirname
+	require("fs")
 );
 
 this.SourceCompiler = function(defaultLoader){
@@ -72,12 +70,11 @@ this.SourceCompiler = function(defaultLoader){
 	() => {}
 );
 
-this.SourceModuleReady = function(SourceCompiler, File, Buffer, MAP_PATH){
+this.SourceModuleReady = function(SourceCompiler, File, Buffer, MAP_PATH, colors){
 	return class SourceModuleReady extends ModuleReady {
 		constructor(){
 			super();
 
-			ModuleCache.disabled = true;
 			this.compilers[".js"] = SourceCompiler;
 			
 			// 绑定 base64 的编译方法
@@ -96,7 +93,9 @@ this.SourceModuleReady = function(SourceCompiler, File, Buffer, MAP_PATH){
 			if(url.filename === ""){
 				let pathname = url.pathname;
 
-				return new URL(url.origin + (pathname ? pathname : "/index") + ".js" + url.search + url.hash);
+				return new URL(
+					url.protocal + "//" + url.host + (pathname ? pathname : "/index") + ".js" + url.search + url.hash
+				);
 			}
 
 			return url;
@@ -108,14 +107,22 @@ this.SourceModuleReady = function(SourceCompiler, File, Buffer, MAP_PATH){
 		 * @param {Function} success - 成功回调
 		 * @param {Function} fail - 失败回调
 		 */
-		readFile(moduleName, success, fail){
+		readFile({ href }, success, fail){
+			if(baseURL && href.indexOf(baseURL) === 0){
+				href = href.substring(baseURL.length);
+			}
+
+			href = `${MAP_PATH}/${href}`;
+
 			try {
 				success(
-					File.read(`${MAP_PATH}/${moduleName.filename}`)
+					File.read(href)
 				);
 			}
 			catch(e){
-				fail(e);
+				fail(
+					`\n${colors.red(e)}`
+				);
 			}
 		}	
 	};
@@ -124,7 +131,8 @@ this.SourceModuleReady = function(SourceCompiler, File, Buffer, MAP_PATH){
 	this.File,
 	Buffer,
 	// MAP_PATH
-	`${__dirname}/${MAP_PATH}`
+	`${__dirname}/${MAP_PATH}`,
+	require("colors")
 );
 
 this.Source = function(SourceModuleReady, File, EventEmitter, inited){
@@ -153,6 +161,7 @@ this.Source = function(SourceModuleReady, File, EventEmitter, inited){
 			ECMAScriptParser.sourceMaps = !!_sourceMaps;
 			source = this;
 
+			ModuleCache.clear();
 			new Module("./index.js");
 
 			source = null;
@@ -161,7 +170,7 @@ this.Source = function(SourceModuleReady, File, EventEmitter, inited){
 				"\n".repeat(3)
 			);
 
-			File.write("../source/rex-es.js", content);
+			File.write(`${__dirname}/../source/rex-es.js`, content);
 			return content;
 		};
 	};
@@ -248,7 +257,7 @@ this.DevSource = function(Source, File, FUNCTION_BODY_REGEXP_SOURCE){
 			);
 
 			// 写入文件
-			File.write("../dev/rex-es.js", content);
+			File.write(`${__dirname}/../dev/rex-es.js`, content);
 			return content;
 		};
 	};
@@ -270,11 +279,10 @@ module.exports = { DevSource: this.DevSource, Source: this.Source };
 	// dev
 	process.argv.indexOf("-dev") > -1,
 	// baseURL
-	null,
+	"",
 	// defaultList
 	[
 		"file-header.js",
-		"ecmaScript-helper.js",
 		"common-expression.js",
 		"ecmaScript-statement.js",
 		"ecmaScript-statements.js",
