@@ -17,6 +17,7 @@ import * as Paren from "./paren/index";
 import * as BaseTag from "./base-tag/index";
 import * as Comment from "./comment/index";
 import * as Env from "./env/index";
+import * as FilePosition from "./file-position/index";
 
 define(EcmaScript);
 define(BaseExpression);
@@ -28,5 +29,6 @@ define(Paren);
 define(BaseTag);
 define(Comment);
 define(Env);
+define(FilePosition);
 
 window.globalThis = globalThis;

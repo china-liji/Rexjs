@@ -289,7 +289,6 @@ module.exports = { DevSource: this.DevSource, Source: this.Source };
 	// defaultList
 	[
 		"file-header.js",
-		"file-position.js",
 		"literal-base.js",
 		"literal-extension.js",
 		"mathematical-number.js",

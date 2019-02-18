@@ -656,12 +656,60 @@ Rexjs.Module.exportFrom("./method","rexjs://source/map/env/index.js");
 
 eval(
 					function(){
+						new Rexjs.Module("rexjs://source/map/file-position/file-start.js",function(Rexjs){
+"use strict";
+var Rexjs=Rexjs.Module.defaultOf("../core/index","rexjs://source/map/file-position/file-start.js");var ECMAScriptOrders=Rexjs.Module.memberOf("ECMAScriptOrders","../ecmascript/ecmascript-orders","rexjs://source/map/file-position/file-start.js");var FileStartTag=function($Rexjs_0){var FilePositionTag,FileStartExpression;$Rexjs_0=new Rexjs.ObjectDestructuringTarget($Rexjs_0),FilePositionTag=$Rexjs_0.get("FilePositionTag"),FileStartExpression=$Rexjs_0.get("FileStartExpression");var $Rexjs_1;return ($Rexjs_1=Rexjs.Class.create(FilePositionTag,[new Rexjs.ClassProperty("order",ECMAScriptOrders.FILE_START),new Rexjs.ClassProperty("regexp",/^/),new Rexjs.ClassProperty("require",function(tagsMap){return tagsMap.mistakableTags;}),new Rexjs.ClassProperty("visitor",function(parser,context,statement){statement.expression=new FileStartExpression(context);}),new Rexjs.ClassProperty("constructor",function FileStartTag(){return Rexjs.Super.callConstructor($Rexjs_1.prototype, this, arguments);})], 4));}(Rexjs);Rexjs.Module.export("FileStartTag", FileStartTag);
+});
+//# sourceURL=http://sourceurl/source/map/file-position/file-start.js
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImh0dHA6Ly9sb2NhbGhvc3Q6OTA5MC9zb3VyY2UvbWFwL2ZpbGUtcG9zaXRpb24vZmlsZS1zdGFydC5qcyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOztxUEFHTyxHQUFBLEFBQUcsQ0FBQyxZQUFBLEFBQVksQUFBQyxDQUFBLEFBQUMsQUFBQyxRQUFBLEFBQVEsQUFBQSxDQUFBLEFBQUMsUUFBd0MsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLG9OQUs1RSxNQUFBLEFBQU0sOEJBQTRCLGVBQUEsQUFBZSwyQkFLaEQsS0FBQSxBQUFLLEVBQUcsZ0JBQUEsQUFBZ0IsQUFBQSxDQUFBLEFBQUMsQUFBQSxVQUFBLEFBQVUsMkJBTW5DLE1BQUEsQUFBTSxFQUFHLEdBQUEsQUFBRywyQkFPWixPQUFBLEFBQU8sVUFBQSxDQUFBLEFBQUMsQUFBQSxPQUFBLEFBQU8sQUFBQSxDQUFBLEFBQUMsQUFBQSxDQUFBLEFBQUMsQUFDaEIsTUFBQSxBQUFNLENBQUMsT0FBQSxBQUFPLEFBQUEsQ0FBQSxBQUFDLEFBQUEsY0FBQSxBQUFjLENBQzlCLENBQUEsQUFBQywyQkFVRCxPQUFBLEFBQU8sVUFBQSxDQUFBLEFBQUMsQUFBQSxNQUFBLEFBQU0sQ0FBRSxPQUFBLEFBQU8sQ0FBRSxTQUFBLEFBQVMsQUFBQSxDQUFBLEFBQUMsQUFBQSxDQUFBLEFBQUMsQUFFbkMsU0FBQSxBQUFTLEFBQUEsQ0FBQSxBQUFDLEFBQUEsVUFBQSxBQUFVLEFBQUMsQ0FBQSxBQUFDLEFBQUMsSUFBQSxBQUFJLEFBQUEsbUJBQUEsQUFBbUIsQUFBQSxDQUFBLEFBQUMsQUFBQSxPQUFBLEFBQU8sQUFBQSxDQUFBLEFBQUMsQ0FDeEQsQ0FBQSxBQUFDLGlKQUVILENBQUEsQUFBQyxBQUFBLENBQUEsQUFBQyxBQUNELEtBQUEsQUFBSyxBQUNOLENBQUEsQUFBQzsifQ==
+					}
+					.toString()
+					.match(
+						/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+					)[1]
+				);
+
+
+eval(
+					function(){
+						new Rexjs.Module("rexjs://source/map/file-position/file-end.js",function(Rexjs){
+"use strict";
+var Rexjs=Rexjs.Module.defaultOf("../core/index","rexjs://source/map/file-position/file-end.js");var GlobalStatements=Rexjs.Module.memberOf("GlobalStatements","../base-statements/global-statements","rexjs://source/map/file-position/file-end.js");var FileEndTag=function($Rexjs_0){var FilePositionTag,FileEndExpression;$Rexjs_0=new Rexjs.ObjectDestructuringTarget($Rexjs_0),FilePositionTag=$Rexjs_0.get("FilePositionTag"),FileEndExpression=$Rexjs_0.get("FileEndExpression");var $Rexjs_1;return ($Rexjs_1=Rexjs.Class.create(FilePositionTag,[new Rexjs.ClassProperty("regexp",/$/),new Rexjs.ClassProperty("throw","end of input"),new Rexjs.ClassProperty("visitor",function(parser,context,statement,statements){switch(false){case statements instanceof GlobalStatements:break;case statement===statements[statements.length-1]:break;case !statement.expression:break;default:statement.expression=new FileEndExpression(context);parser.regexp.break();return;}parser.error(context);}),new Rexjs.ClassProperty("constructor",function FileEndTag(){return Rexjs.Super.callConstructor($Rexjs_1.prototype, this, arguments);})], 3));}(Rexjs);Rexjs.Module.export("FileEndTag", FileEndTag);
+});
+//# sourceURL=http://sourceurl/source/map/file-position/file-end.js
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImh0dHA6Ly9sb2NhbGhvc3Q6OTA5MC9zb3VyY2UvbWFwL2ZpbGUtcG9zaXRpb24vZmlsZS1lbmQuanMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6Ijs7c1BBR08sR0FBQSxBQUFHLENBQUMsVUFBQSxBQUFVLEFBQUMsQ0FBQSxBQUFDLEFBQUMsUUFBQSxBQUFRLEFBQUEsQ0FBQSxBQUFDLFFBQXNDLENBQUEsQUFBQyxBQUFBLENBQUEsQUFBQyw4TUFLeEUsTUFBQSxBQUFNLDhCQUEwQixlQUFBLEFBQWUsMkJBSzlDLE1BQUEsQUFBTSxFQUFHLEdBQUEsQUFBRywyQkFNWixLQUFBLEFBQUssRUFBRyxjQUFBLEFBQWMsMkJBVXRCLE9BQUEsQUFBTyxVQUFBLENBQUEsQUFBQyxBQUFBLE1BQUEsQUFBTSxDQUFFLE9BQUEsQUFBTyxDQUFFLFNBQUEsQUFBUyxDQUFFLFVBQUEsQUFBVSxBQUFBLENBQUEsQUFBQyxBQUFBLENBQUEsQUFBQyxBQUMvQyxNQUFBLEFBQU0sQUFBQSxDQUFBLEFBQUMsQUFBQSxLQUFBLEFBQUssQUFBQSxDQUFBLEFBQUMsQUFBQSxDQUFBLEFBQUMsQUFFYixJQUFBLEFBQUksQ0FBQyxVQUFBLEFBQVUsQUFBQyxZQUFBLEFBQVksQUFBRCxnQkFBQSxBQUFnQixBQUFBLENBQUEsQUFBQyxBQUMzQyxLQUFBLEFBQUssQ0FHTixJQUFBLEFBQUksQ0FBQyxTQUFBLEFBQVMsQUFBQyxHQUFBLEFBQUcsQUFBQyxVQUFBLEFBQVUsQUFBQSxDQUFBLEFBQUMsQUFBQSxVQUFBLEFBQVUsQUFBQSxDQUFBLEFBQUMsQUFBQSxNQUFBLEFBQU0sQUFBQyxDQUFBLEFBQUMsQUFBQyxDQUFBLEFBQUMsQUFBQSxDQUFBLEFBQUMsQUFBQSxDQUFBLEFBQUMsQUFDcEQsS0FBQSxBQUFLLENBR04sSUFBQSxBQUFJLENBQUMsQ0FBQSxBQUFDLEFBQUEsU0FBQSxBQUFTLEFBQUEsQ0FBQSxBQUFDLEFBQUEsVUFBQSxBQUFVLEFBQUEsQ0FBQSxBQUFDLEFBQzFCLEtBQUEsQUFBSyxDQUVOLE9BQUEsQUFBTyxBQUFBLENBQUEsQUFBQyxBQUVQLFNBQUEsQUFBUyxBQUFBLENBQUEsQUFBQyxBQUFBLFVBQUEsQUFBVSxBQUFDLENBQUEsQUFBQyxBQUFDLElBQUEsQUFBSSxBQUFBLGlCQUFBLEFBQWlCLEFBQUEsQ0FBQSxBQUFDLEFBQUEsT0FBQSxBQUFPLEFBQUEsQ0FBQSxBQUFDLENBR3JELE1BQUEsQUFBTSxBQUFBLENBQUEsQUFBQyxBQUFBLE1BQUEsQUFBTSxBQUFBLENBQUEsQUFBQyxBQUFBLEtBQUEsQUFBSyxBQUFBLENBQUEsQUFBQyxBQUFBLENBQUEsQUFBQyxDQUNyQixNQUFBLEFBQU0sQ0FDUixDQUFBLEFBQUMsQUFHRCxNQUFBLEFBQU0sQUFBQSxDQUFBLEFBQUMsQUFBQSxLQUFBLEFBQUssQUFBQSxDQUFBLEFBQUMsQUFBQSxPQUFBLEFBQU8sQUFBQSxDQUFBLEFBQUMsQ0FDdEIsQ0FBQSxBQUFDLCtJQUVILENBQUEsQUFBQyxBQUFBLENBQUEsQUFBQyxBQUNELEtBQUEsQUFBSyxBQUNOLENBQUEsQUFBQzsifQ==
+					}
+					.toString()
+					.match(
+						/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+					)[1]
+				);
+
+
+eval(
+					function(){
+						new Rexjs.Module("rexjs://source/map/file-position/index.js",function(Rexjs){
+"use strict";
+Rexjs.Module.exportFrom("./file-start","rexjs://source/map/file-position/index.js");Rexjs.Module.exportFrom("./file-end","rexjs://source/map/file-position/index.js");
+});
+//# sourceURL=http://sourceurl/source/map/file-position/index.js
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImh0dHA6Ly9sb2NhbGhvc3Q6OTA5MC9zb3VyY2UvbWFwL2ZpbGUtcG9zaXRpb24vaW5kZXguanMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6Ijs7OyJ9
+					}
+					.toString()
+					.match(
+						/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+					)[1]
+				);
+
+
+eval(
+					function(){
 						new Rexjs.Module("rexjs://source/map/index.js",function(Rexjs){
 "use strict";
-var a=1;var globalThis={};var define=(function(exports){return function(){exports,name;for(var name in exports){globalThis[name]=exports[name];}}.apply(this[0],this[1]);}.bind([this, arguments]));var EcmaScript=Rexjs.Module.moduleOf("./ecmascript/index","rexjs://source/map/index.js");var BaseExpression=Rexjs.Module.moduleOf("./base-expression/index","rexjs://source/map/index.js");var BaseStatement=Rexjs.Module.moduleOf("./base-statement/index","rexjs://source/map/index.js");var BaseStatements=Rexjs.Module.moduleOf("./base-statements/index","rexjs://source/map/index.js");var Brace=Rexjs.Module.moduleOf("./brace/index","rexjs://source/map/index.js");var Bracket=Rexjs.Module.moduleOf("./bracket/index","rexjs://source/map/index.js");var Paren=Rexjs.Module.moduleOf("./paren/index","rexjs://source/map/index.js");var BaseTag=Rexjs.Module.moduleOf("./base-tag/index","rexjs://source/map/index.js");var Comment=Rexjs.Module.moduleOf("./comment/index","rexjs://source/map/index.js");var Env=Rexjs.Module.moduleOf("./env/index","rexjs://source/map/index.js");define(EcmaScript);define(BaseExpression);define(BaseStatement);define(BaseStatements);define(Brace);define(Bracket);define(Paren);define(BaseTag);define(Comment);define(Env);window.globalThis=globalThis;
+var a=1;var globalThis={};var define=(function(exports){return function(){exports,name;for(var name in exports){globalThis[name]=exports[name];}}.apply(this[0],this[1]);}.bind([this, arguments]));var EcmaScript=Rexjs.Module.moduleOf("./ecmascript/index","rexjs://source/map/index.js");var BaseExpression=Rexjs.Module.moduleOf("./base-expression/index","rexjs://source/map/index.js");var BaseStatement=Rexjs.Module.moduleOf("./base-statement/index","rexjs://source/map/index.js");var BaseStatements=Rexjs.Module.moduleOf("./base-statements/index","rexjs://source/map/index.js");var Brace=Rexjs.Module.moduleOf("./brace/index","rexjs://source/map/index.js");var Bracket=Rexjs.Module.moduleOf("./bracket/index","rexjs://source/map/index.js");var Paren=Rexjs.Module.moduleOf("./paren/index","rexjs://source/map/index.js");var BaseTag=Rexjs.Module.moduleOf("./base-tag/index","rexjs://source/map/index.js");var Comment=Rexjs.Module.moduleOf("./comment/index","rexjs://source/map/index.js");var Env=Rexjs.Module.moduleOf("./env/index","rexjs://source/map/index.js");var FilePosition=Rexjs.Module.moduleOf("./file-position/index","rexjs://source/map/index.js");define(EcmaScript);define(BaseExpression);define(BaseStatement);define(BaseStatements);define(Brace);define(Bracket);define(Paren);define(BaseTag);define(Comment);define(Env);define(FilePosition);window.globalThis=globalThis;
 });
 //# sourceURL=http://sourceurl/source/map/index.js
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImh0dHA6Ly9sb2NhbGhvc3Q6OTA5MC9zb3VyY2UvbWFwL2luZGV4LmpzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiI7O0FBQUEsR0FBQSxBQUFHLENBQUMsQ0FBQSxBQUFDLEFBQUMsQ0FBQSxBQUFDLEFBQUMsQ0FBQSxBQUFDLENBQ1QsR0FBQSxBQUFHLENBQUMsVUFBQSxBQUFVLEFBQUMsQ0FBQSxBQUFDLEFBQUMsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLENBRW5CLEdBQUEsQUFBRyxDQUFDLE1BQUEsQUFBTSxBQUFDLENBQUEsQUFBQyxTQUFDLENBQUEsQUFBQyxBQUFBLE9BQUEsQUFBTyxBQUFBLENBQUEsQUFBQyxrQkFBSSxDQUFBLEFBQUMsYUFDMUIsR0FBQSxBQUFHLEFBQUEsQ0FBQSxBQUFDLEFBQUEsR0FBQSxBQUFHLENBQUMsSUFBQSxBQUFJLEFBQUMsSUFBQSxBQUFJLEFBQUQsT0FBQSxBQUFPLEFBQUEsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLEFBQ3hCLFVBQUEsQUFBVSxBQUFBLENBQUEsQUFBQyxBQUFBLElBQUEsQUFBSSxBQUFBLENBQUEsQUFBQyxBQUFDLENBQUEsQUFBQyxBQUFDLE9BQUEsQUFBTyxBQUFBLENBQUEsQUFBQyxBQUFBLElBQUEsQUFBSSxBQUFBLENBQUEsQUFBQyxDQUNqQyxDQUFBLEFBQUMsQUFDRixDQUFBLEFBQUMsbTVCQWFELE1BQUEsQUFBTSxBQUFBLENBQUEsQUFBQyxBQUFBLFVBQUEsQUFBVSxBQUFBLENBQUEsQUFBQyxDQUNsQixNQUFBLEFBQU0sQUFBQSxDQUFBLEFBQUMsQUFBQSxjQUFBLEFBQWMsQUFBQSxDQUFBLEFBQUMsQ0FDdEIsTUFBQSxBQUFNLEFBQUEsQ0FBQSxBQUFDLEFBQUEsYUFBQSxBQUFhLEFBQUEsQ0FBQSxBQUFDLENBQ3JCLE1BQUEsQUFBTSxBQUFBLENBQUEsQUFBQyxBQUFBLGNBQUEsQUFBYyxBQUFBLENBQUEsQUFBQyxDQUN0QixNQUFBLEFBQU0sQUFBQSxDQUFBLEFBQUMsQUFBQSxLQUFBLEFBQUssQUFBQSxDQUFBLEFBQUMsQ0FDYixNQUFBLEFBQU0sQUFBQSxDQUFBLEFBQUMsQUFBQSxPQUFBLEFBQU8sQUFBQSxDQUFBLEFBQUMsQ0FDZixNQUFBLEFBQU0sQUFBQSxDQUFBLEFBQUMsQUFBQSxLQUFBLEFBQUssQUFBQSxDQUFBLEFBQUMsQ0FDYixNQUFBLEFBQU0sQUFBQSxDQUFBLEFBQUMsQUFBQSxPQUFBLEFBQU8sQUFBQSxDQUFBLEFBQUMsQ0FDZixNQUFBLEFBQU0sQUFBQSxDQUFBLEFBQUMsQUFBQSxPQUFBLEFBQU8sQUFBQSxDQUFBLEFBQUMsQ0FDZixNQUFBLEFBQU0sQUFBQSxDQUFBLEFBQUMsQUFBQSxHQUFBLEFBQUcsQUFBQSxDQUFBLEFBQUMsQ0FFWCxNQUFBLEFBQU0sQUFBQSxDQUFBLEFBQUMsQUFBQSxVQUFBLEFBQVUsQUFBQyxDQUFBLEFBQUMsQUFBQyxVQUFBLEFBQVU7In0=
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImh0dHA6Ly9sb2NhbGhvc3Q6OTA5MC9zb3VyY2UvbWFwL2luZGV4LmpzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiI7O0FBQUEsR0FBQSxBQUFHLENBQUMsQ0FBQSxBQUFDLEFBQUMsQ0FBQSxBQUFDLEFBQUMsQ0FBQSxBQUFDLENBQ1QsR0FBQSxBQUFHLENBQUMsVUFBQSxBQUFVLEFBQUMsQ0FBQSxBQUFDLEFBQUMsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLENBRW5CLEdBQUEsQUFBRyxDQUFDLE1BQUEsQUFBTSxBQUFDLENBQUEsQUFBQyxTQUFDLENBQUEsQUFBQyxBQUFBLE9BQUEsQUFBTyxBQUFBLENBQUEsQUFBQyxrQkFBSSxDQUFBLEFBQUMsYUFDMUIsR0FBQSxBQUFHLEFBQUEsQ0FBQSxBQUFDLEFBQUEsR0FBQSxBQUFHLENBQUMsSUFBQSxBQUFJLEFBQUMsSUFBQSxBQUFJLEFBQUQsT0FBQSxBQUFPLEFBQUEsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLEFBQ3hCLFVBQUEsQUFBVSxBQUFBLENBQUEsQUFBQyxBQUFBLElBQUEsQUFBSSxBQUFBLENBQUEsQUFBQyxBQUFDLENBQUEsQUFBQyxBQUFDLE9BQUEsQUFBTyxBQUFBLENBQUEsQUFBQyxBQUFBLElBQUEsQUFBSSxBQUFBLENBQUEsQUFBQyxDQUNqQyxDQUFBLEFBQUMsQUFDRixDQUFBLEFBQUMsaS9CQWNELE1BQUEsQUFBTSxBQUFBLENBQUEsQUFBQyxBQUFBLFVBQUEsQUFBVSxBQUFBLENBQUEsQUFBQyxDQUNsQixNQUFBLEFBQU0sQUFBQSxDQUFBLEFBQUMsQUFBQSxjQUFBLEFBQWMsQUFBQSxDQUFBLEFBQUMsQ0FDdEIsTUFBQSxBQUFNLEFBQUEsQ0FBQSxBQUFDLEFBQUEsYUFBQSxBQUFhLEFBQUEsQ0FBQSxBQUFDLENBQ3JCLE1BQUEsQUFBTSxBQUFBLENBQUEsQUFBQyxBQUFBLGNBQUEsQUFBYyxBQUFBLENBQUEsQUFBQyxDQUN0QixNQUFBLEFBQU0sQUFBQSxDQUFBLEFBQUMsQUFBQSxLQUFBLEFBQUssQUFBQSxDQUFBLEFBQUMsQ0FDYixNQUFBLEFBQU0sQUFBQSxDQUFBLEFBQUMsQUFBQSxPQUFBLEFBQU8sQUFBQSxDQUFBLEFBQUMsQ0FDZixNQUFBLEFBQU0sQUFBQSxDQUFBLEFBQUMsQUFBQSxLQUFBLEFBQUssQUFBQSxDQUFBLEFBQUMsQ0FDYixNQUFBLEFBQU0sQUFBQSxDQUFBLEFBQUMsQUFBQSxPQUFBLEFBQU8sQUFBQSxDQUFBLEFBQUMsQ0FDZixNQUFBLEFBQU0sQUFBQSxDQUFBLEFBQUMsQUFBQSxPQUFBLEFBQU8sQUFBQSxDQUFBLEFBQUMsQ0FDZixNQUFBLEFBQU0sQUFBQSxDQUFBLEFBQUMsQUFBQSxHQUFBLEFBQUcsQUFBQSxDQUFBLEFBQUMsQ0FDWCxNQUFBLEFBQU0sQUFBQSxDQUFBLEFBQUMsQUFBQSxZQUFBLEFBQVksQUFBQSxDQUFBLEFBQUMsQ0FFcEIsTUFBQSxBQUFNLEFBQUEsQ0FBQSxBQUFDLEFBQUEsVUFBQSxBQUFVLEFBQUMsQ0FBQSxBQUFDLEFBQUMsVUFBQSxBQUFVOyJ9
 					}
 					.toString()
 					.match(
@@ -692,110 +740,6 @@ var a=1;var globalThis={};var define=(function(exports){return function(){export
 	commonVisitor, getIdentifierRegExpSource
 ){
 "use strict";
-
-
-eval(
-								function(){
-									// 文件位置标签相关
-!function(FilePositionTag){
-
-this.FileStartTag = function(FileStartExpression){
-	/**
-	 * 文件起始符标签
-	 * @param {Number} _type - 标签类型
-	 */
-	function FileStartTag(_type){
-		FilePositionTag.call(this, _type);
-	};
-	FileStartTag = new Rexjs(FileStartTag, FilePositionTag);
-	
-	FileStartTag.props({
-		order: ECMAScriptOrders.FILE_START,
-		regexp: /^/,
-		/**
-		 * 获取此标签接下来所需匹配的标签列表
-		 * @param {TagsMap} tagsMap - 标签集合映射
-		 */
-		require: function(tagsMap){
-			return tagsMap.mistakableTags;
-		},
-		/**
-		 * 标签访问器
-		 * @param {SyntaxParser} parser - 语法解析器
-		 */
-		visitor: function(parser, context, statement){
-			// 设置当前表达式
-			statement.expression = new FileStartExpression(context);
-		}
-	});
-	
-	return FileStartTag;
-}(
-	Rexjs.FileStartExpression
-);
-
-this.FileEndTag = function(FileEndExpression, GlobalStatements){
-	/**
-	 * 文件结束符标签
-	 * @param {Number} _type - 标签类型
-	 */
-	function FileEndTag(_type){
-		FilePositionTag.call(this, _type);
-	};
-	FileEndTag = new Rexjs(FileEndTag, FilePositionTag);
-	
-	FileEndTag.props({
-		regexp: /$/,
-		throw: "end of input",
-		/**
-		 * 标签访问器
-		 * @param {SyntaxParser} parser - 语法解析器
-		 */
-		visitor: function(parser, context, statement, statements){
-			switch(false){
-				// 如果不是全局语句块，说明不是最外层
-				case statements instanceof GlobalStatements:
-					break;
-
-				// 如果不是最后一个语句，则说明语句没有完全跳出
-				case statement === statements[statements.length - 1]:
-					break;
-
-				// 如果存在表达式，说明解析有问题，因为该标签是语句起始标签，而又有上面两点保证，所以当前表达式必定为 null，为了 100% 确保，还是判断一下
-				case !statement.expression:
-					break;
-
-				default:
-					// 设置当前表达式
-					statement.expression = new FileEndExpression(context);
-					
-					// 终止解析
-					parser.regexp.break();
-					return;
-			}
-
-			// 报错
-			parser.error(context);
-		}
-	});
-	
-	return FileEndTag;
-}(
-	Rexjs.FileEndExpression,
-	this.GlobalStatements
-);
-	
-}.call(
-	this,
-	Rexjs.FilePositionTag
-);
-								}
-								.toString()
-								.match(
-									/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-								)[1] +
-								"\n//# sourceURL=http://localhost:9090/source/map1/file-position.js"
-							);
 
 
 eval(
