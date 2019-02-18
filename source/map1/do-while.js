@@ -22,7 +22,7 @@ this.DoExpression = function(ConditionalExpression){
 			this.adapterIndex = this.mainFlowIndex;
 
 			// 以生成器形式编译主体
-			this.generatePrefixBodyTo(this.body, contentBuilder);
+			this.generateBodyTo(this.body, contentBuilder, true);
 			// 以生成器形式编译逻辑条件
 			this.generateConditionTo(this.condition.inner, contentBuilder);
 		},

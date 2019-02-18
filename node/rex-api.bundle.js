@@ -32640,10 +32640,9 @@ this.Module = Module = function(ModuleCache, ModuleCompiler, stack, create, defi
 				// 设置错误响应文本
 				module.origin = error;
 
-				// 提示错误信息
-				console.error('加载模块 "' + module.name.href + '" 错误：' + error + "。");
 				// 触发监听器
 				trigger(module);
+				throw '加载模块 "' + module.name.href + '" 错误：' + error + "。";
 			},
 			_sync
 		);

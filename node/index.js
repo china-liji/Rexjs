@@ -38,21 +38,27 @@ this.SourceCompiler = function(defaultLoader){
 		compile({ name, origin }){
 			// 初始化解析器
 			let parser = new ECMAScriptParser();
-			
-			// 解析代码
-			parser.parse(
-				// 初始化文件
-				new File(
-					name,
-					origin,
-					new URL(`rexjs://${name.pathname}`)
-				)
-			);
-			
-			// 设置模块解析结果
-			this.result = parser.build();
-			// 设置依赖
-			this.deps = parser.deps;
+
+			try {
+				// 解析代码
+				parser.parse(
+					// 初始化文件
+					new File(
+						name,
+						origin,
+						new URL(`rexjs://${name.pathname}`)
+					)
+				);
+				
+				// 设置模块解析结果
+				this.result = parser.build();
+				// 设置依赖
+				this.deps = parser.deps;
+			}
+			catch(e){
+				this.result = `throw "${e.split(`"`).join(`\\"`)}"`;
+				this.deps = [];
+			}
 		};
 
 		/**
@@ -108,8 +114,8 @@ this.SourceModuleReady = function(SourceCompiler, File, Buffer, MAP_PATH, colors
 		 * @param {Function} fail - 失败回调
 		 */
 		readFile({ href }, success, fail){
-			if(baseURL && href.indexOf(baseURL) === 0){
-				href = href.substring(baseURL.length);
+			if(baseURL && href.indexOf(baseURL + "/") === 0){
+				href = href.substring(baseURL.length + 1);
 			}
 
 			href = `${MAP_PATH}/${href}`;
@@ -120,8 +126,8 @@ this.SourceModuleReady = function(SourceCompiler, File, Buffer, MAP_PATH, colors
 				);
 			}
 			catch(e){
-				fail(
-					`\n${colors.red(e)}`
+				success(
+					`throw "${e.message.split(`"`).join(`\\"`)}"`
 				);
 			}
 		}	
@@ -283,11 +289,6 @@ module.exports = { DevSource: this.DevSource, Source: this.Source };
 	// defaultList
 	[
 		"file-header.js",
-		"common-expression.js",
-		"ecmaScript-statement.js",
-		"ecmaScript-statements.js",
-		"brace-body.js",
-		"basic-tag.js",
 		"file-position.js",
 		"literal-base.js",
 		"literal-extension.js",

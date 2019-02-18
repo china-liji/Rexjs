@@ -1381,10 +1381,10 @@ this.Module = Module = function(ModuleCache, ModuleCompiler, stack, create, defi
 				// 设置错误响应文本
 				module.origin = error;
 
-				// 提示错误信息
-				console.error('Load module "' + module.name.href + '" error: ' + error + ".");
 				// 触发监听器
 				trigger(module);
+				// 抛出错误信息
+				throw 'Load module "' + module.name.href + '" error: ' + error + ".";
 			},
 			_sync
 		);

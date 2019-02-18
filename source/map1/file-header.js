@@ -1,4 +1,4 @@
-new function(
+!function(
 	Rexjs,
 	// 内容提取相关
 	ContentBuilder,

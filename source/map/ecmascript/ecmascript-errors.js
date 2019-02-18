@@ -1,6 +1,4 @@
-export let { ECMAScriptErrors } = new function(){
-
-this.ECMAScriptErrors = function(REGEXP){
+export let ECMAScriptErrors = function(REGEXP){
 	/**
 	 * ECMAScript 错误信息
 	 */
@@ -296,5 +294,3 @@ this.ECMAScriptErrors = function(REGEXP){
 	// REGEXP
 	/\$\{(\d+)\}/g
 );
-
-}();

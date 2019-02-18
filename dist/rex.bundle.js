@@ -3032,7 +3032,7 @@ new function(
 //ECMAScript 辅助类
 !function(){
 
-this.ECMAScriptErrors = ECMAScriptErrors = function(REGEXP){
+this.ECMAScriptErrors = function(REGEXP){
 	/**
 	 * 错误信息
 	 */
@@ -3097,7 +3097,7 @@ this.ECMAScriptErrors = ECMAScriptErrors = function(REGEXP){
 	/\$\{(\d+)\}/g
 );
 
-this.ECMAScriptOrders = ECMAScriptOrders = function(){
+this.ECMAScriptOrders = function(){
 	/**
 	 * 标签优先级顺序
 	 */
@@ -3127,19 +3127,18 @@ this.ECMAScriptOrders = ECMAScriptOrders = function(){
 		RIGHT_SHIFT: 201,
 		SUPER_PROPERTY_ASSIGNMENT: 201,
 		EQUALITY: 202,
-		EXPONENTIATION: 202,
+		EXPONENTIATION: 201,
 		UNARY_ASSIGNMENT: 202,
-		INEQUALITY: 202,
+		INEQUALITY: 200,
 		UNSIGNED_RIGHT_SHIFT: 202,
 		IDENTITY: 203,
-		NONIDENTITY: 203,
-		DESTRUCTURING_ASSIGNMENT: 203,
+		NONIDENTITY: 201,
+		DESTRUCTURING_ASSIGNMENT: 201,
 		POSTFIX_UNARY_ASSIGNMENT: 203,
 		SHORTHAND_ASSIGNMENT: 203,
-		ILLEGAL_SHORTHAND_ASSIGNMENT: 204,
 		SUPER_PROPERTY_SHORTHAND_ASSIGNMENT: 204,
 		SUPER_PROPERTY_POSTFIX_UNARY_ASSIGNMENT: 204,
-		JSX_ADJACENT_ELEMENT: 205,
+		JSX_ADJACENT_ELEMENT: 201,
 		IDENTIFIER: 300,
 		ENV_CONSTANT: 300,
 		TARGET: 301,
@@ -3156,8 +3155,8 @@ this.ECMAScriptOrders = ECMAScriptOrders = function(){
 		TEMPLATE_CONTENT: 500,
 		TEMPLATE_PARAMETER: 501,
 		TEMPLATE_SPECIAL_CONTENT: 501,
-		JSX_TEXT: 502,
-		JSX_LINE_TERMINATOR: 503,
+		JSX_TEXT: 501,
+		JSX_LINE_TERMINATOR: 502,
 		FILE_START: 600
 	});
 
@@ -31215,9 +31214,9 @@ Rexjs.static(this);
 	// BoxStatement
 	null,
 	// ECMAScriptErrors
-	null,
+	Rexjs.ECMAScriptErrors,
 	// ECMAScriptOrders
-	null,
+	Rexjs.ECMAScriptOrders,
 	Rexjs.SyntaxTag,
 	Rexjs.TagType,
 	Rexjs.TagClass.CLASS_STATEMENT_BEGIN,
@@ -32120,7 +32119,7 @@ this.JavaScriptCompiler = function(ModuleCompiler, ECMAScriptParser, File, nativ
 		 */
 		compile: function(module){
 			// 初始化解析器
-			var parser = new ECMAScriptParser();
+			var parser = new Rexjs.ECMAScriptParser();
 			
 			// 解析代码
 			parser.parse(
@@ -32640,10 +32639,10 @@ this.Module = Module = function(ModuleCache, ModuleCompiler, stack, create, defi
 				// 设置错误响应文本
 				module.origin = error;
 
-				// 提示错误信息
-				console.error('Load module "' + module.name.href + '" error: ' + error + ".");
 				// 触发监听器
 				trigger(module);
+				// 抛出错误信息
+				throw 'Load module "' + module.name.href + '" error: ' + error + ".";
 			},
 			_sync
 		);
@@ -33266,8 +33265,6 @@ this.BrowserReady = function(HTMLCompiler, CSSCompiler, XMLHttpRequest, BASE_URL
 			if(url.filename === ""){
 				var pathname = url.pathname;
 
-				console.log(url.href, moduleName, _baseUrlString);
-
 				return new URL(
 					url.protocal + "//" + url.host + (pathname ? pathname : "/index") + (url.ext ? "" : ".js") + url.search + url.hash
 				);
@@ -33324,7 +33321,7 @@ this.BrowserReady = function(HTMLCompiler, CSSCompiler, XMLHttpRequest, BASE_URL
 					// 如果要生成 sourceMaps
 					if(script.hasAttribute("data-sourcemaps")){
 						// 开启 sourceMaps
-						ECMAScriptParser.sourceMaps = true;
+						Rexjs.ECMAScriptParser.sourceMaps = true;
 					}
 
 					// 初始化模块

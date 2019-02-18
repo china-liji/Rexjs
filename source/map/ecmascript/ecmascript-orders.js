@@ -1,6 +1,4 @@
-export let { ECMAScriptOrders } = new function(){
-
-this.ECMAScriptOrders = function(){
+export let ECMAScriptOrders = function(){
 	/**
 	 * ECMAScript 标签优先级顺序
 	 */
@@ -445,6 +443,4 @@ this.ECMAScriptOrders = function(){
 			return this.VARIABLE;
 		};
 	};
-}();
-
 }();
