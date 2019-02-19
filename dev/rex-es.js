@@ -704,12 +704,60 @@ Rexjs.Module.exportFrom("./file-start","rexjs://source/map/file-position/index.j
 
 eval(
 					function(){
+						new Rexjs.Module("rexjs://source/map/literal/literal-expression.js",function(Rexjs){
+"use strict";
+var Expression=Rexjs.Module.memberOf("Expression","../core/index","rexjs://source/map/literal/literal-expression.js");var LiteralExpression=function(){var $Rexjs_0;return ($Rexjs_0=Rexjs.Class.create(Expression,[new Rexjs.ClassProperty("constructor",function LiteralExpression(){return Rexjs.Super.callConstructor($Rexjs_0.prototype, this, arguments);})], 0));}();Rexjs.Module.export("LiteralExpression", LiteralExpression);
+});
+//# sourceURL=http://sourceurl/source/map/literal/literal-expression.js
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImh0dHA6Ly9sb2NhbGhvc3Q6OTA5MC9zb3VyY2UvbWFwL2xpdGVyYWwvbGl0ZXJhbC1leHByZXNzaW9uLmpzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiI7O3NIQUVPLEdBQUEsQUFBRyxDQUFDLGlCQUFBLEFBQWlCLEFBQUMsQ0FBQSxBQUFDLEFBQUMsUUFBQSxBQUFRLEFBQUEsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLGFBS3pDLE1BQUEsQUFBTSw4QkFBaUMsVUFBQSxBQUFVLHNKQUNsRCxDQUFBLEFBQUMsQUFBQSxDQUFBLEFBQUMsQUFBQSxDQUFBLEFBQUM7In0=
+					}
+					.toString()
+					.match(
+						/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+					)[1]
+				);
+
+
+eval(
+					function(){
+						new Rexjs.Module("rexjs://source/map/literal/literal-tag.js",function(Rexjs){
+"use strict";
+var SyntaxTag=Rexjs.Module.memberOf("SyntaxTag","../core/index","rexjs://source/map/literal/literal-tag.js"),CLASS_EXPRESSION=Rexjs.Module.memberOf("CLASS_EXPRESSION","../core/index","rexjs://source/map/literal/literal-tag.js");var LiteralExpression=Rexjs.Module.memberOf("LiteralExpression","./literal-expression","rexjs://source/map/literal/literal-tag.js");var LiteralTag=function(){var $Rexjs_0;return ($Rexjs_0=Rexjs.Class.create(SyntaxTag,[new Rexjs.ClassProperty("$class",CLASS_EXPRESSION),new Rexjs.ClassProperty("require",function(tagsMap){return tagsMap.expressionContextTags;}),new Rexjs.ClassProperty("visitor",function(parser,context,statement){statement.expression=new LiteralExpression(context);}),new Rexjs.ClassProperty("constructor",function LiteralTag(){return Rexjs.Super.callConstructor($Rexjs_0.prototype, this, arguments);})], 3));}();Rexjs.Module.export("LiteralTag", LiteralTag);
+});
+//# sourceURL=http://sourceurl/source/map/literal/literal-tag.js
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImh0dHA6Ly9sb2NhbGhvc3Q6OTA5MC9zb3VyY2UvbWFwL2xpdGVyYWwvbGl0ZXJhbC10YWcuanMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6Ijs7d1dBR08sR0FBQSxBQUFHLENBQUMsVUFBQSxBQUFVLEFBQUMsQ0FBQSxBQUFDLEFBQUMsUUFBQSxBQUFRLEFBQUEsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLGFBS2xDLE1BQUEsQUFBTSw4QkFBMEIsU0FBQSxBQUFTLDJCQUt4QyxNQUFBLEFBQU0sRUFBRyxnQkFBQSxBQUFnQiwyQkFRekIsT0FBQSxBQUFPLFVBQUEsQ0FBQSxBQUFDLEFBQUEsT0FBQSxBQUFPLEFBQUEsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLEFBQ2hCLE1BQUEsQUFBTSxDQUFDLE9BQUEsQUFBTyxBQUFBLENBQUEsQUFBQyxBQUFBLHFCQUFBLEFBQXFCLENBQ3JDLENBQUEsQUFBQywyQkFVRCxPQUFBLEFBQU8sVUFBQSxDQUFBLEFBQUMsQUFBQSxNQUFBLEFBQU0sQ0FBRSxPQUFBLEFBQU8sQ0FBRSxTQUFBLEFBQVMsQUFBQSxDQUFBLEFBQUMsQUFBQSxDQUFBLEFBQUMsQUFFbkMsU0FBQSxBQUFTLEFBQUEsQ0FBQSxBQUFDLEFBQUEsVUFBQSxBQUFVLEFBQUMsQ0FBQSxBQUFDLEFBQUMsSUFBQSxBQUFJLEFBQUEsaUJBQUEsQUFBaUIsQUFBQSxDQUFBLEFBQUMsQUFBQSxPQUFBLEFBQU8sQUFBQSxDQUFBLEFBQUMsQ0FDdEQsQ0FBQSxBQUFDLCtJQUVILENBQUEsQUFBQyxBQUFBLENBQUEsQUFBQyxBQUFBLENBQUEsQUFBQzsifQ==
+					}
+					.toString()
+					.match(
+						/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+					)[1]
+				);
+
+
+eval(
+					function(){
+						new Rexjs.Module("rexjs://source/map/literal/index.js",function(Rexjs){
+"use strict";
+Rexjs.Module.exportFrom("./literal-expression","rexjs://source/map/literal/index.js");Rexjs.Module.exportFrom("./literal-tag","rexjs://source/map/literal/index.js");
+});
+//# sourceURL=http://sourceurl/source/map/literal/index.js
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImh0dHA6Ly9sb2NhbGhvc3Q6OTA5MC9zb3VyY2UvbWFwL2xpdGVyYWwvaW5kZXguanMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6Ijs7OyJ9
+					}
+					.toString()
+					.match(
+						/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+					)[1]
+				);
+
+
+eval(
+					function(){
 						new Rexjs.Module("rexjs://source/map/index.js",function(Rexjs){
 "use strict";
-var a=1;var globalThis={};var define=(function(exports){return function(){exports,name;for(var name in exports){globalThis[name]=exports[name];}}.apply(this[0],this[1]);}.bind([this, arguments]));var EcmaScript=Rexjs.Module.moduleOf("./ecmascript/index","rexjs://source/map/index.js");var BaseExpression=Rexjs.Module.moduleOf("./base-expression/index","rexjs://source/map/index.js");var BaseStatement=Rexjs.Module.moduleOf("./base-statement/index","rexjs://source/map/index.js");var BaseStatements=Rexjs.Module.moduleOf("./base-statements/index","rexjs://source/map/index.js");var Brace=Rexjs.Module.moduleOf("./brace/index","rexjs://source/map/index.js");var Bracket=Rexjs.Module.moduleOf("./bracket/index","rexjs://source/map/index.js");var Paren=Rexjs.Module.moduleOf("./paren/index","rexjs://source/map/index.js");var BaseTag=Rexjs.Module.moduleOf("./base-tag/index","rexjs://source/map/index.js");var Comment=Rexjs.Module.moduleOf("./comment/index","rexjs://source/map/index.js");var Env=Rexjs.Module.moduleOf("./env/index","rexjs://source/map/index.js");var FilePosition=Rexjs.Module.moduleOf("./file-position/index","rexjs://source/map/index.js");define(EcmaScript);define(BaseExpression);define(BaseStatement);define(BaseStatements);define(Brace);define(Bracket);define(Paren);define(BaseTag);define(Comment);define(Env);define(FilePosition);window.globalThis=globalThis;
+var a=1;var globalThis={};var define=(function(exports){return function(){exports,name;for(var name in exports){globalThis[name]=exports[name];}}.apply(this[0],this[1]);}.bind([this, arguments]));var EcmaScript=Rexjs.Module.moduleOf("./ecmascript/index","rexjs://source/map/index.js");var BaseExpression=Rexjs.Module.moduleOf("./base-expression/index","rexjs://source/map/index.js");var BaseStatement=Rexjs.Module.moduleOf("./base-statement/index","rexjs://source/map/index.js");var BaseStatements=Rexjs.Module.moduleOf("./base-statements/index","rexjs://source/map/index.js");var Brace=Rexjs.Module.moduleOf("./brace/index","rexjs://source/map/index.js");var Bracket=Rexjs.Module.moduleOf("./bracket/index","rexjs://source/map/index.js");var Paren=Rexjs.Module.moduleOf("./paren/index","rexjs://source/map/index.js");var BaseTag=Rexjs.Module.moduleOf("./base-tag/index","rexjs://source/map/index.js");var Comment=Rexjs.Module.moduleOf("./comment/index","rexjs://source/map/index.js");var Env=Rexjs.Module.moduleOf("./env/index","rexjs://source/map/index.js");var FilePosition=Rexjs.Module.moduleOf("./file-position/index","rexjs://source/map/index.js");var Literal=Rexjs.Module.moduleOf("./literal/index","rexjs://source/map/index.js");define(EcmaScript);define(BaseExpression);define(BaseStatement);define(BaseStatements);define(Brace);define(Bracket);define(Paren);define(BaseTag);define(Comment);define(Env);define(FilePosition);define(Literal);window.globalThis=globalThis;
 });
 //# sourceURL=http://sourceurl/source/map/index.js
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImh0dHA6Ly9sb2NhbGhvc3Q6OTA5MC9zb3VyY2UvbWFwL2luZGV4LmpzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiI7O0FBQUEsR0FBQSxBQUFHLENBQUMsQ0FBQSxBQUFDLEFBQUMsQ0FBQSxBQUFDLEFBQUMsQ0FBQSxBQUFDLENBQ1QsR0FBQSxBQUFHLENBQUMsVUFBQSxBQUFVLEFBQUMsQ0FBQSxBQUFDLEFBQUMsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLENBRW5CLEdBQUEsQUFBRyxDQUFDLE1BQUEsQUFBTSxBQUFDLENBQUEsQUFBQyxTQUFDLENBQUEsQUFBQyxBQUFBLE9BQUEsQUFBTyxBQUFBLENBQUEsQUFBQyxrQkFBSSxDQUFBLEFBQUMsYUFDMUIsR0FBQSxBQUFHLEFBQUEsQ0FBQSxBQUFDLEFBQUEsR0FBQSxBQUFHLENBQUMsSUFBQSxBQUFJLEFBQUMsSUFBQSxBQUFJLEFBQUQsT0FBQSxBQUFPLEFBQUEsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLEFBQ3hCLFVBQUEsQUFBVSxBQUFBLENBQUEsQUFBQyxBQUFBLElBQUEsQUFBSSxBQUFBLENBQUEsQUFBQyxBQUFDLENBQUEsQUFBQyxBQUFDLE9BQUEsQUFBTyxBQUFBLENBQUEsQUFBQyxBQUFBLElBQUEsQUFBSSxBQUFBLENBQUEsQUFBQyxDQUNqQyxDQUFBLEFBQUMsQUFDRixDQUFBLEFBQUMsaS9CQWNELE1BQUEsQUFBTSxBQUFBLENBQUEsQUFBQyxBQUFBLFVBQUEsQUFBVSxBQUFBLENBQUEsQUFBQyxDQUNsQixNQUFBLEFBQU0sQUFBQSxDQUFBLEFBQUMsQUFBQSxjQUFBLEFBQWMsQUFBQSxDQUFBLEFBQUMsQ0FDdEIsTUFBQSxBQUFNLEFBQUEsQ0FBQSxBQUFDLEFBQUEsYUFBQSxBQUFhLEFBQUEsQ0FBQSxBQUFDLENBQ3JCLE1BQUEsQUFBTSxBQUFBLENBQUEsQUFBQyxBQUFBLGNBQUEsQUFBYyxBQUFBLENBQUEsQUFBQyxDQUN0QixNQUFBLEFBQU0sQUFBQSxDQUFBLEFBQUMsQUFBQSxLQUFBLEFBQUssQUFBQSxDQUFBLEFBQUMsQ0FDYixNQUFBLEFBQU0sQUFBQSxDQUFBLEFBQUMsQUFBQSxPQUFBLEFBQU8sQUFBQSxDQUFBLEFBQUMsQ0FDZixNQUFBLEFBQU0sQUFBQSxDQUFBLEFBQUMsQUFBQSxLQUFBLEFBQUssQUFBQSxDQUFBLEFBQUMsQ0FDYixNQUFBLEFBQU0sQUFBQSxDQUFBLEFBQUMsQUFBQSxPQUFBLEFBQU8sQUFBQSxDQUFBLEFBQUMsQ0FDZixNQUFBLEFBQU0sQUFBQSxDQUFBLEFBQUMsQUFBQSxPQUFBLEFBQU8sQUFBQSxDQUFBLEFBQUMsQ0FDZixNQUFBLEFBQU0sQUFBQSxDQUFBLEFBQUMsQUFBQSxHQUFBLEFBQUcsQUFBQSxDQUFBLEFBQUMsQ0FDWCxNQUFBLEFBQU0sQUFBQSxDQUFBLEFBQUMsQUFBQSxZQUFBLEFBQVksQUFBQSxDQUFBLEFBQUMsQ0FFcEIsTUFBQSxBQUFNLEFBQUEsQ0FBQSxBQUFDLEFBQUEsVUFBQSxBQUFVLEFBQUMsQ0FBQSxBQUFDLEFBQUMsVUFBQSxBQUFVOyJ9
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImh0dHA6Ly9sb2NhbGhvc3Q6OTA5MC9zb3VyY2UvbWFwL2luZGV4LmpzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiI7O0FBQUEsR0FBQSxBQUFHLENBQUMsQ0FBQSxBQUFDLEFBQUMsQ0FBQSxBQUFDLEFBQUMsQ0FBQSxBQUFDLENBQ1QsR0FBQSxBQUFHLENBQUMsVUFBQSxBQUFVLEFBQUMsQ0FBQSxBQUFDLEFBQUMsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLENBRW5CLEdBQUEsQUFBRyxDQUFDLE1BQUEsQUFBTSxBQUFDLENBQUEsQUFBQyxTQUFDLENBQUEsQUFBQyxBQUFBLE9BQUEsQUFBTyxBQUFBLENBQUEsQUFBQyxrQkFBSSxDQUFBLEFBQUMsYUFDMUIsR0FBQSxBQUFHLEFBQUEsQ0FBQSxBQUFDLEFBQUEsR0FBQSxBQUFHLENBQUMsSUFBQSxBQUFJLEFBQUMsSUFBQSxBQUFJLEFBQUQsT0FBQSxBQUFPLEFBQUEsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLEFBQ3hCLFVBQUEsQUFBVSxBQUFBLENBQUEsQUFBQyxBQUFBLElBQUEsQUFBSSxBQUFBLENBQUEsQUFBQyxBQUFDLENBQUEsQUFBQyxBQUFDLE9BQUEsQUFBTyxBQUFBLENBQUEsQUFBQyxBQUFBLElBQUEsQUFBSSxBQUFBLENBQUEsQUFBQyxDQUNqQyxDQUFBLEFBQUMsQUFDRixDQUFBLEFBQUMsb2tDQWVELE1BQUEsQUFBTSxBQUFBLENBQUEsQUFBQyxBQUFBLFVBQUEsQUFBVSxBQUFBLENBQUEsQUFBQyxDQUNsQixNQUFBLEFBQU0sQUFBQSxDQUFBLEFBQUMsQUFBQSxjQUFBLEFBQWMsQUFBQSxDQUFBLEFBQUMsQ0FDdEIsTUFBQSxBQUFNLEFBQUEsQ0FBQSxBQUFDLEFBQUEsYUFBQSxBQUFhLEFBQUEsQ0FBQSxBQUFDLENBQ3JCLE1BQUEsQUFBTSxBQUFBLENBQUEsQUFBQyxBQUFBLGNBQUEsQUFBYyxBQUFBLENBQUEsQUFBQyxDQUN0QixNQUFBLEFBQU0sQUFBQSxDQUFBLEFBQUMsQUFBQSxLQUFBLEFBQUssQUFBQSxDQUFBLEFBQUMsQ0FDYixNQUFBLEFBQU0sQUFBQSxDQUFBLEFBQUMsQUFBQSxPQUFBLEFBQU8sQUFBQSxDQUFBLEFBQUMsQ0FDZixNQUFBLEFBQU0sQUFBQSxDQUFBLEFBQUMsQUFBQSxLQUFBLEFBQUssQUFBQSxDQUFBLEFBQUMsQ0FDYixNQUFBLEFBQU0sQUFBQSxDQUFBLEFBQUMsQUFBQSxPQUFBLEFBQU8sQUFBQSxDQUFBLEFBQUMsQ0FDZixNQUFBLEFBQU0sQUFBQSxDQUFBLEFBQUMsQUFBQSxPQUFBLEFBQU8sQUFBQSxDQUFBLEFBQUMsQ0FDZixNQUFBLEFBQU0sQUFBQSxDQUFBLEFBQUMsQUFBQSxHQUFBLEFBQUcsQUFBQSxDQUFBLEFBQUMsQ0FDWCxNQUFBLEFBQU0sQUFBQSxDQUFBLEFBQUMsQUFBQSxZQUFBLEFBQVksQUFBQSxDQUFBLEFBQUMsQ0FDcEIsTUFBQSxBQUFNLEFBQUEsQ0FBQSxBQUFDLEFBQUEsT0FBQSxBQUFPLEFBQUEsQ0FBQSxBQUFDLENBRWYsTUFBQSxBQUFNLEFBQUEsQ0FBQSxBQUFDLEFBQUEsVUFBQSxBQUFVLEFBQUMsQ0FBQSxBQUFDLEFBQUMsVUFBQSxBQUFVOyJ9
 					}
 					.toString()
 					.match(
@@ -740,74 +788,6 @@ var a=1;var globalThis={};var define=(function(exports){return function(){export
 	commonVisitor, getIdentifierRegExpSource
 ){
 "use strict";
-
-
-eval(
-								function(){
-									// 字面量标签相关
-!function(){
-
-this.LiteralExpression = function(){
-	/**
-	 * 字面量表达式
-	 * @param {Context} context - 语法标签上下文
-	 */
-	function LiteralExpression(context){
-		Expression.call(this, context);
-	};
-	LiteralExpression = new Rexjs(LiteralExpression, Expression);
-	
-	return LiteralExpression;
-}();
-
-this.LiteralTag = function(LiteralExpression){
-	/**
-	 * 字面量标签，即用肉眼一眼就可以看出含义的标签
-	 * @param {Number} _type - 标签类型
-	 */
-	function LiteralTag(_type){
-		SyntaxTag.call(this, _type);
-	};
-	LiteralTag = new Rexjs(LiteralTag, SyntaxTag);
-	
-	LiteralTag.props({
-		$class: CLASS_EXPRESSION,
-		/**
-		 * 获取此标签接下来所需匹配的标签列表
-		 * @param {TagsMap} tagsMap - 标签集合映射
-		 * @param {SyntaxTags} currentTags - 上一个标签所需匹配的标签列表
-		 */
-		require: function(tagsMap){
-			return tagsMap.expressionContextTags;
-		},
-		/**
-		 * 标签访问器
-		 * @param {SyntaxParser} parser - 语法解析器
-		 * @param {Context} context - 标签上下文
-		 * @param {Statement} statement - 当前语句
-		 * @param {Statements} statements - 当前语句块
-		 */
-		visitor: function(parser, context, statement){
-			// 设置表达式
-			statement.expression = new LiteralExpression(context);
-		}
-	})
-	
-	return LiteralTag;
-}(
-	this.LiteralExpression
-);
-
-}.call(
-	this
-);
-								}
-								.toString()
-								.match(
-									/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-								)[1] +
-								"\n//# sourceURL=http://localhost:9090/source/map1/literal-base.js"
-							);
 
 
 eval(

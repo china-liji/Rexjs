@@ -18,6 +18,7 @@ import * as BaseTag from "./base-tag/index";
 import * as Comment from "./comment/index";
 import * as Env from "./env/index";
 import * as FilePosition from "./file-position/index";
+import * as Literal from "./literal/index";
 
 define(EcmaScript);
 define(BaseExpression);
@@ -30,5 +31,6 @@ define(BaseTag);
 define(Comment);
 define(Env);
 define(FilePosition);
+define(Literal);
 
 window.globalThis = globalThis;
