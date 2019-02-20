@@ -1,8 +1,8 @@
-import { Statements } from "../core";
+import Rexjs from "../core";
 import { ECMAScriptStatement } from "./ecmascript-statement";
 
 export let ECMAScriptStatements = function(){
-	return class ECMAScriptStatements extends Statements {
+	return class ECMAScriptStatements extends Rexjs.Statements {
 		/**
 		 * 当前的闭包语句块
 		 * @type {ECMAScriptStatements}

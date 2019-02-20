@@ -167,12 +167,6 @@ this.SourceModuleReady = function(SourceCompiler, File, Buffer, toMapPath, unmap
 		 * @param {Function} fail - 失败回调
 		 */
 		readFile({ href }, success, fail){
-			console.log(
-				toMapPath(
-							this.xx(href).href
-						)
-			)
-
 			try {
 				success(
 					File.read(
