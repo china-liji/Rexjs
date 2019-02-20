@@ -1,4 +1,4 @@
-import { SyntaxTag, CLASS_EXPRESSION_CONTEXT, TYPE_MISTAKABLE } from "../core/index";
+import { SyntaxTag, CLASS_EXPRESSION_CONTEXT, TYPE_MISTAKABLE } from "../core";
 
 export let ExpressionSeparatorTag = function(){
 	/**

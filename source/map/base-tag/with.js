@@ -1,4 +1,4 @@
-import { SyntaxTag, CLASS_STATEMENT_BEGIN } from "../core/index";
+import { SyntaxTag, CLASS_STATEMENT_BEGIN } from "../core";
 import { ECMAScriptErrors } from "../ecmascript/ecmascript-errors";
 
 export let WithTag = function(){

@@ -1,4 +1,4 @@
-import { SyntaxTag, TYPE_MATCHABLE } from "../core/index";
+import { SyntaxTag, TYPE_MATCHABLE } from "../core";
 import { ECMAScriptOrders } from "../ecmascript/ecmascript-orders";
 
 export let CommentTag = function(){

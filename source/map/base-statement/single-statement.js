@@ -1,4 +1,4 @@
-import { STATE_STATEMENT_END } from "../core/index";
+import { STATE_STATEMENT_END } from "../core";
 import { ECMAScriptStatement } from "../ecmascript/ecmascript-statement";
 
 export let SingleStatement = function(){

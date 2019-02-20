@@ -1,4 +1,4 @@
-import { SyntaxTag, Expression, CLASS_STATEMENT_BEGIN } from "../core/index";
+import { SyntaxTag, Expression, CLASS_STATEMENT_BEGIN } from "../core";
 
 export let DebuggerTag = function(){
 	/**

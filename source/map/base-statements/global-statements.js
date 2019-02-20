@@ -1,4 +1,4 @@
-import Rexjs from "../core/index";
+import Rexjs from "../core";
 import { ECMAScriptStatements } from "../ecmascript/ecmascript-statements";
 import { ECMAScriptVariableCollections } from "../ecmascript/ecmascript-variable-collections";
 

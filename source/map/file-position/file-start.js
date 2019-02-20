@@ -1,4 +1,4 @@
-import Rexjs from "../core/index";
+import Rexjs from "../core";
 import { ECMAScriptOrders } from "../ecmascript/ecmascript-orders";
 
 export let FileStartTag = function({ FilePositionTag, FileStartExpression }){

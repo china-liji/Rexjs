@@ -1175,14 +1175,63 @@ this.Module = Module = function(ModuleCache, ModuleCompiler, stack, create, defi
 		 * @param {String} name - 模块名称
 		 * @param {String} _baseUrlString - 基础地址
 		 */
-		import: function(name, _baseUrlString){
-			return (
-				ModuleCache
-					.item(
-						moduleReady.parseName(name, _baseUrlString).href
-					)
-					.exports
-			);
+		import: function(nameString, _baseUrlString){
+			// 解析名称，此操作的结果可能会被污染，比如添加 ".js" 拓展名
+			var name = moduleReady.parseName(nameString, _baseUrlString);
+
+			toThrow:
+			{
+				// 如果有此模块
+				if(ModuleCache.cached(name.href)){
+					// 返回模块输出
+					return ModuleCache.item(name.href).exports;
+				}
+
+				// 重新生成无污染的 url
+				var url = new URL(nameString, _baseUrlString);
+				
+				// 如果有详细的文件名
+				if(url.filename){
+					break toThrow;
+				}
+				
+				var dirname = url.dirname;
+
+				// 如果存在目录
+				if(dirname.length !== "/"){
+					// 利用目录名加拓展名，生成新的 dirname 的 url
+					var u = new URL(dirname + ".js");
+
+					// 覆盖 dirname
+					url.dirname = u.dirname;
+					// 覆盖 filename
+					url.filename = u.filename;
+
+					try {
+						// 以 ".js" 的形式导入模块，如果成功，则直接返回结果
+						return this.import(url.href);
+					}
+					catch(e){
+						// 找不到带 ".js" 的模块，进入下一步
+					}
+				}
+
+				// 恢复当初的目录名
+				url.dirname = dirname;
+				// 设置文件名
+				url.filename = "index.js";
+
+				try {
+					// 以 "/index.js" 形式导入模块，如果成功，则直接返回结果
+					return this.import(url.href);
+				}
+				catch(e){
+					break toThrow;
+				}
+			}
+
+			// 抛出错误
+			throw 'Cannot import module "' + nameString + '"' + (_baseUrlString ? ' from "' + _baseUrlString + '"' : "") + ".";
 		},
 		/**
 		 * 获取模块成员

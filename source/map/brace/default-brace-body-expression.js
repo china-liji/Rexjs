@@ -1,4 +1,4 @@
-import { DefaultExpression, STATE_STATEMENT_ENDED } from "../core/index";
+import { DefaultExpression, STATE_STATEMENT_ENDED } from "../core";
 
 export let DefaultBraceBodyExpression = function(){
 	/**

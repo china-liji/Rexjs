@@ -85,7 +85,7 @@ this.List = function(Array, Object, toArray){
 	Rexjs.toArray
 );
 
-this.URL = function(toString, parse){
+this.URL = function(EXT_REGEXP, toString, parse){
 	/**
 	 * 地址
 	 * @param {String} urlString - 地址字符串
@@ -120,7 +120,15 @@ this.URL = function(toString, parse){
 	URL = new Rexjs(URL);
 
 	URL.props({
-		ext: "",
+		/**
+		 * 获取文件拓展名
+		 * @returns {String}
+		 */
+		get ext(){
+			var result = this.filename.match(EXT_REGEXP);
+
+			return result ? result[0] : "";
+		},
 		dirname : "",
 		filename: "",
 		hash : "",
@@ -203,6 +211,8 @@ this.URL = function(toString, parse){
 
 	return URL;
 }(
+	// EXT_REGEXP
+	/\.[^\.]+$/,
 	// toString
 	function(urlString){
 		// 如果不是字符串
@@ -233,11 +243,9 @@ this.URL = function(toString, parse){
 			
 			filename = getUrlInfo(result, 6),
 
-			ext = getUrlInfo(result, 7),
+			search = getUrlInfo(result, 7),
 			
-			search = getUrlInfo(result, 8),
-			
-			hash = getUrlInfo(result, 9);
+			hash = getUrlInfo(result, 8);
 
 		url.protocal = protocal;
 
@@ -272,7 +280,6 @@ this.URL = function(toString, parse){
 				result = decodeURI(urlString).match(UNKNOWN_PROTOCAL_DIR_NAME_REGEXP);
 				dirname = getUrlInfo(result, 1);
 				filename = getUrlInfo(result, 2);
-				ext = getUrlInfo(result, 3);
 				search = decodeURI(search);
 				hash = decodeURI(hash);
 				break;
@@ -281,7 +288,6 @@ this.URL = function(toString, parse){
 		var dirnameArray = [];
 
 		url.filename = filename;
-		url.ext = ext;
 		url.search = search;
 		url.hash = hash;
 		
@@ -327,11 +333,11 @@ Rexjs.static(this);
 }(
 	Rexjs,
 	// URL_REGEXP
-	/^(?:([^:/?#.]+:)(?:\/+(?:([^/?#]*)@)?([\w\d\-\u0100-\uffff.%]*)(?::([0-9]+))?)?)?(?:([^?#]*?)([^\/?#]+?(\.[^.?#\/]+))?)?(?:(\?[^#]*))?(?:(#.*))?$/,
+	/^(?:([^:/?#.]+:)(?:\/+(?:([^/?#]*)@)?([\w\d\-\u0100-\uffff.%]*)(?::([0-9]+))?)?)?(?:([^?#]*?)([^\/?#]+?\.[^.?#\/]+)?)?(?:(\?[^#]*))?(?:(#.*))?$/,
 	// DATA_URL_DIR_NAME_REGEXP
 	/^data:([^?#]*)/,
 	// UNKNOWN_PROTOCAL_DIR_NAME_REGEXP
-	/^[^:/?#.]+:\/*([^?#]*?)([^/?#]+\.([^/?#]+))?(?=[?#].*$|$)/,
+	/^[^:/?#.]+:\/*([^?#]*?)([^/?#]+\.[^/?#]+)?(?=[?#].*$|$)/,
 	// DIR_SEPARATOR_REGEXP
 	/\/|\\/g,
 	encodeURI,

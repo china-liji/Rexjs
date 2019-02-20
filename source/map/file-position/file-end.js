@@ -1,4 +1,4 @@
-import Rexjs from "../core/index";
+import Rexjs from "../core";
 import { GlobalStatements } from "../base-statements/global-statements";
 
 export let FileEndTag = function({ FilePositionTag, FileEndExpression }){

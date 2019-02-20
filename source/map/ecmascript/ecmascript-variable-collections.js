@@ -1,4 +1,4 @@
-import Rexjs from "../core/index";
+import Rexjs from "../core";
 
 export let ECMAScriptVariableCollections = function({ VariableCollections, VariableCollection }){
 	return class ECMAScriptVariableCollections extends VariableCollections {

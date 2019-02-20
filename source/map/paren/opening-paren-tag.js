@@ -1,4 +1,4 @@
-import { SyntaxTag } from "../core/index";
+import { SyntaxTag } from "../core";
 
 export let OpeningParenTag = function(){
 	/**

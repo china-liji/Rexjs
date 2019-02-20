@@ -32123,6 +32123,41 @@ this.ModuleCompiler = function(){
 	return ModuleCompiler;
 }();
 
+this.UnknownCompiler = function(ModuleCompiler, error){
+	/**
+	 * 未知的模块编译器
+	 */
+	function UnknownCompiler(){
+		ModuleCompiler.call(this);
+	};
+	UnknownCompiler = new Rexjs(UnknownCompiler, ModuleCompiler);
+
+	UnknownCompiler.props({
+		/**
+		 * 编译模块
+		 * @param {Module} module - 编译的模块
+		 */
+		compile: function(module){
+			error(module);
+		},
+		/**
+		 * 执行模块编译结果
+		 * @param {Module} module - 编译的模块
+		 */
+		exec: function(module){
+			error(module);
+		}
+	});
+
+	return UnknownCompiler;
+}(
+	this.ModuleCompiler,
+	// error
+	function(module){
+		throw "Used unknown compiler: " + module.name.href + ".";
+	}
+);
+
 this.JavaScriptCompiler = function(ModuleCompiler, ECMAScriptParser, File, nativeEval){
 	/**
 	 * JavaScript 模块编译器
@@ -32292,7 +32327,7 @@ this.ModuleCache = function(cache, hasOwnProperty, getModuleHref, getCachedModul
 	}
 );
 
-this.Module = Module = function(ModuleCache, ModuleCompiler, stack, create, defineProperty, readFile, importedByDep){
+this.Module = Module = function(ModuleCache, UnknownCompiler, stack, create, defineProperty, readFile, importedByDep){
 	/**
 	 * 模块
 	 * @param {String} name - 模块名称
@@ -32584,7 +32619,7 @@ this.Module = Module = function(ModuleCache, ModuleCompiler, stack, create, defi
 			// 设置状态为编译中
 			this.status = STATUS_COMPILING;
 			// 设置编译器
-			this.compiler = compiler = new (moduleReady.compilers[name.ext] || ModuleCompiler)();
+			this.compiler = compiler = new (moduleReady.compilers[name.ext] || UnknownCompiler)();
 
 			// 执行编译
 			compiler.compile(this);
@@ -32622,7 +32657,7 @@ this.Module = Module = function(ModuleCache, ModuleCompiler, stack, create, defi
 	return Module;
 }(
 	this.ModuleCache,
-	this.ModuleCompiler,
+	this.UnknownCompiler,
 	// stack
 	[],
 	Object.create,

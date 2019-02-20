@@ -1,4 +1,4 @@
-import { STATE_STATEMENT_ENDED } from "../core/index";
+import { STATE_STATEMENT_ENDED } from "../core";
 import { GenerableExpression } from "./generable-expression";
 
 export let ConditionalExpression = function(DEFAULT_INDEX){

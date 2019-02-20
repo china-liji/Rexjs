@@ -1,4 +1,4 @@
-import { Expression } from "../core/index";
+import { Expression } from "../core";
 
 export let AssignableExpression = function(){
 	/**

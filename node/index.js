@@ -1,10 +1,41 @@
 new function({ Module, ModuleCache, File, ECMAScriptParser, JavaScriptCompiler, ModuleReady, URL, Base64 }, MAP_PATH, source, dev, baseURL, defaultList){
 
-this.File = function(fs){
+this.File = function(fs, path, url){
 	/**
 	 * 文件
 	 */
 	return class File {
+		static path(pathString, _onerror){
+			try {
+				// 判断文件是否存在并且是文件
+				if(fs.statSync(pathString).isFile()){
+					return pathString;
+				}
+			}
+			catch(e){}
+
+			let pathInfo = path.parse(pathString);
+
+			// 如果 “有目录且不是文件” 或者 “没有目录也没有文件”，而且有拓展名
+			if(pathInfo.ext){
+				return _onerror ? _onerror() : pathString;
+			}
+
+			let { search, hash, pathname } = url.parse(pathString), postfix = `.js${search || ""}${hash || ""}`;
+
+			return this.path(
+				`${pathname}${postfix}`,
+				() => {
+					return this.path(
+						`${pathname}/index${postfix}`,
+						() => {
+							return _onerror ? _onerror() : pathString;
+						}
+					);
+				}
+			);
+		};
+
 		/**
 		 * 读取文件内容
 		 * @param {String} filepath - 文件路径
@@ -23,7 +54,9 @@ this.File = function(fs){
 		};
 	};
 }(
-	require("fs")
+	require("fs"),
+	require("path"),
+	require("url")
 );
 
 this.SourceCompiler = function(defaultLoader){
@@ -76,7 +109,7 @@ this.SourceCompiler = function(defaultLoader){
 	() => {}
 );
 
-this.SourceModuleReady = function(SourceCompiler, File, Buffer, MAP_PATH, colors){
+this.SourceModuleReady = function(SourceCompiler, File, Buffer, toMapPath, unmapPath){
 	return class SourceModuleReady extends ModuleReady {
 		constructor(){
 			super();
@@ -89,20 +122,40 @@ this.SourceModuleReady = function(SourceCompiler, File, Buffer, MAP_PATH, colors
 			});
 		};
 
-		parseName(moduleName, _baseUrlString){
+		xx(moduleName){
 			let url = new URL(
 				moduleName,
-				_baseUrlString ? new URL(_baseUrlString, baseURL).href : baseURL
+				baseURL
 			);
 
-			// 如果文件名不存在
-			if(url.filename === ""){
-				let pathname = url.pathname;
+			return new URL(
+				unmapPath(
+					File.path(
+						toMapPath(url.href)
+					)
+				)
+			);
+		}
 
-				return new URL(
-					url.protocal + "//" + url.host + (pathname ? pathname : "/index") + ".js" + url.search + url.hash
-				);
-			}
+		parseName(moduleName, _baseUrlString){
+			return new URL(
+				unmapPath(
+					File.path(
+						toMapPath(
+							new URL(
+								moduleName,
+								_baseUrlString ? new URL(_baseUrlString, baseURL).href : baseURL
+							)
+							.href
+						)
+					)
+				)
+			);
+
+			let url = new URL(
+				moduleName,
+				_baseUrlString ? new URL(this.xx(_baseUrlString).href, baseURL).href : baseURL
+			);
 
 			return url;
 		};
@@ -114,20 +167,24 @@ this.SourceModuleReady = function(SourceCompiler, File, Buffer, MAP_PATH, colors
 		 * @param {Function} fail - 失败回调
 		 */
 		readFile({ href }, success, fail){
-			if(baseURL && href.indexOf(baseURL + "/") === 0){
-				href = href.substring(baseURL.length + 1);
-			}
-
-			href = `${MAP_PATH}/${href}`;
+			console.log(
+				toMapPath(
+							this.xx(href).href
+						)
+			)
 
 			try {
 				success(
-					File.read(href)
+					File.read(
+						toMapPath(
+							this.xx(href).href
+						)
+					)
 				);
 			}
 			catch(e){
 				success(
-					`throw "${e.message.split(`"`).join(`\\"`)}"`
+					`throw "${e.toString().split(`"`).join(`\\"`)}"`
 				);
 			}
 		}	
@@ -136,9 +193,24 @@ this.SourceModuleReady = function(SourceCompiler, File, Buffer, MAP_PATH, colors
 	this.SourceCompiler,
 	this.File,
 	Buffer,
-	// MAP_PATH
-	`${__dirname}/${MAP_PATH}`,
-	require("colors")
+	// toMapPath
+	(href) => {
+		if(baseURL && href.indexOf(baseURL + "/") === 0){
+			href = href.substring(baseURL.length + 1);
+		}
+
+		return `${__dirname}/${MAP_PATH}/${href}`;
+	},
+	// unmapPath
+	(path) => {
+		let prefix = `${__dirname}/${MAP_PATH}/`;
+
+		if(path.indexOf(prefix) === 0){
+			path = path.substring(prefix.length);
+		}
+
+		return baseURL ? `${baseURL}/${path}` : path;
+	}
 );
 
 this.Source = function(SourceModuleReady, File, EventEmitter, inited){

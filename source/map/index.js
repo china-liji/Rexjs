@@ -7,18 +7,18 @@ let define = (exports) => {
 	}
 };
 
-import * as EcmaScript from "./ecmascript/index";
-import * as BaseExpression from "./base-expression/index";
-import * as BaseStatement from "./base-statement/index";
-import * as BaseStatements from "./base-statements/index";
-import * as Brace from "./brace/index";
-import * as Bracket from "./bracket/index";
-import * as Paren from "./paren/index";
-import * as BaseTag from "./base-tag/index";
-import * as Comment from "./comment/index";
-import * as Env from "./env/index";
-import * as FilePosition from "./file-position/index";
-import * as Literal from "./literal/index";
+import * as EcmaScript from "./ecmascript";
+import * as BaseExpression from "./base-expression";
+import * as BaseStatement from "./base-statement";
+import * as BaseStatements from "./base-statements";
+import * as Brace from "./brace";
+import * as Bracket from "./bracket";
+import * as Paren from "./paren";
+import * as BaseTag from "./base-tag";
+import * as Comment from "./comment";
+import * as Env from "./env";
+import * as FilePosition from "./file-position";
+import * as Literal from "./literal";
 
 define(EcmaScript);
 define(BaseExpression);

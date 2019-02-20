@@ -1,4 +1,4 @@
-import { SyntaxTag, CLASS_STATEMENT_BEGIN } from "../core/index";
+import { SyntaxTag, CLASS_STATEMENT_BEGIN } from "../core";
 import { ECMAScriptErrors } from "../ecmascript/ecmascript-errors";
 import { ECMAScriptStatement } from "../ecmascript/ecmascript-statement";
 import { Method } from "../env/method";

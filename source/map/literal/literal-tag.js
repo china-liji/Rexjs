@@ -1,4 +1,4 @@
-import { SyntaxTag, CLASS_EXPRESSION } from "../core/index";
+import { SyntaxTag, CLASS_EXPRESSION } from "../core";
 import { LiteralExpression } from "./literal-expression";
 
 export let LiteralTag = function(){
