@@ -355,7 +355,6 @@ module.exports = { DevSource: this.DevSource, Source: this.Source };
 	// defaultList
 	[
 		"file-header.js",
-		"literal-extension.js",
 		"mathematical-number.js",
 		"identifier.js",
 		"env-constant.js",

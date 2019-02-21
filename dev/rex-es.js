@@ -464,22 +464,6 @@ var SyntaxTag=Rexjs.Module.memberOf("SyntaxTag","../core","rexjs://source/map/ba
 
 eval(
 					function(){
-						new Rexjs.Module("rexjs://source/map/base-tag/debugger-tag.js",function(Rexjs){
-"use strict";
-var SyntaxTag=Rexjs.Module.memberOf("SyntaxTag","../core","rexjs://source/map/base-tag/debugger-tag.js"),Expression=Rexjs.Module.memberOf("Expression","../core","rexjs://source/map/base-tag/debugger-tag.js"),CLASS_STATEMENT_BEGIN=Rexjs.Module.memberOf("CLASS_STATEMENT_BEGIN","../core","rexjs://source/map/base-tag/debugger-tag.js");var DebuggerTag=function(){var $Rexjs_0;return ($Rexjs_0=Rexjs.Class.create(SyntaxTag,[new Rexjs.ClassProperty("$class",CLASS_STATEMENT_BEGIN),new Rexjs.ClassProperty("regexp",/debugger/),new Rexjs.ClassProperty("require",function(tagsMap){return tagsMap.statementEndTags;}),new Rexjs.ClassProperty("visitor",function(parser,context,statement){statement.expression=new Expression(context);}),new Rexjs.ClassProperty("constructor",function DebuggerTag(){return Rexjs.Super.callConstructor($Rexjs_0.prototype, this, arguments);})], 4));}();Rexjs.Module.export("DebuggerTag", DebuggerTag);
-});
-//# sourceURL=http://sourceurl/source/map/base-tag/debugger-tag.js
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImh0dHA6Ly9sb2NhbGhvc3Q6OTA5MC9zb3VyY2UvbWFwL2Jhc2UtdGFnL2RlYnVnZ2VyLXRhZy5qcyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOzs2VUFFTyxHQUFBLEFBQUcsQ0FBQyxXQUFBLEFBQVcsQUFBQyxDQUFBLEFBQUMsQUFBQyxRQUFBLEFBQVEsQUFBQSxDQUFBLEFBQUMsQUFBQSxDQUFBLEFBQUMsQUFBQSxDQUFBLEFBQUMsYUFLbkMsTUFBQSxBQUFNLDhCQUEyQixTQUFBLEFBQVMsMkJBS3pDLE1BQUEsQUFBTSxFQUFHLHFCQUFBLEFBQXFCLDJCQU05QixNQUFBLEFBQU0sRUFBRyxVQUFBLEFBQVUsMkJBT25CLE9BQUEsQUFBTyxVQUFBLENBQUEsQUFBQyxBQUFBLE9BQUEsQUFBTyxBQUFBLENBQUEsQUFBQyxBQUFBLENBQUEsQUFBQyxBQUNoQixNQUFBLEFBQU0sQ0FBQyxPQUFBLEFBQU8sQUFBQSxDQUFBLEFBQUMsQUFBQSxnQkFBQSxBQUFnQixDQUNoQyxDQUFBLEFBQUMsMkJBVUQsT0FBQSxBQUFPLFVBQUEsQ0FBQSxBQUFDLEFBQUEsTUFBQSxBQUFNLENBQUUsT0FBQSxBQUFPLENBQUUsU0FBQSxBQUFTLEFBQUEsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLEFBQ25DLFNBQUEsQUFBUyxBQUFBLENBQUEsQUFBQyxBQUFBLFVBQUEsQUFBVSxBQUFDLENBQUEsQUFBQyxBQUFDLElBQUEsQUFBSSxBQUFBLFVBQUEsQUFBVSxBQUFBLENBQUEsQUFBQyxBQUFBLE9BQUEsQUFBTyxBQUFBLENBQUEsQUFBQyxDQUMvQyxDQUFBLEFBQUMsZ0pBRUgsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDOyJ9
-					}
-					.toString()
-					.match(
-						/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-					)[1]
-				);
-
-
-eval(
-					function(){
 						new Rexjs.Module("rexjs://source/map/base-tag/dot-tag.js",function(Rexjs){
 "use strict";
 var SyntaxTag=Rexjs.Module.memberOf("SyntaxTag","../core","rexjs://source/map/base-tag/dot-tag.js");var DotTag=function(){var $Rexjs_0;return ($Rexjs_0=Rexjs.Class.create(SyntaxTag,[new Rexjs.ClassProperty("regexp",/\.(?!\d)/),new Rexjs.ClassProperty("constructor",function DotTag(){return Rexjs.Super.callConstructor($Rexjs_0.prototype, this, arguments);})], 1));}();Rexjs.Module.export("DotTag", DotTag);
@@ -544,6 +528,70 @@ var SyntaxTag=Rexjs.Module.memberOf("SyntaxTag","../core","rexjs://source/map/ba
 
 eval(
 					function(){
+						new Rexjs.Module("rexjs://source/map/literal/literal-expression.js",function(Rexjs){
+"use strict";
+var Expression=Rexjs.Module.memberOf("Expression","../core","rexjs://source/map/literal/literal-expression.js");var LiteralExpression=function(){var $Rexjs_0;return ($Rexjs_0=Rexjs.Class.create(Expression,[new Rexjs.ClassProperty("constructor",function LiteralExpression(){return Rexjs.Super.callConstructor($Rexjs_0.prototype, this, arguments);})], 0));}();Rexjs.Module.export("LiteralExpression", LiteralExpression);
+});
+//# sourceURL=http://sourceurl/source/map/literal/literal-expression.js
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImh0dHA6Ly9sb2NhbGhvc3Q6OTA5MC9zb3VyY2UvbWFwL2xpdGVyYWwvbGl0ZXJhbC1leHByZXNzaW9uLmpzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiI7O2dIQUVPLEdBQUEsQUFBRyxDQUFDLGlCQUFBLEFBQWlCLEFBQUMsQ0FBQSxBQUFDLEFBQUMsUUFBQSxBQUFRLEFBQUEsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLGFBS3pDLE1BQUEsQUFBTSw4QkFBaUMsVUFBQSxBQUFVLHNKQUNsRCxDQUFBLEFBQUMsQUFBQSxDQUFBLEFBQUMsQUFBQSxDQUFBLEFBQUM7In0=
+					}
+					.toString()
+					.match(
+						/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+					)[1]
+				);
+
+
+eval(
+					function(){
+						new Rexjs.Module("rexjs://source/map/literal/literal-tag.js",function(Rexjs){
+"use strict";
+var SyntaxTag=Rexjs.Module.memberOf("SyntaxTag","../core","rexjs://source/map/literal/literal-tag.js"),CLASS_EXPRESSION=Rexjs.Module.memberOf("CLASS_EXPRESSION","../core","rexjs://source/map/literal/literal-tag.js");var LiteralExpression=Rexjs.Module.memberOf("LiteralExpression","./literal-expression","rexjs://source/map/literal/literal-tag.js");var LiteralTag=function(){var $Rexjs_0;return ($Rexjs_0=Rexjs.Class.create(SyntaxTag,[new Rexjs.ClassProperty("$class",CLASS_EXPRESSION),new Rexjs.ClassProperty("require",function(tagsMap){return tagsMap.expressionContextTags;}),new Rexjs.ClassProperty("visitor",function(parser,context,statement){statement.expression=new LiteralExpression(context);}),new Rexjs.ClassProperty("constructor",function LiteralTag(){return Rexjs.Super.callConstructor($Rexjs_0.prototype, this, arguments);})], 3));}();Rexjs.Module.export("LiteralTag", LiteralTag);
+});
+//# sourceURL=http://sourceurl/source/map/literal/literal-tag.js
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImh0dHA6Ly9sb2NhbGhvc3Q6OTA5MC9zb3VyY2UvbWFwL2xpdGVyYWwvbGl0ZXJhbC10YWcuanMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6Ijs7NFZBR08sR0FBQSxBQUFHLENBQUMsVUFBQSxBQUFVLEFBQUMsQ0FBQSxBQUFDLEFBQUMsUUFBQSxBQUFRLEFBQUEsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLGFBS2xDLE1BQUEsQUFBTSw4QkFBMEIsU0FBQSxBQUFTLDJCQUt4QyxNQUFBLEFBQU0sRUFBRyxnQkFBQSxBQUFnQiwyQkFRekIsT0FBQSxBQUFPLFVBQUEsQ0FBQSxBQUFDLEFBQUEsT0FBQSxBQUFPLEFBQUEsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLEFBQ2hCLE1BQUEsQUFBTSxDQUFDLE9BQUEsQUFBTyxBQUFBLENBQUEsQUFBQyxBQUFBLHFCQUFBLEFBQXFCLENBQ3JDLENBQUEsQUFBQywyQkFVRCxPQUFBLEFBQU8sVUFBQSxDQUFBLEFBQUMsQUFBQSxNQUFBLEFBQU0sQ0FBRSxPQUFBLEFBQU8sQ0FBRSxTQUFBLEFBQVMsQUFBQSxDQUFBLEFBQUMsQUFBQSxDQUFBLEFBQUMsQUFFbkMsU0FBQSxBQUFTLEFBQUEsQ0FBQSxBQUFDLEFBQUEsVUFBQSxBQUFVLEFBQUMsQ0FBQSxBQUFDLEFBQUMsSUFBQSxBQUFJLEFBQUEsaUJBQUEsQUFBaUIsQUFBQSxDQUFBLEFBQUMsQUFBQSxPQUFBLEFBQU8sQUFBQSxDQUFBLEFBQUMsQ0FDdEQsQ0FBQSxBQUFDLCtJQUVILENBQUEsQUFBQyxBQUFBLENBQUEsQUFBQyxBQUFBLENBQUEsQUFBQzsifQ==
+					}
+					.toString()
+					.match(
+						/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+					)[1]
+				);
+
+
+eval(
+					function(){
+						new Rexjs.Module("rexjs://source/map/base-tag/number-tag.js",function(Rexjs){
+"use strict";
+var LiteralTag=Rexjs.Module.memberOf("LiteralTag","../literal/literal-tag","rexjs://source/map/base-tag/number-tag.js");var NumberTag=function(){var $Rexjs_0;return ($Rexjs_0=Rexjs.Class.create(LiteralTag,[new Rexjs.ClassProperty("regexp",/0[xX][0-9a-fA-F]+|0{2,}(?!\.)|(?:\d*\.\d+|\d+\.?)(?:[eE][+-]?\d+)?/),new Rexjs.ClassProperty("throw","number"),new Rexjs.ClassProperty("constructor",function NumberTag(){return Rexjs.Super.callConstructor($Rexjs_0.prototype, this, arguments);})], 2));}();Rexjs.Module.export("NumberTag", NumberTag);
+});
+//# sourceURL=http://sourceurl/source/map/base-tag/number-tag.js
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImh0dHA6Ly9sb2NhbGhvc3Q6OTA5MC9zb3VyY2UvbWFwL2Jhc2UtdGFnL251bWJlci10YWcuanMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6Ijs7d0hBRU8sR0FBQSxBQUFHLENBQUMsU0FBQSxBQUFTLEFBQUMsQ0FBQSxBQUFDLEFBQUMsUUFBQSxBQUFRLEFBQUEsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLGFBS2pDLE1BQUEsQUFBTSw4QkFBeUIsVUFBQSxBQUFVLDJCQUt4QyxNQUFBLEFBQU0sRUFBRyxvRUFBQSxBQUFvRSwyQkFNN0UsS0FBQSxBQUFLLEVBQUcsUUFBQSxBQUFRLDhJQUVsQixDQUFBLEFBQUMsQUFBQSxDQUFBLEFBQUMsQUFBQSxDQUFBLEFBQUM7In0=
+					}
+					.toString()
+					.match(
+						/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+					)[1]
+				);
+
+
+eval(
+					function(){
+						new Rexjs.Module("rexjs://source/map/base-tag/regexp-tag.js",function(Rexjs){
+"use strict";
+var LiteralTag=Rexjs.Module.memberOf("LiteralTag","../literal/literal-tag","rexjs://source/map/base-tag/regexp-tag.js");var ECMAScriptErrors=Rexjs.Module.memberOf("ECMAScriptErrors","../ecmascript/ecmascript-errors","rexjs://source/map/base-tag/regexp-tag.js");var RegExpTag=function(){var $Rexjs_0;return ($Rexjs_0=Rexjs.Class.create(LiteralTag,[new Rexjs.ClassProperty("regexp",/\/(?:\\[^\r\n\u2028\u2029]|\[(?:\\[^\r\n\u2028\u2029]|[^\\\]\r\n\u2028\u2029])*\]|[^/\\[\r\n\u2028\u2029])+\/[imguy]*/),new Rexjs.ClassProperty("visitor",function(parser,context,statement,statements){var i=0,m=0,g=0,u=0,y=0,count=0,content=context.content;flags:for(var n=content.length-1;n>-1;n--){switch(content[n]){case "/":break flags;case "i":count=++i;break;case "m":count=++m;break;case "g":count=++g;break;case "u":count=++u;break;case "y":count=++y;break;default:count=2;break;}if(count>1){parser.error(context,ECMAScriptErrors.REGEXP_FLAGS);return;}}Rexjs.Super.execMethod(this,(Rexjs.Super.getProperty($Rexjs_0.prototype,this,"visitor")),[parser,context,statement,statements]);}),new Rexjs.ClassProperty("constructor",function RegExpTag(){return Rexjs.Super.callConstructor($Rexjs_0.prototype, this, arguments);})], 2));}();Rexjs.Module.export("RegExpTag", RegExpTag);
+});
+//# sourceURL=http://sourceurl/source/map/base-tag/regexp-tag.js
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImh0dHA6Ly9sb2NhbGhvc3Q6OTA5MC9zb3VyY2UvbWFwL2Jhc2UtdGFnL3JlZ2V4cC10YWcuanMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6Ijs7cVFBR08sR0FBQSxBQUFHLENBQUMsU0FBQSxBQUFTLEFBQUMsQ0FBQSxBQUFDLEFBQUMsUUFBQSxBQUFRLEFBQUEsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLGFBS2pDLE1BQUEsQUFBTSw4QkFBeUIsVUFBQSxBQUFVLDJCQVd4QyxNQUFBLEFBQU0sRUFBRyx1SEFBQSxBQUF1SCwyQkFVaEksT0FBQSxBQUFPLFVBQUEsQ0FBQSxBQUFDLEFBQUEsTUFBQSxBQUFNLENBQUUsT0FBQSxBQUFPLENBQUUsU0FBQSxBQUFTLENBQUUsVUFBQSxBQUFVLEFBQUEsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLEFBQy9DLEdBQUEsQUFBRyxDQUFDLENBQUEsQUFBQyxBQUFDLENBQUEsQUFBQyxBQUFDLENBQUEsQUFBQyxDQUFFLENBQUEsQUFBQyxBQUFDLENBQUEsQUFBQyxBQUFDLENBQUEsQUFBQyxDQUFFLENBQUEsQUFBQyxBQUFDLENBQUEsQUFBQyxBQUFDLENBQUEsQUFBQyxDQUFFLENBQUEsQUFBQyxBQUFDLENBQUEsQUFBQyxBQUFDLENBQUEsQUFBQyxDQUFFLENBQUEsQUFBQyxBQUFDLENBQUEsQUFBQyxBQUFDLENBQUEsQUFBQyxDQUFFLEtBQUEsQUFBSyxBQUFDLENBQUEsQUFBQyxBQUFDLENBQUEsQUFBQyxDQUFFLE9BQUEsQUFBTyxBQUFDLENBQUEsQUFBQyxBQUFDLE9BQUEsQUFBTyxBQUFBLENBQUEsQUFBQyxBQUFBLE9BQUEsQUFBTyxDQUczRSxLQUFBLEFBQUssQ0FDTCxHQUFBLEFBQUcsQUFBQSxDQUFBLEFBQUMsQUFBQSxHQUFBLEFBQUcsQ0FBQyxDQUFBLEFBQUMsQUFBQyxDQUFBLEFBQUMsQUFBQyxPQUFBLEFBQU8sQUFBQSxDQUFBLEFBQUMsQUFBQSxNQUFBLEFBQU0sQUFBQyxDQUFBLEFBQUMsQUFBQyxDQUFBLEFBQUMsQ0FBQyxDQUFBLEFBQUMsQUFBQyxDQUFBLEFBQUMsQUFBQyxDQUFBLEFBQUMsQUFBQSxDQUFBLEFBQUMsQ0FBQyxDQUFBLEFBQUMsQUFBQSxFQUFBLEFBQUUsQUFBQSxDQUFBLEFBQUMsQUFBQSxDQUFBLEFBQUMsQUFFMUMsTUFBQSxBQUFNLEFBQUEsQ0FBQSxBQUFDLEFBQUEsT0FBQSxBQUFPLEFBQUEsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLEFBQ2xCLElBQUEsQUFBSSxDQUFDLEdBQUEsQUFBRyxBQUFBLENBQUEsQUFBQyxBQUNSLEtBQUEsQUFBSyxDQUFDLEtBQUEsQUFBSyxDQUVaLElBQUEsQUFBSSxDQUFDLEdBQUEsQUFBRyxBQUFBLENBQUEsQUFBQyxBQUNSLEtBQUEsQUFBSyxBQUFDLENBQUEsQUFBQyxBQUFDLEVBQUEsQUFBRSxBQUFBLENBQUEsQUFBQyxDQUNYLEtBQUEsQUFBSyxDQUVOLElBQUEsQUFBSSxDQUFDLEdBQUEsQUFBRyxBQUFBLENBQUEsQUFBQyxBQUNSLEtBQUEsQUFBSyxBQUFDLENBQUEsQUFBQyxBQUFDLEVBQUEsQUFBRSxBQUFBLENBQUEsQUFBQyxDQUNYLEtBQUEsQUFBSyxDQUVOLElBQUEsQUFBSSxDQUFDLEdBQUEsQUFBRyxBQUFBLENBQUEsQUFBQyxBQUNSLEtBQUEsQUFBSyxBQUFDLENBQUEsQUFBQyxBQUFDLEVBQUEsQUFBRSxBQUFBLENBQUEsQUFBQyxDQUNYLEtBQUEsQUFBSyxDQUVOLElBQUEsQUFBSSxDQUFDLEdBQUEsQUFBRyxBQUFBLENBQUEsQUFBQyxBQUNSLEtBQUEsQUFBSyxBQUFDLENBQUEsQUFBQyxBQUFDLEVBQUEsQUFBRSxBQUFBLENBQUEsQUFBQyxDQUNYLEtBQUEsQUFBSyxDQUVOLElBQUEsQUFBSSxDQUFDLEdBQUEsQUFBRyxBQUFBLENBQUEsQUFBQyxBQUNSLEtBQUEsQUFBSyxBQUFDLENBQUEsQUFBQyxBQUFDLEVBQUEsQUFBRSxBQUFBLENBQUEsQUFBQyxDQUNYLEtBQUEsQUFBSyxDQUVOLE9BQUEsQUFBTyxBQUFBLENBQUEsQUFBQyxBQUNQLEtBQUEsQUFBSyxBQUFDLENBQUEsQUFBQyxBQUFDLENBQUEsQUFBQyxDQUNULEtBQUEsQUFBSyxDQUNQLENBQUEsQUFBQyxBQUdELEVBQUEsQUFBRSxBQUFBLENBQUEsQUFBQyxBQUFBLEtBQUEsQUFBSyxBQUFDLENBQUEsQUFBQyxBQUFDLENBQUEsQUFBQyxBQUFBLENBQUEsQUFBQyxBQUFBLENBQUEsQUFBQyxBQUViLE1BQUEsQUFBTSxBQUFBLENBQUEsQUFBQyxBQUFBLEtBQUEsQUFBSyxBQUFBLENBQUEsQUFBQyxBQUFBLE9BQUEsQUFBTyxDQUFFLGdCQUFBLEFBQWdCLEFBQUEsQ0FBQSxBQUFDLEFBQUEsWUFBQSxBQUFZLEFBQUEsQ0FBQSxBQUFDLENBQ3BELE1BQUEsQUFBTSxDQUNQLENBQUEsQUFBQyxBQUNGLENBQUEsQUFBQyw4RUFHSyxPQUFBLEFBQU8sS0FBQyxNQUFBLEFBQU0sQ0FBRSxPQUFBLEFBQU8sQ0FBRSxTQUFBLEFBQVMsQ0FBRSxVQUFBLEFBQVUsR0FDckQsQ0FBQSxBQUFDLDhJQUVILENBQUEsQUFBQyxBQUFBLENBQUEsQUFBQyxBQUFBLENBQUEsQUFBQzsifQ==
+					}
+					.toString()
+					.match(
+						/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+					)[1]
+				);
+
+
+eval(
+					function(){
 						new Rexjs.Module("rexjs://source/map/base-tag/semicolon-tag.js",function(Rexjs){
 "use strict";
 var SyntaxTag=Rexjs.Module.memberOf("SyntaxTag","../core","rexjs://source/map/base-tag/semicolon-tag.js");var SemicolonTag=function(){var $Rexjs_0;return ($Rexjs_0=Rexjs.Class.create(SyntaxTag,[new Rexjs.ClassProperty("regexp",/;/),new Rexjs.ClassProperty("constructor",function SemicolonTag(){return Rexjs.Super.callConstructor($Rexjs_0.prototype, this, arguments);})], 1));}();Rexjs.Module.export("SemicolonTag", SemicolonTag);
@@ -576,12 +624,12 @@ var Rexjs=Rexjs.Module.defaultOf("../core","rexjs://source/map/base-tag/special-
 
 eval(
 					function(){
-						new Rexjs.Module("rexjs://source/map/base-tag/with.js",function(Rexjs){
+						new Rexjs.Module("rexjs://source/map/base-tag/string-tag.js",function(Rexjs){
 "use strict";
-var SyntaxTag=Rexjs.Module.memberOf("SyntaxTag","../core","rexjs://source/map/base-tag/with.js"),CLASS_STATEMENT_BEGIN=Rexjs.Module.memberOf("CLASS_STATEMENT_BEGIN","../core","rexjs://source/map/base-tag/with.js");var ECMAScriptErrors=Rexjs.Module.memberOf("ECMAScriptErrors","../ecmascript/ecmascript-errors","rexjs://source/map/base-tag/with.js");var WithTag=function(){var $Rexjs_0;return ($Rexjs_0=Rexjs.Class.create(SyntaxTag,[new Rexjs.ClassProperty("$class",CLASS_STATEMENT_BEGIN),new Rexjs.ClassProperty("regexp",/with/),new Rexjs.ClassProperty("visitor",function(parser,context){parser.error(context,ECMAScriptErrors.WITH);}),new Rexjs.ClassProperty("constructor",function WithTag(){return Rexjs.Super.callConstructor($Rexjs_0.prototype, this, arguments);})], 3));}();Rexjs.Module.export("WithTag", WithTag);
+var LiteralTag=Rexjs.Module.memberOf("LiteralTag","../literal/literal-tag","rexjs://source/map/base-tag/string-tag.js");var StringTag=function(){var $Rexjs_0;return ($Rexjs_0=Rexjs.Class.create(LiteralTag,[new Rexjs.ClassProperty("regexp",/"(?:\\(?:[^\r]|\r\n?)|[^"\\\r\n\u2028\u2029]+)*"|'(?:\\(?:[^\r]|\r\n?)|[^'\\\r\n\u2028\u2029]+)*'/),new Rexjs.ClassProperty("throw","string"),new Rexjs.ClassProperty("constructor",function StringTag(){return Rexjs.Super.callConstructor($Rexjs_0.prototype, this, arguments);})], 2));}();Rexjs.Module.export("StringTag", StringTag);
 });
-//# sourceURL=http://sourceurl/source/map/base-tag/with.js
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImh0dHA6Ly9sb2NhbGhvc3Q6OTA5MC9zb3VyY2UvbWFwL2Jhc2UtdGFnL3dpdGguanMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6Ijs7NlZBR08sR0FBQSxBQUFHLENBQUMsT0FBQSxBQUFPLEFBQUMsQ0FBQSxBQUFDLEFBQUMsUUFBQSxBQUFRLEFBQUEsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLGFBSy9CLE1BQUEsQUFBTSw4QkFBdUIsU0FBQSxBQUFTLDJCQUtyQyxNQUFBLEFBQU0sRUFBRyxxQkFBQSxBQUFxQiwyQkFNOUIsTUFBQSxBQUFNLEVBQUcsTUFBQSxBQUFNLDJCQVVmLE9BQUEsQUFBTyxVQUFBLENBQUEsQUFBQyxBQUFBLE1BQUEsQUFBTSxDQUFFLE9BQUEsQUFBTyxBQUFBLENBQUEsQUFBQyxBQUFBLENBQUEsQUFBQyxBQUV4QixNQUFBLEFBQU0sQUFBQSxDQUFBLEFBQUMsQUFBQSxLQUFBLEFBQUssQUFBQSxDQUFBLEFBQUMsQUFBQSxPQUFBLEFBQU8sQ0FBRSxnQkFBQSxBQUFnQixBQUFBLENBQUEsQUFBQyxBQUFBLElBQUEsQUFBSSxBQUFBLENBQUEsQUFBQyxDQUM3QyxDQUFBLEFBQUMsNElBRUgsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDOyJ9
+//# sourceURL=http://sourceurl/source/map/base-tag/string-tag.js
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImh0dHA6Ly9sb2NhbGhvc3Q6OTA5MC9zb3VyY2UvbWFwL2Jhc2UtdGFnL3N0cmluZy10YWcuanMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6Ijs7d0hBRU8sR0FBQSxBQUFHLENBQUMsU0FBQSxBQUFTLEFBQUMsQ0FBQSxBQUFDLEFBQUMsUUFBQSxBQUFRLEFBQUEsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLGFBS2pDLE1BQUEsQUFBTSw4QkFBeUIsVUFBQSxBQUFVLDJCQUt4QyxNQUFBLEFBQU0sRUFBRyxtR0FBQSxBQUFtRywyQkFNNUcsS0FBQSxBQUFLLEVBQUcsUUFBQSxBQUFRLDhJQUVsQixDQUFBLEFBQUMsQUFBQSxDQUFBLEFBQUMsQUFBQSxDQUFBLEFBQUM7In0=
 					}
 					.toString()
 					.match(
@@ -594,10 +642,106 @@ eval(
 					function(){
 						new Rexjs.Module("rexjs://source/map/base-tag/index.js",function(Rexjs){
 "use strict";
-Rexjs.Module.exportFrom("./as-tag","rexjs://source/map/base-tag/index.js");Rexjs.Module.exportFrom("./debugger-tag","rexjs://source/map/base-tag/index.js");Rexjs.Module.exportFrom("./dot-tag","rexjs://source/map/base-tag/index.js");Rexjs.Module.exportFrom("./expression-separator-tag","rexjs://source/map/base-tag/index.js");Rexjs.Module.exportFrom("./module-tag","rexjs://source/map/base-tag/index.js");Rexjs.Module.exportFrom("./semicolon-tag","rexjs://source/map/base-tag/index.js");Rexjs.Module.exportFrom("./special-line-terminator-tag","rexjs://source/map/base-tag/index.js");Rexjs.Module.exportFrom("./with","rexjs://source/map/base-tag/index.js");
+Rexjs.Module.exportFrom("./as-tag","rexjs://source/map/base-tag/index.js");Rexjs.Module.exportFrom("./dot-tag","rexjs://source/map/base-tag/index.js");Rexjs.Module.exportFrom("./expression-separator-tag","rexjs://source/map/base-tag/index.js");Rexjs.Module.exportFrom("./module-tag","rexjs://source/map/base-tag/index.js");Rexjs.Module.exportFrom("./number-tag","rexjs://source/map/base-tag/index.js");Rexjs.Module.exportFrom("./regexp-tag","rexjs://source/map/base-tag/index.js");Rexjs.Module.exportFrom("./semicolon-tag","rexjs://source/map/base-tag/index.js");Rexjs.Module.exportFrom("./special-line-terminator-tag","rexjs://source/map/base-tag/index.js");Rexjs.Module.exportFrom("./string-tag","rexjs://source/map/base-tag/index.js");
 });
 //# sourceURL=http://sourceurl/source/map/base-tag/index.js
 //# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImh0dHA6Ly9sb2NhbGhvc3Q6OTA5MC9zb3VyY2UvbWFwL2Jhc2UtdGFnL2luZGV4LmpzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiI7OzsifQ==
+					}
+					.toString()
+					.match(
+						/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+					)[1]
+				);
+
+
+eval(
+					function(){
+						new Rexjs.Module("rexjs://source/map/keyword/boolean-tag.js",function(Rexjs){
+"use strict";
+var LiteralTag=Rexjs.Module.memberOf("LiteralTag","../literal/literal-tag","rexjs://source/map/keyword/boolean-tag.js");var BooleanTag=function(){var $Rexjs_0;return ($Rexjs_0=Rexjs.Class.create(LiteralTag,[new Rexjs.ClassProperty("regexp",/true|false/),new Rexjs.ClassProperty("constructor",function BooleanTag(){return Rexjs.Super.callConstructor($Rexjs_0.prototype, this, arguments);})], 1));}();Rexjs.Module.export("BooleanTag", BooleanTag);
+});
+//# sourceURL=http://sourceurl/source/map/keyword/boolean-tag.js
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImh0dHA6Ly9sb2NhbGhvc3Q6OTA5MC9zb3VyY2UvbWFwL2tleXdvcmQvYm9vbGVhbi10YWcuanMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6Ijs7d0hBRU8sR0FBQSxBQUFHLENBQUMsVUFBQSxBQUFVLEFBQUMsQ0FBQSxBQUFDLEFBQUMsUUFBQSxBQUFRLEFBQUEsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLGFBS2xDLE1BQUEsQUFBTSw4QkFBMEIsVUFBQSxBQUFVLDJCQUt6QyxNQUFBLEFBQU0sRUFBRyxZQUFBLEFBQVksK0lBRXZCLENBQUEsQUFBQyxBQUFBLENBQUEsQUFBQyxBQUFBLENBQUEsQUFBQzsifQ==
+					}
+					.toString()
+					.match(
+						/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+					)[1]
+				);
+
+
+eval(
+					function(){
+						new Rexjs.Module("rexjs://source/map/keyword/debugger-tag.js",function(Rexjs){
+"use strict";
+var SyntaxTag=Rexjs.Module.memberOf("SyntaxTag","../core","rexjs://source/map/keyword/debugger-tag.js"),Expression=Rexjs.Module.memberOf("Expression","../core","rexjs://source/map/keyword/debugger-tag.js"),CLASS_STATEMENT_BEGIN=Rexjs.Module.memberOf("CLASS_STATEMENT_BEGIN","../core","rexjs://source/map/keyword/debugger-tag.js");var DebuggerTag=function(){var $Rexjs_0;return ($Rexjs_0=Rexjs.Class.create(SyntaxTag,[new Rexjs.ClassProperty("$class",CLASS_STATEMENT_BEGIN),new Rexjs.ClassProperty("regexp",/debugger/),new Rexjs.ClassProperty("require",function(tagsMap){return tagsMap.statementEndTags;}),new Rexjs.ClassProperty("visitor",function(parser,context,statement){statement.expression=new Expression(context);}),new Rexjs.ClassProperty("constructor",function DebuggerTag(){return Rexjs.Super.callConstructor($Rexjs_0.prototype, this, arguments);})], 4));}();Rexjs.Module.export("DebuggerTag", DebuggerTag);
+});
+//# sourceURL=http://sourceurl/source/map/keyword/debugger-tag.js
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImh0dHA6Ly9sb2NhbGhvc3Q6OTA5MC9zb3VyY2UvbWFwL2tleXdvcmQvZGVidWdnZXItdGFnLmpzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiI7OzBVQUVPLEdBQUEsQUFBRyxDQUFDLFdBQUEsQUFBVyxBQUFDLENBQUEsQUFBQyxBQUFDLFFBQUEsQUFBUSxBQUFBLENBQUEsQUFBQyxBQUFBLENBQUEsQUFBQyxBQUFBLENBQUEsQUFBQyxhQUtuQyxNQUFBLEFBQU0sOEJBQTJCLFNBQUEsQUFBUywyQkFLekMsTUFBQSxBQUFNLEVBQUcscUJBQUEsQUFBcUIsMkJBTTlCLE1BQUEsQUFBTSxFQUFHLFVBQUEsQUFBVSwyQkFPbkIsT0FBQSxBQUFPLFVBQUEsQ0FBQSxBQUFDLEFBQUEsT0FBQSxBQUFPLEFBQUEsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLEFBQ2hCLE1BQUEsQUFBTSxDQUFDLE9BQUEsQUFBTyxBQUFBLENBQUEsQUFBQyxBQUFBLGdCQUFBLEFBQWdCLENBQ2hDLENBQUEsQUFBQywyQkFVRCxPQUFBLEFBQU8sVUFBQSxDQUFBLEFBQUMsQUFBQSxNQUFBLEFBQU0sQ0FBRSxPQUFBLEFBQU8sQ0FBRSxTQUFBLEFBQVMsQUFBQSxDQUFBLEFBQUMsQUFBQSxDQUFBLEFBQUMsQUFDbkMsU0FBQSxBQUFTLEFBQUEsQ0FBQSxBQUFDLEFBQUEsVUFBQSxBQUFVLEFBQUMsQ0FBQSxBQUFDLEFBQUMsSUFBQSxBQUFJLEFBQUEsVUFBQSxBQUFVLEFBQUEsQ0FBQSxBQUFDLEFBQUEsT0FBQSxBQUFPLEFBQUEsQ0FBQSxBQUFDLENBQy9DLENBQUEsQUFBQyxnSkFFSCxDQUFBLEFBQUMsQUFBQSxDQUFBLEFBQUMsQUFBQSxDQUFBLEFBQUM7In0=
+					}
+					.toString()
+					.match(
+						/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+					)[1]
+				);
+
+
+eval(
+					function(){
+						new Rexjs.Module("rexjs://source/map/keyword/null-tag.js",function(Rexjs){
+"use strict";
+var LiteralTag=Rexjs.Module.memberOf("LiteralTag","../literal/literal-tag","rexjs://source/map/keyword/null-tag.js");var NullTag=function(){var $Rexjs_0;return ($Rexjs_0=Rexjs.Class.create(LiteralTag,[new Rexjs.ClassProperty("regexp",/null/),new Rexjs.ClassProperty("constructor",function NullTag(){return Rexjs.Super.callConstructor($Rexjs_0.prototype, this, arguments);})], 1));}();Rexjs.Module.export("NullTag", NullTag);
+});
+//# sourceURL=http://sourceurl/source/map/keyword/null-tag.js
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImh0dHA6Ly9sb2NhbGhvc3Q6OTA5MC9zb3VyY2UvbWFwL2tleXdvcmQvbnVsbC10YWcuanMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6Ijs7cUhBRU8sR0FBQSxBQUFHLENBQUMsT0FBQSxBQUFPLEFBQUMsQ0FBQSxBQUFDLEFBQUMsUUFBQSxBQUFRLEFBQUEsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLGFBSy9CLE1BQUEsQUFBTSw4QkFBdUIsVUFBQSxBQUFVLDJCQUt0QyxNQUFBLEFBQU0sRUFBRyxNQUFBLEFBQU0sNElBRWpCLENBQUEsQUFBQyxBQUFBLENBQUEsQUFBQyxBQUFBLENBQUEsQUFBQzsifQ==
+					}
+					.toString()
+					.match(
+						/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+					)[1]
+				);
+
+
+eval(
+					function(){
+						new Rexjs.Module("rexjs://source/map/keyword/this-tag.js",function(Rexjs){
+"use strict";
+var LiteralTag=Rexjs.Module.memberOf("LiteralTag","../literal/literal-tag","rexjs://source/map/keyword/this-tag.js");var ThisTag=function(){var $Rexjs_0;return ($Rexjs_0=Rexjs.Class.create(LiteralTag,[new Rexjs.ClassProperty("regexp",/this/),new Rexjs.ClassProperty("visitor",function(parser,context,statement,statements){var $Rexjs_1=new Rexjs.ObjectDestructuringTarget((statements)),closure=$Rexjs_1.get("closure");if(closure){closure.applyThis(parser,context);}Rexjs.Super.execMethod(this,(Rexjs.Super.getProperty($Rexjs_0.prototype,this,"visitor")),[parser,context,statement,statements]);}),new Rexjs.ClassProperty("constructor",function ThisTag(){return Rexjs.Super.callConstructor($Rexjs_0.prototype, this, arguments);})], 2));}();Rexjs.Module.export("ThisTag", ThisTag);
+});
+//# sourceURL=http://sourceurl/source/map/keyword/this-tag.js
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImh0dHA6Ly9sb2NhbGhvc3Q6OTA5MC9zb3VyY2UvbWFwL2tleXdvcmQvdGhpcy10YWcuanMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6Ijs7cUhBRU8sR0FBQSxBQUFHLENBQUMsT0FBQSxBQUFPLEFBQUMsQ0FBQSxBQUFDLEFBQUMsUUFBQSxBQUFRLEFBQUEsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLGFBSy9CLE1BQUEsQUFBTSw4QkFBdUIsVUFBQSxBQUFVLDJCQUt0QyxNQUFBLEFBQU0sRUFBRyxNQUFBLEFBQU0sMkJBVWYsT0FBQSxBQUFPLFVBQUEsQ0FBQSxBQUFDLEFBQUEsTUFBQSxBQUFNLENBQUUsT0FBQSxBQUFPLENBQUUsU0FBQSxBQUFTLENBQUUsVUFBQSxBQUFVLEFBQUEsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLEFBQy9DLEdBQUEsQUFBRyxTQUFhLENBQUEsQUFBQyxxQ0FBQyxVQUFBLEFBQVUsR0FBdEIsT0FBQSxBQUFPLHlCQUdiLEVBQUEsQUFBRSxBQUFBLENBQUEsQUFBQyxBQUFBLE9BQUEsQUFBTyxBQUFBLENBQUEsQUFBQyxBQUFBLENBQUEsQUFBQyxBQUVYLE9BQUEsQUFBTyxBQUFBLENBQUEsQUFBQyxBQUFBLFNBQUEsQUFBUyxBQUFBLENBQUEsQUFBQyxBQUFBLE1BQUEsQUFBTSxDQUFFLE9BQUEsQUFBTyxBQUFBLENBQUEsQUFBQyxDQUNuQyxDQUFBLEFBQUMsOEVBR0ssT0FBQSxBQUFPLEtBQUMsTUFBQSxBQUFNLENBQUUsT0FBQSxBQUFPLENBQUUsU0FBQSxBQUFTLENBQUUsVUFBQSxBQUFVLEdBQ3JELENBQUEsQUFBQyw0SUFFSCxDQUFBLEFBQUMsQUFBQSxDQUFBLEFBQUMsQUFBQSxDQUFBLEFBQUM7In0=
+					}
+					.toString()
+					.match(
+						/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+					)[1]
+				);
+
+
+eval(
+					function(){
+						new Rexjs.Module("rexjs://source/map/keyword/with-tag.js",function(Rexjs){
+"use strict";
+var SyntaxTag=Rexjs.Module.memberOf("SyntaxTag","../core","rexjs://source/map/keyword/with-tag.js"),CLASS_STATEMENT_BEGIN=Rexjs.Module.memberOf("CLASS_STATEMENT_BEGIN","../core","rexjs://source/map/keyword/with-tag.js");var ECMAScriptErrors=Rexjs.Module.memberOf("ECMAScriptErrors","../ecmascript/ecmascript-errors","rexjs://source/map/keyword/with-tag.js");var WithTag=function(){var $Rexjs_0;return ($Rexjs_0=Rexjs.Class.create(SyntaxTag,[new Rexjs.ClassProperty("$class",CLASS_STATEMENT_BEGIN),new Rexjs.ClassProperty("regexp",/with/),new Rexjs.ClassProperty("visitor",function(parser,context){parser.error(context,ECMAScriptErrors.WITH);}),new Rexjs.ClassProperty("constructor",function WithTag(){return Rexjs.Super.callConstructor($Rexjs_0.prototype, this, arguments);})], 3));}();Rexjs.Module.export("WithTag", WithTag);
+});
+//# sourceURL=http://sourceurl/source/map/keyword/with-tag.js
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImh0dHA6Ly9sb2NhbGhvc3Q6OTA5MC9zb3VyY2UvbWFwL2tleXdvcmQvd2l0aC10YWcuanMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6Ijs7c1dBR08sR0FBQSxBQUFHLENBQUMsT0FBQSxBQUFPLEFBQUMsQ0FBQSxBQUFDLEFBQUMsUUFBQSxBQUFRLEFBQUEsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLGFBSy9CLE1BQUEsQUFBTSw4QkFBdUIsU0FBQSxBQUFTLDJCQUtyQyxNQUFBLEFBQU0sRUFBRyxxQkFBQSxBQUFxQiwyQkFNOUIsTUFBQSxBQUFNLEVBQUcsTUFBQSxBQUFNLDJCQVVmLE9BQUEsQUFBTyxVQUFBLENBQUEsQUFBQyxBQUFBLE1BQUEsQUFBTSxDQUFFLE9BQUEsQUFBTyxBQUFBLENBQUEsQUFBQyxBQUFBLENBQUEsQUFBQyxBQUV4QixNQUFBLEFBQU0sQUFBQSxDQUFBLEFBQUMsQUFBQSxLQUFBLEFBQUssQUFBQSxDQUFBLEFBQUMsQUFBQSxPQUFBLEFBQU8sQ0FBRSxnQkFBQSxBQUFnQixBQUFBLENBQUEsQUFBQyxBQUFBLElBQUEsQUFBSSxBQUFBLENBQUEsQUFBQyxDQUM3QyxDQUFBLEFBQUMsNElBRUgsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDOyJ9
+					}
+					.toString()
+					.match(
+						/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+					)[1]
+				);
+
+
+eval(
+					function(){
+						new Rexjs.Module("rexjs://source/map/keyword/index.js",function(Rexjs){
+"use strict";
+Rexjs.Module.exportFrom("./boolean-tag","rexjs://source/map/keyword/index.js");Rexjs.Module.exportFrom("./debugger-tag","rexjs://source/map/keyword/index.js");Rexjs.Module.exportFrom("./null-tag","rexjs://source/map/keyword/index.js");Rexjs.Module.exportFrom("./this-tag","rexjs://source/map/keyword/index.js");Rexjs.Module.exportFrom("./with-tag","rexjs://source/map/keyword/index.js");
+});
+//# sourceURL=http://sourceurl/source/map/keyword/index.js
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImh0dHA6Ly9sb2NhbGhvc3Q6OTA5MC9zb3VyY2UvbWFwL2tleXdvcmQvaW5kZXguanMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6Ijs7OyJ9
 					}
 					.toString()
 					.match(
@@ -704,38 +848,6 @@ Rexjs.Module.exportFrom("./file-start","rexjs://source/map/file-position/index.j
 
 eval(
 					function(){
-						new Rexjs.Module("rexjs://source/map/literal/literal-expression.js",function(Rexjs){
-"use strict";
-var Expression=Rexjs.Module.memberOf("Expression","../core","rexjs://source/map/literal/literal-expression.js");var LiteralExpression=function(){var $Rexjs_0;return ($Rexjs_0=Rexjs.Class.create(Expression,[new Rexjs.ClassProperty("constructor",function LiteralExpression(){return Rexjs.Super.callConstructor($Rexjs_0.prototype, this, arguments);})], 0));}();Rexjs.Module.export("LiteralExpression", LiteralExpression);
-});
-//# sourceURL=http://sourceurl/source/map/literal/literal-expression.js
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImh0dHA6Ly9sb2NhbGhvc3Q6OTA5MC9zb3VyY2UvbWFwL2xpdGVyYWwvbGl0ZXJhbC1leHByZXNzaW9uLmpzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiI7O2dIQUVPLEdBQUEsQUFBRyxDQUFDLGlCQUFBLEFBQWlCLEFBQUMsQ0FBQSxBQUFDLEFBQUMsUUFBQSxBQUFRLEFBQUEsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLGFBS3pDLE1BQUEsQUFBTSw4QkFBaUMsVUFBQSxBQUFVLHNKQUNsRCxDQUFBLEFBQUMsQUFBQSxDQUFBLEFBQUMsQUFBQSxDQUFBLEFBQUM7In0=
-					}
-					.toString()
-					.match(
-						/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-					)[1]
-				);
-
-
-eval(
-					function(){
-						new Rexjs.Module("rexjs://source/map/literal/literal-tag.js",function(Rexjs){
-"use strict";
-var SyntaxTag=Rexjs.Module.memberOf("SyntaxTag","../core","rexjs://source/map/literal/literal-tag.js"),CLASS_EXPRESSION=Rexjs.Module.memberOf("CLASS_EXPRESSION","../core","rexjs://source/map/literal/literal-tag.js");var LiteralExpression=Rexjs.Module.memberOf("LiteralExpression","./literal-expression","rexjs://source/map/literal/literal-tag.js");var LiteralTag=function(){var $Rexjs_0;return ($Rexjs_0=Rexjs.Class.create(SyntaxTag,[new Rexjs.ClassProperty("$class",CLASS_EXPRESSION),new Rexjs.ClassProperty("require",function(tagsMap){return tagsMap.expressionContextTags;}),new Rexjs.ClassProperty("visitor",function(parser,context,statement){statement.expression=new LiteralExpression(context);}),new Rexjs.ClassProperty("constructor",function LiteralTag(){return Rexjs.Super.callConstructor($Rexjs_0.prototype, this, arguments);})], 3));}();Rexjs.Module.export("LiteralTag", LiteralTag);
-});
-//# sourceURL=http://sourceurl/source/map/literal/literal-tag.js
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImh0dHA6Ly9sb2NhbGhvc3Q6OTA5MC9zb3VyY2UvbWFwL2xpdGVyYWwvbGl0ZXJhbC10YWcuanMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6Ijs7NFZBR08sR0FBQSxBQUFHLENBQUMsVUFBQSxBQUFVLEFBQUMsQ0FBQSxBQUFDLEFBQUMsUUFBQSxBQUFRLEFBQUEsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLGFBS2xDLE1BQUEsQUFBTSw4QkFBMEIsU0FBQSxBQUFTLDJCQUt4QyxNQUFBLEFBQU0sRUFBRyxnQkFBQSxBQUFnQiwyQkFRekIsT0FBQSxBQUFPLFVBQUEsQ0FBQSxBQUFDLEFBQUEsT0FBQSxBQUFPLEFBQUEsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLEFBQ2hCLE1BQUEsQUFBTSxDQUFDLE9BQUEsQUFBTyxBQUFBLENBQUEsQUFBQyxBQUFBLHFCQUFBLEFBQXFCLENBQ3JDLENBQUEsQUFBQywyQkFVRCxPQUFBLEFBQU8sVUFBQSxDQUFBLEFBQUMsQUFBQSxNQUFBLEFBQU0sQ0FBRSxPQUFBLEFBQU8sQ0FBRSxTQUFBLEFBQVMsQUFBQSxDQUFBLEFBQUMsQUFBQSxDQUFBLEFBQUMsQUFFbkMsU0FBQSxBQUFTLEFBQUEsQ0FBQSxBQUFDLEFBQUEsVUFBQSxBQUFVLEFBQUMsQ0FBQSxBQUFDLEFBQUMsSUFBQSxBQUFJLEFBQUEsaUJBQUEsQUFBaUIsQUFBQSxDQUFBLEFBQUMsQUFBQSxPQUFBLEFBQU8sQUFBQSxDQUFBLEFBQUMsQ0FDdEQsQ0FBQSxBQUFDLCtJQUVILENBQUEsQUFBQyxBQUFBLENBQUEsQUFBQyxBQUFBLENBQUEsQUFBQzsifQ==
-					}
-					.toString()
-					.match(
-						/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-					)[1]
-				);
-
-
-eval(
-					function(){
 						new Rexjs.Module("rexjs://source/map/literal/index.js",function(Rexjs){
 "use strict";
 Rexjs.Module.exportFrom("./literal-expression","rexjs://source/map/literal/index.js");Rexjs.Module.exportFrom("./literal-tag","rexjs://source/map/literal/index.js");
@@ -754,10 +866,10 @@ eval(
 					function(){
 						new Rexjs.Module("rexjs://source/map/index.js",function(Rexjs){
 "use strict";
-var a=1;var globalThis={};var define=(function(exports){return function(){exports,name;for(var name in exports){globalThis[name]=exports[name];}}.apply(this[0],this[1]);}.bind([this, arguments]));var EcmaScript=Rexjs.Module.moduleOf("./ecmascript","rexjs://source/map/index.js");var BaseExpression=Rexjs.Module.moduleOf("./base-expression","rexjs://source/map/index.js");var BaseStatement=Rexjs.Module.moduleOf("./base-statement","rexjs://source/map/index.js");var BaseStatements=Rexjs.Module.moduleOf("./base-statements","rexjs://source/map/index.js");var Brace=Rexjs.Module.moduleOf("./brace","rexjs://source/map/index.js");var Bracket=Rexjs.Module.moduleOf("./bracket","rexjs://source/map/index.js");var Paren=Rexjs.Module.moduleOf("./paren","rexjs://source/map/index.js");var BaseTag=Rexjs.Module.moduleOf("./base-tag","rexjs://source/map/index.js");var Comment=Rexjs.Module.moduleOf("./comment","rexjs://source/map/index.js");var Env=Rexjs.Module.moduleOf("./env","rexjs://source/map/index.js");var FilePosition=Rexjs.Module.moduleOf("./file-position","rexjs://source/map/index.js");var Literal=Rexjs.Module.moduleOf("./literal","rexjs://source/map/index.js");define(EcmaScript);define(BaseExpression);define(BaseStatement);define(BaseStatements);define(Brace);define(Bracket);define(Paren);define(BaseTag);define(Comment);define(Env);define(FilePosition);define(Literal);window.globalThis=globalThis;
+var a=1;var globalThis={};var define=(function(exports){return function(){exports,name;for(var name in exports){globalThis[name]=exports[name];}}.apply(this[0],this[1]);}.bind([this, arguments]));var EcmaScript=Rexjs.Module.moduleOf("./ecmascript","rexjs://source/map/index.js");var BaseExpression=Rexjs.Module.moduleOf("./base-expression","rexjs://source/map/index.js");var BaseStatement=Rexjs.Module.moduleOf("./base-statement","rexjs://source/map/index.js");var BaseStatements=Rexjs.Module.moduleOf("./base-statements","rexjs://source/map/index.js");var Brace=Rexjs.Module.moduleOf("./brace","rexjs://source/map/index.js");var Bracket=Rexjs.Module.moduleOf("./bracket","rexjs://source/map/index.js");var Paren=Rexjs.Module.moduleOf("./paren","rexjs://source/map/index.js");var BaseTag=Rexjs.Module.moduleOf("./base-tag","rexjs://source/map/index.js");var Keyword=Rexjs.Module.moduleOf("./keyword","rexjs://source/map/index.js");var Comment=Rexjs.Module.moduleOf("./comment","rexjs://source/map/index.js");var Env=Rexjs.Module.moduleOf("./env","rexjs://source/map/index.js");var FilePosition=Rexjs.Module.moduleOf("./file-position","rexjs://source/map/index.js");var Literal=Rexjs.Module.moduleOf("./literal","rexjs://source/map/index.js");define(EcmaScript);define(BaseExpression);define(BaseStatement);define(BaseStatements);define(Brace);define(Bracket);define(Paren);define(BaseTag);define(Keyword);define(Comment);define(Env);define(FilePosition);define(Literal);window.globalThis=globalThis;
 });
 //# sourceURL=http://sourceurl/source/map/index.js
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImh0dHA6Ly9sb2NhbGhvc3Q6OTA5MC9zb3VyY2UvbWFwL2luZGV4LmpzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiI7O0FBQUEsR0FBQSxBQUFHLENBQUMsQ0FBQSxBQUFDLEFBQUMsQ0FBQSxBQUFDLEFBQUMsQ0FBQSxBQUFDLENBQ1QsR0FBQSxBQUFHLENBQUMsVUFBQSxBQUFVLEFBQUMsQ0FBQSxBQUFDLEFBQUMsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLENBRW5CLEdBQUEsQUFBRyxDQUFDLE1BQUEsQUFBTSxBQUFDLENBQUEsQUFBQyxTQUFDLENBQUEsQUFBQyxBQUFBLE9BQUEsQUFBTyxBQUFBLENBQUEsQUFBQyxrQkFBSSxDQUFBLEFBQUMsYUFDMUIsR0FBQSxBQUFHLEFBQUEsQ0FBQSxBQUFDLEFBQUEsR0FBQSxBQUFHLENBQUMsSUFBQSxBQUFJLEFBQUMsSUFBQSxBQUFJLEFBQUQsT0FBQSxBQUFPLEFBQUEsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLEFBQ3hCLFVBQUEsQUFBVSxBQUFBLENBQUEsQUFBQyxBQUFBLElBQUEsQUFBSSxBQUFBLENBQUEsQUFBQyxBQUFDLENBQUEsQUFBQyxBQUFDLE9BQUEsQUFBTyxBQUFBLENBQUEsQUFBQyxBQUFBLElBQUEsQUFBSSxBQUFBLENBQUEsQUFBQyxDQUNqQyxDQUFBLEFBQUMsQUFDRixDQUFBLEFBQUMsNC9CQWVELE1BQUEsQUFBTSxBQUFBLENBQUEsQUFBQyxBQUFBLFVBQUEsQUFBVSxBQUFBLENBQUEsQUFBQyxDQUNsQixNQUFBLEFBQU0sQUFBQSxDQUFBLEFBQUMsQUFBQSxjQUFBLEFBQWMsQUFBQSxDQUFBLEFBQUMsQ0FDdEIsTUFBQSxBQUFNLEFBQUEsQ0FBQSxBQUFDLEFBQUEsYUFBQSxBQUFhLEFBQUEsQ0FBQSxBQUFDLENBQ3JCLE1BQUEsQUFBTSxBQUFBLENBQUEsQUFBQyxBQUFBLGNBQUEsQUFBYyxBQUFBLENBQUEsQUFBQyxDQUN0QixNQUFBLEFBQU0sQUFBQSxDQUFBLEFBQUMsQUFBQSxLQUFBLEFBQUssQUFBQSxDQUFBLEFBQUMsQ0FDYixNQUFBLEFBQU0sQUFBQSxDQUFBLEFBQUMsQUFBQSxPQUFBLEFBQU8sQUFBQSxDQUFBLEFBQUMsQ0FDZixNQUFBLEFBQU0sQUFBQSxDQUFBLEFBQUMsQUFBQSxLQUFBLEFBQUssQUFBQSxDQUFBLEFBQUMsQ0FDYixNQUFBLEFBQU0sQUFBQSxDQUFBLEFBQUMsQUFBQSxPQUFBLEFBQU8sQUFBQSxDQUFBLEFBQUMsQ0FDZixNQUFBLEFBQU0sQUFBQSxDQUFBLEFBQUMsQUFBQSxPQUFBLEFBQU8sQUFBQSxDQUFBLEFBQUMsQ0FDZixNQUFBLEFBQU0sQUFBQSxDQUFBLEFBQUMsQUFBQSxHQUFBLEFBQUcsQUFBQSxDQUFBLEFBQUMsQ0FDWCxNQUFBLEFBQU0sQUFBQSxDQUFBLEFBQUMsQUFBQSxZQUFBLEFBQVksQUFBQSxDQUFBLEFBQUMsQ0FDcEIsTUFBQSxBQUFNLEFBQUEsQ0FBQSxBQUFDLEFBQUEsT0FBQSxBQUFPLEFBQUEsQ0FBQSxBQUFDLENBRWYsTUFBQSxBQUFNLEFBQUEsQ0FBQSxBQUFDLEFBQUEsVUFBQSxBQUFVLEFBQUMsQ0FBQSxBQUFDLEFBQUMsVUFBQSxBQUFVOyJ9
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImh0dHA6Ly9sb2NhbGhvc3Q6OTA5MC9zb3VyY2UvbWFwL2luZGV4LmpzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiI7O0FBQUEsR0FBQSxBQUFHLENBQUMsQ0FBQSxBQUFDLEFBQUMsQ0FBQSxBQUFDLEFBQUMsQ0FBQSxBQUFDLENBQ1QsR0FBQSxBQUFHLENBQUMsVUFBQSxBQUFVLEFBQUMsQ0FBQSxBQUFDLEFBQUMsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLENBRW5CLEdBQUEsQUFBRyxDQUFDLE1BQUEsQUFBTSxBQUFDLENBQUEsQUFBQyxTQUFDLENBQUEsQUFBQyxBQUFBLE9BQUEsQUFBTyxBQUFBLENBQUEsQUFBQyxrQkFBSSxDQUFBLEFBQUMsYUFDMUIsR0FBQSxBQUFHLEFBQUEsQ0FBQSxBQUFDLEFBQUEsR0FBQSxBQUFHLENBQUMsSUFBQSxBQUFJLEFBQUMsSUFBQSxBQUFJLEFBQUQsT0FBQSxBQUFPLEFBQUEsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLEFBQ3hCLFVBQUEsQUFBVSxBQUFBLENBQUEsQUFBQyxBQUFBLElBQUEsQUFBSSxBQUFBLENBQUEsQUFBQyxBQUFDLENBQUEsQUFBQyxBQUFDLE9BQUEsQUFBTyxBQUFBLENBQUEsQUFBQyxBQUFBLElBQUEsQUFBSSxBQUFBLENBQUEsQUFBQyxDQUNqQyxDQUFBLEFBQUMsQUFDRixDQUFBLEFBQUMseWtDQWdCRCxNQUFBLEFBQU0sQUFBQSxDQUFBLEFBQUMsQUFBQSxVQUFBLEFBQVUsQUFBQSxDQUFBLEFBQUMsQ0FDbEIsTUFBQSxBQUFNLEFBQUEsQ0FBQSxBQUFDLEFBQUEsY0FBQSxBQUFjLEFBQUEsQ0FBQSxBQUFDLENBQ3RCLE1BQUEsQUFBTSxBQUFBLENBQUEsQUFBQyxBQUFBLGFBQUEsQUFBYSxBQUFBLENBQUEsQUFBQyxDQUNyQixNQUFBLEFBQU0sQUFBQSxDQUFBLEFBQUMsQUFBQSxjQUFBLEFBQWMsQUFBQSxDQUFBLEFBQUMsQ0FDdEIsTUFBQSxBQUFNLEFBQUEsQ0FBQSxBQUFDLEFBQUEsS0FBQSxBQUFLLEFBQUEsQ0FBQSxBQUFDLENBQ2IsTUFBQSxBQUFNLEFBQUEsQ0FBQSxBQUFDLEFBQUEsT0FBQSxBQUFPLEFBQUEsQ0FBQSxBQUFDLENBQ2YsTUFBQSxBQUFNLEFBQUEsQ0FBQSxBQUFDLEFBQUEsS0FBQSxBQUFLLEFBQUEsQ0FBQSxBQUFDLENBQ2IsTUFBQSxBQUFNLEFBQUEsQ0FBQSxBQUFDLEFBQUEsT0FBQSxBQUFPLEFBQUEsQ0FBQSxBQUFDLENBQ2YsTUFBQSxBQUFNLEFBQUEsQ0FBQSxBQUFDLEFBQUEsT0FBQSxBQUFPLEFBQUEsQ0FBQSxBQUFDLENBQ2YsTUFBQSxBQUFNLEFBQUEsQ0FBQSxBQUFDLEFBQUEsT0FBQSxBQUFPLEFBQUEsQ0FBQSxBQUFDLENBQ2YsTUFBQSxBQUFNLEFBQUEsQ0FBQSxBQUFDLEFBQUEsR0FBQSxBQUFHLEFBQUEsQ0FBQSxBQUFDLENBQ1gsTUFBQSxBQUFNLEFBQUEsQ0FBQSxBQUFDLEFBQUEsWUFBQSxBQUFZLEFBQUEsQ0FBQSxBQUFDLENBQ3BCLE1BQUEsQUFBTSxBQUFBLENBQUEsQUFBQyxBQUFBLE9BQUEsQUFBTyxBQUFBLENBQUEsQUFBQyxDQUVmLE1BQUEsQUFBTSxBQUFBLENBQUEsQUFBQyxBQUFBLFVBQUEsQUFBVSxBQUFDLENBQUEsQUFBQyxBQUFDLFVBQUEsQUFBVTsifQ==
 					}
 					.toString()
 					.match(
@@ -788,212 +900,6 @@ var a=1;var globalThis={};var define=(function(exports){return function(){export
 	commonVisitor, getIdentifierRegExpSource
 ){
 "use strict";
-
-
-eval(
-								function(){
-									// 字面量子类标签相关
-!function(LiteralTag){
-
-this.BooleanTag = function(){
-	/**
-	 * 布尔标签
-	 * @param {Number} _type - 标签类型
-	 */
-	function BooleanTag(_type){
-		LiteralTag.call(this, _type);
-	};
-	BooleanTag = new Rexjs(BooleanTag, LiteralTag);
-	
-	BooleanTag.props({
-		regexp: /true|false/
-	});
-	
-	return BooleanTag;
-}();
-
-this.NullTag = function(){
-	/**
-	 * null 标签
-	 * @param {Number} _type - 标签类型
-	 */
-	function NullTag(_type){
-		LiteralTag.call(this, _type);
-	};
-	NullTag = new Rexjs(NullTag, LiteralTag);
-	
-	NullTag.props({
-		regexp: /null/
-	});
-	
-	return NullTag;
-}();
-
-this.ThisTag = function(visitor){
-	/**
-	 * this 标签
-	 * @param {Number} _type - 标签类型
-	 */
-	function ThisTag(_type){
-		LiteralTag.call(this, _type);
-	};
-	ThisTag = new Rexjs(ThisTag, LiteralTag);
-	
-	ThisTag.props({
-		regexp: /this/,
-		/**
-		 * 标签访问器
-		 * @param {SyntaxParser} parser - 语法解析器
-		 * @param {Context} context - 标签上下文
-		 * @param {Statement} statement - 当前语句
-		 * @param {Statements} statements - 当前语句块
-		 */
-		visitor: function(parser, context, statement, statements){
-			var closure = statements.closure;
-
-			// 如果存在闭包
-			if(closure){
-				// 向当前闭包申请应用 this 关键字
-				closure.applyThis(parser, context);
-			}
-
-			// 调用父类方法
-			visitor.call(this, parser, context, statement, statements);
-		}
-	});
-	
-	return ThisTag;
-}(
-	LiteralTag.prototype.visitor
-);
-
-this.RegExpTag = function(visitor){
-	/**
-	 * 未捕获的正则表达式标签
-	 * @param {Number} _type - 标签类型
-	 */
-	function RegExpTag(_type){
-		LiteralTag.call(this, _type);
-	};
-	RegExpTag = new Rexjs(RegExpTag, LiteralTag);
-
-	RegExpTag.props({
-		/*
-			主体分三部分：
-				1. 反斜杠 + 非换行符，如：\/
-				2. 中括号内容，又分两部分：
-					2.1 被转义的非换行符，如：\]
-					2.2 非换行符、转义符（/）、结束中括号（]）
-				3. 除了 转义符（/）、斜杠（\）、起始中括号（[）、换行符 之外的其他字符
-		*/
-		regexp : /\/(?:\\[^\r\n\u2028\u2029]|\[(?:\\[^\r\n\u2028\u2029]|[^\\\]\r\n\u2028\u2029])*\]|[^/\\[\r\n\u2028\u2029])+\/[imguy]*/,
-		/**
-		 * 标签访问器
-		 * @param {SyntaxParser} parser - 语法解析器
-		 * @param {Context} context - 标签上下文
-		 * @param {Statement} statement - 当前语句
-		 * @param {Statements} statements - 当前语句块
-		 */
-		visitor: function(parser, context, statement, statements){
-			var i = 0, m = 0, g = 0, u = 0, y = 0, count = 0, content = context.content;
-			
-			// 遍历正则标记
-			flags:
-			for(var n = content.length - 1;n > -1;n--){
-				// 判断当前标记
-				switch(content[n]){
-					case "/":
-						break flags;
-
-					case "i":
-						count = ++i;
-						break;
-						
-					case "m":
-						count = ++m;
-						break;
-						
-					case "g":
-						count = ++g;
-						break;
-						
-					case "u":
-						count = ++u;
-						break;
-						
-					case "y":
-						count = ++y;
-						break;
-						
-					default:
-						count = 2;
-						break;
-				}
-				
-				// 如果对应标记出现过 2 次
-				if(count > 1){
-					// 报错
-					parser.error(context, ECMAScriptErrors.REGEXP_FLAGS);
-					return;
-				}
-			}
-			
-			visitor.call(this, parser, context, statement, statements);
-		}
-	});
-	
-	return RegExpTag;
-}(
-	LiteralTag.prototype.visitor
-);
-	
-this.NumberTag = function(){
-	/**
-	 * 数字标签
-	 * @param {Number} _type - 标签类型
-	 */
-	function NumberTag(_type){
-		LiteralTag.call(this, _type);
-	};
-	NumberTag = new Rexjs(NumberTag, LiteralTag);
-	
-	NumberTag.props({
-		regexp: /0[xX][0-9a-fA-F]+|0{2,}(?!\.)|(?:\d*\.\d+|\d+\.?)(?:[eE][+-]?\d+)?/,
-		throw: "number"
-	});
-	
-	return NumberTag;
-}();
-
-this.StringTag = function(){
-	/**
-	 * 字符串标签
-	 * @param {Number} _type - 标签类型
-	 */
-	function StringTag(_type){
-		LiteralTag.call(this, _type);
-	};
-	StringTag = new Rexjs(StringTag, LiteralTag);
-	
-	StringTag.props({
-		regexp: /"(?:\\(?:[^\r]|\r\n?)|[^"\\\r\n\u2028\u2029]+)*"|'(?:\\(?:[^\r]|\r\n?)|[^'\\\r\n\u2028\u2029]+)*'/,
-		throw: "string"
-	});
-	
-	return StringTag;
-}();
-
-}.call(
-	this,
-	this.LiteralTag
-);
-								}
-								.toString()
-								.match(
-									/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-								)[1] +
-								"\n//# sourceURL=http://localhost:9090/source/map1/literal-extension.js"
-							);
 
 
 eval(
