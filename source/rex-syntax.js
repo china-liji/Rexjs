@@ -707,26 +707,6 @@ this.SyntaxElement = function(){
 	return SyntaxElement;
 }();
 
-this.SyntaxConfig = function(){
-	/**
-	 * 语法配置，用于管理是否编译指定表达式
-	 * @param {String} name - 配置名称
-	 */
-	function SyntaxConfig(){
-		forEach(
-			arguments,
-			function(name){
-				this[name] = true;
-			},
-			this,
-			true
-		);
-	};
-	SyntaxConfig = new Rexjs(SyntaxConfig);
-
-	return SyntaxConfig;
-}();
-
 this.SyntaxRegExp = function(RegExp, Infinity){
 	/**
 	 * 语法正则表达式类，用于语法树匹配
@@ -1378,7 +1358,7 @@ this.SyntaxTagsMap = function(){
 
 
 // 语法解析相关
-!function(SyntaxElement, SyntaxTag, SyntaxConfig){
+!function(SyntaxElement, SyntaxTag){
 
 this.Expression = function(parseInt){
 	/**
@@ -1621,8 +1601,7 @@ this.Statements = function(Statement, STATE_STATEMENT_ENDED, parseInt){
 }.call(
 	this,
 	this.SyntaxElement,
-	this.SyntaxTag,
-	this.SyntaxConfig
+	this.SyntaxTag
 );
 
 

@@ -31,7 +31,7 @@ Rexjs.static(this);
 	Rexjs.Expression.STATE_STATEMENT_END,
 	Rexjs.Expression.STATE_STATEMENT_ENDED,
 	// config
-	new Rexjs.SyntaxConfig("es6Base", "es6Module", "rexjs", "jsx"),
+	{es6Base: true, es6Module: true, rexjs: true, jsx: true },
 	globalThis.Method.visitor,
 	globalThis.Method.getIdentifierRegExpSource
 );
