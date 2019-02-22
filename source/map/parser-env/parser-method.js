@@ -1,8 +1,8 @@
-export let Method = function(IDENTIFIER_REGEXP){
+export let ParserMethod = function(IDENTIFIER_REGEXP){
 	/**
 	 * 环境中的公用方法
 	 */
-	return class Method {
+	return class ParserMethod {
 		/**
 		 * 标签访问器
 		 * @param {SyntaxParser} parser - 语法解析器

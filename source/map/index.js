@@ -17,11 +17,12 @@ import * as Paren from "./paren";
 import * as BaseTag from "./base-tag";
 import * as Keyword from "./keyword";
 import * as Comment from "./comment";
-import * as Env from "./env";
+import * as ParserEnv from "./parser-env";
 import * as FilePosition from "./file-position";
 import * as Literal from "./literal";
 import * as MethematicalNumber from "./mathematical-number";
 import * as Identifier from "./identifier";
+import * as EnvConstant from "./env-constant";
 
 define(EcmaScript);
 define(BaseExpression);
@@ -33,10 +34,11 @@ define(Paren);
 define(BaseTag);
 define(Keyword);
 define(Comment);
-define(Env);
+define(ParserEnv);
 define(FilePosition);
 define(Literal);
 define(MethematicalNumber);
 define(Identifier);
+define(EnvConstant);
 
 window.globalThis = globalThis;

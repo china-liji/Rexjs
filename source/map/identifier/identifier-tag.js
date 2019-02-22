@@ -1,5 +1,5 @@
 import { SyntaxTag, CLASS_EXPRESSION } from "../core";
-import { Method } from "../env/method";
+import { ParserMethod } from "../parser-env/parser-method";
 import { ECMAScriptErrors } from "../ecmascript/ecmascript-errors";
 import { ECMAScriptOrders } from "../ecmascript";
 import { IdentifierExpression } from "./identifier-expression";
@@ -214,7 +214,7 @@ export let IdentifierTag = function(RegExg, REGEXP_SOURCE, exceptions, constantI
 }(
 	RegExp,
 	// REGEXP_SOURCE
-	Method.getIdentifierRegExpSource(),
+	ParserMethod.getIdentifierRegExpSource(),
 	// exceptions
 	null,
 	// constantIdentifiers

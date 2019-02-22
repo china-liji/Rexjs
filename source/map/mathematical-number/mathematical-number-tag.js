@@ -1,6 +1,6 @@
 import { NumberTag } from "../base-tag/number-tag";
 import { ECMAScriptOrders } from "../ecmascript/ecmascript-orders";
-import { ParserConfig } from "../env/config";
+import { ParserConfig } from "../parser-env/parser-config";
 
 export let MathematicalNumberTag = function(){
 	/**
