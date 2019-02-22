@@ -1056,12 +1056,60 @@ Rexjs.Module.exportFrom("./env-constant-expression","rexjs://source/map/env-cons
 
 eval(
 					function(){
+						new Rexjs.Module("rexjs://source/map/variable/variable-tag.js",function(Rexjs){
+"use strict";
+var IdentifierTag=Rexjs.Module.memberOf("IdentifierTag","../identifier/identifier-tag","rexjs://source/map/variable/variable-tag.js");var ECMAScriptOrders=Rexjs.Module.memberOf("ECMAScriptOrders","../ecmascript/ecmascript-orders","rexjs://source/map/variable/variable-tag.js");var VariableTag=function(){var $Rexjs_0;return ($Rexjs_0=Rexjs.Class.create(IdentifierTag,[new Rexjs.ClassProperty("order",ECMAScriptOrders.VARIABLE),new Rexjs.ClassProperty("constructor",function VariableTag(){return Rexjs.Super.callConstructor($Rexjs_0.prototype, this, arguments);})], 1));}();Rexjs.Module.export("VariableTag", VariableTag);
+});
+//# sourceURL=http://sourceurl/source/map/variable/variable-tag.js
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImh0dHA6Ly9sb2NhbGhvc3Q6OTA5MC9zb3VyY2UvbWFwL3ZhcmlhYmxlL3ZhcmlhYmxlLXRhZy5qcyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOztxUkFHTyxHQUFBLEFBQUcsQ0FBQyxXQUFBLEFBQVcsQUFBQyxDQUFBLEFBQUMsQUFBQyxRQUFBLEFBQVEsQUFBQSxDQUFBLEFBQUMsQUFBQSxDQUFBLEFBQUMsQUFBQSxDQUFBLEFBQUMsYUFLbkMsTUFBQSxBQUFNLDhCQUEyQixhQUFBLEFBQWEsMkJBSzdDLEtBQUEsQUFBSyxFQUFHLGdCQUFBLEFBQWdCLEFBQUEsQ0FBQSxBQUFDLEFBQUEsUUFBQSxBQUFRLGdKQUVuQyxDQUFBLEFBQUMsQUFBQSxDQUFBLEFBQUMsQUFBQSxDQUFBLEFBQUM7In0=
+					}
+					.toString()
+					.match(
+						/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+					)[1]
+				);
+
+
+eval(
+					function(){
+						new Rexjs.Module("rexjs://source/map/variable/variable-declaration-tag.js",function(Rexjs){
+"use strict";
+var VariableTag=Rexjs.Module.memberOf("VariableTag","./variable-tag","rexjs://source/map/variable/variable-declaration-tag.js");var ECMAScriptStatements=Rexjs.Module.memberOf("ECMAScriptStatements","../ecmascript/ecmascript-statements","rexjs://source/map/variable/variable-declaration-tag.js");var VariableDeclarationTag=function(SCOPE_CLOSURE){var $Rexjs_0;return ($Rexjs_0=Rexjs.Class.create(VariableTag,[new Rexjs.ClassProperty("errorType","REDECLARATION"),new Rexjs.ClassProperty("collectTo",function(parser,context,statements){var content=context.content;if(this.collected(parser,context,statements)){return false;}statements.collections.declaration.collect(content);return true;}),new Rexjs.ClassProperty("containsBy",function(variable,collections){return collections.blacklist.contains(variable);}),new Rexjs.ClassProperty("nextStatementsOf",function(statements){return (statements.scope&SCOPE_CLOSURE)===SCOPE_CLOSURE?null:statements.target;}),new Rexjs.ClassProperty("visitor",function(parser,context,statement,statements){this.collectTo(parser,context,statements);Rexjs.Super.execMethod(this,(Rexjs.Super.getProperty($Rexjs_0.prototype,this,"visitor")),[parser,context,statement,statements]);}),new Rexjs.ClassProperty("constructor",function VariableDeclarationTag(){return Rexjs.Super.callConstructor($Rexjs_0.prototype, this, arguments);})], 5));}(ECMAScriptStatements.SCOPE_CLOSURE);Rexjs.Module.export("VariableDeclarationTag", VariableDeclarationTag);
+});
+//# sourceURL=http://sourceurl/source/map/variable/variable-declaration-tag.js
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImh0dHA6Ly9sb2NhbGhvc3Q6OTA5MC9zb3VyY2UvbWFwL3ZhcmlhYmxlL3ZhcmlhYmxlLWRlY2xhcmF0aW9uLXRhZy5qcyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOzt1U0FHTyxHQUFBLEFBQUcsQ0FBQyxzQkFBQSxBQUFzQixBQUFDLENBQUEsQUFBQyxBQUFDLFFBQUEsQUFBUSxBQUFBLENBQUEsQUFBQyxBQUFBLGFBQUEsQUFBYSxBQUFBLENBQUEsQUFBQyxBQUFBLENBQUEsQUFBQyxhQUszRCxNQUFBLEFBQU0sOEJBQXNDLFdBQUEsQUFBVywyQkFLdEQsU0FBQSxBQUFTLEVBQUcsZUFBQSxBQUFlLDJCQVMzQixTQUFBLEFBQVMsVUFBQSxDQUFBLEFBQUMsQUFBQSxNQUFBLEFBQU0sQ0FBRSxPQUFBLEFBQU8sQ0FBRSxVQUFBLEFBQVUsQUFBQSxDQUFBLEFBQUMsQUFBQSxDQUFBLEFBQUMsQUFDdEMsR0FBQSxBQUFHLENBQUMsT0FBQSxBQUFPLEFBQUMsQ0FBQSxBQUFDLEFBQUMsT0FBQSxBQUFPLEFBQUEsQ0FBQSxBQUFDLEFBQUEsT0FBQSxBQUFPLENBRzdCLEVBQUEsQUFBRSxBQUFBLENBQUEsQUFBQyxBQUFBLElBQUEsQUFBSSxBQUFBLENBQUEsQUFBQyxBQUFBLFNBQUEsQUFBUyxBQUFBLENBQUEsQUFBQyxBQUFBLE1BQUEsQUFBTSxDQUFFLE9BQUEsQUFBTyxDQUFFLFVBQUEsQUFBVSxBQUFBLENBQUEsQUFBQyxBQUFBLENBQUEsQUFBQyxBQUFBLENBQUEsQUFBQyxBQUMvQyxNQUFBLEFBQU0sQ0FBQyxLQUFBLEFBQUssQ0FDYixDQUFBLEFBQUMsQUFHRCxVQUFBLEFBQVUsQUFBQSxDQUFBLEFBQUMsQUFBQSxXQUFBLEFBQVcsQUFBQSxDQUFBLEFBQUMsQUFBQSxXQUFBLEFBQVcsQUFBQSxDQUFBLEFBQUMsQUFBQSxPQUFBLEFBQU8sQUFBQSxDQUFBLEFBQUMsQUFBQSxPQUFBLEFBQU8sQUFBQSxDQUFBLEFBQUMsQ0FDbkQsTUFBQSxBQUFNLENBQUMsSUFBQSxBQUFJLENBQ1osQ0FBQSxBQUFDLDJCQVFELFVBQUEsQUFBVSxVQUFBLENBQUEsQUFBQyxBQUFBLFFBQUEsQUFBUSxDQUFFLFdBQUEsQUFBVyxBQUFBLENBQUEsQUFBQyxBQUFBLENBQUEsQUFBQyxBQUNqQyxNQUFBLEFBQU0sQ0FBQyxXQUFBLEFBQVcsQUFBQSxDQUFBLEFBQUMsQUFBQSxTQUFBLEFBQVMsQUFBQSxDQUFBLEFBQUMsQUFBQSxRQUFBLEFBQVEsQUFBQSxDQUFBLEFBQUMsQUFBQSxRQUFBLEFBQVEsQUFBQSxDQUFBLEFBQUMsQ0FDaEQsQ0FBQSxBQUFDLDJCQU9ELGdCQUFBLEFBQWdCLFVBQUEsQ0FBQSxBQUFDLEFBQUEsVUFBQSxBQUFVLEFBQUEsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLEFBRTVCLE1BQUEsQUFBTSxDQUFDLENBQUEsQUFBQyxBQUFBLFVBQUEsQUFBVSxBQUFBLENBQUEsQUFBQyxBQUFBLEtBQUEsQUFBSyxBQUFDLENBQUEsQUFBQyxBQUFDLGFBQUEsQUFBYSxBQUFBLENBQUEsQUFBQyxBQUFDLEdBQUEsQUFBRyxBQUFDLGFBQUEsQUFBYSxBQUFDLENBQUEsQUFBQyxBQUFDLElBQUEsQUFBSSxBQUFDLENBQUEsQUFBQyxBQUFDLFVBQUEsQUFBVSxBQUFBLENBQUEsQUFBQyxBQUFBLE1BQUEsQUFBTSxDQUN2RixDQUFBLEFBQUMsMkJBVUQsT0FBQSxBQUFPLFVBQUEsQ0FBQSxBQUFDLEFBQUEsTUFBQSxBQUFNLENBQUUsT0FBQSxBQUFPLENBQUUsU0FBQSxBQUFTLENBQUUsVUFBQSxBQUFVLEFBQUEsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLEFBRS9DLElBQUEsQUFBSSxBQUFBLENBQUEsQUFBQyxBQUFBLFNBQUEsQUFBUyxBQUFBLENBQUEsQUFBQyxBQUFBLE1BQUEsQUFBTSxDQUFFLE9BQUEsQUFBTyxDQUFFLFVBQUEsQUFBVSxBQUFBLENBQUEsQUFBQywrRUFFckMsT0FBQSxBQUFPLEtBQUMsTUFBQSxBQUFNLENBQUUsT0FBQSxBQUFPLENBQUUsU0FBQSxBQUFTLENBQUUsVUFBQSxBQUFVLEdBQ3JELENBQUEsQUFBQywySkFFSCxDQUFBLEFBQUMsQUFBQSxDQUFBLEFBQUMsQUFDRCxvQkFBQSxBQUFvQixBQUFBLENBQUEsQUFBQyxBQUFBLGFBQUEsQUFBYSxBQUNuQyxDQUFBLEFBQUM7In0=
+					}
+					.toString()
+					.match(
+						/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+					)[1]
+				);
+
+
+eval(
+					function(){
+						new Rexjs.Module("rexjs://source/map/variable/index.js",function(Rexjs){
+"use strict";
+Rexjs.Module.exportFrom("./variable-tag","rexjs://source/map/variable/index.js");Rexjs.Module.exportFrom("./variable-declaration-tag","rexjs://source/map/variable/index.js");
+});
+//# sourceURL=http://sourceurl/source/map/variable/index.js
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImh0dHA6Ly9sb2NhbGhvc3Q6OTA5MC9zb3VyY2UvbWFwL3ZhcmlhYmxlL2luZGV4LmpzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiI7OzsifQ==
+					}
+					.toString()
+					.match(
+						/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+					)[1]
+				);
+
+
+eval(
+					function(){
 						new Rexjs.Module("rexjs://source/map/index.js",function(Rexjs){
 "use strict";
-var a=1;var globalThis={};var define=(function(exports){return function(){exports,name;for(var name in exports){globalThis[name]=exports[name];}}.apply(this[0],this[1]);}.bind([this, arguments]));var EcmaScript=Rexjs.Module.moduleOf("./ecmascript","rexjs://source/map/index.js");var BaseExpression=Rexjs.Module.moduleOf("./base-expression","rexjs://source/map/index.js");var BaseStatement=Rexjs.Module.moduleOf("./base-statement","rexjs://source/map/index.js");var BaseStatements=Rexjs.Module.moduleOf("./base-statements","rexjs://source/map/index.js");var Brace=Rexjs.Module.moduleOf("./brace","rexjs://source/map/index.js");var Bracket=Rexjs.Module.moduleOf("./bracket","rexjs://source/map/index.js");var Paren=Rexjs.Module.moduleOf("./paren","rexjs://source/map/index.js");var BaseTag=Rexjs.Module.moduleOf("./base-tag","rexjs://source/map/index.js");var Keyword=Rexjs.Module.moduleOf("./keyword","rexjs://source/map/index.js");var Comment=Rexjs.Module.moduleOf("./comment","rexjs://source/map/index.js");var ParserEnv=Rexjs.Module.moduleOf("./parser-env","rexjs://source/map/index.js");var FilePosition=Rexjs.Module.moduleOf("./file-position","rexjs://source/map/index.js");var Literal=Rexjs.Module.moduleOf("./literal","rexjs://source/map/index.js");var MethematicalNumber=Rexjs.Module.moduleOf("./mathematical-number","rexjs://source/map/index.js");var Identifier=Rexjs.Module.moduleOf("./identifier","rexjs://source/map/index.js");var EnvConstant=Rexjs.Module.moduleOf("./env-constant","rexjs://source/map/index.js");define(EcmaScript);define(BaseExpression);define(BaseStatement);define(BaseStatements);define(Brace);define(Bracket);define(Paren);define(BaseTag);define(Keyword);define(Comment);define(ParserEnv);define(FilePosition);define(Literal);define(MethematicalNumber);define(Identifier);define(EnvConstant);window.globalThis=globalThis;
+var a=1;var globalThis={};var define=(function(exports){return function(){exports,name;for(var name in exports){globalThis[name]=exports[name];}}.apply(this[0],this[1]);}.bind([this, arguments]));var EcmaScript=Rexjs.Module.moduleOf("./ecmascript","rexjs://source/map/index.js");var BaseExpression=Rexjs.Module.moduleOf("./base-expression","rexjs://source/map/index.js");var BaseStatement=Rexjs.Module.moduleOf("./base-statement","rexjs://source/map/index.js");var BaseStatements=Rexjs.Module.moduleOf("./base-statements","rexjs://source/map/index.js");var Brace=Rexjs.Module.moduleOf("./brace","rexjs://source/map/index.js");var Bracket=Rexjs.Module.moduleOf("./bracket","rexjs://source/map/index.js");var Paren=Rexjs.Module.moduleOf("./paren","rexjs://source/map/index.js");var BaseTag=Rexjs.Module.moduleOf("./base-tag","rexjs://source/map/index.js");var Keyword=Rexjs.Module.moduleOf("./keyword","rexjs://source/map/index.js");var Comment=Rexjs.Module.moduleOf("./comment","rexjs://source/map/index.js");var ParserEnv=Rexjs.Module.moduleOf("./parser-env","rexjs://source/map/index.js");var FilePosition=Rexjs.Module.moduleOf("./file-position","rexjs://source/map/index.js");var Literal=Rexjs.Module.moduleOf("./literal","rexjs://source/map/index.js");var MethematicalNumber=Rexjs.Module.moduleOf("./mathematical-number","rexjs://source/map/index.js");var Identifier=Rexjs.Module.moduleOf("./identifier","rexjs://source/map/index.js");var EnvConstant=Rexjs.Module.moduleOf("./env-constant","rexjs://source/map/index.js");var Variable=Rexjs.Module.moduleOf("./variable","rexjs://source/map/index.js");define(EcmaScript);define(BaseExpression);define(BaseStatement);define(BaseStatements);define(Brace);define(Bracket);define(Paren);define(BaseTag);define(Keyword);define(Comment);define(ParserEnv);define(FilePosition);define(Literal);define(MethematicalNumber);define(Identifier);define(EnvConstant);define(Variable);window.globalThis=globalThis;
 });
 //# sourceURL=http://sourceurl/source/map/index.js
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImh0dHA6Ly9sb2NhbGhvc3Q6OTA5MC9zb3VyY2UvbWFwL2luZGV4LmpzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiI7O0FBQUEsR0FBQSxBQUFHLENBQUMsQ0FBQSxBQUFDLEFBQUMsQ0FBQSxBQUFDLEFBQUMsQ0FBQSxBQUFDLENBQ1QsR0FBQSxBQUFHLENBQUMsVUFBQSxBQUFVLEFBQUMsQ0FBQSxBQUFDLEFBQUMsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLENBRW5CLEdBQUEsQUFBRyxDQUFDLE1BQUEsQUFBTSxBQUFDLENBQUEsQUFBQyxTQUFDLENBQUEsQUFBQyxBQUFBLE9BQUEsQUFBTyxBQUFBLENBQUEsQUFBQyxrQkFBSSxDQUFBLEFBQUMsYUFDMUIsR0FBQSxBQUFHLEFBQUEsQ0FBQSxBQUFDLEFBQUEsR0FBQSxBQUFHLENBQUMsSUFBQSxBQUFJLEFBQUMsSUFBQSxBQUFJLEFBQUQsT0FBQSxBQUFPLEFBQUEsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLEFBQ3hCLFVBQUEsQUFBVSxBQUFBLENBQUEsQUFBQyxBQUFBLElBQUEsQUFBSSxBQUFBLENBQUEsQUFBQyxBQUFDLENBQUEsQUFBQyxBQUFDLE9BQUEsQUFBTyxBQUFBLENBQUEsQUFBQyxBQUFBLElBQUEsQUFBSSxBQUFBLENBQUEsQUFBQyxDQUNqQyxDQUFBLEFBQUMsQUFDRixDQUFBLEFBQUMsbTJDQW1CRCxNQUFBLEFBQU0sQUFBQSxDQUFBLEFBQUMsQUFBQSxVQUFBLEFBQVUsQUFBQSxDQUFBLEFBQUMsQ0FDbEIsTUFBQSxBQUFNLEFBQUEsQ0FBQSxBQUFDLEFBQUEsY0FBQSxBQUFjLEFBQUEsQ0FBQSxBQUFDLENBQ3RCLE1BQUEsQUFBTSxBQUFBLENBQUEsQUFBQyxBQUFBLGFBQUEsQUFBYSxBQUFBLENBQUEsQUFBQyxDQUNyQixNQUFBLEFBQU0sQUFBQSxDQUFBLEFBQUMsQUFBQSxjQUFBLEFBQWMsQUFBQSxDQUFBLEFBQUMsQ0FDdEIsTUFBQSxBQUFNLEFBQUEsQ0FBQSxBQUFDLEFBQUEsS0FBQSxBQUFLLEFBQUEsQ0FBQSxBQUFDLENBQ2IsTUFBQSxBQUFNLEFBQUEsQ0FBQSxBQUFDLEFBQUEsT0FBQSxBQUFPLEFBQUEsQ0FBQSxBQUFDLENBQ2YsTUFBQSxBQUFNLEFBQUEsQ0FBQSxBQUFDLEFBQUEsS0FBQSxBQUFLLEFBQUEsQ0FBQSxBQUFDLENBQ2IsTUFBQSxBQUFNLEFBQUEsQ0FBQSxBQUFDLEFBQUEsT0FBQSxBQUFPLEFBQUEsQ0FBQSxBQUFDLENBQ2YsTUFBQSxBQUFNLEFBQUEsQ0FBQSxBQUFDLEFBQUEsT0FBQSxBQUFPLEFBQUEsQ0FBQSxBQUFDLENBQ2YsTUFBQSxBQUFNLEFBQUEsQ0FBQSxBQUFDLEFBQUEsT0FBQSxBQUFPLEFBQUEsQ0FBQSxBQUFDLENBQ2YsTUFBQSxBQUFNLEFBQUEsQ0FBQSxBQUFDLEFBQUEsU0FBQSxBQUFTLEFBQUEsQ0FBQSxBQUFDLENBQ2pCLE1BQUEsQUFBTSxBQUFBLENBQUEsQUFBQyxBQUFBLFlBQUEsQUFBWSxBQUFBLENBQUEsQUFBQyxDQUNwQixNQUFBLEFBQU0sQUFBQSxDQUFBLEFBQUMsQUFBQSxPQUFBLEFBQU8sQUFBQSxDQUFBLEFBQUMsQ0FDZixNQUFBLEFBQU0sQUFBQSxDQUFBLEFBQUMsQUFBQSxrQkFBQSxBQUFrQixBQUFBLENBQUEsQUFBQyxDQUMxQixNQUFBLEFBQU0sQUFBQSxDQUFBLEFBQUMsQUFBQSxVQUFBLEFBQVUsQUFBQSxDQUFBLEFBQUMsQ0FDbEIsTUFBQSxBQUFNLEFBQUEsQ0FBQSxBQUFDLEFBQUEsV0FBQSxBQUFXLEFBQUEsQ0FBQSxBQUFDLENBRW5CLE1BQUEsQUFBTSxBQUFBLENBQUEsQUFBQyxBQUFBLFVBQUEsQUFBVSxBQUFDLENBQUEsQUFBQyxBQUFDLFVBQUEsQUFBVTsifQ==
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImh0dHA6Ly9sb2NhbGhvc3Q6OTA5MC9zb3VyY2UvbWFwL2luZGV4LmpzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiI7O0FBQUEsR0FBQSxBQUFHLENBQUMsQ0FBQSxBQUFDLEFBQUMsQ0FBQSxBQUFDLEFBQUMsQ0FBQSxBQUFDLENBQ1QsR0FBQSxBQUFHLENBQUMsVUFBQSxBQUFVLEFBQUMsQ0FBQSxBQUFDLEFBQUMsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLENBRW5CLEdBQUEsQUFBRyxDQUFDLE1BQUEsQUFBTSxBQUFDLENBQUEsQUFBQyxTQUFDLENBQUEsQUFBQyxBQUFBLE9BQUEsQUFBTyxBQUFBLENBQUEsQUFBQyxrQkFBSSxDQUFBLEFBQUMsYUFDMUIsR0FBQSxBQUFHLEFBQUEsQ0FBQSxBQUFDLEFBQUEsR0FBQSxBQUFHLENBQUMsSUFBQSxBQUFJLEFBQUMsSUFBQSxBQUFJLEFBQUQsT0FBQSxBQUFPLEFBQUEsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLEFBQ3hCLFVBQUEsQUFBVSxBQUFBLENBQUEsQUFBQyxBQUFBLElBQUEsQUFBSSxBQUFBLENBQUEsQUFBQyxBQUFDLENBQUEsQUFBQyxBQUFDLE9BQUEsQUFBTyxBQUFBLENBQUEsQUFBQyxBQUFBLElBQUEsQUFBSSxBQUFBLENBQUEsQUFBQyxDQUNqQyxDQUFBLEFBQUMsQUFDRixDQUFBLEFBQUMsazdDQW9CRCxNQUFBLEFBQU0sQUFBQSxDQUFBLEFBQUMsQUFBQSxVQUFBLEFBQVUsQUFBQSxDQUFBLEFBQUMsQ0FDbEIsTUFBQSxBQUFNLEFBQUEsQ0FBQSxBQUFDLEFBQUEsY0FBQSxBQUFjLEFBQUEsQ0FBQSxBQUFDLENBQ3RCLE1BQUEsQUFBTSxBQUFBLENBQUEsQUFBQyxBQUFBLGFBQUEsQUFBYSxBQUFBLENBQUEsQUFBQyxDQUNyQixNQUFBLEFBQU0sQUFBQSxDQUFBLEFBQUMsQUFBQSxjQUFBLEFBQWMsQUFBQSxDQUFBLEFBQUMsQ0FDdEIsTUFBQSxBQUFNLEFBQUEsQ0FBQSxBQUFDLEFBQUEsS0FBQSxBQUFLLEFBQUEsQ0FBQSxBQUFDLENBQ2IsTUFBQSxBQUFNLEFBQUEsQ0FBQSxBQUFDLEFBQUEsT0FBQSxBQUFPLEFBQUEsQ0FBQSxBQUFDLENBQ2YsTUFBQSxBQUFNLEFBQUEsQ0FBQSxBQUFDLEFBQUEsS0FBQSxBQUFLLEFBQUEsQ0FBQSxBQUFDLENBQ2IsTUFBQSxBQUFNLEFBQUEsQ0FBQSxBQUFDLEFBQUEsT0FBQSxBQUFPLEFBQUEsQ0FBQSxBQUFDLENBQ2YsTUFBQSxBQUFNLEFBQUEsQ0FBQSxBQUFDLEFBQUEsT0FBQSxBQUFPLEFBQUEsQ0FBQSxBQUFDLENBQ2YsTUFBQSxBQUFNLEFBQUEsQ0FBQSxBQUFDLEFBQUEsT0FBQSxBQUFPLEFBQUEsQ0FBQSxBQUFDLENBQ2YsTUFBQSxBQUFNLEFBQUEsQ0FBQSxBQUFDLEFBQUEsU0FBQSxBQUFTLEFBQUEsQ0FBQSxBQUFDLENBQ2pCLE1BQUEsQUFBTSxBQUFBLENBQUEsQUFBQyxBQUFBLFlBQUEsQUFBWSxBQUFBLENBQUEsQUFBQyxDQUNwQixNQUFBLEFBQU0sQUFBQSxDQUFBLEFBQUMsQUFBQSxPQUFBLEFBQU8sQUFBQSxDQUFBLEFBQUMsQ0FDZixNQUFBLEFBQU0sQUFBQSxDQUFBLEFBQUMsQUFBQSxrQkFBQSxBQUFrQixBQUFBLENBQUEsQUFBQyxDQUMxQixNQUFBLEFBQU0sQUFBQSxDQUFBLEFBQUMsQUFBQSxVQUFBLEFBQVUsQUFBQSxDQUFBLEFBQUMsQ0FDbEIsTUFBQSxBQUFNLEFBQUEsQ0FBQSxBQUFDLEFBQUEsV0FBQSxBQUFXLEFBQUEsQ0FBQSxBQUFDLENBQ25CLE1BQUEsQUFBTSxBQUFBLENBQUEsQUFBQyxBQUFBLFFBQUEsQUFBUSxBQUFBLENBQUEsQUFBQyxDQUVoQixNQUFBLEFBQU0sQUFBQSxDQUFBLEFBQUMsQUFBQSxVQUFBLEFBQVUsQUFBQyxDQUFBLEFBQUMsQUFBQyxVQUFBLEFBQVU7In0=
 					}
 					.toString()
 					.match(
@@ -1092,110 +1140,6 @@ var a=1;var globalThis={};var define=(function(exports){return function(){export
 	commonVisitor, getIdentifierRegExpSource
 ){
 "use strict";
-
-
-eval(
-								function(){
-									// 变量标签相关
-!function(){
-
-this.VariableTag = function(IdentifierTag){
-	/**
-	 * 变量标签
-	 * @param {Number} _type - 标签类型
-	 */
-	function VariableTag(_type){
-		IdentifierTag.call(this, _type);
-	};
-	VariableTag = new Rexjs(VariableTag, IdentifierTag);
-
-	VariableTag.props({
-		order: ECMAScriptOrders.VARIABLE
-	});
-	
-	return VariableTag;
-}(
-	this.IdentifierTag
-);
-
-this.VariableDeclarationTag = function(VariableTag, SCOPE_CLOSURE, visitor){
-	/**
-	 * 变量声明标签
-	 * @param {Number} _type - 标签类型
-	 */
-	function VariableDeclarationTag(_type){
-		VariableTag.call(this, _type);
-	};
-	VariableDeclarationTag = new Rexjs(VariableDeclarationTag, VariableTag);
-
-	VariableDeclarationTag.props({
-		/**
-		 * 判断该变量名是否还能被定义
-		 * @param {SyntaxParser} parser - 语法解析器
-		 * @param {Context} context - 标签上下文
-		 * @param {Statements} statements - 当前语句块
-		 */
-		collectTo: function(parser, context, statements){
-			var content = context.content;
-
-			// 如果已被收集
-			if(this.collected(parser, context, statements)){
-				return false;
-			}
-			
-			// 收集变量名
-			statements.collections.declaration.collect(content);
-			return true;
-		},
-		/**
-		 * 判断变量名，是否包含于指定收集器内
-		 * @param {String} variable - 需要判断的变量名
-		 * @param {ECMAScriptVariableCollections} collections - 指定的变量名集合
-		 */
-		containsBy: function(variable, collections){
-			return collections.blacklist.contains(variable);
-		},
-		errorType: "REDECLARATION",
-		/**
-		 * 获取下一个语句块
-		 * @params {ECMAScriptStatements} statements - 当前语句块
-		 */
-		nextStatementsOf: function(statements){
-			// 如果当前语句块是闭包，那么返回 null（因为不同闭包内，可以多次声明同一变量），否则返回 target
-			return (statements.scope & SCOPE_CLOSURE) === SCOPE_CLOSURE ? null : statements.target;
-		},
-		/**
-		 * 标签访问器
-		 * @param {SyntaxParser} parser - 语法解析器
-		 * @param {Context} context - 标签上下文
-		 * @param {Statement} statement - 当前语句
-		 * @param {Statements} statements - 当前语句块
-		 */
-		visitor: function(parser, context, statement, statements){
-			// 收集变量名
-			this.collectTo(parser, context, statements);
-			// 调用父类方法
-			visitor.call(this, parser, context, statement, statements);
-		}
-	});
-	
-	return VariableDeclarationTag;
-}(
-	this.VariableTag,
-	this.ECMAScriptStatements.SCOPE_CLOSURE,
-	this.VariableTag.prototype.visitor
-);
-
-}.call(
-	this
-);
-								}
-								.toString()
-								.match(
-									/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-								)[1] +
-								"\n//# sourceURL=http://localhost:9090/source/map1/variable.js"
-							);
 
 
 eval(

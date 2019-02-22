@@ -355,7 +355,6 @@ module.exports = { DevSource: this.DevSource, Source: this.Source };
 	// defaultList
 	[
 		"file-header.js",
-		"variable.js",
 		"semicolon.js",
 		"line-terminator.js",
 		"comment.js",

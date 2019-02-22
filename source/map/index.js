@@ -23,6 +23,7 @@ import * as Literal from "./literal";
 import * as MethematicalNumber from "./mathematical-number";
 import * as Identifier from "./identifier";
 import * as EnvConstant from "./env-constant";
+import * as Variable from "./variable";
 
 define(EcmaScript);
 define(BaseExpression);
@@ -40,5 +41,6 @@ define(Literal);
 define(MethematicalNumber);
 define(Identifier);
 define(EnvConstant);
+define(Variable);
 
 window.globalThis = globalThis;
