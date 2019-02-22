@@ -800,9 +800,121 @@ var SyntaxTag=Rexjs.Module.memberOf("SyntaxTag","../core","rexjs://source/map/co
 
 eval(
 					function(){
+						new Rexjs.Module("rexjs://source/map/comment/closing-multi-line-comment-tag.js",function(Rexjs){
+"use strict";
+var CommentTag=Rexjs.Module.memberOf("CommentTag","./comment-tag","rexjs://source/map/comment/closing-multi-line-comment-tag.js");var ClosingMultiLineCommentTag=function(tags){var $Rexjs_0;return ($Rexjs_0=Rexjs.Class.create(CommentTag,[new Rexjs.StaticProperty("requiredTags",null),new Rexjs.ClassProperty("regexp",/\*\//),new Rexjs.ClassProperty("require",function(){return ClosingMultiLineCommentTag.requiredTags;}),new Rexjs.ClassProperty("constructor",function ClosingMultiLineCommentTag(){return Rexjs.Super.callConstructor($Rexjs_0.prototype, this, arguments);})], 3));}();Rexjs.Module.export("ClosingMultiLineCommentTag", ClosingMultiLineCommentTag);
+});
+//# sourceURL=http://sourceurl/source/map/comment/closing-multi-line-comment-tag.js
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImh0dHA6Ly9sb2NhbGhvc3Q6OTA5MC9zb3VyY2UvbWFwL2NvbW1lbnQvY2xvc2luZy1tdWx0aS1saW5lLWNvbW1lbnQtdGFnLmpzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiI7O2tJQUVPLEdBQUEsQUFBRyxDQUFDLDBCQUFBLEFBQTBCLEFBQUMsQ0FBQSxBQUFDLEFBQUMsUUFBQSxBQUFRLEFBQUEsQ0FBQSxBQUFDLEFBQUEsSUFBQSxBQUFJLEFBQUEsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLGFBS3RELE1BQUEsQUFBTSw4QkFBMEMsVUFBQSxBQUFVLDRCQUtsRCxZQUFBLEFBQVksRUFBRyxJQUFBLEFBQUksMkJBTTFCLE1BQUEsQUFBTSxFQUFHLE1BQUEsQUFBTSwyQkFRZixPQUFBLEFBQU8sVUFBQSxDQUFBLEFBQUMsQUFBQSxDQUFBLEFBQUMsQUFBQSxDQUFBLEFBQUMsQUFDVCxNQUFBLEFBQU0sQ0FBQywwQkFBQSxBQUEwQixBQUFBLENBQUEsQUFBQyxBQUFBLFlBQUEsQUFBWSxDQUMvQyxDQUFBLEFBQUMsK0pBRUgsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDOyJ9
+					}
+					.toString()
+					.match(
+						/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+					)[1]
+				);
+
+
+eval(
+					function(){
+						new Rexjs.Module("rexjs://source/map/line-terminator/expression-break-tag.js",function(Rexjs){
+"use strict";
+var SpecialLineTerminatorTag=Rexjs.Module.memberOf("SpecialLineTerminatorTag","../base-tag","rexjs://source/map/line-terminator/expression-break-tag.js");var ECMAScriptOrders=Rexjs.Module.memberOf("ECMAScriptOrders","../ecmascript/ecmascript-orders","rexjs://source/map/line-terminator/expression-break-tag.js");var STATE_STATEMENT_ENDABLE=Rexjs.Module.memberOf("STATE_STATEMENT_ENDABLE","../core","rexjs://source/map/line-terminator/expression-break-tag.js");var ExpressionBreakTag=function(){var $Rexjs_0;return ($Rexjs_0=Rexjs.Class.create(SpecialLineTerminatorTag,[new Rexjs.ClassProperty("order",ECMAScriptOrders.EXPRESSION_BREAK),new Rexjs.ClassProperty("require",function(tagsMap,currentTags){return currentTags.newlineTags;}),new Rexjs.ClassProperty("visitor",function(parser,context,statement,statements){statement.expression.state|=STATE_STATEMENT_ENDABLE;Rexjs.Super.execMethod(this,(Rexjs.Super.getProperty($Rexjs_0.prototype,this,"visitor")),[parser,context,statement,statements]);}),new Rexjs.ClassProperty("constructor",function ExpressionBreakTag(){return Rexjs.Super.callConstructor($Rexjs_0.prototype, this, arguments);})], 3));}();Rexjs.Module.export("ExpressionBreakTag", ExpressionBreakTag);
+});
+//# sourceURL=http://sourceurl/source/map/line-terminator/expression-break-tag.js
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImh0dHA6Ly9sb2NhbGhvc3Q6OTA5MC9zb3VyY2UvbWFwL2xpbmUtdGVybWluYXRvci9leHByZXNzaW9uLWJyZWFrLXRhZy5qcyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOzs0Y0FJTyxHQUFBLEFBQUcsQ0FBQyxrQkFBQSxBQUFrQixBQUFDLENBQUEsQUFBQyxBQUFDLFFBQUEsQUFBUSxBQUFBLENBQUEsQUFBQyxBQUFBLENBQUEsQUFBQyxBQUFBLENBQUEsQUFBQyxhQUsxQyxNQUFBLEFBQU0sOEJBQWtDLHdCQUFBLEFBQXdCLDJCQUsvRCxLQUFBLEFBQUssRUFBRyxnQkFBQSxBQUFnQixBQUFBLENBQUEsQUFBQyxBQUFBLGdCQUFBLEFBQWdCLDJCQVF6QyxPQUFBLEFBQU8sVUFBQSxDQUFBLEFBQUMsQUFBQSxPQUFBLEFBQU8sQ0FBRSxXQUFBLEFBQVcsQUFBQSxDQUFBLEFBQUMsQUFBQSxDQUFBLEFBQUMsQUFDN0IsTUFBQSxBQUFNLENBQUMsV0FBQSxBQUFXLEFBQUEsQ0FBQSxBQUFDLEFBQUEsV0FBQSxBQUFXLENBQy9CLENBQUEsQUFBQywyQkFVRCxPQUFBLEFBQU8sVUFBQSxDQUFBLEFBQUMsQUFBQSxNQUFBLEFBQU0sQ0FBRSxPQUFBLEFBQU8sQ0FBRSxTQUFBLEFBQVMsQ0FBRSxVQUFBLEFBQVUsQUFBQSxDQUFBLEFBQUMsQUFBQSxDQUFBLEFBQUMsQUFFL0MsU0FBQSxBQUFTLEFBQUEsQ0FBQSxBQUFDLEFBQUEsVUFBQSxBQUFVLEFBQUEsQ0FBQSxBQUFDLEFBQUEsS0FBQSxBQUFLLEFBQUMsRUFBQSxBQUFFLEFBQUMsdUJBQUEsQUFBdUIsK0VBRS9DLE9BQUEsQUFBTyxLQUFDLE1BQUEsQUFBTSxDQUFFLE9BQUEsQUFBTyxDQUFFLFNBQUEsQUFBUyxDQUFFLFVBQUEsQUFBVSxHQUNyRCxDQUFBLEFBQUMsdUpBRUgsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDOyJ9
+					}
+					.toString()
+					.match(
+						/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+					)[1]
+				);
+
+
+eval(
+					function(){
+						new Rexjs.Module("rexjs://source/map/comment/comment-break-tag.js",function(Rexjs){
+"use strict";
+var ExpressionBreakTag=Rexjs.Module.memberOf("ExpressionBreakTag","../line-terminator/expression-break-tag","rexjs://source/map/comment/comment-break-tag.js");var ClosingMultiLineCommentTag=Rexjs.Module.memberOf("ClosingMultiLineCommentTag","./closing-multi-line-comment-tag","rexjs://source/map/comment/comment-break-tag.js");var CommentBreakTag=function(){var $Rexjs_0;return ($Rexjs_0=Rexjs.Class.create(ExpressionBreakTag,[new Rexjs.ClassProperty("require",function(tagsMap,currentTags){ClosingMultiLineCommentTag.requiredTags=ClosingMultiLineCommentTag.requiredTags.newlineTags;return currentTags;}),new Rexjs.ClassProperty("constructor",function CommentBreakTag(){return Rexjs.Super.callConstructor($Rexjs_0.prototype, this, arguments);})], 1));}();Rexjs.Module.export("CommentBreakTag", CommentBreakTag);
+});
+//# sourceURL=http://sourceurl/source/map/comment/comment-break-tag.js
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImh0dHA6Ly9sb2NhbGhvc3Q6OTA5MC9zb3VyY2UvbWFwL2NvbW1lbnQvY29tbWVudC1icmVhay10YWcuanMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6Ijs7dVVBR08sR0FBQSxBQUFHLENBQUMsZUFBQSxBQUFlLEFBQUMsQ0FBQSxBQUFDLEFBQUMsUUFBQSxBQUFRLEFBQUEsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLGFBS3ZDLE1BQUEsQUFBTSw4QkFBK0Isa0JBQUEsQUFBa0IsMkJBT3RELE9BQUEsQUFBTyxVQUFBLENBQUEsQUFBQyxBQUFBLE9BQUEsQUFBTyxDQUFFLFdBQUEsQUFBVyxBQUFBLENBQUEsQUFBQyxBQUFBLENBQUEsQUFBQyxBQUU3QiwwQkFBQSxBQUEwQixBQUFBLENBQUEsQUFBQyxBQUFBLFlBQUEsQUFBWSxBQUFDLENBQUEsQUFBQyxBQUFDLDBCQUFBLEFBQTBCLEFBQUEsQ0FBQSxBQUFDLEFBQUEsWUFBQSxBQUFZLEFBQUEsQ0FBQSxBQUFDLEFBQUEsV0FBQSxBQUFXLENBQzdGLE1BQUEsQUFBTSxDQUFDLFdBQUEsQUFBVyxDQUNuQixDQUFBLEFBQUMsb0pBRUgsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDOyJ9
+					}
+					.toString()
+					.match(
+						/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+					)[1]
+				);
+
+
+eval(
+					function(){
+						new Rexjs.Module("rexjs://source/map/comment/comment-content-tag.js",function(Rexjs){
+"use strict";
+var CommentTag=Rexjs.Module.memberOf("CommentTag","./comment-tag","rexjs://source/map/comment/comment-content-tag.js");var ECMAScriptOrders=Rexjs.Module.memberOf("ECMAScriptOrders","../ecmascript/ecmascript-orders","rexjs://source/map/comment/comment-content-tag.js");var CommentContentTag=function(){var $Rexjs_0;return ($Rexjs_0=Rexjs.Class.create(CommentTag,[new Rexjs.ClassProperty("order",ECMAScriptOrders.COMMENT_CONTENT),new Rexjs.ClassProperty("regexp",/(?:[^*\r\n\u2028\u2029]|\*(?!\/))+/),new Rexjs.ClassProperty("require",function(tagsMap,currentTags){return currentTags;}),new Rexjs.ClassProperty("constructor",function CommentContentTag(){return Rexjs.Super.callConstructor($Rexjs_0.prototype, this, arguments);})], 3));}();Rexjs.Module.export("CommentContentTag", CommentContentTag);
+});
+//# sourceURL=http://sourceurl/source/map/comment/comment-content-tag.js
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImh0dHA6Ly9sb2NhbGhvc3Q6OTA5MC9zb3VyY2UvbWFwL2NvbW1lbnQvY29tbWVudC1jb250ZW50LXRhZy5qcyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOzs0UUFHTyxHQUFBLEFBQUcsQ0FBQyxpQkFBQSxBQUFpQixBQUFDLENBQUEsQUFBQyxBQUFDLFFBQUEsQUFBUSxBQUFBLENBQUEsQUFBQyxBQUFBLENBQUEsQUFBQyxBQUFBLENBQUEsQUFBQyxhQUt6QyxNQUFBLEFBQU0sOEJBQWlDLFVBQUEsQUFBVSwyQkFLaEQsS0FBQSxBQUFLLEVBQUcsZ0JBQUEsQUFBZ0IsQUFBQSxDQUFBLEFBQUMsQUFBQSxlQUFBLEFBQWUsMkJBTXhDLE1BQUEsQUFBTSxFQUFHLG9DQUFBLEFBQW9DLDJCQVE3QyxPQUFBLEFBQU8sVUFBQSxDQUFBLEFBQUMsQUFBQSxPQUFBLEFBQU8sQ0FBRSxXQUFBLEFBQVcsQUFBQSxDQUFBLEFBQUMsQUFBQSxDQUFBLEFBQUMsQUFDN0IsTUFBQSxBQUFNLENBQUMsV0FBQSxBQUFXLENBQ25CLENBQUEsQUFBQyxzSkFFSCxDQUFBLEFBQUMsQUFBQSxDQUFBLEFBQUMsQUFBQSxDQUFBLEFBQUM7In0=
+					}
+					.toString()
+					.match(
+						/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+					)[1]
+				);
+
+
+eval(
+					function(){
+						new Rexjs.Module("rexjs://source/map/comment/opening-multi-line-comment-tag.js",function(Rexjs){
+"use strict";
+var CommentTag=Rexjs.Module.memberOf("CommentTag","./comment-tag","rexjs://source/map/comment/opening-multi-line-comment-tag.js");var ClosingMultiLineCommentTag=Rexjs.Module.memberOf("ClosingMultiLineCommentTag","./closing-multi-line-comment-tag","rexjs://source/map/comment/opening-multi-line-comment-tag.js");var OpeningMultiLineCommentTag=function(){var $Rexjs_0;return ($Rexjs_0=Rexjs.Class.create(CommentTag,[new Rexjs.ClassProperty("regexp",/\/\*/),new Rexjs.ClassProperty("require",function(tagsMap,currentTags){ClosingMultiLineCommentTag.requiredTags=currentTags;return tagsMap.openingMultiLineCommentContextTags;}),new Rexjs.ClassProperty("constructor",function OpeningMultiLineCommentTag(){return Rexjs.Super.callConstructor($Rexjs_0.prototype, this, arguments);})], 2));}();Rexjs.Module.export("OpeningMultiLineCommentTag", OpeningMultiLineCommentTag);
+});
+//# sourceURL=http://sourceurl/source/map/comment/opening-multi-line-comment-tag.js
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImh0dHA6Ly9sb2NhbGhvc3Q6OTA5MC9zb3VyY2UvbWFwL2NvbW1lbnQvb3BlbmluZy1tdWx0aS1saW5lLWNvbW1lbnQtdGFnLmpzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiI7O3VUQUdPLEdBQUEsQUFBRyxDQUFDLDBCQUFBLEFBQTBCLEFBQUMsQ0FBQSxBQUFDLEFBQUMsUUFBQSxBQUFRLEFBQUEsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLGFBS2xELE1BQUEsQUFBTSw4QkFBMEMsVUFBQSxBQUFVLDJCQUt6RCxNQUFBLEFBQU0sRUFBRyxNQUFBLEFBQU0sMkJBUWYsT0FBQSxBQUFPLFVBQUEsQ0FBQSxBQUFDLEFBQUEsT0FBQSxBQUFPLENBQUUsV0FBQSxBQUFXLEFBQUEsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLEFBRTdCLDBCQUFBLEFBQTBCLEFBQUEsQ0FBQSxBQUFDLEFBQUEsWUFBQSxBQUFZLEFBQUMsQ0FBQSxBQUFDLEFBQUMsV0FBQSxBQUFXLENBQ3JELE1BQUEsQUFBTSxDQUFDLE9BQUEsQUFBTyxBQUFBLENBQUEsQUFBQyxBQUFBLGtDQUFBLEFBQWtDLENBQ2xELENBQUEsQUFBQywrSkFFSCxDQUFBLEFBQUMsQUFBQSxDQUFBLEFBQUMsQUFBQSxDQUFBLEFBQUM7In0=
+					}
+					.toString()
+					.match(
+						/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+					)[1]
+				);
+
+
+eval(
+					function(){
+						new Rexjs.Module("rexjs://source/map/comment/opening-restricted-comment-tag.js",function(Rexjs){
+"use strict";
+var OpeningMultiLineCommentTag=Rexjs.Module.memberOf("OpeningMultiLineCommentTag","./opening-multi-line-comment-tag","rexjs://source/map/comment/opening-restricted-comment-tag.js");var ECMAScriptOrders=Rexjs.Module.memberOf("ECMAScriptOrders","../ecmascript/ecmascript-orders","rexjs://source/map/comment/opening-restricted-comment-tag.js");var ClosingMultiLineCommentTag=Rexjs.Module.memberOf("ClosingMultiLineCommentTag","./closing-multi-line-comment-tag","rexjs://source/map/comment/opening-restricted-comment-tag.js");var OpeningRestrictedCommentTag=function(){var $Rexjs_0;return ($Rexjs_0=Rexjs.Class.create(OpeningMultiLineCommentTag,[new Rexjs.ClassProperty("order",ECMAScriptOrders.OPENING_RESTRICTED_COMMENT),new Rexjs.ClassProperty("require",function(tagsMap,currentTags){ClosingMultiLineCommentTag.requiredTags=currentTags;return tagsMap.openingRestrictedCommentContextTags;}),new Rexjs.ClassProperty("constructor",function OpeningRestrictedCommentTag(){return Rexjs.Super.callConstructor($Rexjs_0.prototype, this, arguments);})], 2));}();Rexjs.Module.export("OpeningRestrictedCommentTag", OpeningRestrictedCommentTag);
+});
+//# sourceURL=http://sourceurl/source/map/comment/opening-restricted-comment-tag.js
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImh0dHA6Ly9sb2NhbGhvc3Q6OTA5MC9zb3VyY2UvbWFwL2NvbW1lbnQvb3BlbmluZy1yZXN0cmljdGVkLWNvbW1lbnQtdGFnLmpzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiI7OzBnQkFJTyxHQUFBLEFBQUcsQ0FBQywyQkFBQSxBQUEyQixBQUFDLENBQUEsQUFBQyxBQUFDLFFBQUEsQUFBUSxBQUFBLENBQUEsQUFBQyxBQUFBLENBQUEsQUFBQyxBQUFBLENBQUEsQUFBQyxhQUtuRCxNQUFBLEFBQU0sOEJBQTJDLDBCQUFBLEFBQTBCLDJCQUsxRSxLQUFBLEFBQUssRUFBRyxnQkFBQSxBQUFnQixBQUFBLENBQUEsQUFBQyxBQUFBLDBCQUFBLEFBQTBCLDJCQVFuRCxPQUFBLEFBQU8sVUFBQSxDQUFBLEFBQUMsQUFBQSxPQUFBLEFBQU8sQ0FBRSxXQUFBLEFBQVcsQUFBQSxDQUFBLEFBQUMsQUFBQSxDQUFBLEFBQUMsQUFFN0IsMEJBQUEsQUFBMEIsQUFBQSxDQUFBLEFBQUMsQUFBQSxZQUFBLEFBQVksQUFBQyxDQUFBLEFBQUMsQUFBQyxXQUFBLEFBQVcsQ0FDckQsTUFBQSxBQUFNLENBQUMsT0FBQSxBQUFPLEFBQUEsQ0FBQSxBQUFDLEFBQUEsbUNBQUEsQUFBbUMsQ0FDbkQsQ0FBQSxBQUFDLGdLQUVILENBQUEsQUFBQyxBQUFBLENBQUEsQUFBQyxBQUFBLENBQUEsQUFBQzsifQ==
+					}
+					.toString()
+					.match(
+						/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+					)[1]
+				);
+
+
+eval(
+					function(){
+						new Rexjs.Module("rexjs://source/map/comment/single-line-comment-tag.js",function(Rexjs){
+"use strict";
+var CommentTag=Rexjs.Module.memberOf("CommentTag","./comment-tag","rexjs://source/map/comment/single-line-comment-tag.js");var SingleLineCommentTag=function(){var $Rexjs_0;return ($Rexjs_0=Rexjs.Class.create(CommentTag,[new Rexjs.ClassProperty("regexp",/\/\/.*/),new Rexjs.ClassProperty("constructor",function SingleLineCommentTag(){return Rexjs.Super.callConstructor($Rexjs_0.prototype, this, arguments);})], 1));}();Rexjs.Module.export("SingleLineCommentTag", SingleLineCommentTag);
+});
+//# sourceURL=http://sourceurl/source/map/comment/single-line-comment-tag.js
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImh0dHA6Ly9sb2NhbGhvc3Q6OTA5MC9zb3VyY2UvbWFwL2NvbW1lbnQvc2luZ2xlLWxpbmUtY29tbWVudC10YWcuanMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6Ijs7MkhBRU8sR0FBQSxBQUFHLENBQUMsb0JBQUEsQUFBb0IsQUFBQyxDQUFBLEFBQUMsQUFBQyxRQUFBLEFBQVEsQUFBQSxDQUFBLEFBQUMsQUFBQSxDQUFBLEFBQUMsQUFBQSxDQUFBLEFBQUMsYUFLNUMsTUFBQSxBQUFNLDhCQUFvQyxVQUFBLEFBQVUsMkJBS25ELE1BQUEsQUFBTSxFQUFHLFFBQUEsQUFBUSx5SkFFbkIsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDOyJ9
+					}
+					.toString()
+					.match(
+						/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+					)[1]
+				);
+
+
+eval(
+					function(){
 						new Rexjs.Module("rexjs://source/map/comment/index.js",function(Rexjs){
 "use strict";
-Rexjs.Module.exportFrom("./comment-tag","rexjs://source/map/comment/index.js");
+Rexjs.Module.exportFrom("./closing-multi-line-comment-tag","rexjs://source/map/comment/index.js");Rexjs.Module.exportFrom("./comment-break-tag","rexjs://source/map/comment/index.js");Rexjs.Module.exportFrom("./comment-content-tag","rexjs://source/map/comment/index.js");Rexjs.Module.exportFrom("./comment-tag","rexjs://source/map/comment/index.js");Rexjs.Module.exportFrom("./opening-multi-line-comment-tag","rexjs://source/map/comment/index.js");Rexjs.Module.exportFrom("./opening-restricted-comment-tag","rexjs://source/map/comment/index.js");Rexjs.Module.exportFrom("./single-line-comment-tag","rexjs://source/map/comment/index.js");
 });
 //# sourceURL=http://sourceurl/source/map/comment/index.js
 //# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImh0dHA6Ly9sb2NhbGhvc3Q6OTA5MC9zb3VyY2UvbWFwL2NvbW1lbnQvaW5kZXguanMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6Ijs7OyJ9
@@ -1125,7 +1237,7 @@ eval(
 var SemicolonTag=Rexjs.Module.memberOf("SemicolonTag","./semicolon-tag","rexjs://source/map/semicolon/statement-end-tag.js");var CLASS_STATEMENT_END=Rexjs.Module.memberOf("CLASS_STATEMENT_END","../core","rexjs://source/map/semicolon/statement-end-tag.js"),TYPE_MISTAKABLE=Rexjs.Module.memberOf("TYPE_MISTAKABLE","../core","rexjs://source/map/semicolon/statement-end-tag.js"),STATE_STATEMENT_END=Rexjs.Module.memberOf("STATE_STATEMENT_END","../core","rexjs://source/map/semicolon/statement-end-tag.js");var ECMAScriptOrders=Rexjs.Module.memberOf("ECMAScriptOrders","../ecmascript","rexjs://source/map/semicolon/statement-end-tag.js");var StatementEndTag=function(){var $Rexjs_0;return ($Rexjs_0=Rexjs.Class.create(SemicolonTag,[new Rexjs.ClassProperty("$class",CLASS_STATEMENT_END),new Rexjs.ClassProperty("$type",TYPE_MISTAKABLE),new Rexjs.ClassProperty("order",ECMAScriptOrders.STATEMENT_END),new Rexjs.ClassProperty("require",function(tagsMap){return tagsMap.mistakableTags;}),new Rexjs.ClassProperty("visitor",function(parser,context,statement,statements){statement.expression.state|=STATE_STATEMENT_END;}),new Rexjs.ClassProperty("constructor",function StatementEndTag(){return Rexjs.Super.callConstructor($Rexjs_0.prototype, this, arguments);})], 5));}();Rexjs.Module.export("StatementEndTag", StatementEndTag);
 });
 //# sourceURL=http://sourceurl/source/map/semicolon/statement-end-tag.js
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImh0dHA6Ly9sb2NhbGhvc3Q6OTA5MC9zb3VyY2UvbWFwL3NlbWljb2xvbi9zdGF0ZW1lbnQtZW5kLXRhZy5qcyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOzt5bkJBSU8sR0FBQSxBQUFHLENBQUMsZUFBQSxBQUFlLEFBQUMsQ0FBQSxBQUFDLEFBQUMsUUFBQSxBQUFRLEFBQUEsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLGFBS3ZDLE1BQUEsQUFBTSw4QkFBK0IsWUFBQSxBQUFZLDJCQUtoRCxNQUFBLEFBQU0sRUFBRyxtQkFBQSxBQUFtQiwyQkFNNUIsS0FBQSxBQUFLLEVBQUcsZUFBQSxBQUFlLDJCQU12QixLQUFBLEFBQUssRUFBRyxnQkFBQSxBQUFnQixBQUFBLENBQUEsQUFBQyxBQUFBLGFBQUEsQUFBYSwyQkFPdEMsT0FBQSxBQUFPLFVBQUEsQ0FBQSxBQUFDLEFBQUEsT0FBQSxBQUFPLEFBQUEsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLEFBQ2hCLE1BQUEsQUFBTSxDQUFDLE9BQUEsQUFBTyxBQUFBLENBQUEsQUFBQyxBQUFBLGNBQUEsQUFBYyxDQUM5QixDQUFBLEFBQUMsMkJBVUQsT0FBQSxBQUFPLFVBQUEsQ0FBQSxBQUFDLEFBQUEsTUFBQSxBQUFNLENBQUUsT0FBQSxBQUFPLENBQUUsU0FBQSxBQUFTLENBQUUsVUFBQSxBQUFVLEFBQUEsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLEFBQy9DLFNBQUEsQUFBUyxBQUFBLENBQUEsQUFBQyxBQUFBLFVBQUEsQUFBVSxBQUFBLENBQUEsQUFBQyxBQUFBLEtBQUEsQUFBSyxBQUFDLEVBQUEsQUFBRSxBQUFDLG1CQUFBLEFBQW1CLENBQ2xELENBQUEsQUFBQyxvSkFFSCxDQUFBLEFBQUMsQUFBQSxDQUFBLEFBQUMsQUFBQSxDQUFBLEFBQUM7In0=
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImh0dHA6Ly9sb2NhbGhvc3Q6OTA5MC9zb3VyY2UvbWFwL3NlbWljb2xvbi9zdGF0ZW1lbnQtZW5kLXRhZy5qcyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOzt5bkJBSU8sR0FBQSxBQUFHLENBQUMsZUFBQSxBQUFlLEFBQUMsQ0FBQSxBQUFDLEFBQUMsUUFBQSxBQUFRLEFBQUEsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLGFBS3ZDLE1BQUEsQUFBTSw4QkFBK0IsWUFBQSxBQUFZLDJCQUtoRCxNQUFBLEFBQU0sRUFBRyxtQkFBQSxBQUFtQiwyQkFNNUIsS0FBQSxBQUFLLEVBQUcsZUFBQSxBQUFlLDJCQU12QixLQUFBLEFBQUssRUFBRyxnQkFBQSxBQUFnQixBQUFBLENBQUEsQUFBQyxBQUFBLGFBQUEsQUFBYSwyQkFRdEMsT0FBQSxBQUFPLFVBQUEsQ0FBQSxBQUFDLEFBQUEsT0FBQSxBQUFPLEFBQUEsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLEFBQ2hCLE1BQUEsQUFBTSxDQUFDLE9BQUEsQUFBTyxBQUFBLENBQUEsQUFBQyxBQUFBLGNBQUEsQUFBYyxDQUM5QixDQUFBLEFBQUMsMkJBVUQsT0FBQSxBQUFPLFVBQUEsQ0FBQSxBQUFDLEFBQUEsTUFBQSxBQUFNLENBQUUsT0FBQSxBQUFPLENBQUUsU0FBQSxBQUFTLENBQUUsVUFBQSxBQUFVLEFBQUEsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLEFBQy9DLFNBQUEsQUFBUyxBQUFBLENBQUEsQUFBQyxBQUFBLFVBQUEsQUFBVSxBQUFBLENBQUEsQUFBQyxBQUFBLEtBQUEsQUFBSyxBQUFDLEVBQUEsQUFBRSxBQUFDLG1CQUFBLEFBQW1CLENBQ2xELENBQUEsQUFBQyxvSkFFSCxDQUFBLEFBQUMsQUFBQSxDQUFBLEFBQUMsQUFBQSxDQUFBLEFBQUM7In0=
 					}
 					.toString()
 					.match(
@@ -1158,22 +1270,6 @@ Rexjs.Module.exportFrom("./empty-statement-tag","rexjs://source/map/semicolon/in
 });
 //# sourceURL=http://sourceurl/source/map/semicolon/index.js
 //# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImh0dHA6Ly9sb2NhbGhvc3Q6OTA5MC9zb3VyY2UvbWFwL3NlbWljb2xvbi9pbmRleC5qcyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOzs7In0=
-					}
-					.toString()
-					.match(
-						/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-					)[1]
-				);
-
-
-eval(
-					function(){
-						new Rexjs.Module("rexjs://source/map/line-terminator/expression-break-tag.js",function(Rexjs){
-"use strict";
-var SpecialLineTerminatorTag=Rexjs.Module.memberOf("SpecialLineTerminatorTag","../base-tag","rexjs://source/map/line-terminator/expression-break-tag.js");var ECMAScriptOrders=Rexjs.Module.memberOf("ECMAScriptOrders","../ecmascript/ecmascript-orders","rexjs://source/map/line-terminator/expression-break-tag.js");var STATE_STATEMENT_ENDABLE=Rexjs.Module.memberOf("STATE_STATEMENT_ENDABLE","../core","rexjs://source/map/line-terminator/expression-break-tag.js");var ExpressionBreakTag=function(){var $Rexjs_0;return ($Rexjs_0=Rexjs.Class.create(SpecialLineTerminatorTag,[new Rexjs.ClassProperty("order",ECMAScriptOrders.EXPRESSION_BREAK),new Rexjs.ClassProperty("require",function(tagsMap,currentTags){return currentTags.newlineTags;}),new Rexjs.ClassProperty("visitor",function(parser,context,statement,statements){statement.expression.state|=STATE_STATEMENT_ENDABLE;Rexjs.Super.execMethod(this,(Rexjs.Super.getProperty($Rexjs_0.prototype,this,"visitor")),[parser,context,statement,statements]);}),new Rexjs.ClassProperty("constructor",function ExpressionBreakTag(){return Rexjs.Super.callConstructor($Rexjs_0.prototype, this, arguments);})], 3));}();Rexjs.Module.export("ExpressionBreakTag", ExpressionBreakTag);
-});
-//# sourceURL=http://sourceurl/source/map/line-terminator/expression-break-tag.js
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImh0dHA6Ly9sb2NhbGhvc3Q6OTA5MC9zb3VyY2UvbWFwL2xpbmUtdGVybWluYXRvci9leHByZXNzaW9uLWJyZWFrLXRhZy5qcyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOzs0Y0FJTyxHQUFBLEFBQUcsQ0FBQyxrQkFBQSxBQUFrQixBQUFDLENBQUEsQUFBQyxBQUFDLFFBQUEsQUFBUSxBQUFBLENBQUEsQUFBQyxBQUFBLENBQUEsQUFBQyxBQUFBLENBQUEsQUFBQyxhQUsxQyxNQUFBLEFBQU0sOEJBQWtDLHdCQUFBLEFBQXdCLDJCQUsvRCxLQUFBLEFBQUssRUFBRyxnQkFBQSxBQUFnQixBQUFBLENBQUEsQUFBQyxBQUFBLGdCQUFBLEFBQWdCLDJCQVF6QyxPQUFBLEFBQU8sVUFBQSxDQUFBLEFBQUMsQUFBQSxPQUFBLEFBQU8sQ0FBRSxXQUFBLEFBQVcsQUFBQSxDQUFBLEFBQUMsQUFBQSxDQUFBLEFBQUMsQUFDN0IsTUFBQSxBQUFNLENBQUMsV0FBQSxBQUFXLEFBQUEsQ0FBQSxBQUFDLEFBQUEsV0FBQSxBQUFXLENBQy9CLENBQUEsQUFBQywyQkFVRCxPQUFBLEFBQU8sVUFBQSxDQUFBLEFBQUMsQUFBQSxNQUFBLEFBQU0sQ0FBRSxPQUFBLEFBQU8sQ0FBRSxTQUFBLEFBQVMsQ0FBRSxVQUFBLEFBQVUsQUFBQSxDQUFBLEFBQUMsQUFBQSxDQUFBLEFBQUMsQUFFL0MsU0FBQSxBQUFTLEFBQUEsQ0FBQSxBQUFDLEFBQUEsVUFBQSxBQUFVLEFBQUEsQ0FBQSxBQUFDLEFBQUEsS0FBQSxBQUFLLEFBQUMsRUFBQSxBQUFFLEFBQUMsdUJBQUEsQUFBdUIsK0VBRS9DLE9BQUEsQUFBTyxLQUFDLE1BQUEsQUFBTSxDQUFFLE9BQUEsQUFBTyxDQUFFLFNBQUEsQUFBUyxDQUFFLFVBQUEsQUFBVSxHQUNyRCxDQUFBLEFBQUMsdUpBRUgsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDOyJ9
 					}
 					.toString()
 					.match(
@@ -1268,174 +1364,6 @@ var a=1;var globalThis={};var define=(function(exports){return function(){export
 	commonVisitor, getIdentifierRegExpSource
 ){
 "use strict";
-
-
-eval(
-								function(){
-									// 注释标签
-!function(CommentTag, tags){
-
-this.SingleLineCommentTag = function(){
-	/**
-	 * 单行注释标签
-	 * @param {Number} _type - 标签类型
-	 */
-	function SingleLineCommentTag(_type){
-		CommentTag.call(this, _type);
-	};
-	SingleLineCommentTag = new Rexjs(SingleLineCommentTag, CommentTag);
-	
-	SingleLineCommentTag.props({
-		regexp: /\/\/.*/
-	});
-	
-	return SingleLineCommentTag;
-}();
-
-this.OpeningMultiLineCommentTag = function(){
-	/**
-	 * 多行注释起始标签
-	 * @param {Number} _type - 标签类型
-	 */
-	function OpeningMultiLineCommentTag(_type){
-		CommentTag.call(this, _type);
-	};
-	OpeningMultiLineCommentTag = new Rexjs(OpeningMultiLineCommentTag, CommentTag);
-	
-	OpeningMultiLineCommentTag.props({
-		regexp: /\/\*/,
-		/**
-		 * 获取此标签接下来所需匹配的标签列表
-		 * @param {TagsMap} tagsMap - 标签集合映射
-		 */
-		require: function(tagsMap, currentTags){
-			// 记录 currentTags
-			tags = currentTags;
-			return tagsMap.openingMultiLineCommentContextTags;
-		}
-	});
-	
-	return OpeningMultiLineCommentTag;
-}();
-
-this.OpeningRestrictedCommentTag = function(OpeningMultiLineCommentTag){
-	/**
-	 * 受限制的多行注释起始标签，一般使用在表达式上下文中
-	 * @param {Number} _type - 标签类型
-	 */
-	function OpeningRestrictedCommentTag(_type){
-		OpeningMultiLineCommentTag.call(this, _type);
-	};
-	OpeningRestrictedCommentTag = new Rexjs(OpeningRestrictedCommentTag, OpeningMultiLineCommentTag);
-
-	OpeningRestrictedCommentTag.props({
-		order: ECMAScriptOrders.OPENING_RESTRICTED_COMMENT,
-		/**
-		 * 获取此标签接下来所需匹配的标签列表
-		 * @param {TagsMap} tagsMap - 标签集合映射
-		 */
-		require: function(tagsMap, currentTags){
-			// 记录 currentTags
-			tags = currentTags;
-			return tagsMap.openingRestrictedCommentContextTags;
-		}
-	});
-	
-	return OpeningRestrictedCommentTag;
-}(
-	this.OpeningMultiLineCommentTag
-);
-
-this.CommentBreakTag = function(ExpressionBreakTag){
-	/**
-	 * 注释行结束符标签
-	 */
-	function CommentBreakTag(){
-		ExpressionBreakTag.call(this);
-	};
-	CommentBreakTag = new Rexjs(CommentBreakTag, ExpressionBreakTag);
-	
-	CommentBreakTag.props({
-		/**
-		 * 获取此标签接下来所需匹配的标签列表
-		 * @param {TagsMap} tagsMap - 标签集合映射
-		 * @param {SyntaxTags} currentTags - 上一个标签所需匹配的标签列表
-		 */
-		require: function(tagsMap, currentTags){
-			// 记录严格模式的标签列表
-			tags = tags.newlineTags;
-			return currentTags;
-		}
-	});
-	
-	return CommentBreakTag;
-}(
-	this.ExpressionBreakTag
-);
-
-this.CommentContentTag = function(){
-	/**
-	 * 注释内容标签
-	 * @param {Number} _type - 标签类型
-	 */
-	function CommentContentTag(_type){
-		CommentTag.call(this, _type);
-	};
-	CommentContentTag = new Rexjs(CommentContentTag, CommentTag);
-	
-	CommentContentTag.props({
-		// 防止与单行注释标签或多行注释起始标签冲突
-		order: ECMAScriptOrders.COMMENT_CONTENT,
-		regexp: /(?:[^*\r\n\u2028\u2029]|\*(?!\/))+/,
-		/**
-		 * 获取此标签接下来所需匹配的标签列表
-		 * @param {TagsMap} tagsMap - 标签集合映射
-		 */
-		require: function(tagsMap, currentTags){
-			return currentTags;
-		}
-	});
-	
-	return CommentContentTag;
-}();
-
-this.ClosingMultiLineCommentTag = function(){
-	/**
-	 * 多行注释结束标签
-	 * @param {Number} _type - 标签类型
-	 */
-	function ClosingMultiLineCommentTag(_type){
-		CommentTag.call(this, _type);
-	};
-	ClosingMultiLineCommentTag = new Rexjs(ClosingMultiLineCommentTag, CommentTag);
-	
-	ClosingMultiLineCommentTag.props({
-		regexp: /\*\//,
-		/**
-		 * 获取此标签接下来所需匹配的标签列表
-		 * @param {TagsMap} tagsMap - 标签集合映射
-		 */
-		require: function(){
-			return tags;
-		}
-	});
-	
-	return ClosingMultiLineCommentTag;
-}();
-
-}.call(
-	this,
-	this.CommentTag,
-	// tags
-	null
-);
-								}
-								.toString()
-								.match(
-									/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-								)[1] +
-								"\n//# sourceURL=http://localhost:9090/source/map1/comment.js"
-							);
 
 
 eval(
