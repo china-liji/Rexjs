@@ -17,7 +17,7 @@ export let LiteralTag = function(){
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
 		 * @param {SyntaxTags} currentTags - 上一个标签所需匹配的标签列表
-		 * @returns {SyntaxTags}
+		 * @returns {SyntaxTagsMap}
 		 */
 		require(tagsMap){
 			return tagsMap.expressionContextTags;

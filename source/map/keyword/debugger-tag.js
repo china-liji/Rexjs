@@ -21,7 +21,7 @@ export let DebuggerTag = function(){
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
-		 * @returns {SyntaxTags}
+		 * @returns {SyntaxTagsMap}
 		 */
 		require(tagsMap){
 			return tagsMap.statementEndTags;

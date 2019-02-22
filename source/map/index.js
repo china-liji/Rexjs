@@ -21,6 +21,7 @@ import * as Env from "./env";
 import * as FilePosition from "./file-position";
 import * as Literal from "./literal";
 import * as MethematicalNumber from "./mathematical-number";
+import * as Identifier from "./identifier";
 
 define(EcmaScript);
 define(BaseExpression);
@@ -36,5 +37,6 @@ define(Env);
 define(FilePosition);
 define(Literal);
 define(MethematicalNumber);
+define(Identifier);
 
 window.globalThis = globalThis;
