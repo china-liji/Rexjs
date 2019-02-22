@@ -4,6 +4,5 @@ export * from "./expression-separator-tag";
 export * from "./module-tag";
 export * from "./number-tag";
 export * from "./regexp-tag";
-export * from "./semicolon-tag";
 export * from "./special-line-terminator-tag";
 export * from "./string-tag";

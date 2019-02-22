@@ -24,6 +24,7 @@ import * as MethematicalNumber from "./mathematical-number";
 import * as Identifier from "./identifier";
 import * as EnvConstant from "./env-constant";
 import * as Variable from "./variable";
+import * as Semicolon from "./semicolon";
 
 define(EcmaScript);
 define(BaseExpression);
@@ -42,5 +43,6 @@ define(MethematicalNumber);
 define(Identifier);
 define(EnvConstant);
 define(Variable);
+define(Semicolon);
 
 window.globalThis = globalThis;
