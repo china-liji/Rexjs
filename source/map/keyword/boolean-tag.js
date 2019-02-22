@@ -7,7 +7,7 @@ export let BooleanTag = function(){
 	 */
 	return class BooleanTag extends LiteralTag {
 		/**
-		 * 该标签的正则表达式
+		 * 标签正则
 		 * @type {RegExp}
 		 */
 		regexp = /true|false/;

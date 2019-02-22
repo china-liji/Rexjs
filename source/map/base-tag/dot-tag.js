@@ -7,7 +7,7 @@ export let DotTag = function(){
 	 */
 	return class DotTag extends SyntaxTag {
 		/**
-		 * 该标签的正则表达式
+		 * 标签正则
 		 * @type {RegExp}
 		 */
 		regexp = /\.(?!\d)/;

@@ -13,7 +13,7 @@ export let BinaryNumberTag = function(){
 		radix = 2;
 
 		/**
-		 * 该标签的正则表达式
+		 * 标签正则
 		 * @type {RegExp}
 		 */
 		regexp = /0[bB][01]+/;

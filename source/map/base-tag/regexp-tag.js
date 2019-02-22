@@ -8,7 +8,7 @@ export let RegExpTag = function(){
 	 */
 	return class RegExpTag extends LiteralTag {
 		/**
-		 * 该标签的正则表达式
+		 * 标签正则
 		 * 主体分三部分：
 		 * 1. 反斜杠 + 非换行符，如：\/
 		 * 2. 中括号内容，又分两部分：

@@ -7,7 +7,7 @@ export let LastStatementEndTag = function(){
 	 */
 	return class LastStatementEndTag extends StatementEndTag {
 		/**
-		 * 该标签的正则表达式
+		 * 标签正则
 		 * @type {RegExp}
 		 */
 		regexp = /$/;

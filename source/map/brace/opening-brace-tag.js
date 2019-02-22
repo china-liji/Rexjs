@@ -7,7 +7,7 @@ export let OpeningBraceTag = function(){
 	 */
 	return class OpeningBraceTag extends SyntaxTag {
 		/**
-		 * 该标签的正则表达式
+		 * 标签正则
 		 * @type {RegExp}
 		 */
 		regexp = /\{/;

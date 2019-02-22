@@ -13,7 +13,7 @@ export let OctalNumberTag = function(){
 		radix = 8;
 
 		/**
-		 * 该标签的正则表达式
+		 * 标签正则
 		 * @type {RegExp}
 		 */
 		regexp = /0[oO][0-7]+/;

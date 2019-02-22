@@ -8,7 +8,7 @@ export let FileEndTag = function({ FilePositionTag, FileEndExpression }){
 	 */
 	return class FileEndTag extends FilePositionTag {
 		/**
-		 * 该标签的正则表达式
+		 * 标签正则
 		 * @type {RegExp}
 		 */
 		regexp = /$/;

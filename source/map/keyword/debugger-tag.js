@@ -13,7 +13,7 @@ export let DebuggerTag = function(){
 		$class = CLASS_STATEMENT_BEGIN;
 
 		/**
-		 * 该标签的正则表达式
+		 * 标签正则
 		 * @type {RegExp}
 		 */
 		regexp = /debugger/;

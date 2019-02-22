@@ -7,7 +7,7 @@ export let ThisTag = function(){
 	 */
 	return class ThisTag extends LiteralTag {
 		/**
-		 * 该标签的正则表达式
+		 * 标签正则
 		 * @type {RegExp}
 		 */
 		regexp = /this/;

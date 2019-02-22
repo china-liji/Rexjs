@@ -1,23 +1,24 @@
-import { SyntaxTag, CLASS_STATEMENT_BEGIN } from "../core";
+import { SpecialLineTerminatorTag } from "../base-tag";
 import { ECMAScriptErrors } from "../ecmascript/ecmascript-errors";
+import { ECMAScriptOrders } from "../ecmascript/ecmascript-orders";
 
-export let WithTag = function(){
+export let IllegalLineTerminatorTag = function(){
 	/**
-	 * with 关键字标签
+	 * 不合法的行结束符标签
 	 * @param {Number} _type - 标签类型
 	 */
-	return class WithTag extends SyntaxTag {
+	return class IllegalLineTerminatorTag extends SpecialLineTerminatorTag {
 		/**
-		 * 标签种类分类
+		 * 标签顺序
 		 * @type {Number}
 		 */
-		$class = CLASS_STATEMENT_BEGIN;
+		order = ECMAScriptOrders.ILLEGAL_LINE_TERMINATOR;
 
 		/**
 		 * 标签正则
 		 * @type {RegExp}
 		 */
-		regexp = /with/;
+		regexp = /(?:\/\*(?:[^*]|\*(?!\/))*)?(?:\r\n?|\n|\u2028|\u2029)/;
 
 		/**
 		 * 标签访问器
@@ -29,7 +30,7 @@ export let WithTag = function(){
 		 */
 		visitor(parser, context){
 			// 报错
-			parser.error(context, ECMAScriptErrors.WITH);
-		};
+			parser.error(context, ECMAScriptErrors.NEWLINE);
+		}
 	};
 }();

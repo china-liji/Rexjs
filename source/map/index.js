@@ -25,6 +25,7 @@ import * as Identifier from "./identifier";
 import * as EnvConstant from "./env-constant";
 import * as Variable from "./variable";
 import * as Semicolon from "./semicolon";
+import * as LineTerminator from "./line-terminator";
 
 define(EcmaScript);
 define(BaseExpression);
@@ -44,5 +45,6 @@ define(Identifier);
 define(EnvConstant);
 define(Variable);
 define(Semicolon);
+define(LineTerminator);
 
 window.globalThis = globalThis;

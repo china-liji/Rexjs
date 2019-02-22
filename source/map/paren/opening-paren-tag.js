@@ -7,7 +7,7 @@ export let OpeningParenTag = function(){
 	 */
 	return class OpeningParenTag extends SyntaxTag {
 		/**
-		 * 该标签的正则表达式
+		 * 标签正则
 		 * @type {RegExp}
 		 */
 		regexp = /\(/;

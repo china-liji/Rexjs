@@ -1,23 +1,17 @@
-import Rexjs from "../core";
-import { ECMAScriptOrders } from "../ecmascript/ecmascript-orders";
+import { SpecialLineTerminatorTag } from "../base-tag";
+import { CLASS_STATEMENT_END, STATE_STATEMENT_END } from "../core";
 
-export let FileStartTag = function({ FilePositionTag, FileStartExpression }){
+export let StatementBreakTag = function(){
 	/**
-	 * 文件起始符标签
+	 * 语句行结束符标签
 	 * @param {Number} _type - 标签类型
 	 */
-	return class FileStartTag extends FilePositionTag {
+	return class StatementBreakTag extends SpecialLineTerminatorTag {
 		/**
-		 * 标签顺序
+		 * 标签种类分类
 		 * @type {Number}
 		 */
-		order = ECMAScriptOrders.FILE_START;
-
-		/**
-		 * 标签正则
-		 * @type {RegExp}
-		 */
-		regexp = /^/;
+		$class = CLASS_STATEMENT_END;
 
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
@@ -37,11 +31,11 @@ export let FileStartTag = function({ FilePositionTag, FileStartExpression }){
 		 * @param {Statements} statements - 当前语句块
 		 * @returns {void}
 		 */
-		visitor(parser, context, statement){
-			// 设置当前表达式
-			statement.expression = new FileStartExpression(context);
-		};
+		visitor(parser, context, statement, statements){
+			// 设置状态
+			statement.expression.state |= STATE_STATEMENT_END;
+			
+			super.visitor(parser, context, statement, statements);
+		}
 	};
-}(
-	Rexjs
-);
+}();

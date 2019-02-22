@@ -7,7 +7,7 @@ export let EvalTag = function(){
 	 */
 	return class EvalTag extends EnvConstantTag {
 		/**
-		 * 该标签的正则表达式
+		 * 标签正则
 		 * @type {RegExp}
 		 */
 		regexp = /eval/;
