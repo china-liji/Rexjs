@@ -355,7 +355,6 @@ module.exports = { DevSource: this.DevSource, Source: this.Source };
 	// defaultList
 	[
 		"file-header.js",
-		"accessor-bracket.js",
 		"comma.js",
 		"unary-base.js",
 		"unary-exec.js",

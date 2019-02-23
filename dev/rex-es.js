@@ -1344,12 +1344,76 @@ var AssignableExpression=Rexjs.Module.memberOf("AssignableExpression","../base-e
 
 eval(
 					function(){
+						new Rexjs.Module("rexjs://source/map/accessor/bracket-acccessor-expression.js",function(Rexjs){
+"use strict";
+var AccessorExpression=Rexjs.Module.memberOf("AccessorExpression","./accessor-expression","rexjs://source/map/accessor/bracket-acccessor-expression.js");var PartnerExpression=Rexjs.Module.memberOf("PartnerExpression","../core","rexjs://source/map/accessor/bracket-acccessor-expression.js");var BracketAccessorExpression=function(){var $Rexjs_0;return ($Rexjs_0=Rexjs.Class.create(AccessorExpression,[new Rexjs.ClassProperty("constructor",function BracketAccessorExpression(context,object){var $Rexjs_1;($Rexjs_1=Rexjs.Super.callConstructor($Rexjs_0.prototype,this,[context,object]));$Rexjs_1.property=new PartnerExpression(context);return $Rexjs_1;}),new Rexjs.ClassProperty("extractTo",function(contentBuilder){this.object.extractTo(contentBuilder);this.property.extractTo(contentBuilder);})], 0));}();Rexjs.Module.export("BracketAccessorExpression", BracketAccessorExpression);
+});
+//# sourceURL=http://sourceurl/source/map/accessor/bracket-acccessor-expression.js
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImh0dHA6Ly9sb2NhbGhvc3Q6OTA5MC9zb3VyY2UvbWFwL2FjY2Vzc29yL2JyYWNrZXQtYWNjY2Vzc29yLWV4cHJlc3Npb24uanMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6Ijs7a1NBR08sR0FBQSxBQUFHLENBQUMseUJBQUEsQUFBeUIsQUFBQyxDQUFBLEFBQUMsQUFBQyxRQUFBLEFBQVEsQUFBQSxDQUFBLEFBQUMsQUFBQSxDQUFBLEFBQUMsQUFBQSxDQUFBLEFBQUMsYUFDakQsTUFBQSxBQUFNLDhCQUF5QyxrQkFBQSxBQUFrQiwyQkFNaEUsV0FBQSxBQUFXLG9DQUFBLENBQUEsQUFBQyxBQUFBLE9BQUEsQUFBTyxDQUFFLE1BQUEsQUFBTSxBQUFBLENBQUEsQUFBQyxBQUFBLENBQUEsQUFBQyw0RUFDdEIsT0FBQSxBQUFPLENBQUUsTUFBQSxBQUFNLElBRXJCLFFBQUEsQUFBUSxBQUFKLENBQUEsQUFBQyxBQUFBLFFBQUEsQUFBUSxBQUFDLENBQUEsQUFBQyxBQUFDLElBQUEsQUFBSSxBQUFBLGlCQUFBLEFBQWlCLEFBQUEsQ0FBQSxBQUFDLEFBQUEsT0FBQSxBQUFPLEFBQUEsQ0FBQSxBQUFDLGlCQUMvQyxDQUFBLEFBQUMsMkJBT0QsU0FBQSxBQUFTLFVBQUEsQ0FBQSxBQUFDLEFBQUEsY0FBQSxBQUFjLEFBQUEsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLEFBRXpCLElBQUEsQUFBSSxBQUFBLENBQUEsQUFBQyxBQUFBLE1BQUEsQUFBTSxBQUFBLENBQUEsQUFBQyxBQUFBLFNBQUEsQUFBUyxBQUFBLENBQUEsQUFBQyxBQUFBLGNBQUEsQUFBYyxBQUFBLENBQUEsQUFBQyxDQUVyQyxJQUFBLEFBQUksQUFBQSxDQUFBLEFBQUMsQUFBQSxRQUFBLEFBQVEsQUFBQSxDQUFBLEFBQUMsQUFBQSxTQUFBLEFBQVMsQUFBQSxDQUFBLEFBQUMsQUFBQSxjQUFBLEFBQWMsQUFBQSxDQUFBLEFBQUMsQ0FDeEMsQ0FBQSxBQUFDLFFBRUgsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDOyJ9
+					}
+					.toString()
+					.match(
+						/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+					)[1]
+				);
+
+
+eval(
+					function(){
+						new Rexjs.Module("rexjs://source/map/accessor/bracket-accessor-statement.js",function(Rexjs){
+"use strict";
+var ECMAScriptStatement=Rexjs.Module.memberOf("ECMAScriptStatement","../ecmascript/ecmascript-statement","rexjs://source/map/accessor/bracket-accessor-statement.js");var BracketAccessorStatement=function(){var $Rexjs_0;return ($Rexjs_0=Rexjs.Class.create(ECMAScriptStatement,[new Rexjs.ClassProperty("catch",function(parser,context){if(context.content!=="]"){parser.error(context);return null;}this.out().property.inner=this.expression;return this.bindingOf();}),new Rexjs.ClassProperty("constructor",function BracketAccessorStatement(){return Rexjs.Super.callConstructor($Rexjs_0.prototype, this, arguments);})], 1));}();Rexjs.Module.export("BracketAccessorStatement", BracketAccessorStatement);
+});
+//# sourceURL=http://sourceurl/source/map/accessor/bracket-accessor-statement.js
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImh0dHA6Ly9sb2NhbGhvc3Q6OTA5MC9zb3VyY2UvbWFwL2FjY2Vzc29yL2JyYWNrZXQtYWNjZXNzb3Itc3RhdGVtZW50LmpzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiI7O3NLQUVPLEdBQUEsQUFBRyxDQUFDLHdCQUFBLEFBQXdCLEFBQUMsQ0FBQSxBQUFDLEFBQUMsUUFBQSxBQUFRLEFBQUEsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLGFBS2hELE1BQUEsQUFBTSw4QkFBd0MsbUJBQUEsQUFBbUIsMkJBT2hFLEtBQUEsQUFBSyxVQUFBLENBQUEsQUFBQyxBQUFBLE1BQUEsQUFBTSxDQUFFLE9BQUEsQUFBTyxBQUFBLENBQUEsQUFBQyxBQUFBLENBQUEsQUFBQyxBQUV0QixFQUFBLEFBQUUsQUFBQSxDQUFBLEFBQUMsQUFBQSxPQUFBLEFBQU8sQUFBQSxDQUFBLEFBQUMsQUFBQSxPQUFBLEFBQU8sQUFBQyxHQUFBLEFBQUcsQUFBQyxHQUFBLEFBQUcsQUFBQSxDQUFBLEFBQUMsQUFBQSxDQUFBLEFBQUMsQUFFM0IsTUFBQSxBQUFNLEFBQUEsQ0FBQSxBQUFDLEFBQUEsS0FBQSxBQUFLLEFBQUEsQ0FBQSxBQUFDLEFBQUEsT0FBQSxBQUFPLEFBQUEsQ0FBQSxBQUFDLENBQ3JCLE1BQUEsQUFBTSxDQUFDLElBQUEsQUFBSSxDQUNaLENBQUEsQUFBQyxBQUdELElBQUEsQUFBSSxBQUFBLENBQUEsQUFBQyxBQUFBLEdBQUEsQUFBRyxBQUFBLENBQUEsQUFBQyxBQUFBLENBQUEsQUFBQyxBQUFBLENBQUEsQUFBQyxBQUFBLFFBQUEsQUFBUSxBQUFBLENBQUEsQUFBQyxBQUFBLEtBQUEsQUFBSyxBQUFDLENBQUEsQUFBQyxBQUFDLElBQUEsQUFBSSxBQUFBLENBQUEsQUFBQyxBQUFBLFVBQUEsQUFBVSxDQUMzQyxNQUFBLEFBQU0sQ0FBQyxJQUFBLEFBQUksQUFBQSxDQUFBLEFBQUMsQUFBQSxTQUFBLEFBQVMsQUFBQSxDQUFBLEFBQUMsQUFBQSxDQUFBLEFBQUMsQ0FDeEIsQ0FBQSxBQUFDLDZKQUVILENBQUEsQUFBQyxBQUFBLENBQUEsQUFBQyxBQUFBLENBQUEsQUFBQzsifQ==
+					}
+					.toString()
+					.match(
+						/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+					)[1]
+				);
+
+
+eval(
+					function(){
+						new Rexjs.Module("rexjs://source/map/accessor/closing-bracket-accessor-tag.js",function(Rexjs){
+"use strict";
+var ClosingBracketTag=Rexjs.Module.memberOf("ClosingBracketTag","../bracket","rexjs://source/map/accessor/closing-bracket-accessor-tag.js");var ClosingBracketAccessorTag=function(){var $Rexjs_0;return ($Rexjs_0=Rexjs.Class.create(ClosingBracketTag,[new Rexjs.ClassProperty("require",function(tagsMap){return tagsMap.expressionContextTags;}),new Rexjs.ClassProperty("visitor",function(parser,context,statement,statements){statement.expression.property.closing=context;}),new Rexjs.ClassProperty("constructor",function ClosingBracketAccessorTag(){return Rexjs.Super.callConstructor($Rexjs_0.prototype, this, arguments);})], 2));}();Rexjs.Module.export("ClosingBracketAccessorTag", ClosingBracketAccessorTag);
+});
+//# sourceURL=http://sourceurl/source/map/accessor/closing-bracket-accessor-tag.js
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImh0dHA6Ly9sb2NhbGhvc3Q6OTA5MC9zb3VyY2UvbWFwL2FjY2Vzc29yL2Nsb3NpbmctYnJhY2tldC1hY2Nlc3Nvci10YWcuanMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6Ijs7NElBRU8sR0FBQSxBQUFHLENBQUMseUJBQUEsQUFBeUIsQUFBQyxDQUFBLEFBQUMsQUFBQyxRQUFBLEFBQVEsQUFBQSxDQUFBLEFBQUMsQUFBQSxDQUFBLEFBQUMsQUFBQSxDQUFBLEFBQUMsYUFLakQsTUFBQSxBQUFNLDhCQUF5QyxpQkFBQSxBQUFpQiwyQkFPL0QsT0FBQSxBQUFPLFVBQUEsQ0FBQSxBQUFDLEFBQUEsT0FBQSxBQUFPLEFBQUEsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLEFBQ2hCLE1BQUEsQUFBTSxDQUFDLE9BQUEsQUFBTyxBQUFBLENBQUEsQUFBQyxBQUFBLHFCQUFBLEFBQXFCLENBQ3JDLENBQUEsQUFBQywyQkFVRCxPQUFBLEFBQU8sVUFBQSxDQUFBLEFBQUMsQUFBQSxNQUFBLEFBQU0sQ0FBRSxPQUFBLEFBQU8sQ0FBRSxTQUFBLEFBQVMsQ0FBRSxVQUFBLEFBQVUsQUFBQSxDQUFBLEFBQUMsQUFBQSxDQUFBLEFBQUMsQUFFL0MsU0FBQSxBQUFTLEFBQUEsQ0FBQSxBQUFDLEFBQUEsVUFBQSxBQUFVLEFBQUEsQ0FBQSxBQUFDLEFBQUEsUUFBQSxBQUFRLEFBQUEsQ0FBQSxBQUFDLEFBQUEsT0FBQSxBQUFPLEFBQUMsQ0FBQSxBQUFDLEFBQUMsT0FBQSxBQUFPLENBQ2hELENBQUEsQUFBQyw4SkFFSCxDQUFBLEFBQUMsQUFBQSxDQUFBLEFBQUMsQUFBQSxDQUFBLEFBQUM7In0=
+					}
+					.toString()
+					.match(
+						/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+					)[1]
+				);
+
+
+eval(
+					function(){
 						new Rexjs.Module("rexjs://source/map/accessor/dot-accessor-tag.js",function(Rexjs){
 "use strict";
 var DotTag=Rexjs.Module.memberOf("DotTag","../base-tag/dot-tag","rexjs://source/map/accessor/dot-accessor-tag.js");var CLASS_EXPRESSION_CONTEXT=Rexjs.Module.memberOf("CLASS_EXPRESSION_CONTEXT","../core","rexjs://source/map/accessor/dot-accessor-tag.js");var AccessorExpression=Rexjs.Module.memberOf("AccessorExpression","./accessor-expression","rexjs://source/map/accessor/dot-accessor-tag.js");var ECMAScriptOrders=Rexjs.Module.memberOf("ECMAScriptOrders","../ecmascript/ecmascript-orders","rexjs://source/map/accessor/dot-accessor-tag.js");var DotAccessorTag=function(){var $Rexjs_0;return ($Rexjs_0=Rexjs.Class.create(DotTag,[new Rexjs.ClassProperty("$class",CLASS_EXPRESSION_CONTEXT),new Rexjs.ClassProperty("order",ECMAScriptOrders.DOT_ACCESSOR),new Rexjs.ClassProperty("getBoundExpression",function(context,statement){return new AccessorExpression(context,statement.expression);}),new Rexjs.ClassProperty("require",function(tagsMap){return tagsMap.dotAccessorContextTags;}),new Rexjs.ClassProperty("visitor",function(parser,context,statement,statements){context.setExpressionOf(statement);}),new Rexjs.ClassProperty("constructor",function DotAccessorTag(){return Rexjs.Super.callConstructor($Rexjs_0.prototype, this, arguments);})], 5));}();Rexjs.Module.export("DotAccessorTag", DotAccessorTag);
 });
 //# sourceURL=http://sourceurl/source/map/accessor/dot-accessor-tag.js
 //# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImh0dHA6Ly9sb2NhbGhvc3Q6OTA5MC9zb3VyY2UvbWFwL2FjY2Vzc29yL2RvdC1hY2Nlc3Nvci10YWcuanMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6Ijs7OGhCQUtPLEdBQUEsQUFBRyxDQUFDLGNBQUEsQUFBYyxBQUFDLENBQUEsQUFBQyxBQUFDLFFBQUEsQUFBUSxBQUFBLENBQUEsQUFBQyxBQUFBLENBQUEsQUFBQyxBQUFBLENBQUEsQUFBQyxhQUt0QyxNQUFBLEFBQU0sOEJBQThCLE1BQUEsQUFBTSwyQkFLekMsTUFBQSxBQUFNLEVBQUcsd0JBQUEsQUFBd0IsMkJBTWpDLEtBQUEsQUFBSyxFQUFHLGdCQUFBLEFBQWdCLEFBQUEsQ0FBQSxBQUFDLEFBQUEsWUFBQSxBQUFZLDJCQVFyQyxrQkFBQSxBQUFrQixVQUFBLENBQUEsQUFBQyxBQUFBLE9BQUEsQUFBTyxDQUFFLFNBQUEsQUFBUyxBQUFBLENBQUEsQUFBQyxBQUFBLENBQUEsQUFBQyxBQUN0QyxNQUFBLEFBQU0sQ0FBQyxJQUFBLEFBQUksQUFBQSxrQkFBQSxBQUFrQixBQUFBLENBQUEsQUFBQyxBQUFBLE9BQUEsQUFBTyxDQUFFLFNBQUEsQUFBUyxBQUFBLENBQUEsQUFBQyxBQUFBLFVBQUEsQUFBVSxBQUFBLENBQUEsQUFBQyxDQUM3RCxDQUFBLEFBQUMsMkJBT0QsT0FBQSxBQUFPLFVBQUEsQ0FBQSxBQUFDLEFBQUEsT0FBQSxBQUFPLEFBQUEsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLEFBQ2hCLE1BQUEsQUFBTSxDQUFDLE9BQUEsQUFBTyxBQUFBLENBQUEsQUFBQyxBQUFBLHNCQUFBLEFBQXNCLENBQ3RDLENBQUEsQUFBQywyQkFVRCxPQUFBLEFBQU8sVUFBQSxDQUFBLEFBQUMsQUFBQSxNQUFBLEFBQU0sQ0FBRSxPQUFBLEFBQU8sQ0FBRSxTQUFBLEFBQVMsQ0FBRSxVQUFBLEFBQVUsQUFBQSxDQUFBLEFBQUMsQUFBQSxDQUFBLEFBQUMsQUFFL0MsT0FBQSxBQUFPLEFBQUEsQ0FBQSxBQUFDLEFBQUEsZUFBQSxBQUFlLEFBQUEsQ0FBQSxBQUFDLEFBQUEsU0FBQSxBQUFTLEFBQUEsQ0FBQSxBQUFDLENBQ25DLENBQUEsQUFBQyxtSkFFSCxDQUFBLEFBQUMsQUFBQSxDQUFBLEFBQUMsQUFBQSxDQUFBLEFBQUM7In0=
+					}
+					.toString()
+					.match(
+						/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+					)[1]
+				);
+
+
+eval(
+					function(){
+						new Rexjs.Module("rexjs://source/map/accessor/opening-bracket-accessor-tag.js",function(Rexjs){
+"use strict";
+var OpeningBracketTag=Rexjs.Module.memberOf("OpeningBracketTag","../bracket/opening-bracket-tag","rexjs://source/map/accessor/opening-bracket-accessor-tag.js");var CLASS_EXPRESSION_CONTEXT=Rexjs.Module.memberOf("CLASS_EXPRESSION_CONTEXT","../core","rexjs://source/map/accessor/opening-bracket-accessor-tag.js");var BracketAccessorExpression=Rexjs.Module.memberOf("BracketAccessorExpression","./bracket-acccessor-expression","rexjs://source/map/accessor/opening-bracket-accessor-tag.js");var BracketAccessorStatement=Rexjs.Module.memberOf("BracketAccessorStatement","./bracket-accessor-statement","rexjs://source/map/accessor/opening-bracket-accessor-tag.js");var ECMAScriptOrders=Rexjs.Module.memberOf("ECMAScriptOrders","../ecmascript/ecmascript-orders","rexjs://source/map/accessor/opening-bracket-accessor-tag.js");var ParserMethod=Rexjs.Module.memberOf("ParserMethod","../parser-env","rexjs://source/map/accessor/opening-bracket-accessor-tag.js");var ClosingBracketAccessorTag=Rexjs.Module.memberOf("ClosingBracketAccessorTag","./closing-bracket-accessor-tag","rexjs://source/map/accessor/opening-bracket-accessor-tag.js");var OpeningBracketAccessorTag=function(closingBracketAccessorTag){var $Rexjs_0;return ($Rexjs_0=Rexjs.Class.create(OpeningBracketTag,[new Rexjs.ClassProperty("$class",CLASS_EXPRESSION_CONTEXT),new Rexjs.ClassProperty("order",ECMAScriptOrders.OPENING_BRACKET_ACCESSOR),new Rexjs.ClassProperty("binding",function(){return closingBracketAccessorTag;},"get"),new Rexjs.ClassProperty("getBoundExpression",function(context,statement){return new BracketAccessorExpression(context,statement.expression);}),new Rexjs.ClassProperty("getBoundStatement",function(statements){return new BracketAccessorStatement(statements);}),new Rexjs.ClassProperty("require",function(tagsMap){return tagsMap.expressionTags;}),new Rexjs.ClassProperty("visitor",function(parser,context,statement,statements){ParserMethod.visitor(parser,context,statement,statements);}),new Rexjs.ClassProperty("constructor",function OpeningBracketAccessorTag(){return Rexjs.Super.callConstructor($Rexjs_0.prototype, this, arguments);})], 7));}(new ClosingBracketAccessorTag());Rexjs.Module.export("OpeningBracketAccessorTag", OpeningBracketAccessorTag);
+});
+//# sourceURL=http://sourceurl/source/map/accessor/opening-bracket-accessor-tag.js
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImh0dHA6Ly9sb2NhbGhvc3Q6OTA5MC9zb3VyY2UvbWFwL2FjY2Vzc29yL29wZW5pbmctYnJhY2tldC1hY2Nlc3Nvci10YWcuanMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6Ijs7dW1DQVFPLEdBQUEsQUFBRyxDQUFDLHlCQUFBLEFBQXlCLEFBQUMsQ0FBQSxBQUFDLEFBQUMsUUFBQSxBQUFRLEFBQUEsQ0FBQSxBQUFDLEFBQUEseUJBQUEsQUFBeUIsQUFBQSxDQUFBLEFBQUMsQUFBQSxDQUFBLEFBQUMsYUFLMUUsTUFBQSxBQUFNLDhCQUF5QyxpQkFBQSxBQUFpQiwyQkFLL0QsTUFBQSxBQUFNLEVBQUcsd0JBQUEsQUFBd0IsMkJBTWpDLEtBQUEsQUFBSyxFQUFHLGdCQUFBLEFBQWdCLEFBQUEsQ0FBQSxBQUFDLEFBQUEsd0JBQUEsQUFBd0IsMkJBTTdDLE9BQUEsQUFBTyxVQUFBLENBQUEsQUFBQyxBQUFBLENBQUEsQUFBQyxBQUFBLENBQUEsQUFBQyxBQUNiLE1BQUEsQUFBTSxDQUFDLHlCQUFBLEFBQXlCLENBQ2pDLENBQUEsQUFBQyxpQ0FRRCxrQkFBQSxBQUFrQixVQUFBLENBQUEsQUFBQyxBQUFBLE9BQUEsQUFBTyxDQUFFLFNBQUEsQUFBUyxBQUFBLENBQUEsQUFBQyxBQUFBLENBQUEsQUFBQyxBQUN0QyxNQUFBLEFBQU0sQ0FBQyxJQUFBLEFBQUksQUFBQSx5QkFBQSxBQUF5QixBQUFBLENBQUEsQUFBQyxBQUFBLE9BQUEsQUFBTyxDQUFFLFNBQUEsQUFBUyxBQUFBLENBQUEsQUFBQyxBQUFBLFVBQUEsQUFBVSxBQUFBLENBQUEsQUFBQyxDQUNwRSxDQUFBLEFBQUMsMkJBT0QsaUJBQUEsQUFBaUIsVUFBQSxDQUFBLEFBQUMsQUFBQSxVQUFBLEFBQVUsQUFBQSxDQUFBLEFBQUMsQUFBQSxDQUFBLEFBQUMsQUFDN0IsTUFBQSxBQUFNLENBQUMsSUFBQSxBQUFJLEFBQUEsd0JBQUEsQUFBd0IsQUFBQSxDQUFBLEFBQUMsQUFBQSxVQUFBLEFBQVUsQUFBQSxDQUFBLEFBQUMsQ0FDaEQsQ0FBQSxBQUFDLDJCQVFELE9BQUEsQUFBTyxVQUFBLENBQUEsQUFBQyxBQUFBLE9BQUEsQUFBTyxBQUFBLENBQUEsQUFBQyxBQUFBLENBQUEsQUFBQyxBQUNoQixNQUFBLEFBQU0sQ0FBQyxPQUFBLEFBQU8sQUFBQSxDQUFBLEFBQUMsQUFBQSxjQUFBLEFBQWMsQ0FDOUIsQ0FBQSxBQUFDLDJCQVNELE9BQUEsQUFBTyxVQUFBLENBQUEsQUFBQyxBQUFBLE1BQUEsQUFBTSxDQUFFLE9BQUEsQUFBTyxDQUFFLFNBQUEsQUFBUyxDQUFFLFVBQUEsQUFBVSxBQUFBLENBQUEsQUFBQyxBQUFBLENBQUEsQUFBQyxBQUMvQyxZQUFBLEFBQVksQUFBQSxDQUFBLEFBQUMsQUFBQSxPQUFBLEFBQU8sQUFBQSxDQUFBLEFBQUMsQUFBQSxNQUFBLEFBQU0sQ0FBRSxPQUFBLEFBQU8sQ0FBRSxTQUFBLEFBQVMsQ0FBRSxVQUFBLEFBQVUsQUFBQSxDQUFBLEFBQUMsQ0FDN0QsQ0FBQSxBQUFDLDhKQUVILENBQUEsQUFBQyxBQUFBLENBQUEsQUFBQyxBQUVELElBQUEsQUFBSSxBQUFBLHlCQUFBLEFBQXlCLEFBQUEsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLEFBQ2hDLENBQUEsQUFBQzsifQ==
 					}
 					.toString()
 					.match(
@@ -1378,7 +1442,7 @@ eval(
 					function(){
 						new Rexjs.Module("rexjs://source/map/accessor/index.js",function(Rexjs){
 "use strict";
-Rexjs.Module.exportFrom("./accessor-expression","rexjs://source/map/accessor/index.js");Rexjs.Module.exportFrom("./dot-accessor-tag","rexjs://source/map/accessor/index.js");Rexjs.Module.exportFrom("./property-name-tag","rexjs://source/map/accessor/index.js");
+Rexjs.Module.exportFrom("./accessor-expression","rexjs://source/map/accessor/index.js");Rexjs.Module.exportFrom("./bracket-acccessor-expression","rexjs://source/map/accessor/index.js");Rexjs.Module.exportFrom("./bracket-accessor-statement","rexjs://source/map/accessor/index.js");Rexjs.Module.exportFrom("./closing-bracket-accessor-tag","rexjs://source/map/accessor/index.js");Rexjs.Module.exportFrom("./dot-accessor-tag","rexjs://source/map/accessor/index.js");Rexjs.Module.exportFrom("./opening-bracket-accessor-tag","rexjs://source/map/accessor/index.js");Rexjs.Module.exportFrom("./property-name-tag","rexjs://source/map/accessor/index.js");
 });
 //# sourceURL=http://sourceurl/source/map/accessor/index.js
 //# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImh0dHA6Ly9sb2NhbGhvc3Q6OTA5MC9zb3VyY2UvbWFwL2FjY2Vzc29yL2luZGV4LmpzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiI7OzsifQ==
@@ -1428,186 +1492,6 @@ var a=1;var globalThis={};var define=(function(exports){return function(){export
 	commonVisitor, getIdentifierRegExpSource
 ){
 "use strict";
-
-
-eval(
-								function(){
-									// 中括号属性访问器
-!function(closingBracketAccessorTag){
-	
-this.BracketAccessorExpression = function(AccessorExpression){
-	/**
-	 * 中括号属性访问器表达式
-	 * @param {Context} context - 语法标签上下文
-	 * @param {Expression} object - 拥有该属性的对象
-	 */
-	function BracketAccessorExpression(context, object){
-		AccessorExpression.call(this, context, object);
-
-		this.property = new PartnerExpression(context);
-	};
-	BracketAccessorExpression = new Rexjs(BracketAccessorExpression, AccessorExpression);
-	
-	BracketAccessorExpression.props({
-		/**
-		 * 提取表达式文本内容
-		 * @param {ContentBuilder} contentBuilder - 内容生成器
-		 */
-		extractTo: function(contentBuilder){
-			// 提取对象
-			this.object.extractTo(contentBuilder);
-			// 提取属性
-			this.property.extractTo(contentBuilder);
-		}
-	});
-	
-	return BracketAccessorExpression;
-}(
-	this.AccessorExpression
-);
-	
-this.BracketAccessorStatement = function(){
-	/**
-	 * 中括号属性访问器语句
-	 * @param {Statements} statements - 该语句将要所处的语句块
-	 */
-	function BracketAccessorStatement(statements){
-		ECMAScriptStatement.call(this, statements);
-	};
-	BracketAccessorStatement = new Rexjs(BracketAccessorStatement, ECMAScriptStatement);
-	
-	BracketAccessorStatement.props({
-		/**
-		 * 捕获处理异常
-		 * @param {SyntaxParser} parser - 语法解析器
-		 * @param {Context} context - 语法标签上下文
-		 */
-		catch: function(parser, context){
-			// 如果不是关闭分组小括号
-			if(context.content !== "]"){
-				// 报错
-				parser.error(context);
-				return null;
-			}
-
-			// 跳出该语句并设置 inner
-			this.out().property.inner = this.expression;
-			return this.bindingOf();
-		}
-	});
-	
-	return BracketAccessorStatement;
-}();
-
-this.OpeningBracketAccessorTag = function(OpeningBracketTag, BracketAccessorExpression, BracketAccessorStatement){
-	/**
-	 * 起始中括号属性访问器标签
-	 * @param {Number} _type - 标签类型
-	 */
-	function OpeningBracketAccessorTag(_type){
-		OpeningBracketTag.call(this, _type);
-	};
-	OpeningBracketAccessorTag = new Rexjs(OpeningBracketAccessorTag, OpeningBracketTag);
-	
-	OpeningBracketAccessorTag.props({
-		$class: CLASS_EXPRESSION_CONTEXT,
-		/**
-		 * 获取绑定的标签，该标签一般是用于语句的 try、catch 的返回值
-		 */
-		get binding(){
-			return closingBracketAccessorTag;
-		},
-		/**
-		 * 获取绑定的表达式，一般在子类使用父类逻辑，而不使用父类表达式的情况下使用
-		 * @param {Context} context - 相关的语法标签上下文
-		 * @param {Statement} statement - 当前语句
-		 */
-		getBoundExpression: function(context, statement){
-			return new BracketAccessorExpression(context, statement.expression);
-		},
-		/**
-		 * 获取绑定的语句，一般在子类使用父类逻辑，而不使用父类语句的情况下使用
-		 * @param {Statements} statements - 该语句将要所处的语句块
-		 */
-		getBoundStatement: function(statements){
-			return new BracketAccessorStatement(statements);
-		},
-		// 防止与起始数组标签冲突
-		order: ECMAScriptOrders.OPENING_BRACKET_ACCESSOR,
-		/**
-		 * 获取此标签接下来所需匹配的标签列表
-		 * @param {TagsMap} tagsMap - 标签集合映射
-		 */
-		require: function(tagsMap){
-			return tagsMap.expressionTags;
-		},
-		/**
-		 * 标签访问器
-		 * @param {SyntaxParser} parser - 语法解析器
-		 * @param {Context} context - 标签上下文
-		 * @param {Statement} statement - 当前语句
-		 * @param {Statements} statements - 当前语句块
-		 */
-		visitor: commonVisitor
-	});
-	
-	return OpeningBracketAccessorTag;
-}(
-	this.OpeningBracketTag,
-	this.BracketAccessorExpression,
-	this.BracketAccessorStatement
-);
-
-this.ClosingBracketAccessorTag = function(ClosingBracketTag){
-	/**
-	 * 结束中括号属性访问器标签
-	 * @param {Number} _type - 标签类型
-	 */
-	function ClosingBracketAccessorTag(_type){
-		ClosingBracketTag.call(this, _type);
-	};
-	ClosingBracketAccessorTag = new Rexjs(ClosingBracketAccessorTag, ClosingBracketTag);
-	
-	ClosingBracketAccessorTag.props({
-		/**
-		 * 获取此标签接下来所需匹配的标签列表
-		 * @param {TagsMap} tagsMap - 标签集合映射
-		 */
-		require: function(tagsMap){
-			return tagsMap.expressionContextTags;
-		},
-		/**
-		 * 标签访问器
-		 * @param {SyntaxParser} parser - 语法解析器
-		 * @param {Context} context - 标签上下文
-		 * @param {Statement} statement - 当前语句
-		 * @param {Statements} statements - 当前语句块
-		 */
-		visitor: function(parser, context, statement, statements){
-			// 设置表达式
-			statement.expression.property.closing = context;
-		}
-	});
-	
-	return ClosingBracketAccessorTag;
-}(
-	this.ClosingBracketTag
-);
-
-closingBracketAccessorTag = new this.ClosingBracketAccessorTag();
-	
-}.call(
-	this,
-	// closingBracketAccessorTag
-	null
-);
-								}
-								.toString()
-								.match(
-									/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-								)[1] +
-								"\n//# sourceURL=http://localhost:9090/source/map1/accessor-bracket.js"
-							);
 
 
 eval(
