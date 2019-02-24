@@ -192,8 +192,14 @@ this.ArrowContextStatement = function(SingleStatement, ArrowFunctionBodyExpressi
 		 * @param {Context} context - 语法标签上下文
 		 */
 		requestOut: function(parser, context){
-			// 跳出语句并设置 body
-			this.out().body = new ArrowFunctionBodyExpression(this.expression);
+			var targetStatements = parser.statements.target;
+
+			// 跳出当前语句
+			this.out();
+			// 跳出 box 语句并设置 body
+			targetStatements.statement.out().body = new ArrowFunctionBodyExpression(this.expression);
+			// 设置当前语句块
+			parser.statements = targetStatements;
 		},
 		/**
 		 * 尝试处理异常
@@ -231,7 +237,7 @@ this.ArrowFunctionBodyStatements = function(FunctionBodyStatements){
 		 * @param {Context} context - super 关键字上下文
 		 */
 		applySuper: function(parser, context){
-			return this.target.closure.applySuper(parser, context);
+			this.target.closure.applySuper(parser, context);
 		},
 		/**
 		 * 申请父类调用
@@ -240,7 +246,7 @@ this.ArrowFunctionBodyStatements = function(FunctionBodyStatements){
 		 * @param {Context} opening - 起始父类调用小括号标签上下文
 		 */
 		applySuperCall: function(parser, context, opening){
-			return this.target.closure.applySuperCall(parser, context, opening);
+			this.target.closure.applySuperCall(parser, context, opening);
 		},
 		/**
 		 * 申请应用 this 关键字
@@ -270,7 +276,7 @@ this.ArrowFunctionBodyStatements = function(FunctionBodyStatements){
 	this.FunctionBodyStatements
 );
 
-this.ArrowTag = function(ExpressionSeparatorTag, ArrowFunctionExpression, SingleArgumentExpression, IdentifierExpression, ArgumentsExpression, ArrowContextStatement){
+this.ArrowTag = function(ExpressionSeparatorTag, ArrowFunctionExpression, SingleArgumentExpression, IdentifierExpression, ArgumentsExpression, ArrowContextStatement, ArrowFunctionBodyStatements){
 	/**
 	 * 箭头标签
 	 * @param {Number} _type - 标签类型
@@ -331,7 +337,13 @@ this.ArrowTag = function(ExpressionSeparatorTag, ArrowFunctionExpression, Single
 				return;
 			}
 
-			// 设置当前语句
+			// 设置外层语句块的语句
+			statements.statement = statement = new BoxStatement(statements);
+			// 设置外层语句块的语句表达式
+			statement.expression = new EmptyExpression();
+			// 设置当前语句块
+			parser.statements = statements = new ArrowFunctionBodyStatements(statements);
+			// 设置语句的当前语句
 			statements.statement = new ArrowContextStatement(statements);
 		}
 	});
@@ -343,7 +355,8 @@ this.ArrowTag = function(ExpressionSeparatorTag, ArrowFunctionExpression, Single
 	this.SingleArgumentExpression,
 	this.IdentifierExpression,
 	this.ArgumentsExpression,
-	this.ArrowContextStatement
+	this.ArrowContextStatement,
+	this.ArrowFunctionBodyStatements
 );
 
 this.OpeningArrowFunctionBodyTag = function(ArrowFunctionBodyStatements, visitor){
@@ -379,10 +392,18 @@ this.OpeningArrowFunctionBodyTag = function(ArrowFunctionBodyStatements, visitor
 		 * @param {Statements} statements - 当前语句块
 		 */
 		visitor: function(parser, context, statement, statements){
-			// 跳出当前语句
+			var targetStatements = statements.target;
+
+			// 跳出 ArrowContextStatement 语句
 			statement.out();
-			// 调用父类方法
-			visitor.call(this, parser, context, statements.statement, statements);
+			// 跳出 box 语句
+			targetStatements.statement.out();
+
+			// 设置表达式
+			context.setExpressionOf(
+				// 先设置当前语句
+				context.setStatementOf(targetStatements)
+			);
 		}
 	});
 

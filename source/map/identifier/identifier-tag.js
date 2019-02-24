@@ -1,15 +1,15 @@
 import { SyntaxTag, CLASS_EXPRESSION } from "../core";
-import { ParserMethod } from "../parser-env/parser-method";
 import { ECMAScriptErrors } from "../ecmascript/ecmascript-errors";
 import { ECMAScriptOrders } from "../ecmascript";
 import { IdentifierExpression } from "./identifier-expression";
+import { ECMAScriptMethod } from "../ecmascript/ecmascript-method";
 
 export let IdentifierTag = function(RegExg, REGEXP_SOURCE, exceptions, constantIdentifiers, constantKeywords, nonconstantKeywords, regexp){
 	/**
 	 * 标识符标签
 	 * @param {Number} _type - 标签类型
 	 */
-	class IdentifierTag extends SyntaxTag {
+	return class IdentifierTag extends SyntaxTag {
 		/**
 		 * 标签种类分类
 		 * @type {Number}
@@ -207,14 +207,10 @@ export let IdentifierTag = function(RegExg, REGEXP_SOURCE, exceptions, constantI
 			statement.expression = new IdentifierExpression(context);
 		};
 	};
-
-	// 设置 exceptions，并触发编译正则
-	IdentifierTag.exceptions = constantIdentifiers.concat(IdentifierTag.keywords);
-	return IdentifierTag;
 }(
 	RegExp,
 	// REGEXP_SOURCE
-	ParserMethod.getIdentifierRegExpSource(),
+	ECMAScriptMethod.getIdentifierRegExpSource(),
 	// exceptions
 	null,
 	// constantIdentifiers
@@ -234,3 +230,6 @@ export let IdentifierTag = function(RegExg, REGEXP_SOURCE, exceptions, constantI
 	// regexp
 	null
 );
+
+// 设置 exceptions，并触发编译正则
+IdentifierTag.exceptions = IdentifierTag.constantIdentifiers.concat(IdentifierTag.keywords);

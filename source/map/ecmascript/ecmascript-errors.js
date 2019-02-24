@@ -220,6 +220,14 @@ export let ECMAScriptErrors = function(REGEXP){
 		};
 
 		/**
+		 * super 在传递 this 或 return 之后调用
+		 * @returns {String}
+		 */
+		static get SUPER_AFTER_ACCESSING_THIS_OR_RETURNING(){
+			return 'Must call super constructor in derived class before accessing "this" or returning from derived constructor';
+		};
+
+		/**
 		 * 无继承性质的类中使用 super 错误信息
 		 * @returns {String}
 		 */

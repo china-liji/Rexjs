@@ -111,15 +111,7 @@ class A {
 // 有构造函数
 class B extends A {
 	constructor(){
-		let fn = () => {
-			super();
-		}
-
-		if(this !== void 0){
-			throw "super() 在箭头函数中，且没有调用之前，this 应该是 undefined";
-		}
-
-		fn();
+		super();
 	};
 
 	static get x(){
@@ -240,7 +232,8 @@ var c = {
 	set x(value){ this.x_c = value; },
 	get y(){
 		return this.y + 123
-	}
+	},
+	set y(val){}
 }
 
 var d = {

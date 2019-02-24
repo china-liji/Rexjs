@@ -1,11 +1,16 @@
 export let {
 	ContentBuilder,
-	Expression,
-	ListExpression,
-	EmptyExpression,
 	DefaultExpression,
-	PartnerExpression,
+	EmptyExpression,
+	Expression,
+	Expression: {
+		STATE_STATEMENT_ENDABLE,
+		STATE_STATEMENT_END,
+		STATE_STATEMENT_ENDED
+	},
 	LeftHandSideExpression,
+	ListExpression,
+	PartnerExpression,
 	SyntaxTag,
 	TagType,
 	TagClass: {
@@ -14,16 +19,12 @@ export let {
 		CLASS_EXPRESSION,
 		CLASS_EXPRESSION_CONTEXT
 	},
+	TagStorage,
 	TagType: {
 		TYPE_MATCHABLE,
 		TYPE_UNEXPECTED,
 		TYPE_MISTAKABLE,
 		TYPE_ILLEGAL
-	},
-	Expression: {
-		STATE_STATEMENT_ENDABLE,
-		STATE_STATEMENT_END,
-		STATE_STATEMENT_ENDED
 	}
 } = Rexjs;
 

@@ -1,7 +1,7 @@
 // 类的属性初始化表达式相关
 (function(){
 
-this.ClassPropertyInitializerExpression = function(PropertyInitializerExpression){
+this.ClassPropertyInitializerExpression = function(PropertyInitializerExpression, extractTo){
 	/**
 	 * 类属性初始值表达式
 	 * @param {Context} context - 语法标签上下文
@@ -48,7 +48,8 @@ this.ClassPropertyInitializerExpression = function(PropertyInitializerExpression
 
 	return ClassPropertyInitializerExpression;
 }(
-	this.PropertyInitializerExpression
+	this.PropertyInitializerExpression,
+	this.PropertyInitializerExpression.prototype.extractTo
 );
 
 this.ClassPropertyInitializerTag = function(PropertyInitializerTag, ClassPropertyInitializerExpression){

@@ -1,35 +1,35 @@
-import { OpeningBracketTag } from "../bracket/opening-bracket-tag";
-import { CLASS_EXPRESSION_CONTEXT } from "../core";
-import { BracketAccessorExpression } from "./bracket-acccessor-expression";
-import { BracketAccessorStatement } from "./bracket-accessor-statement";
-import { ECMAScriptOrders } from "../ecmascript/ecmascript-orders";
-import { ClosingBracketAccessorTag } from "./closing-bracket-accessor-tag";
+import { ExpressionSeparatorTag } from "../base-tag/expression-separator-tag";
+import { CommaExpression } from "./comma-expression";
 import { ECMAScriptMethod } from "../ecmascript/ecmascript-method";
+import { TagStorage } from "../core";
+import { CommaStatement } from "./comma-statement";
 
-export let OpeningBracketAccessorTag = function(closingBracketAccessorTag){
+export let CommaTag = function(tagStorage){
 	/**
-	 * 起始中括号属性访问器标签
+	 * 逗号标签
 	 * @param {Number} _type - 标签类型
 	 */
-	return class OpeningBracketAccessorTag extends OpeningBracketTag {
+	return class CommaTag extends ExpressionSeparatorTag {
 		/**
-		 * 标签种类分类
-		 * @type {Number}
+		 * 标签正则
+		 * @type {RegExp}
 		 */
-		$class = CLASS_EXPRESSION_CONTEXT;
+		regexp = /,/;
 
 		/**
-		 * 标签顺序
-		 * @type {Number}
+		 * 获取所关联的标签存储器
+		 * @returns {TagStorage}
 		 */
-		order = ECMAScriptOrders.OPENING_BRACKET_ACCESSOR;
+		static get storage(){
+			return tagStorage;
+		};
 
 		/**
 		 * 获取绑定的标签，该标签一般是用于语句的 try、catch 的返回值
 		 * @returns {SyntaxTag}
 		 */
 		get binding(){
-			return closingBracketAccessorTag;
+			return tagStorage.tag;
 		};
 
 		/**
@@ -39,7 +39,7 @@ export let OpeningBracketAccessorTag = function(closingBracketAccessorTag){
 		 * @returns {Expression}
 		 */
 		getBoundExpression(context, statement){
-			return new BracketAccessorExpression(context, statement.expression);
+			return new CommaExpression(context, statement.expression);
 		};
 
 		/**
@@ -48,13 +48,12 @@ export let OpeningBracketAccessorTag = function(closingBracketAccessorTag){
 		 * @returns {ECMAScriptStatement}
 		 */
 		getBoundStatement(statements){
-			return new BracketAccessorStatement(statements);
+			return new CommaStatement(statements);
 		};
-
+		
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
-		 * @param {SyntaxTags} currentTags - 上一个标签所需匹配的标签列表
 		 * @returns {SyntaxTags}
 		 */
 		require(tagsMap){
@@ -73,6 +72,6 @@ export let OpeningBracketAccessorTag = function(closingBracketAccessorTag){
 		};
 	};
 }(
-	// closingBracketAccessorTag
-	new ClosingBracketAccessorTag()
+	// tagStorage
+	new TagStorage()
 );

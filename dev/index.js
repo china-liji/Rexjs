@@ -11,6 +11,6 @@
 // }
 
 // a(1, [9 ,8 ,7], { a: 5 }, 2, 3, { b: 9999 }, {}, [100, 200], 999 , 888);
-
+function fn(){ return () => {new.target }}
 export let { ...a } = { a: 1, b: 2 };
 debugger

@@ -6,6 +6,7 @@ test.unit(
 		test.group("new.target 表达式测试");
 
 		test.true("最简单的表达式", "function fn(){ new.target }");
+		test.true("在有语句块的箭头函数主体内", "function fn(){ return () => { new.target } }")
 		test.true("在无语句块的箭头函数主体内", "function fn(){ return () => new.target }")
 
 		test.false(

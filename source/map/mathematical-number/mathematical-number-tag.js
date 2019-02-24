@@ -1,6 +1,6 @@
 import { NumberTag } from "../base-tag/number-tag";
 import { ECMAScriptOrders } from "../ecmascript/ecmascript-orders";
-import { ParserConfig } from "../parser-env/parser-config";
+import { ECMAScriptConfig } from "../ecmascript/ecmascript-config";
 
 export let MathematicalNumberTag = function(){
 	/**
@@ -30,7 +30,7 @@ export let MathematicalNumberTag = function(){
 			// 追加字符串内容
 			contentBuilder.appendString(
 				// 如果需要编译
-				ParserConfig.es6Base ?
+				ECMAScriptConfig.es6Base ?
 					// 转换为指定基数的数字
 					'(parseInt("' + content.substring(2) + '",' + this.radix + "))" :
 					content

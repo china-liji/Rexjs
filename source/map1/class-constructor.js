@@ -102,7 +102,7 @@ this.DefaultConstructorPropertyExpression = function(ClassPropertyExpression, Co
 	this.ConstructorNameExpression
 );
 
-this.ConstructorBodyStatements = function(extractTo, applyAfterSuperCall){
+this.ConstructorBodyStatements = function(extractTo, inArrowFunction){
 	/**
 	 * 简写方法主体语句块
 	 * @param {Statements} target - 目标语句块，即上一层语句块
@@ -142,8 +142,25 @@ this.ConstructorBodyStatements = function(extractTo, applyAfterSuperCall){
 		 * @param {Context} context - super 关键字上下文
 		 */
 		applySuper: function(parser, context){
-			// 如果是在 super 调用之后
-			applyAfterSuperCall(parser, this, context);
+			// 判断阶段
+			switch(this.phase){
+				// 无阶段，说明没有父类
+				case PHASE_NONE:
+				// 如果 super 已经被调用
+				case PHASE_CALLED:
+					return;
+			}
+
+			// 如果在箭头函数内
+			if(inArrowFunction(parser, context)){
+				return;
+			}
+
+			// 报错，因为进入这里，说明是在没有调用 super 之前
+			parser.error(
+				context,
+				ECMAScriptErrors.template("KEYWORD", context.content)
+			);
 		},
 		/**
 		 * 申请父类调用
@@ -164,10 +181,16 @@ this.ConstructorBodyStatements = function(extractTo, applyAfterSuperCall){
 				case PHASE_WAITING_CALL:
 					break;
 
+				// PHASE_NONE，说明没有继承父类
 				default:
 					// 报错
 					parser.error(opening, ECMAScriptErrors.SUPER_CALL_UNEXTEND);
 					return;
+			}
+
+			// 如果在箭头函数内
+			if(inArrowFunction(parser, context)){
+				return;
 			}
 
 			// 表示已经调用过 super
@@ -179,11 +202,10 @@ this.ConstructorBodyStatements = function(extractTo, applyAfterSuperCall){
 		 * @param {Context} context - this 关键字上下文
 		 */
 		applyThis: function(parser, context){
-			// 如果是在 super 调用之后
-			if(applyAfterSuperCall(parser, this, context)){
-				// 修改 this 上下文的文本内容为临时变量名，因为 this 是要根据 super 的返回值来决定的
-				context.content = this.reference;
-			}
+			this.applySuper(parser, context);
+
+			// 修改 this 上下文的文本内容为临时变量名，因为 this 是要根据 super 的返回值来决定的
+			context.content = this.reference;
 		},
 		/**
 		 * 提取文本内容
@@ -207,24 +229,16 @@ this.ConstructorBodyStatements = function(extractTo, applyAfterSuperCall){
 	return ConstructorBodyStatements;
 }(
 	ShorthandMethodBodyStatements.prototype.extractTo,
-	// applyAfterSuperCall
-	function(parser, statements, context){
-		// 判断阶段
-		switch(statements.phase){
-			// 无阶段，说明没有父类
-			case PHASE_NONE:
-				return false;
-
-			// 如果 super 已经被调用
-			case PHASE_CALLED:
-				return true;
+	// inArrowFunction
+	function(parser, context){
+		// 如果是惰性闭包（箭头函数内）
+		if((parser.statements.scope & ShorthandMethodBodyStatements.SCOPE_LAZY) === ShorthandMethodBodyStatements.SCOPE_LAZY){
+			// 报错
+			parser.error(context, ECMAScriptErrors.SUPER_AFTER_ACCESSING_THIS_OR_RETURNING);
+			return true;
 		}
 
-		// 报错，因为进入这里，说明是在没有调用 super 之前
-		parser.error(
-			context,
-			ECMAScriptErrors.template("KEYWORD", context.content)
-		);
+		return false;
 	}
 );
 

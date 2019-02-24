@@ -808,12 +808,30 @@ this.TagData = function(){
 	return TagData;
 }();
 
+this.TagStorage = function(){
+	/**
+	 * 标签存储器，一般用于文件依赖冲突时使用
+	 */
+	function TagStorage(){};
+	TagStorage = new Rexjs(TagStorage);
+
+	TagStorage.props({
+		/**
+		 * 所存储的标签
+		 * @type {SyntaxTag}
+		 */
+		tag: null
+	});
+
+	return TagStorage;
+}();
+
 }.call(
 	this
 );
 
 
-// 标签数据子类相关
+// 语法标签相关
 !function(TagData, parseInt){
 
 this.TagClass = function(CLASS_NONE, CLASS_STATEMENT, CLASS_STATEMENT_BEGIN, CLASS_STATEMENT_END, CLASS_EXPRESSION, CLASS_EXPRESSION_CONTEXT){
@@ -932,6 +950,16 @@ this.SyntaxTag = function(SyntaxElement, TagClass, TagType){
 		this.class = new TagClass(this.$class);
 	};
 	SyntaxTag = new Rexjs(SyntaxTag, SyntaxElement);
+
+	SyntaxTag.static({
+		/**
+		 * 获取所关联的标签存储器
+		 * @returns {TagStorage}
+		 */
+		get storage(){
+			return null;
+		}
+	});
 
 	SyntaxTag.props({
 		$class: TagClass.CLASS_NONE,

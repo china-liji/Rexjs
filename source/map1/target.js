@@ -107,23 +107,14 @@ this.TargetTag = function(SCOPE_CLOSURE, SCOPE_LAZY, visitor){
 
 			doBlock:
 			do {
-				// 判断作用域类型
-				switch(s.scope & SCOPE_LAZY){
-					// 如果是惰性闭包
-					case SCOPE_LAZY:
-						break doBlock;
-
-					// 如果是普通闭包
-					case SCOPE_CLOSURE:
-						// 调用父类方法
-						visitor.call(this, parser, context, statement, statements);
-						return;
-
-					// 如果不是闭包
-					default:
-						s = s.target;
-						break;
+				// 如果是闭包，而且不是惰性闭包（箭头函数）
+				if((s.scope & SCOPE_LAZY) === SCOPE_CLOSURE){
+					// 调用父类方法
+					visitor.call(this, parser, context, statement, statements);
+					return;
 				}
+
+				s = s.target;
 			}
 			while(s);
 

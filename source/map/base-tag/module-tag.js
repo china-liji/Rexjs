@@ -1,7 +1,7 @@
 import { SyntaxTag, CLASS_STATEMENT_BEGIN } from "../core";
 import { ECMAScriptErrors } from "../ecmascript/ecmascript-errors";
 import { ECMAScriptStatement } from "../ecmascript/ecmascript-statement";
-import { ParserMethod } from "../parser-env/parser-method";
+import { ECMAScriptMethod } from "../ecmascript/ecmascript-method";
 
 export let ModuleTag = function(FLOW_MAIN){
 	/**
@@ -46,7 +46,7 @@ export let ModuleTag = function(FLOW_MAIN){
 			}
 
 			// 调用公共访问器
-			ParserMethod.visitor(parser, context, statement, statements);
+			ECMAScriptMethod.visitor(parser, context, statement, statements);
 
 			// 设置当前表达式的 file 属性
 			statement.expression.file = parser.file;
