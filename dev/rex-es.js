@@ -2160,9 +2160,41 @@ var ExpressionSeparatorTag=Rexjs.Module.memberOf("ExpressionSeparatorTag","../ba
 
 eval(
 					function(){
+						new Rexjs.Module("rexjs://source/map/binary/assignment-tag.js",function(Rexjs){
+"use strict";
+var BinaryTag=Rexjs.Module.memberOf("BinaryTag","./binary-tag","rexjs://source/map/binary/assignment-tag.js");var ECMAScriptErrors=Rexjs.Module.memberOf("ECMAScriptErrors","../ecmascript/ecmascript-errors","rexjs://source/map/binary/assignment-tag.js");var BoxStatement=Rexjs.Module.memberOf("BoxStatement","../base-statement/box-statement","rexjs://source/map/binary/assignment-tag.js");var BinaryExpression=Rexjs.Module.memberOf("BinaryExpression","./binary-expression","rexjs://source/map/binary/assignment-tag.js");var AssignableExpression=Rexjs.Module.memberOf("AssignableExpression","../base-expression/assignable-expression","rexjs://source/map/binary/assignment-tag.js");var IdentifierExpression=Rexjs.Module.memberOf("IdentifierExpression","../identifier/identifier-expression","rexjs://source/map/binary/assignment-tag.js");var VariableDeclarationTag=Rexjs.Module.memberOf("VariableDeclarationTag","../variable/variable-declaration-tag","rexjs://source/map/binary/assignment-tag.js");var AssignmentTag=function(assignable){var $Rexjs_0;return ($Rexjs_0=Rexjs.Class.create(BinaryTag,[new Rexjs.ClassProperty("isSeparator",function(context){return Rexjs.Super.execMethod(this,(Rexjs.Super.getProperty($Rexjs_0.prototype,this,"isSeparator")),[context])&&context.content!=="=>";}),new Rexjs.ClassProperty("visitor",function(parser,context,statement,statements){var $Rexjs_1=new Rexjs.ObjectDestructuringTarget((statement)),expression=$Rexjs_1.get("expression");switch(true){case assignable(parser,expression):var binaryExpression=context.setExpressionOf(statement);binaryExpression.left=expression;binaryExpression.last=binaryExpression;break;case expression instanceof BinaryExpression:var $Rexjs_2=new Rexjs.ObjectDestructuringTarget((expression)),last=$Rexjs_2.get("last"),$Rexjs_3=new Rexjs.ObjectDestructuringTarget((last)),right=$Rexjs_3.get("right");if(last.context.tag.precedence===0&&assignable(parser,right)){(last.right=expression.last=context.setExpressionOf(new BoxStatement(statements))).left=right;break;}default:parser.error(context,ECMAScriptErrors.ASSIGNMENT,true);return;}context.setStatementOf(statements);}),new Rexjs.ClassProperty("constructor",function AssignmentTag(){return Rexjs.Super.callConstructor($Rexjs_0.prototype, this, arguments);})], 2));}((function(parser,expression){return function(){parser,expression;if(expression instanceof AssignableExpression){if(expression instanceof IdentifierExpression){var $Rexjs_4=new Rexjs.ObjectDestructuringTarget((expression)),context=$Rexjs_4.get("context"),$Rexjs_5=new Rexjs.ObjectDestructuringTarget((context)),tag=$Rexjs_5.get("tag");switch(true){case tag instanceof VariableDeclarationTag:break;case tag.collected(parser,context,parser.statements):return false;}}return true;}return false;}.apply(this[0],this[1]);}.bind([this, arguments])));Rexjs.Module.export("AssignmentTag", AssignmentTag);
+});
+//# sourceURL=http://sourceurl/source/map/binary/assignment-tag.js
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImh0dHA6Ly9sb2NhbGhvc3Q6OTA5MC9zb3VyY2UvbWFwL2JpbmFyeS9hc3NpZ25tZW50LXRhZy5qcyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOztrK0JBUU8sR0FBQSxBQUFHLENBQUMsYUFBQSxBQUFhLEFBQUMsQ0FBQSxBQUFDLEFBQUMsUUFBQSxBQUFRLEFBQUEsQ0FBQSxBQUFDLEFBQUEsVUFBQSxBQUFVLEFBQUEsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLGFBSy9DLE1BQUEsQUFBTSw4QkFBNkIsU0FBQSxBQUFTLDJCQU0zQyxXQUFBLEFBQVcsVUFBQSxDQUFBLEFBQUMsQUFBQSxPQUFBLEFBQU8sQUFBQSxDQUFBLEFBQUMsQUFBQSxDQUFBLEFBQUMsQUFFcEIsTUFBQSxBQUFNLCtFQUFPLFdBQUEsQUFBVyxLQUFDLE9BQUEsQUFBTyxFQUFFLEVBQUEsQUFBRSxBQUFDLE9BQUEsQUFBTyxBQUFBLENBQUEsQUFBQyxBQUFBLE9BQUEsQUFBTyxBQUFDLEdBQUEsQUFBRyxBQUFDLElBQUEsQUFBSSxDQUM5RCxDQUFBLEFBQUMsMkJBVUQsT0FBQSxBQUFPLFVBQUEsQ0FBQSxBQUFDLEFBQUEsTUFBQSxBQUFNLENBQUUsT0FBQSxBQUFPLENBQUUsU0FBQSxBQUFTLENBQUUsVUFBQSxBQUFVLEFBQUEsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLEFBQy9DLEdBQUEsQUFBRyxTQUFnQixDQUFBLEFBQUMscUNBQUMsU0FBQSxBQUFTLEdBQXhCLFVBQUEsQUFBVSw0QkFFaEIsTUFBQSxBQUFNLEFBQUEsQ0FBQSxBQUFDLEFBQUEsSUFBQSxBQUFJLEFBQUEsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLEFBRVosSUFBQSxBQUFJLENBQUMsVUFBQSxBQUFVLEFBQUEsQ0FBQSxBQUFDLEFBQUEsTUFBQSxBQUFNLENBQUUsVUFBQSxBQUFVLEFBQUEsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLEFBQ25DLEdBQUEsQUFBRyxDQUFDLGdCQUFBLEFBQWdCLEFBQUMs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LFNBQWEsQ0FBQSxBQUFDLHFDQUFDLFVBQUEsQUFBVSxHQUF0QixPQUFBLEFBQU8saUNBQXlCLENBQUEsQUFBQyxxQ0FBQyxPQUFBLEFBQU8sR0FBZixHQUFBLEFBQUcscUJBRW5DLE1BQUEsQUFBTSxBQUFBLENBQUEsQUFBQyxBQUFBLElBQUEsQUFBSSxBQUFBLENBQUEsQUFBQyxBQUFBLENBQUEsQUFBQyxBQUVaLElBQUEsQUFBSSxDQUFDLEdBQUEsQUFBRyxBQUFDLFlBQUEsQUFBWSxBQUFELHNCQUFBLEFBQXNCLEFBQUEsQ0FBQSxBQUFDLEFBQzFDLEtBQUEsQUFBSyxDQUdOLElBQUEsQUFBSSxDQUFDLEdBQUEsQUFBRyxBQUFBLENBQUEsQUFBQyxBQUFBLFNBQUEsQUFBUyxBQUFBLENBQUEsQUFBQyxBQUFBLE1BQUEsQUFBTSxDQUFFLE9BQUEsQUFBTyxDQUFFLE1BQUEsQUFBTSxBQUFBLENBQUEsQUFBQyxBQUFBLFVBQUEsQUFBVSxBQUFBLENBQUEsQUFBQyxBQUFBLENBQUEsQUFBQyxBQUN0RCxNQUFBLEFBQU0sQ0FBQyxLQUFBLEFBQUssQ0FDZCxDQUFBLEFBQUMsQUFDRixDQUFBLEFBQUMsQUFFRCxNQUFBLEFBQU0sQ0FBQyxJQUFBLEFBQUksQ0FDWixDQUFBLEFBQUMsQUFFRCxNQUFBLEFBQU0sQ0FBQyxLQUFBLEFBQUssQ0FDYixDQUFBLEFBQUMsa0RBQ0YsQ0FBQSxBQUFDOyJ9
+					}
+					.toString()
+					.match(
+						/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+					)[1]
+				);
+
+
+eval(
+					function(){
+						new Rexjs.Module("rexjs://source/map/binary/binary-keyword-tag.js",function(Rexjs){
+"use strict";
+var BinaryTag=Rexjs.Module.memberOf("BinaryTag","./binary-tag","rexjs://source/map/binary/binary-keyword-tag.js");var BinaryKeywordTag=function(){var $Rexjs_0;return ($Rexjs_0=Rexjs.Class.create(BinaryTag,[new Rexjs.ClassProperty("extractTo",function(contentBuilder,content){contentBuilder.appendSpace();contentBuilder.appendString(content);contentBuilder.appendSpace();}),new Rexjs.ClassProperty("constructor",function BinaryKeywordTag(){return Rexjs.Super.callConstructor($Rexjs_0.prototype, this, arguments);})], 1));}();Rexjs.Module.export("BinaryKeywordTag", BinaryKeywordTag);
+});
+//# sourceURL=http://sourceurl/source/map/binary/binary-keyword-tag.js
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImh0dHA6Ly9sb2NhbGhvc3Q6OTA5MC9zb3VyY2UvbWFwL2JpbmFyeS9iaW5hcnkta2V5d29yZC10YWcuanMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6Ijs7a0hBRU8sR0FBQSxBQUFHLENBQUMsZ0JBQUEsQUFBZ0IsQUFBQyxDQUFBLEFBQUMsQUFBQyxRQUFBLEFBQVEsQUFBQSxDQUFBLEFBQUMsQUFBQSxDQUFBLEFBQUMsQUFBQSxDQUFBLEFBQUMsYUFLeEMsTUFBQSxBQUFNLDhCQUFnQyxTQUFBLEFBQVMsMkJBTzlDLFNBQUEsQUFBUyxVQUFBLENBQUEsQUFBQyxBQUFBLGNBQUEsQUFBYyxDQUFFLE9BQUEsQUFBTyxBQUFBLENBQUEsQUFBQyxBQUFBLENBQUEsQUFBQyxBQUVsQyxjQUFBLEFBQWMsQUFBQSxDQUFBLEFBQUMsQUFBQSxXQUFBLEFBQVcsQUFBQSxDQUFBLEFBQUMsQUFBQSxDQUFBLEFBQUMsQ0FFNUIsY0FBQSxBQUFjLEFBQUEsQ0FBQSxBQUFDLEFBQUEsWUFBQSxBQUFZLEFBQUEsQ0FBQSxBQUFDLEFBQUEsT0FBQSxBQUFPLEFBQUEsQ0FBQSxBQUFDLENBRXBDLGNBQUEsQUFBYyxBQUFBLENBQUEsQUFBQyxBQUFBLFdBQUEsQUFBVyxBQUFBLENBQUEsQUFBQyxBQUFBLENBQUEsQUFBQyxDQUM3QixDQUFBLEFBQUMscUpBRUgsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDOyJ9
+					}
+					.toString()
+					.match(
+						/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+					)[1]
+				);
+
+
+eval(
+					function(){
 						new Rexjs.Module("rexjs://source/map/binary/index.js",function(Rexjs){
 "use strict";
-Rexjs.Module.exportFrom("./binary-expression","rexjs://source/map/binary/index.js");Rexjs.Module.exportFrom("./binary-statement","rexjs://source/map/binary/index.js");Rexjs.Module.exportFrom("./binary-tag","rexjs://source/map/binary/index.js");
+Rexjs.Module.exportFrom("./assignment-tag","rexjs://source/map/binary/index.js");Rexjs.Module.exportFrom("./binary-expression","rexjs://source/map/binary/index.js");Rexjs.Module.exportFrom("./binary-keyword-tag","rexjs://source/map/binary/index.js");Rexjs.Module.exportFrom("./binary-statement","rexjs://source/map/binary/index.js");Rexjs.Module.exportFrom("./binary-tag","rexjs://source/map/binary/index.js");
 });
 //# sourceURL=http://sourceurl/source/map/binary/index.js
 //# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImh0dHA6Ly9sb2NhbGhvc3Q6OTA5MC9zb3VyY2UvbWFwL2JpbmFyeS9pbmRleC5qcyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOzs7In0=
@@ -2212,155 +2244,6 @@ var a=1;var globalThis={};var define=(function(exports){return function(){export
 	commonVisitor, getIdentifierRegExpSource
 ){
 "use strict";
-
-
-eval(
-								function(){
-									// 二元标签子类
-!function(BinaryTag, AssignableExpression, IdentifierExpression, VariableDeclarationTag){
-
-this.AssignmentTag = function(BinaryExpression, isSeparator, assignable){
-	/**
-	 * 二元赋值运算符标签
-	 * @param {Number} _type - 标签类型
-	 */
-	function AssignmentTag(_type){
-		BinaryTag.call(this, _type);
-	};
-	AssignmentTag = new Rexjs(AssignmentTag, BinaryTag);
-
-	AssignmentTag.props({
-		/**
-		 * 验证所提供的标签是否为表达式分隔符标签
-		 * @param {Context} context - 所需验证的标签上下文
-		 */
-		isSeparator: function(context){
-			// 如果是父类确定的分隔符，但不是箭头符号，那么它就是赋值标签所认定的分隔符
-			return isSeparator.call(this, context) && context.content !== "=>";
-		},
-		/**
-		 * 标签访问器
-		 * @param {SyntaxParser} parser - 语法解析器
-		 * @param {Context} context - 标签上下文
-		 * @param {Statement} statement - 当前语句
-		 * @param {Statements} statements - 当前语句块
-		 */
-		visitor: function(parser, context, statement, statements){
-			var expression = statement.expression;
-
-			switch(true){
-				// 如果可赋值
-				case assignable(parser, expression):
-					var binaryExpression = context.setExpressionOf(statement);
-
-					// 设置左侧表达式
-					binaryExpression.left = expression;
-					// 设置最后的二元表达式为自己
-					binaryExpression.last = binaryExpression;
-					break;
-
-				// 如果表达式是二元表达式
-				case expression instanceof BinaryExpression:
-					var last = expression.last, right = last.right;
-
-					// 如果该二元表达式是“赋值表达式”，而且其值也是“可赋值表达式”
-					if(last.context.tag.precedence === 0 && assignable(parser, right)){
-						// 设置新的右侧表达式并设置当前表达式
-						(
-							last.right = expression.last = context.setExpressionOf(
-								// 仅仅为了模拟环境
-								new BoxStatement(statements)
-							)
-						)
-						// 设置左侧表达式
-						.left = right;
-						break;
-					}
-
-				default:
-					// 报错
-					parser.error(context, ECMAScriptErrors.ASSIGNMENT, true);
-					return;
-			}
-
-			// 设置当前语句
-			context.setStatementOf(statements);
-		}
-	});
-	
-	return AssignmentTag;
-}(
-	this.BinaryExpression,
-	BinaryTag.prototype.isSeparator,
-	// assignable
-	function(parser, expression){
-		// 如果是赋值表达式
-		if(expression instanceof AssignableExpression){
-			// 如果是标识符表达式，那么需要验证是否为常量赋值
-			if(expression instanceof IdentifierExpression){
-				var ctx = expression.context, tag = ctx.tag;
-
-				switch(true){
-					// 如果当前是声明变量名标签，则不判断是否被收集，因为在声明中，已经判断，再判断的话，100% 由于重复定义，而报错
-					case tag instanceof VariableDeclarationTag:
-						break;
-
-					// 如果已经被收集，会导致报错
-					case tag.collected(parser, ctx, parser.statements):
-						return false;
-				}
-			}
-
-			return true;
-		}
-
-		return false;
-	}
-);
-
-this.BinaryKeywordTag = function(){
-	/**
-	 * 二元关键字标签
-	 * @param {Number} _type - 标签类型
-	 */
-	function BinaryKeywordTag(_type){
-		BinaryTag.call(this, _type);
-	};
-	BinaryKeywordTag = new Rexjs(BinaryKeywordTag, BinaryTag);
-
-	BinaryKeywordTag.props({
-		/**
-		 * 提取文本内容
-		 * @param {ContentBuilder} contentBuilder - 内容生成器
-		 * @param {String} content - 标签内容
-		 */
-		extractTo: function(contentBuilder, content){
-			// 追加空格
-			contentBuilder.appendSpace();
-			// 追加标签内容
-			contentBuilder.appendString(content);
-			// 追加空格
-			contentBuilder.appendSpace();
-		}
-	});
-	
-	return BinaryKeywordTag;
-}();
-
-}.call(
-	this,
-	this.BinaryTag,
-	this.AssignableExpression,
-	this.IdentifierExpression,
-	this.VariableDeclarationTag
-);
-								}
-								.toString()
-								.match(
-									/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-								)[1] +
-								"\n//# sourceURL=http://localhost:9090/source/map1/binary-extension.js"
-							);
 
 
 eval(
