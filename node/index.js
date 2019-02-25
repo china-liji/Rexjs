@@ -355,7 +355,6 @@ module.exports = { DevSource: this.DevSource, Source: this.Source };
 	// defaultList
 	[
 		"file-header.js",
-		"binary-base.js",
 		"binary-extension.js",
 		"binary-all.js",
 		"question-assignment.js",

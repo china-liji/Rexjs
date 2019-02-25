@@ -33,6 +33,7 @@ import * as Call from "./call";
 import * as Plus from "./plus";
 import * as Negation from "./negation";
 import * as Not from "./not";
+import * as Binary from "./binary";
 
 define(EcmaScript);
 define(BaseExpression);
@@ -60,5 +61,6 @@ define(Call);
 define(Plus);
 define(Negation);
 define(Not);
+define(Binary);
 
 window.globalThis = globalThis;
