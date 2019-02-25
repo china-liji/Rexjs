@@ -28,6 +28,8 @@ import * as LineTerminator from "./line-terminator";
 import * as Accessor from "./accessor";
 import * as Comma from "./comma";
 import * as Unary from "./unary";
+import * as Exec from "./exec";
+import * as Call from "./call";
 
 define(EcmaScript);
 define(BaseExpression);
@@ -50,5 +52,7 @@ define(LineTerminator);
 define(Accessor);
 define(Comma);
 define(Unary);
+define(Exec);
+define(Call);
 
 window.globalThis = globalThis;
