@@ -2,6 +2,8 @@ export * from "./boolean-tag";
 export * from "./debugger-tag";
 export * from "./delete-tag";
 export * from "./eval-tag";
+export * from "./in-tag";
+export * from "./instanceof-tag";
 export * from "./new-tag";
 export * from "./null-tag";
 export * from "./this-tag";

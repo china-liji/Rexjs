@@ -1,7 +1,7 @@
-import { BinaryTag } from "./binary-tag";
+import { BinaryTag } from "../binary/binary-tag";
+import { BinaryExpression } from "../binary/binary-expression";
 import { ECMAScriptErrors } from "../ecmascript/ecmascript-errors";
 import { BoxStatement } from "../base-statement/box-statement";
-import { BinaryExpression } from "./binary-expression";
 import { AssignableExpression } from "../base-expression/assignable-expression";
 import { IdentifierExpression } from "../identifier/identifier-expression";
 import { VariableDeclarationTag } from "../variable/variable-declaration-tag";

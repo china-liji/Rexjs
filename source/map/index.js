@@ -32,8 +32,12 @@ import * as Exec from "./exec";
 import * as Call from "./call";
 import * as Plus from "./plus";
 import * as Negation from "./negation";
-import * as Not from "./not";
 import * as Binary from "./binary";
+import * as AssigmentOperator from "./assignment-operator";
+import * as BitwiseOperator from "./bitwise-operator";
+import * as LogicalOperator from "./logical-operator";
+import * as RelationalOperator from "./relational-operator";
+import * as ArithmeticOperator from "./arithmetic-operator";
 
 define(EcmaScript);
 define(BaseExpression);
@@ -60,7 +64,11 @@ define(Exec);
 define(Call);
 define(Plus);
 define(Negation);
-define(Not);
 define(Binary);
+define(AssigmentOperator);
+define(BitwiseOperator);
+define(LogicalOperator);
+define(RelationalOperator);
+define(ArithmeticOperator);
 
 window.globalThis = globalThis;

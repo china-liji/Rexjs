@@ -320,7 +320,7 @@ export let ECMAScriptOrders = function(){
 		 * @returns {Number}
 		 */
 		static get SHORTHAND_ASSIGNMENT(){
-			return this.UNSIGNED_RIGHT_SHIFT + 1;
+			return this.ZERO_FILL_RIGHT_SHIFT + 1;
 		};
 		
 		/**
@@ -423,7 +423,7 @@ export let ECMAScriptOrders = function(){
 		 * 无符号右位移 ">>>" 符号序列
 		 * @returns {Number}
 		 */
-		static get UNSIGNED_RIGHT_SHIFT(){
+		static get ZERO_FILL_RIGHT_SHIFT(){
 			return this.RIGHT_SHIFT + 1;
 		};
 		
