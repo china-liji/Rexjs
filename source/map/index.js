@@ -30,6 +30,9 @@ import * as Comma from "./comma";
 import * as Unary from "./unary";
 import * as Exec from "./exec";
 import * as Call from "./call";
+import * as Plus from "./plus";
+import * as Negation from "./negation";
+import * as Not from "./not";
 
 define(EcmaScript);
 define(BaseExpression);
@@ -54,5 +57,8 @@ define(Comma);
 define(Unary);
 define(Exec);
 define(Call);
+define(Plus);
+define(Negation);
+define(Not);
 
 window.globalThis = globalThis;
