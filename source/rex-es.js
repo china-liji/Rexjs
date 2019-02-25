@@ -934,6 +934,22 @@ Rexjs.Module.exportFrom("./call-expression","rexjs://source/map/call/index.js");
 //# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImh0dHA6Ly9sb2NhbGhvc3Q6OTA5MC9zb3VyY2UvbWFwL2NhbGwvaW5kZXguanMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6Ijs7OyJ9
 
 
+new Rexjs.Module("rexjs://source/map/plus/increment-tag.js",function(Rexjs){
+"use strict";
+var UnaryAssignmentTag=Rexjs.Module.memberOf("UnaryAssignmentTag","../unary/unary-assignment-tag","rexjs://source/map/plus/increment-tag.js");var IncrementTag=function(){var $Rexjs_0;return ($Rexjs_0=Rexjs.Class.create(UnaryAssignmentTag,[new Rexjs.ClassProperty("regexp",/\+\+/),new Rexjs.ClassProperty("require",function(tagsMap){return tagsMap.plusContextTags;}),new Rexjs.ClassProperty("constructor",function IncrementTag(){return Rexjs.Super.callConstructor($Rexjs_0.prototype, this, arguments);})], 2));}();Rexjs.Module.export("IncrementTag", IncrementTag);
+});
+//# sourceURL=http://sourceurl/source/map/plus/increment-tag.js
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImh0dHA6Ly9sb2NhbGhvc3Q6OTA5MC9zb3VyY2UvbWFwL3BsdXMvaW5jcmVtZW50LXRhZy5qcyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOzs4SUFFTyxHQUFBLEFBQUcsQ0FBQyxZQUFBLEFBQVksQUFBQyxDQUFBLEFBQUMsQUFBQyxRQUFBLEFBQVEsQUFBQSxDQUFBLEFBQUMsQUFBQSxDQUFBLEFBQUMsQUFBQSxDQUFBLEFBQUMsYUFLcEMsTUFBQSxBQUFNLDhCQUE0QixrQkFBQSxBQUFrQiwyQkFLbkQsTUFBQSxBQUFNLEVBQUcsTUFBQSxBQUFNLDJCQU9mLE9BQUEsQUFBTyxVQUFBLENBQUEsQUFBQyxBQUFBLE9BQUEsQUFBTyxBQUFBLENBQUEsQUFBQyxBQUFBLENBQUEsQUFBQyxBQUNoQixNQUFBLEFBQU0sQ0FBQyxPQUFBLEFBQU8sQUFBQSxDQUFBLEFBQUMsQUFBQSxlQUFBLEFBQWUsQ0FDL0IsQ0FBQSxBQUFDLGlKQUVILENBQUEsQUFBQyxBQUFBLENBQUEsQUFBQyxBQUFBLENBQUEsQUFBQzsifQ==
+
+
+new Rexjs.Module("rexjs://source/map/plus/increment-sibling-tag.js",function(Rexjs){
+"use strict";
+var IncrementTag=Rexjs.Module.memberOf("IncrementTag","./increment-tag","rexjs://source/map/plus/increment-sibling-tag.js");var IncrementSiblingTag=function(){var $Rexjs_0;return ($Rexjs_0=Rexjs.Class.create(IncrementTag,[new Rexjs.ClassProperty("extractTo",function(contentBuilder,content){contentBuilder.appendSpace();contentBuilder.appendString(content);}),new Rexjs.ClassProperty("constructor",function IncrementSiblingTag(){return Rexjs.Super.callConstructor($Rexjs_0.prototype, this, arguments);})], 1));}();Rexjs.Module.export("IncrementSiblingTag", IncrementSiblingTag);
+});
+//# sourceURL=http://sourceurl/source/map/plus/increment-sibling-tag.js
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImh0dHA6Ly9sb2NhbGhvc3Q6OTA5MC9zb3VyY2UvbWFwL3BsdXMvaW5jcmVtZW50LXNpYmxpbmctdGFnLmpzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiI7OzRIQUVPLEdBQUEsQUFBRyxDQUFDLG1CQUFBLEFBQW1CLEFBQUMsQ0FBQSxBQUFDLEFBQUMsUUFBQSxBQUFRLEFBQUEsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLGFBSzNDLE1BQUEsQUFBTSw4QkFBbUMsWUFBQSxBQUFZLDJCQU9wRCxTQUFBLEFBQVMsVUFBQSxDQUFBLEFBQUMsQUFBQSxjQUFBLEFBQWMsQ0FBRSxPQUFBLEFBQU8sQUFBQSxDQUFBLEFBQUMsQUFBQSxDQUFBLEFBQUMsQUFFbEMsY0FBQSxBQUFjLEFBQUEsQ0FBQSxBQUFDLEFBQUEsV0FBQSxBQUFXLEFBQUEsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLENBRTVCLGNBQUEsQUFBYyxBQUFBLENBQUEsQUFBQyxBQUFBLFlBQUEsQUFBWSxBQUFBLENBQUEsQUFBQyxBQUFBLE9BQUEsQUFBTyxBQUFBLENBQUEsQUFBQyxDQUNyQyxDQUFBLEFBQUMsd0pBRUgsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDOyJ9
+
+
 new Rexjs.Module("rexjs://source/map/plus/plus-tag.js",function(Rexjs){
 "use strict";
 var UnaryTag=Rexjs.Module.memberOf("UnaryTag","../unary/unary-tag","rexjs://source/map/plus/plus-tag.js");var PlusTag=function(){var $Rexjs_0;return ($Rexjs_0=Rexjs.Class.create(UnaryTag,[new Rexjs.ClassProperty("regexp",/\+/),new Rexjs.ClassProperty("require",function(tagsMap){return tagsMap.plusContextTags;}),new Rexjs.ClassProperty("constructor",function PlusTag(){return Rexjs.Super.callConstructor($Rexjs_0.prototype, this, arguments);})], 2));}();Rexjs.Module.export("PlusTag", PlusTag);
@@ -950,12 +966,36 @@ var PlusTag=Rexjs.Module.memberOf("PlusTag","./plus-tag","rexjs://source/map/plu
 //# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImh0dHA6Ly9sb2NhbGhvc3Q6OTA5MC9zb3VyY2UvbWFwL3BsdXMvcGx1cy1zaWJsaW5nLXRhZy5qcyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOzt1UEFHTyxHQUFBLEFBQUcsQ0FBQyxjQUFBLEFBQWMsQUFBQyxDQUFBLEFBQUMsQUFBQyxRQUFBLEFBQVEsQUFBQSxDQUFBLEFBQUMsQUFBQSxDQUFBLEFBQUMsQUFBQSxDQUFBLEFBQUMsYUFLdEMsTUFBQSxBQUFNLDhCQUE4QixPQUFBLEFBQU8sMkJBSzFDLEtBQUEsQUFBSyxFQUFHLGdCQUFBLEFBQWdCLEFBQUEsQ0FBQSxBQUFDLEFBQUEsWUFBQSxBQUFZLDJCQVFyQyxTQUFBLEFBQVMsVUFBQSxDQUFBLEFBQUMsQUFBQSxjQUFBLEFBQWMsQ0FBRSxPQUFBLEFBQU8sQUFBQSxDQUFBLEFBQUMsQUFBQSxDQUFBLEFBQUMsQUFFbEMsY0FBQSxBQUFjLEFBQUEsQ0FBQSxBQUFDLEFBQUEsV0FBQSxBQUFXLEFBQUEsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLENBRTVCLGNBQUEsQUFBYyxBQUFBLENBQUEsQUFBQyxBQUFBLFlBQUEsQUFBWSxBQUFBLENBQUEsQUFBQyxBQUFBLE9BQUEsQUFBTyxBQUFBLENBQUEsQUFBQyxDQUNyQyxDQUFBLEFBQUMsbUpBRUgsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDOyJ9
 
 
+new Rexjs.Module("rexjs://source/map/plus/postfix-increment-tag.js",function(Rexjs){
+"use strict";
+var PostfixUnaryAssignmentTag=Rexjs.Module.memberOf("PostfixUnaryAssignmentTag","../unary/postfix-unary-assignment-tag","rexjs://source/map/plus/postfix-increment-tag.js");var PostfixIncrementTag=function(){var $Rexjs_0;return ($Rexjs_0=Rexjs.Class.create(PostfixUnaryAssignmentTag,[new Rexjs.ClassProperty("regexp",/\+\+/),new Rexjs.ClassProperty("constructor",function PostfixIncrementTag(){return Rexjs.Super.callConstructor($Rexjs_0.prototype, this, arguments);})], 1));}();Rexjs.Module.export("PostfixIncrementTag", PostfixIncrementTag);
+});
+//# sourceURL=http://sourceurl/source/map/plus/postfix-increment-tag.js
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImh0dHA6Ly9sb2NhbGhvc3Q6OTA5MC9zb3VyY2UvbWFwL3BsdXMvcG9zdGZpeC1pbmNyZW1lbnQtdGFnLmpzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiI7OzRLQUVPLEdBQUEsQUFBRyxDQUFDLG1CQUFBLEFBQW1CLEFBQUMsQ0FBQSxBQUFDLEFBQUMsUUFBQSxBQUFRLEFBQUEsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLGFBSzNDLE1BQUEsQUFBTSw4QkFBbUMseUJBQUEsQUFBeUIsMkJBS2pFLE1BQUEsQUFBTSxFQUFHLE1BQUEsQUFBTSx3SkFFakIsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDOyJ9
+
+
 new Rexjs.Module("rexjs://source/map/plus/index.js",function(Rexjs){
 "use strict";
-Rexjs.Module.exportFrom("./plus-sibling-tag","rexjs://source/map/plus/index.js");Rexjs.Module.exportFrom("./plus-tag","rexjs://source/map/plus/index.js");
+Rexjs.Module.exportFrom("./increment-sibling-tag","rexjs://source/map/plus/index.js");Rexjs.Module.exportFrom("./increment-tag","rexjs://source/map/plus/index.js");Rexjs.Module.exportFrom("./plus-sibling-tag","rexjs://source/map/plus/index.js");Rexjs.Module.exportFrom("./plus-tag","rexjs://source/map/plus/index.js");Rexjs.Module.exportFrom("./postfix-increment-tag","rexjs://source/map/plus/index.js");
 });
 //# sourceURL=http://sourceurl/source/map/plus/index.js
 //# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImh0dHA6Ly9sb2NhbGhvc3Q6OTA5MC9zb3VyY2UvbWFwL3BsdXMvaW5kZXguanMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6Ijs7OyJ9
+
+
+new Rexjs.Module("rexjs://source/map/negation/decrement-tag.js",function(Rexjs){
+"use strict";
+var UnaryAssignmentTag=Rexjs.Module.memberOf("UnaryAssignmentTag","../unary/","rexjs://source/map/negation/decrement-tag.js");var DecrementTag=function(){var $Rexjs_0;return ($Rexjs_0=Rexjs.Class.create(UnaryAssignmentTag,[new Rexjs.ClassProperty("regexp",/--/),new Rexjs.ClassProperty("require",function(tagsMap){return tagsMap.negationContextTags;}),new Rexjs.ClassProperty("constructor",function DecrementTag(){return Rexjs.Super.callConstructor($Rexjs_0.prototype, this, arguments);})], 2));}();Rexjs.Module.export("DecrementTag", DecrementTag);
+});
+//# sourceURL=http://sourceurl/source/map/negation/decrement-tag.js
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImh0dHA6Ly9sb2NhbGhvc3Q6OTA5MC9zb3VyY2UvbWFwL25lZ2F0aW9uL2RlY3JlbWVudC10YWcuanMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6Ijs7OEhBRU8sR0FBQSxBQUFHLENBQUMsWUFBQSxBQUFZLEFBQUMsQ0FBQSxBQUFDLEFBQUMsUUFBQSxBQUFRLEFBQUEsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLGFBS3BDLE1BQUEsQUFBTSw4QkFBNEIsa0JBQUEsQUFBa0IsMkJBS25ELE1BQUEsQUFBTSxFQUFHLElBQUEsQUFBSSwyQkFPYixPQUFBLEFBQU8sVUFBQSxDQUFBLEFBQUMsQUFBQSxPQUFBLEFBQU8sQUFBQSxDQUFBLEFBQUMsQUFBQSxDQUFBLEFBQUMsQUFDaEIsTUFBQSxBQUFNLENBQUMsT0FBQSxBQUFPLEFBQUEsQ0FBQSxBQUFDLEFBQUEsbUJBQUEsQUFBbUIsQ0FDbkMsQ0FBQSxBQUFDLGlKQUVILENBQUEsQUFBQyxBQUFBLENBQUEsQUFBQyxBQUFBLENBQUEsQUFBQzsifQ==
+
+
+new Rexjs.Module("rexjs://source/map/negation/decrement-sibling-tag.js",function(Rexjs){
+"use strict";
+var DecrementTag=Rexjs.Module.memberOf("DecrementTag","./decrement-tag","rexjs://source/map/negation/decrement-sibling-tag.js");var DecrementSiblingTag=function(){var $Rexjs_0;return ($Rexjs_0=Rexjs.Class.create(DecrementTag,[new Rexjs.ClassProperty("extractTo",function(contentBuilder,content){contentBuilder.appendSpace();contentBuilder.appendString(content);}),new Rexjs.ClassProperty("constructor",function DecrementSiblingTag(){return Rexjs.Super.callConstructor($Rexjs_0.prototype, this, arguments);})], 1));}();Rexjs.Module.export("DecrementSiblingTag", DecrementSiblingTag);
+});
+//# sourceURL=http://sourceurl/source/map/negation/decrement-sibling-tag.js
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImh0dHA6Ly9sb2NhbGhvc3Q6OTA5MC9zb3VyY2UvbWFwL25lZ2F0aW9uL2RlY3JlbWVudC1zaWJsaW5nLXRhZy5qcyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOztnSUFFTyxHQUFBLEFBQUcsQ0FBQyxtQkFBQSxBQUFtQixBQUFDLENBQUEsQUFBQyxBQUFDLFFBQUEsQUFBUSxBQUFBLENBQUEsQUFBQyxBQUFBLENBQUEsQUFBQyxBQUFBLENBQUEsQUFBQyxhQUszQyxNQUFBLEFBQU0sOEJBQW1DLFlBQUEsQUFBWSwyQkFPcEQsU0FBQSxBQUFTLFVBQUEsQ0FBQSxBQUFDLEFBQUEsY0FBQSxBQUFjLENBQUUsT0FBQSxBQUFPLEFBQUEsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLEFBRWxDLGNBQUEsQUFBYyxBQUFBLENBQUEsQUFBQyxBQUFBLFdBQUEsQUFBVyxBQUFBLENBQUEsQUFBQyxBQUFBLENBQUEsQUFBQyxDQUU1QixjQUFBLEFBQWMsQUFBQSxDQUFBLEFBQUMsQUFBQSxZQUFBLEFBQVksQUFBQSxDQUFBLEFBQUMsQUFBQSxPQUFBLEFBQU8sQUFBQSxDQUFBLEFBQUMsQ0FDckMsQ0FBQSxBQUFDLHdKQUVILENBQUEsQUFBQyxBQUFBLENBQUEsQUFBQyxBQUFBLENBQUEsQUFBQzsifQ==
 
 
 new Rexjs.Module("rexjs://source/map/negation/negation-tag.js",function(Rexjs){
@@ -974,9 +1014,17 @@ var NegationTag=Rexjs.Module.memberOf("NegationTag","./negation-tag","rexjs://so
 //# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImh0dHA6Ly9sb2NhbGhvc3Q6OTA5MC9zb3VyY2UvbWFwL25lZ2F0aW9uL25lZ2F0aW9uLXNpYmxpbmctdGFnLmpzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiI7O21SQUdPLEdBQUEsQUFBRyxDQUFDLGtCQUFBLEFBQWtCLEFBQUMsQ0FBQSxBQUFDLEFBQUMsUUFBQSxBQUFRLEFBQUEsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLGFBSzFDLE1BQUEsQUFBTSw4QkFBa0MsV0FBQSxBQUFXLDJCQUtsRCxLQUFBLEFBQUssRUFBRyxnQkFBQSxBQUFnQixBQUFBLENBQUEsQUFBQyxBQUFBLGdCQUFBLEFBQWdCLDJCQVF6QyxTQUFBLEFBQVMsVUFBQSxDQUFBLEFBQUMsQUFBQSxjQUFBLEFBQWMsQ0FBRSxPQUFBLEFBQU8sQUFBQSxDQUFBLEFBQUMsQUFBQSxDQUFBLEFBQUMsQUFFbEMsY0FBQSxBQUFjLEFBQUEsQ0FBQSxBQUFDLEFBQUEsV0FBQSxBQUFXLEFBQUEsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLENBRTVCLGNBQUEsQUFBYyxBQUFBLENBQUEsQUFBQyxBQUFBLFlBQUEsQUFBWSxBQUFBLENBQUEsQUFBQyxBQUFBLE9BQUEsQUFBTyxBQUFBLENBQUEsQUFBQyxDQUNyQyxDQUFBLEFBQUMsdUpBRUgsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDOyJ9
 
 
+new Rexjs.Module("rexjs://source/map/negation/postfix-decrement-tag.js",function(Rexjs){
+"use strict";
+var PostfixUnaryAssignmentTag=Rexjs.Module.memberOf("PostfixUnaryAssignmentTag","../unary/postfix-unary-assignment-tag","rexjs://source/map/negation/postfix-decrement-tag.js");var PostfixDecrementTag=function(){var $Rexjs_0;return ($Rexjs_0=Rexjs.Class.create(PostfixUnaryAssignmentTag,[new Rexjs.ClassProperty("regexp",/--/),new Rexjs.ClassProperty("constructor",function PostfixDecrementTag(){return Rexjs.Super.callConstructor($Rexjs_0.prototype, this, arguments);})], 1));}();Rexjs.Module.export("PostfixDecrementTag", PostfixDecrementTag);
+});
+//# sourceURL=http://sourceurl/source/map/negation/postfix-decrement-tag.js
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImh0dHA6Ly9sb2NhbGhvc3Q6OTA5MC9zb3VyY2UvbWFwL25lZ2F0aW9uL3Bvc3RmaXgtZGVjcmVtZW50LXRhZy5qcyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOztnTEFFTyxHQUFBLEFBQUcsQ0FBQyxtQkFBQSxBQUFtQixBQUFDLENBQUEsQUFBQyxBQUFDLFFBQUEsQUFBUSxBQUFBLENBQUEsQUFBQyxBQUFBLENBQUEsQUFBQyxBQUFBLENBQUEsQUFBQyxhQUszQyxNQUFBLEFBQU0sOEJBQW1DLHlCQUFBLEFBQXlCLDJCQUtqRSxNQUFBLEFBQU0sRUFBRyxJQUFBLEFBQUksd0pBRWYsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDOyJ9
+
+
 new Rexjs.Module("rexjs://source/map/negation/index.js",function(Rexjs){
 "use strict";
-Rexjs.Module.exportFrom("./negation-sibling-tag","rexjs://source/map/negation/index.js");Rexjs.Module.exportFrom("./negation-tag","rexjs://source/map/negation/index.js");
+Rexjs.Module.exportFrom("./decrement-sibling-tag","rexjs://source/map/negation/index.js");Rexjs.Module.exportFrom("./decrement-tag","rexjs://source/map/negation/index.js");Rexjs.Module.exportFrom("./negation-sibling-tag","rexjs://source/map/negation/index.js");Rexjs.Module.exportFrom("./negation-tag","rexjs://source/map/negation/index.js");Rexjs.Module.exportFrom("./postfix-decrement-tag","rexjs://source/map/negation/index.js");
 });
 //# sourceURL=http://sourceurl/source/map/negation/index.js
 //# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImh0dHA6Ly9sb2NhbGhvc3Q6OTA5MC9zb3VyY2UvbWFwL25lZ2F0aW9uL2luZGV4LmpzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiI7OzsifQ==
