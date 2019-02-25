@@ -1,24 +1,22 @@
-import { UnaryAssignmentTag } from "../unary/unary-assignment-tag";
+import { UnaryTag } from "../unary-operator/unary-tag";
 
-export let IncrementTag = function(){
+export let NegationTag = function(){
 	/**
-	 * 前置递增标签
+	 * 负号标签
 	 * @param {Number} _type - 标签类型
 	 */
-	return class IncrementTag extends UnaryAssignmentTag {
+	return class NegationTag extends UnaryTag {
 		/**
 		 * 标签正则
-		 * @type {RegExp}
 		 */
-		regexp = /\+\+/;
-
+		regexp = /-/;
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
 		 * @returns {SyntaxTags}
 		 */
 		require(tagsMap){
-			return tagsMap.plusContextTags;
+			return tagsMap.negationContextTags;
 		};
 	};
 }();

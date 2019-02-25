@@ -1,4 +1,4 @@
-import { UnaryKeywordTag } from "../unary/unary-keyword-tag";
+import { UnaryKeywordTag } from "../unary-operator/unary-keyword-tag";
 
 export let TypeofTag = function(){
 	/**

@@ -1,4 +1,4 @@
-import { BinaryTag } from "../binary/binary-tag";
+import { BinaryTag } from "../binary-operator/binary-tag";
 
 export let DivisionTag = function(){
 	/**

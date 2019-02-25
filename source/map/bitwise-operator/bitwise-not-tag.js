@@ -1,4 +1,4 @@
-import { UnaryTag } from "../unary/unary-tag";
+import { UnaryTag } from "../unary-operator/unary-tag";
 
 export let BitwiseNOTTag = function(){
 	/**

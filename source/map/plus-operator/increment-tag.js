@@ -1,21 +1,21 @@
-import { UnaryTag } from "../unary/unary-tag";
+import { UnaryAssignmentTag } from "../unary-operator/unary-assignment-tag";
 
-export let PlusTag = function(){
+export let IncrementTag = function(){
 	/**
-	 * 正号标签
+	 * 前置递增标签
 	 * @param {Number} _type - 标签类型
 	 */
-	return class PlusTag extends UnaryTag {
+	return class IncrementTag extends UnaryAssignmentTag {
 		/**
 		 * 标签正则
 		 * @type {RegExp}
 		 */
-		regexp = /\+/;
+		regexp = /\+\+/;
 
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
-		 * @return {SyntaxTags}
+		 * @returns {SyntaxTags}
 		 */
 		require(tagsMap){
 			return tagsMap.plusContextTags;

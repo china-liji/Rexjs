@@ -1,4 +1,4 @@
-import { BinaryKeywordTag } from "../binary/binary-keyword-tag";
+import { BinaryKeywordTag } from "../binary-operator/binary-keyword-tag";
 
 export let InTag = function(){
 	/**

@@ -1,5 +1,5 @@
-import { ExecExpression } from "../exec/exec-expression";
-import { UnaryStatement } from "../unary/unary-statement";
+import { ExecExpression } from "../exec-operator/exec-expression";
+import { UnaryStatement } from "../unary-operator/unary-statement";
 import { ListExpression } from "../core";
 import { BracketAccessorExpression } from "../accessor/bracket-acccessor-expression";
 import { AccessorExpression } from "../accessor/accessor-expression";

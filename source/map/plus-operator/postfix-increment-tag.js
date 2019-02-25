@@ -1,4 +1,4 @@
-import { PostfixUnaryAssignmentTag } from "../unary/postfix-unary-assignment-tag";
+import { PostfixUnaryAssignmentTag } from "../unary-operator/postfix-unary-assignment-tag";
 
 export let PostfixIncrementTag = function(){
 	/**

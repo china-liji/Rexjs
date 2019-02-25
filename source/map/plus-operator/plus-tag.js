@@ -1,24 +1,24 @@
-import { ExecTag } from "../exec-operator/exec-tag";
+import { UnaryTag } from "../unary-operator/unary-tag";
 
-export let NewTag = function(){
+export let PlusTag = function(){
 	/**
-	 * new 关键字标签
+	 * 正号标签
 	 * @param {Number} _type - 标签类型
 	 */
-	return class NewTag extends ExecTag {
+	return class PlusTag extends UnaryTag {
 		/**
 		 * 标签正则
 		 * @type {RegExp}
 		 */
-		regexp = /new/;
+		regexp = /\+/;
 
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
-		 * @returns {SyntaxTags}
+		 * @return {SyntaxTags}
 		 */
 		require(tagsMap){
-			return tagsMap.newContextTags;
+			return tagsMap.plusContextTags;
 		};
 	};
 }();

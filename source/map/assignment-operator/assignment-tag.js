@@ -1,5 +1,5 @@
-import { BinaryTag } from "../binary/binary-tag";
-import { BinaryExpression } from "../binary/binary-expression";
+import { BinaryTag } from "../binary-operator/binary-tag";
+import { BinaryExpression } from "../binary-operator/binary-expression";
 import { ECMAScriptErrors } from "../ecmascript/ecmascript-errors";
 import { BoxStatement } from "../base-statement/box-statement";
 import { AssignableExpression } from "../base-expression/assignable-expression";
