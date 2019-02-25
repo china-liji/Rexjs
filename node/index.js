@@ -355,7 +355,6 @@ module.exports = { DevSource: this.DevSource, Source: this.Source };
 	// defaultList
 	[
 		"file-header.js",
-		"unary-assginment.js",
 		"unary-assginment-extension.js",
 		"binary-base.js",
 		"binary-extension.js",

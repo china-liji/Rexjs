@@ -1680,9 +1680,73 @@ Rexjs.Module.exportFrom("./comma-expression","rexjs://source/map/comma/index.js"
 
 eval(
 					function(){
+						new Rexjs.Module("rexjs://source/map/unary/unary-assigment-statement.js",function(Rexjs){
+"use strict";
+var UnaryStatement=Rexjs.Module.memberOf("UnaryStatement","./unary-statement","rexjs://source/map/unary/unary-assigment-statement.js");var ECMAScriptErrors=Rexjs.Module.memberOf("ECMAScriptErrors","../ecmascript/ecmascript-errors","rexjs://source/map/unary/unary-assigment-statement.js");var UnaryAssignmentStatement=function(error){var $Rexjs_0;return ($Rexjs_0=Rexjs.Class.create(UnaryStatement,[new Rexjs.ClassProperty("catch",function(parser,context){if(this.target.expression.context.tag.operable(parser,this.expression)){this.out().operand=this.expression;return;}error(parser,this);}),new Rexjs.ClassProperty("try",function(parser,context){var $Rexjs_1=new Rexjs.ObjectDestructuringTarget((this)),expression=$Rexjs_1.get("expression"),tag=new Rexjs.ObjectDestructuringTarget(new Rexjs.ObjectDestructuringTarget(new Rexjs.ObjectDestructuringTarget($Rexjs_1.get("target")).get("expression")).get("context")).get("tag");switch(false){case tag.isSeparator(context,expression):return;case tag.operable(parser,expression):error(parser,this);return;}this.out().operand=expression;}),new Rexjs.ClassProperty("constructor",function UnaryAssignmentStatement(){return Rexjs.Super.callConstructor($Rexjs_0.prototype, this, arguments);})], 2));}((function(parser,statement){return function(){parser,statement;parser.error(statement.target.expression.context,ECMAScriptErrors.PREFIX_OPERATION,true);}.apply(this[0],this[1]);}.bind([this, arguments])));Rexjs.Module.export("UnaryAssignmentStatement", UnaryAssignmentStatement);
+});
+//# sourceURL=http://sourceurl/source/map/unary/unary-assigment-statement.js
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImh0dHA6Ly9sb2NhbGhvc3Q6OTA5MC9zb3VyY2UvbWFwL3VuYXJ5L3VuYXJ5LWFzc2lnbWVudC1zdGF0ZW1lbnQuanMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6Ijs7Z1NBR08sR0FBQSxBQUFHLENBQUMsd0JBQUEsQUFBd0IsQUFBQyxDQUFBLEFBQUMsQUFBQyxRQUFBLEFBQVEsQUFBQSxDQUFBLEFBQUMsQUFBQSxLQUFBLEFBQUssQUFBQSxDQUFBLEFBQUMsQUFBQSxDQUFBLEFBQUMsYUFLckQsTUFBQSxBQUFNLDhCQUF3QyxjQUFBLEFBQWMsMkJBTzNELEtBQUEsQUFBSyxVQUFBLENBQUEsQUFBQyxBQUFBLE1BQUEsQUFBTSxDQUFFLE9BQUEsQUFBTyxBQUFBLENBQUEsQUFBQyxBQUFBLENBQUEsQUFBQyxBQUV0QixFQUFBLEFBQUUsQUFBQSxDQUFBLEFBQUMsQUFBQSxJQUFBLEFBQUksQUFBQSxDQUFBLEFBQUMsQUFBQSxNQUFBLEFBQU0sQUFBQSxDQUFBLEFBQUMsQUFBQSxVQUFBLEFBQVUsQUFBQSxDQUFBLEFBQUMsQUFBQSxPQUFBLEFBQU8sQUFBQSxDQUFBLEFBQUMsQUFBQSxHQUFBLEFBQUcsQUFBQSxDQUFBLEFBQUMsQUFBQSxRQUFBLEFBQVEsQUFBQSxDQUFBLEFBQUMsQUFBQSxNQUFBLEFBQU0sQ0FBRSxJQUFBLEFBQUksQUFBQSxDQUFBLEFBQUMsQUFBQSxVQUFBLEFBQVUsQUFBQSxDQUFBLEFBQUMsQUFBQSxDQUFBLEFBQUMsQUFBQSxDQUFBLEFBQUMsQUFFeEUsSUFBQSxBQUFJLEFBQUEsQ0FBQSxBQUFDLEFBQUEsR0FBQSxBQUFHLEFBQUEsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLEFBQUEsT0FBQSxBQUFPLEFBQUMsQ0FBQSxBQUFDLEFBQUMsSUFBQSxBQUFJLEFBQUEsQ0FBQSxBQUFDLEFBQUEsVUFBQSxBQUFVLENBQ3BDLE1BQUEsQUFBTSxDQUNQLENBQUEsQUFBQyxBQUdELEtBQUEsQUFBSyxBQUFBLENBQUEsQUFBQyxBQUFBLE1BQUEsQUFBTSxDQUFFLElBQUEsQUFBSSxBQUFBLENBQUEsQUFBQyxDQUNwQixDQUFBLEFBQUMsMkJBUUQsR0FBQSxBQUFHLFVBQUEsQ0FBQSxBQUFDLEFBQUEsTUFBQSxBQUFNLENBQUUsT0FBQSxBQUFPLEFBQUEsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLEFBQ3BCLEdBQUEsQUFBRyxTQU9ELENBQUEsQUFBQyxxQ0FBQyxJQUFBLEFBQUksR0FOUCxVQUFBLEFBQVUsNEJBR0csR0FBQSxBQUFHLG1MQUtqQixNQUFBLEFBQU0sQUFBQSxDQUFBLEFBQUMsQUFBQSxLQUFBLEFBQUssQUFBQSxDQUFBLEFBQUMsQUFBQSxDQUFBLEFBQUMsQUFFYixJQUFBLEFBQUksQ0FBQyxHQUFBLEFBQUcsQUFBQSxDQUFBLEFBQUMsQUFBQSxXQUFBLEFBQVcsQUFBQSxDQUFBLEFBQUMsQUFBQSxPQUFBLEFBQU8sQ0FBRSxVQUFBLEFBQVUsQUFBQSxDQUFBLEFBQUMsQUFBQSxDQUFBLEFBQUMsQUFDekMsTUFBQSxBQUFNLENBR1AsSUFBQSxBQUFJLENBQUMsR0FBQSxBQUFHLEFBQUEsQ0FBQSxBQUFDLEFBQUEsUUFBQSxBQUFRLEFBQUEsQ0FBQSxBQUFDLEFBQUEsTUFBQSxBQUFNLENBQUUsVUFBQSxBQUFVLEFBQUEsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLEFBRXJDLEtBQUEsQUFBSyxBQUFBLENBQUEsQUFBQyxBQUFBLE1BQUEsQUFBTSxDQUFFLElBQUEsQUFBSSxBQUFBLENBQUEsQUFBQyxDQUNuQixNQUFBLEFBQU0sQ0FDUixDQUFBLEFBQUMsQUFHRCxJQUFBLEFBQUksQUFBQSxDQUFBLEFBQUMsQUFBQSxHQUFBLEFBQUcsQUFBQSxDQUFBLEFBQUMsQUFBQSxDQUFBLEFBQUMsQUFBQSxDQUFBLEFBQUMsQUFBQSxPQUFBLEFBQU8sQUFBQyxDQUFBLEFBQUMsQUFBQyxVQUFBLEFBQVUsQ0FDaEMsQ0FBQSxBQUFDLDZKQUVILENBQUEsQUFBQyxBQUFBLENBQUEsQUFBQyxTQUVELENBQUEsQUFBQyxBQUFBLE1BQUEsQUFBTSxDQUFFLFNBQUEsQUFBUyxBQUFBLENBQUEsQUFBQyxrQkFBSSxDQUFBLEFBQUMsaUJBRXZCLE1BQUEsQUFBTSxBQUFBLENBQUEsQUFBQyxBQUFBLEtBQUEsQUFBSyxBQUFBLENBQUEsQUFBQyxBQUNaLFNBQUEsQUFBUyxBQUFBLENBQUEsQUFBQyxBQUFBLE1BQUEsQUFBTSxBQUFBLENBQUEsQUFBQyxBQUFBLFVBQUEsQUFBVSxBQUFBLENBQUEsQUFBQyxBQUFBLE9BQUEsQUFBTyxDQUNuQyxnQkFBQSxBQUFnQixBQUFBLENBQUEsQUFBQyxBQUFBLGdCQUFBLEFBQWdCLENBQ2pDLElBQUEsQUFBSSxBQUNMLENBQUEsQUFBQyxDQUNGLENBQUEsQUFBQyxrREFDRixDQUFBLEFBQUM7In0=
+					}
+					.toString()
+					.match(
+						/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+					)[1]
+				);
+
+
+eval(
+					function(){
+						new Rexjs.Module("rexjs://source/map/unary/unary-assignment-tag.js",function(Rexjs){
+"use strict";
+var UnaryTag=Rexjs.Module.memberOf("UnaryTag","./unary-tag","rexjs://source/map/unary/unary-assignment-tag.js");var ECMAScriptOrders=Rexjs.Module.memberOf("ECMAScriptOrders","../ecmascript/ecmascript-orders","rexjs://source/map/unary/unary-assignment-tag.js");var UnaryAssignmentStatement=Rexjs.Module.memberOf("UnaryAssignmentStatement","./unary-assigment-statement","rexjs://source/map/unary/unary-assignment-tag.js");var AssignableExpression=Rexjs.Module.memberOf("AssignableExpression","../base-expression/assignable-expression","rexjs://source/map/unary/unary-assignment-tag.js");var AccessorExpression=Rexjs.Module.memberOf("AccessorExpression","../accessor","rexjs://source/map/unary/unary-assignment-tag.js");var UnaryAssignmentTag=function(){var $Rexjs_0;return ($Rexjs_0=Rexjs.Class.create(UnaryTag,[new Rexjs.ClassProperty("order",ECMAScriptOrders.UNARY_ASSIGNMENT),new Rexjs.ClassProperty("getBoundStatement",function(statements){return new UnaryAssignmentStatement(statements);}),new Rexjs.ClassProperty("operable",function(parser,expression){if(expression instanceof AssignableExpression){var $Rexjs_1=new Rexjs.ObjectDestructuringTarget((expression)),context=$Rexjs_1.get("context");switch(true){case expression instanceof AccessorExpression:break;case context.tag.collected(parser,context,parser.statements):return false;}return true;}return false;}),new Rexjs.ClassProperty("constructor",function UnaryAssignmentTag(){return Rexjs.Super.callConstructor($Rexjs_0.prototype, this, arguments);})], 3));}();Rexjs.Module.export("UnaryAssignmentTag", UnaryAssignmentTag);
+});
+//# sourceURL=http://sourceurl/source/map/unary/unary-assignment-tag.js
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImh0dHA6Ly9sb2NhbGhvc3Q6OTA5MC9zb3VyY2UvbWFwL3VuYXJ5L3VuYXJ5LWFzc2lnbm1lbnQtdGFnLmpzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiI7OzZzQkFNTyxHQUFBLEFBQUcsQ0FBQyxrQkFBQSxBQUFrQixBQUFDLENBQUEsQUFBQyxBQUFDLFFBQUEsQUFBUSxBQUFBLENBQUEsQUFBQyxBQUFBLENBQUEsQUFBQyxBQUFBLENBQUEsQUFBQyxhQUsxQyxNQUFBLEFBQU0sOEJBQWtDLFFBQUEsQUFBUSwyQkFLL0MsS0FBQSxBQUFLLEVBQUcsZ0JBQUEsQUFBZ0IsQUFBQSxDQUFBLEFBQUMsQUFBQSxnQkFBQSxBQUFnQiwyQkFPekMsaUJBQUEsQUFBaUIsVUFBQSxDQUFBLEFBQUMsQUFBQSxVQUFBLEFBQVUsQUFBQSxDQUFBLEFBQUMsQUFBQSxDQUFBLEFBQUMsQUFDN0IsTUFBQSxBQUFNLENBQUMsSUFBQSxBQUFJLEFBQUEsd0JBQUEsQUFBd0IsQUFBQSxDQUFBLEFBQUMsQUFBQSxVQUFBLEFBQVUsQUFBQSxDQUFBLEFBQUMsQ0FDaEQsQ0FBQSxBQUFDLDJCQVFELFFBQUEsQUFBUSxVQUFBLENBQUEsQUFBQyxBQUFBLE1BQUEsQUFBTSxDQUFFLFVBQUEsQUFBVSxBQUFBLENBQUEsQUFBQyxBQUFBLENBQUEsQUFBQyxBQUU1QixFQUFBLEFBQUUsQUFBQSxDQUFBLEFBQUMsQUFBQSxVQUFBLEFBQVUsQUFBQyxZQUFBLEFBQVksQUFBRCxvQkFBQSxBQUFvQixBQUFBLENBQUEsQUFBQyxBQUFBLENBQUEsQUFBQyxBQUM5QyxHQUFBLEFBQUcsU0FBYSxDQUFBLEFBQUMscUNBQUMsVUFBQSxBQUFVLEdBQXRCLE9BQUEsQUFBTyx5QkFFYixNQUFBLEFBQU0sQUFBQSxDQUFBLEFBQUMsQUFBQSxJQUFBLEFBQUksQUFBQSxDQUFBLEFBQUMsQUFBQSxDQUFBLEFBQUMsQUFFWixJQUFBLEFBQUksQ0FBQyxVQUFBLEFBQVUsQUFBQyxZQUFBLEFBQVksQUFBRCxrQkFBQSxBQUFrQixBQUFBLENBQUEsQUFBQyxBQUM3QyxLQUFBLEFBQUssQ0FHTixJQUFBLEFBQUksQ0FBQyxPQUFBLEFBQU8sQUFBQSxDQUFBLEFBQUMsQUFBQSxHQUFBLEFBQUcsQUFBQSxDQUFBLEFBQUMsQUFBQSxTQUFBLEFBQVMsQUFBQSxDQUFBLEFBQUMsQUFBQSxNQUFBLEFBQU0sQ0FBRSxPQUFBLEFBQU8sQ0FBRSxNQUFBLEFBQU0sQUFBQSxDQUFBLEFBQUMsQUFBQSxVQUFBLEFBQVUsQUFBQSxDQUFBLEFBQUMsQUFBQSxDQUFBLEFBQUMsQUFDOUQsTUFBQSxBQUFNLENBQUMsS0FBQSxBQUFLLENBQ2QsQ0FBQSxBQUFDLEFBRUQsTUFBQSxBQUFNLENBQUMsSUFBQSxBQUFJLENBQ1osQ0FBQSxBQUFDLEFBRUQsTUFBQSxBQUFNLENBQUMsS0FBQSxBQUFLLENBQ2IsQ0FBQSxBQUFDLHVKQUVILENBQUEsQUFBQyxBQUFBLENBQUEsQUFBQyxBQUFBLENBQUEsQUFBQzsifQ==
+					}
+					.toString()
+					.match(
+						/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+					)[1]
+				);
+
+
+eval(
+					function(){
+						new Rexjs.Module("rexjs://source/map/unary/postfix-unary-expression.js",function(Rexjs){
+"use strict";
+var UnaryExpression=Rexjs.Module.memberOf("UnaryExpression","./unary-expression","rexjs://source/map/unary/postfix-unary-expression.js");var PostfixUnaryExpression=function(){var $Rexjs_0;return ($Rexjs_0=Rexjs.Class.create(UnaryExpression,[new Rexjs.ClassProperty("constructor",function PostfixUnaryExpression(context,operand){var $Rexjs_1;($Rexjs_1=Rexjs.Super.callConstructor($Rexjs_0.prototype,this,[context]));$Rexjs_1.operand=operand;return $Rexjs_1;}),new Rexjs.ClassProperty("extractTo",function(contentBuilder){this.operand.extractTo(contentBuilder);contentBuilder.appendContext(this.context);})], 0));}();Rexjs.Module.export("PostfixUnaryExpression", PostfixUnaryExpression);
+});
+//# sourceURL=http://sourceurl/source/map/unary/postfix-unary-expression.js
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImh0dHA6Ly9sb2NhbGhvc3Q6OTA5MC9zb3VyY2UvbWFwL3VuYXJ5L3Bvc3RmaXgtdW5hcnktZXhwcmVzc2lvbi5qcyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOzt5SUFFTyxHQUFBLEFBQUcsQ0FBQyxzQkFBQSxBQUFzQixBQUFDLENBQUEsQUFBQyxBQUFDLFFBQUEsQUFBUSxBQUFBLENBQUEsQUFBQyxBQUFBLENBQUEsQUFBQyxBQUFBLENBQUEsQUFBQyxhQUM5QyxNQUFBLEFBQU0sOEJBQXNDLGVBQUEsQUFBZSwyQkFNMUQsV0FBQSxBQUFXLGlDQUFBLENBQUEsQUFBQyxBQUFBLE9BQUEsQUFBTyxDQUFFLE9BQUEsQUFBTyxBQUFBLENBQUEsQUFBQyxBQUFBLENBQUEsQUFBQyw0RUFDdkIsT0FBQSxBQUFPLElBRWIsUUFBQSxBQUFRLEFBQUosQ0FBQSxBQUFDLEFBQUEsT0FBQSxBQUFPLEFBQUMsQ0FBQSxBQUFDLEFBQUMsT0FBQSxBQUFPLGlCQUN2QixDQUFBLEFBQUMsMkJBT0QsU0FBQSxBQUFTLFVBQUEsQ0FBQSxBQUFDLEFBQUEsY0FBQSxBQUFjLEFBQUEsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLEFBRXpCLElBQUEsQUFBSSxBQUFBLENBQUEsQUFBQyxBQUFBLE9BQUEsQUFBTyxBQUFBLENBQUEsQUFBQyxBQUFBLFNBQUEsQUFBUyxBQUFBLENBQUEsQUFBQyxBQUFBLGNBQUEsQUFBYyxBQUFBLENBQUEsQUFBQyxDQUV0QyxjQUFBLEFBQWMsQUFBQSxDQUFBLEFBQUMsQUFBQSxhQUFBLEFBQWEsQUFBQSxDQUFBLEFBQUMsQUFBQSxJQUFBLEFBQUksQUFBQSxDQUFBLEFBQUMsQUFBQSxPQUFBLEFBQU8sQUFBQSxDQUFBLEFBQUMsQ0FDM0MsQ0FBQSxBQUFDLFFBRUgsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDOyJ9
+					}
+					.toString()
+					.match(
+						/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+					)[1]
+				);
+
+
+eval(
+					function(){
+						new Rexjs.Module("rexjs://source/map/unary/postfix-unary-assignment-tag.js",function(Rexjs){
+"use strict";
+var UnaryAssignmentTag=Rexjs.Module.memberOf("UnaryAssignmentTag","./unary-assignment-tag","rexjs://source/map/unary/postfix-unary-assignment-tag.js");var CLASS_EXPRESSION_CONTEXT=Rexjs.Module.memberOf("CLASS_EXPRESSION_CONTEXT","../core","rexjs://source/map/unary/postfix-unary-assignment-tag.js");var PostfixUnaryExpression=Rexjs.Module.memberOf("PostfixUnaryExpression","./postfix-unary-expression","rexjs://source/map/unary/postfix-unary-assignment-tag.js");var ECMAScriptOrders=Rexjs.Module.memberOf("ECMAScriptOrders","../ecmascript/ecmascript-orders","rexjs://source/map/unary/postfix-unary-assignment-tag.js");var ECMAScriptErrors=Rexjs.Module.memberOf("ECMAScriptErrors","../ecmascript/ecmascript-errors","rexjs://source/map/unary/postfix-unary-assignment-tag.js");var PostfixUnaryAssignmentTag=function(){var $Rexjs_0;return ($Rexjs_0=Rexjs.Class.create(UnaryAssignmentTag,[new Rexjs.ClassProperty("$class",CLASS_EXPRESSION_CONTEXT),new Rexjs.ClassProperty("order",ECMAScriptOrders.POSTFIX_UNARY_ASSIGNMENT),new Rexjs.ClassProperty("getBoundExpression",function(context,statement){return new PostfixUnaryExpression(context,statement.expression);}),new Rexjs.ClassProperty("require",function(tagsMap){return tagsMap.expressionContextTags.newlineTags;}),new Rexjs.ClassProperty("visitor",function(parser,context,statement,statements){if(this.operable(parser,statement.expression)){context.setExpressionOf(statement);return;}parser.error(context,ECMAScriptErrors.POSTFIX_OPERATION,true);}),new Rexjs.ClassProperty("constructor",function PostfixUnaryAssignmentTag(){return Rexjs.Super.callConstructor($Rexjs_0.prototype, this, arguments);})], 5));}();Rexjs.Module.export("PostfixUnaryAssignmentTag", PostfixUnaryAssignmentTag);
+});
+//# sourceURL=http://sourceurl/source/map/unary/postfix-unary-assignment-tag.js
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImh0dHA6Ly9sb2NhbGhvc3Q6OTA5MC9zb3VyY2UvbWFwL3VuYXJ5L3Bvc3RmaXgtdW5hcnktYXNzaWdubWVudC10YWcuanMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6Ijs7c3dCQU1PLEdBQUEsQUFBRyxDQUFDLHlCQUFBLEFBQXlCLEFBQUMsQ0FBQSxBQUFDLEFBQUMsUUFBQSxBQUFRLEFBQUEsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLGFBS2pELE1BQUEsQUFBTSw4QkFBeUMsa0JBQUEsQUFBa0IsMkJBS2hFLE1BQUEsQUFBTSxFQUFHLHdCQUFBLEFBQXdCLDJCQU1qQyxLQUFBLEFBQUssRUFBRyxnQkFBQSxBQUFnQixBQUFBLENBQUEsQUFBQyxBQUFBLHdCQUFBLEFBQXdCLDJCQVFqRCxrQkFBQSxBQUFrQixVQUFBLENBQUEsQUFBQyxBQUFBLE9BQUEsQUFBTyxDQUFFLFNBQUEsQUFBUyxBQUFBLENBQUEsQUFBQyxBQUFBLENBQUEsQUFBQyxBQUN0QyxNQUFBLEFBQU0sQ0FBQyxJQUFBLEFBQUksQUFBQSxzQkFBQSxBQUFzQixBQUFBLENBQUEsQUFBQyxBQUFBLE9BQUEsQUFBTyxDQUFFLFNBQUEsQUFBUyxBQUFBLENBQUEsQUFBQyxBQUFBLFVBQUEsQUFBVSxBQUFBLENBQUEsQUFBQyxDQUNqRSxDQUFBLEFBQUMsMkJBT0QsT0FBQSxBQUFPLFVBQUEsQ0FBQSxBQUFDLEFBQUEsT0FBQSxBQUFPLEFBQUEsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLEFBQ2hCLE1BQUEsQUFBTSxDQUFDLE9BQUEsQUFBTyxBQUFBLENBQUEsQUFBQyxBQUFBLHFCQUFBLEFBQXFCLEFBQUEsQ0FBQSxBQUFDLEFBQUEsV0FBQSxBQUFXLENBQ2pELENBQUEsQUFBQywyQkFVRCxPQUFBLEFBQU8sVUFBQSxDQUFBLEFBQUMsQUFBQSxNQUFBLEFBQU0sQ0FBRSxPQUFBLEFBQU8sQ0FBRSxTQUFBLEFBQVMsQ0FBRSxVQUFBLEFBQVUsQUFBQSxDQUFBLEFBQUMsQUFBQSxDQUFBLEFBQUMsQUFFL0MsRUFBQSxBQUFFLEFBQUEsQ0FBQSxBQUFDLEFBQUEsSUFBQSxBQUFJLEFBQUEsQ0FBQSxBQUFDLEFBQUEsUUFBQSxBQUFRLEFBQUEsQ0FBQSxBQUFDLEFBQUEsTUFBQSxBQUFNLENBQUUsU0FBQSxBQUFTLEFBQUEsQ0FBQSxBQUFDLEFBQUEsVUFBQSxBQUFVLEFBQUEsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLEFBRS9DLE9BQUEsQUFBTyxBQUFBLENBQUEsQUFBQyxBQUFBLGVBQUEsQUFBZSxBQUFBLENBQUEsQUFBQyxBQUFBLFNBQUEsQUFBUyxBQUFBLENBQUEsQUFBQyxDQUNsQyxNQUFBLEFBQU0sQ0FDUCxDQUFBLEFBQUMsQUFHRCxNQUFBLEFBQU0sQUFBQSxDQUFBLEFBQUMsQUFBQSxLQUFBLEFBQUssQUFBQSxDQUFBLEFBQUMsQUFBQSxPQUFBLEFBQU8sQ0FBRSxnQkFBQSxBQUFnQixBQUFBLENBQUEsQUFBQyxBQUFBLGlCQUFBLEFBQWlCLENBQUUsSUFBQSxBQUFJLEFBQUEsQ0FBQSxBQUFDLENBQ2hFLENBQUEsQUFBQyw4SkFFSCxDQUFBLEFBQUMsQUFBQSxDQUFBLEFBQUMsQUFBQSxDQUFBLEFBQUM7In0=
+					}
+					.toString()
+					.match(
+						/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+					)[1]
+				);
+
+
+eval(
+					function(){
 						new Rexjs.Module("rexjs://source/map/unary/index.js",function(Rexjs){
 "use strict";
-Rexjs.Module.exportFrom("./unary-expression","rexjs://source/map/unary/index.js");Rexjs.Module.exportFrom("./unary-keyword-tag","rexjs://source/map/unary/index.js");Rexjs.Module.exportFrom("./unary-statement","rexjs://source/map/unary/index.js");Rexjs.Module.exportFrom("./unary-tag","rexjs://source/map/unary/index.js");
+Rexjs.Module.exportFrom("./postfix-unary-assignment-tag","rexjs://source/map/unary/index.js");Rexjs.Module.exportFrom("./postfix-unary-expression","rexjs://source/map/unary/index.js");Rexjs.Module.exportFrom("./unary-assigment-statement","rexjs://source/map/unary/index.js");Rexjs.Module.exportFrom("./unary-assignment-tag","rexjs://source/map/unary/index.js");Rexjs.Module.exportFrom("./unary-expression","rexjs://source/map/unary/index.js");Rexjs.Module.exportFrom("./unary-keyword-tag","rexjs://source/map/unary/index.js");Rexjs.Module.exportFrom("./unary-statement","rexjs://source/map/unary/index.js");Rexjs.Module.exportFrom("./unary-tag","rexjs://source/map/unary/index.js");
 });
 //# sourceURL=http://sourceurl/source/map/unary/index.js
 //# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImh0dHA6Ly9sb2NhbGhvc3Q6OTA5MC9zb3VyY2UvbWFwL3VuYXJ5L2luZGV4LmpzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiI7OzsifQ==
@@ -1988,230 +2052,6 @@ var a=1;var globalThis={};var define=(function(exports){return function(){export
 	commonVisitor, getIdentifierRegExpSource
 ){
 "use strict";
-
-
-eval(
-								function(){
-									// 一元赋值标签
-!function(VariableTag){
-
-this.PostfixUnaryExpression = function(UnaryExpression){
-	/**
-	 * 后置一元表达式
-	 * @param {Context} context - 标签上下文
-	 * @param {AssignableExpression} operand - 操作对象表达式
-	 */
-	function PostfixUnaryExpression(context, operand){
-		UnaryExpression.call(this, context);
-
-		this.operand = operand;
-	};
-	PostfixUnaryExpression = new Rexjs(PostfixUnaryExpression, UnaryExpression);
-	
-	PostfixUnaryExpression.props({
-		/**
-		 * 提取表达式文本内容
-		 * @param {ContentBuilder} contentBuilder - 内容生成器
-		 */
-		extractTo: function(contentBuilder){
-			// 提取操作对象内容
-			this.operand.extractTo(contentBuilder);
-			// 提取一元操作符的内容
-			contentBuilder.appendContext(this.context);
-		}
-	});
-	
-	return PostfixUnaryExpression;
-}(
-	this.UnaryExpression
-);
-
-this.UnaryAssignmentStatement = function(UnaryStatement, error){
-	/**
-	 * 一元赋值语句
-	 * @param {Statements} statements - 该语句将要所处的语句块
-	 */
-	function UnaryAssignmentStatement(statements){
-		UnaryStatement.call(this, statements);
-	};
-	UnaryAssignmentStatement = new Rexjs(UnaryAssignmentStatement, UnaryStatement);
-	
-	UnaryAssignmentStatement.props({
-		/**
-		 * 捕获处理异常
-		 * @param {SyntaxParser} parser - 语法解析器
-		 * @param {Context} context - 语法标签上下文
-		 */
-		catch: function(parser, context){
-			// 如果满足一元赋值标签条件
-			if(this.target.expression.context.tag.operable(parser, this.expression)){
-				// 跳出语句并设置 operand
-				this.out().operand = this.expression;
-				return;
-			}
-
-			// 报错
-			error(parser, this);
-		},
-		/**
-		 * 尝试处理异常
-		 * @param {SyntaxParser} parser - 语法解析器
-		 * @param {Context} context - 语法标签上下文
-		 */
-		try: function(parser, context){
-			var expression = this.expression, tag = this.target.expression.context.tag;
-
-			switch(false){
-				// 如果不是分隔符标签
-				case tag.isSeparator(context, expression):
-					return;
-	
-				// 如果不能满足一元赋值标签条件
-				case tag.operable(parser, expression):
-					// 报错
-					error(parser, this);
-					return;
-			}
-
-			// 跳出语句并设置 operand
-			this.out().operand = expression;
-		}
-	});
-	
-	return UnaryAssignmentStatement;
-}(
-	this.UnaryStatement,
-	// error
-	function(parser, statement){
-		// 报错
-		parser.error(
-			statement.target.expression.context,
-			ECMAScriptErrors.PREFIX_OPERATION,
-			true
-		);
-	}
-);
-
-this.UnaryAssignmentTag = function(UnaryTag, UnaryExpression, UnaryAssignmentStatement, AssignableExpression, AccessorExpression){
-	/**
-	 * 一元赋值标签
-	 * @param {Number} _type - 标签类型
-	 */
-	function UnaryAssignmentTag(_type){
-		UnaryTag.call(this, _type);
-	};
-	UnaryAssignmentTag = new Rexjs(UnaryAssignmentTag, UnaryTag);
-
-	UnaryAssignmentTag.props({
-		/**
-		 * 获取绑定的语句，一般在子类使用父类逻辑，而不使用父类语句的情况下使用
-		 * @param {Statements} statements - 该语句将要所处的语句块
-		 */
-		getBoundStatement: function(statements){
-			return new UnaryAssignmentStatement(statements);
-		},
-		/**
-		 * 判断该一元表达式在当前表达式中，是否能使用
-		 * @param {SyntaxParser} parser - 语法解析器
-		 * @param {Expression} expression - 当前表达式
-		 */
-		operable: function(parser, expression){
-			// 如果当前表达式是赋值表达式
-			if(expression instanceof AssignableExpression){
-				var ctx = expression.context;
-
-				switch(true){
-					// 如果是属性访问表达式
-					case expression instanceof AccessorExpression:
-						break;
-
-					// 如果已被收集到常量（会触发报错）
-					case ctx.tag.collected(parser, ctx, parser.statements):
-						return false;
-				}
-
-				return true;
-			}
-
-			return false;
-		},
-		order: ECMAScriptOrders.UNARY_ASSIGNMENT
-	});
-
-	return UnaryAssignmentTag;
-}(
-	this.UnaryTag,
-	this.UnaryExpression,
-	this.UnaryAssignmentStatement,
-	this.AssignableExpression,
-	this.AccessorExpression
-);
-
-this.PostfixUnaryAssignmentTag = function(UnaryAssignmentTag, PostfixUnaryExpression){
-	/**
-	 * 后置一元赋值标签
-	 * @param {Number} _type - 标签类型
-	 */
-	function PostfixUnaryAssignmentTag(_type){
-		UnaryAssignmentTag.call(this, _type);
-	};
-	PostfixUnaryAssignmentTag = new Rexjs(PostfixUnaryAssignmentTag, UnaryAssignmentTag);
-
-	PostfixUnaryAssignmentTag.props({
-		$class: CLASS_EXPRESSION_CONTEXT,
-		/**
-		 * 获取绑定的表达式，一般在子类使用父类逻辑，而不使用父类表达式的情况下使用
-		 * @param {Context} context - 相关的语法标签上下文
-		 * @param {Statement} statement - 当前语句
-		 */
-		getBoundExpression: function(context, statement){
-			return new PostfixUnaryExpression(context, statement.expression);
-		},
-		order: ECMAScriptOrders.POSTFIX_UNARY_ASSIGNMENT,
-		/**
-		 * 获取此标签接下来所需匹配的标签列表
-		 * @param {TagsMap} tagsMap - 标签集合映射
-		 */
-		require: function(tagsMap){
-			return tagsMap.expressionContextTags.newlineTags;
-		},
-		/**
-		 * 标签访问器
-		 * @param {SyntaxParser} parser - 语法解析器
-		 * @param {Context} context - 标签上下文
-		 * @param {Statement} statement - 当前语句
-		 * @param {Statements} statements - 当前语句块
-		 */
-		visitor: function(parser, context, statement, statements){
-			// 如果满足一元赋值标签条件
-			if(this.operable(parser, statement.expression)){
-				// 设置当前表达式
-				context.setExpressionOf(statement);
-				return;
-			}
-
-			// 报错
-			parser.error(context, ECMAScriptErrors.POSTFIX_OPERATION, true);
-		}
-	});
-
-	return PostfixUnaryAssignmentTag;
-}(
-	this.UnaryAssignmentTag,
-	this.PostfixUnaryExpression
-);
-
-}.call(
-	this,
-	this.VariableTag
-);
-								}
-								.toString()
-								.match(
-									/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-								)[1] +
-								"\n//# sourceURL=http://localhost:9090/source/map1/unary-assginment.js"
-							);
 
 
 eval(
