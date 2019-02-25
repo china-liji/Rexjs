@@ -27,6 +27,7 @@ import * as Semicolon from "./semicolon";
 import * as LineTerminator from "./line-terminator";
 import * as Accessor from "./accessor";
 import * as Comma from "./comma";
+import * as Unary from "./unary";
 
 define(EcmaScript);
 define(BaseExpression);
@@ -48,5 +49,6 @@ define(Semicolon);
 define(LineTerminator);
 define(Accessor);
 define(Comma);
+define(Unary);
 
 window.globalThis = globalThis;

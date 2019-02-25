@@ -1520,12 +1520,92 @@ Rexjs.Module.exportFrom("./comma-expression","rexjs://source/map/comma/index.js"
 
 eval(
 					function(){
+						new Rexjs.Module("rexjs://source/map/unary/unary-expression.js",function(Rexjs){
+"use strict";
+var Expression=Rexjs.Module.memberOf("Expression","../core","rexjs://source/map/unary/unary-expression.js");var UnaryExpression=function(){var $Rexjs_0;return ($Rexjs_0=Rexjs.Class.create(Expression,[new Rexjs.ClassProperty("operand",null),new Rexjs.ClassProperty("extractTo",function(contentBuilder){contentBuilder.appendContext(this.context);this.operand.extractTo(contentBuilder);}),new Rexjs.ClassProperty("constructor",function UnaryExpression(){return Rexjs.Super.callConstructor($Rexjs_0.prototype, this, arguments);})], 2));}();Rexjs.Module.export("UnaryExpression", UnaryExpression);
+});
+//# sourceURL=http://sourceurl/source/map/unary/unary-expression.js
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImh0dHA6Ly9sb2NhbGhvc3Q6OTA5MC9zb3VyY2UvbWFwL3VuYXJ5L3VuYXJ5LWV4cHJlc3Npb24uanMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6Ijs7NEdBRU8sR0FBQSxBQUFHLENBQUMsZUFBQSxBQUFlLEFBQUMsQ0FBQSxBQUFDLEFBQUMsUUFBQSxBQUFRLEFBQUEsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLGFBS3ZDLE1BQUEsQUFBTSw4QkFBK0IsVUFBQSxBQUFVLDJCQUs5QyxPQUFBLEFBQU8sRUFBRyxJQUFBLEFBQUksMkJBT2QsU0FBQSxBQUFTLFVBQUEsQ0FBQSxBQUFDLEFBQUEsY0FBQSxBQUFjLEFBQUEsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLEFBRXpCLGNBQUEsQUFBYyxBQUFBLENBQUEsQUFBQyxBQUFBLGFBQUEsQUFBYSxBQUFBLENBQUEsQUFBQyxBQUFBLElBQUEsQUFBSSxBQUFBLENBQUEsQUFBQyxBQUFBLE9BQUEsQUFBTyxBQUFBLENBQUEsQUFBQyxDQUUxQyxJQUFBLEFBQUksQUFBQSxDQUFBLEFBQUMsQUFBQSxPQUFBLEFBQU8sQUFBQSxDQUFBLEFBQUMsQUFBQSxTQUFBLEFBQVMsQUFBQSxDQUFBLEFBQUMsQUFBQSxjQUFBLEFBQWMsQUFBQSxDQUFBLEFBQUMsQ0FDdkMsQ0FBQSxBQUFDLG9KQUVILENBQUEsQUFBQyxBQUFBLENBQUEsQUFBQyxBQUFBLENBQUEsQUFBQzsifQ==
+					}
+					.toString()
+					.match(
+						/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+					)[1]
+				);
+
+
+eval(
+					function(){
+						new Rexjs.Module("rexjs://source/map/unary/unary-statement.js",function(Rexjs){
+"use strict";
+var ECMAScriptStatement=Rexjs.Module.memberOf("ECMAScriptStatement","../ecmascript/ecmascript-statement","rexjs://source/map/unary/unary-statement.js");var UnaryStatement=function(){var $Rexjs_0;return ($Rexjs_0=Rexjs.Class.create(ECMAScriptStatement,[new Rexjs.ClassProperty("catch",function(){this.out().operand=this.expression;}),new Rexjs.ClassProperty("try",function(parser,context){var $Rexjs_1=new Rexjs.ObjectDestructuringTarget((this)),expression=$Rexjs_1.get("expression");if(this.target.expression.context.tag.isSeparator(context,expression)){this.out().operand=expression;}}),new Rexjs.ClassProperty("constructor",function UnaryStatement(){return Rexjs.Super.callConstructor($Rexjs_0.prototype, this, arguments);})], 2));}();Rexjs.Module.export("UnaryStatement", UnaryStatement);
+});
+//# sourceURL=http://sourceurl/source/map/unary/unary-statement.js
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImh0dHA6Ly9sb2NhbGhvc3Q6OTA5MC9zb3VyY2UvbWFwL3VuYXJ5L3VuYXJ5LXN0YXRlbWVudC5qcyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOzt3SkFFTyxHQUFBLEFBQUcsQ0FBQyxjQUFBLEFBQWMsQUFBQyxDQUFBLEFBQUMsQUFBQyxRQUFBLEFBQVEsQUFBQSxDQUFBLEFBQUMsQUFBQSxDQUFBLEFBQUMsQUFBQSxDQUFBLEFBQUMsYUFLdEMsTUFBQSxBQUFNLDhCQUE4QixtQkFBQSxBQUFtQiwyQkFPdEQsS0FBQSxBQUFLLFVBQUEsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLEFBRVAsSUFBQSxBQUFJLEFBQUEsQ0FBQSxBQUFDLEFBQUEsR0FBQSxBQUFHLEFBQUEsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLEFBQUEsT0FBQSxBQUFPLEFBQUMsQ0FBQSxBQUFDLEFBQUMsSUFBQSxBQUFJLEFBQUEsQ0FBQSxBQUFDLEFBQUEsVUFBQSxBQUFVLENBQ3JDLENBQUEsQUFBQywyQkFRRCxHQUFBLEFBQUcsVUFBQSxDQUFBLEFBQUMsQUFBQSxNQUFBLEFBQU0sQ0FBRSxPQUFBLEFBQU8sQUFBQSxDQUFBLEFBQUMsQUFBQSxDQUFBLEFBQUMsQUFDcEIsR0FBQSxBQUFHLFNBQWdCLENBQUEsQUFBQyxxQ0FBQyxJQUFBLEFBQUksR0FBbkIsVUFBQSxBQUFVLDRCQUdoQixFQUFBLEFBQUUsQUFBQSxDQUFBLEFBQUMsQUFBQSxJQUFBLEFBQUksQUFBQSxDQUFBLEFBQUMsQUFBQSxNQUFBLEFBQU0sQUFBQSxDQUFBLEFBQUMsQUFBQSxVQUFBLEFBQVUsQUFBQSxDQUFBLEFBQUMsQUFBQSxPQUFBLEFBQU8sQUFBQSxDQUFBLEFBQUMsQUFBQSxHQUFBLEFBQUcsQUFBQSxDQUFBLEFBQUMsQUFBQSxXQUFBLEFBQVcsQUFBQSxDQUFBLEFBQUMsQUFBQSxPQUFBLEFBQU8sQ0FBRSxVQUFBLEFBQVUsQUFBQSxDQUFBLEFBQUMsQUFBQSxDQUFBLEFBQUMsQUFBQSxDQUFBLEFBQUMsQUFFdkUsSUFBQSxBQUFJLEFBQUEsQ0FBQSxBQUFDLEFBQUEsR0FBQSxBQUFHLEFBQUEsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLEFBQUEsT0FBQSxBQUFPLEFBQUMsQ0FBQSxBQUFDLEFBQUMsVUFBQSxBQUFVLENBQ2hDLENBQUEsQUFBQyxBQUNGLENBQUEsQUFBQyxtSkFFSCxDQUFBLEFBQUMsQUFBQSxDQUFBLEFBQUMsQUFBQSxDQUFBLEFBQUM7In0=
+					}
+					.toString()
+					.match(
+						/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+					)[1]
+				);
+
+
+eval(
+					function(){
+						new Rexjs.Module("rexjs://source/map/unary/unary-tag.js",function(Rexjs){
+"use strict";
+var SyntaxTag=Rexjs.Module.memberOf("SyntaxTag","../core","rexjs://source/map/unary/unary-tag.js"),CLASS_EXPRESSION=Rexjs.Module.memberOf("CLASS_EXPRESSION","../core","rexjs://source/map/unary/unary-tag.js");var ECMAScriptMethod=Rexjs.Module.memberOf("ECMAScriptMethod","../ecmascript","rexjs://source/map/unary/unary-tag.js");var UnaryExpression=Rexjs.Module.memberOf("UnaryExpression","./unary-expression","rexjs://source/map/unary/unary-tag.js");var UnaryStatement=Rexjs.Module.memberOf("UnaryStatement","./unary-statement","rexjs://source/map/unary/unary-tag.js");var ExpressionSeparatorTag=Rexjs.Module.memberOf("ExpressionSeparatorTag","../base-tag/expression-separator-tag","rexjs://source/map/unary/unary-tag.js");var UnaryTag=function(){var $Rexjs_0;return ($Rexjs_0=Rexjs.Class.create(SyntaxTag,[new Rexjs.ClassProperty("$class",CLASS_EXPRESSION),new Rexjs.ClassProperty("getBoundExpression",function(context){return new UnaryExpression(context);}),new Rexjs.ClassProperty("getBoundStatement",function(statements){return new UnaryStatement(statements);}),new Rexjs.ClassProperty("isSeparator",function(context){return context.tag instanceof ExpressionSeparatorTag;}),new Rexjs.ClassProperty("require",function(tagsMap){return tagsMap.expressionTags;}),new Rexjs.ClassProperty("visitor",function(parser,context,statement,statements){ECMAScriptMethod.visitor(parser,context,statement,statements);}),new Rexjs.ClassProperty("constructor",function UnaryTag(){return Rexjs.Super.callConstructor($Rexjs_0.prototype, this, arguments);})], 6));}();Rexjs.Module.export("UnaryTag", UnaryTag);
+});
+//# sourceURL=http://sourceurl/source/map/unary/unary-tag.js
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImh0dHA6Ly9sb2NhbGhvc3Q6OTA5MC9zb3VyY2UvbWFwL3VuYXJ5L3VuYXJ5LXRhZy5qcyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOztrdEJBTU8sR0FBQSxBQUFHLENBQUMsUUFBQSxBQUFRLEFBQUMsQ0FBQSxBQUFDLEFBQUMsUUFBQSxBQUFRLEFBQUEsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLGFBS2hDLE1BQUEsQUFBTSw4QkFBd0IsU0FBQSxBQUFTLDJCQUt0QyxNQUFBLEFBQU0sRUFBRyxnQkFBQSxBQUFnQiwyQkFRekIsa0JBQUEsQUFBa0IsVUFBQSxDQUFBLEFBQUMsQUFBQSxPQUFBLEFBQU8sQUFBQSxDQUFBLEFBQUMsQUFBQSxDQUFBLEFBQUMsQUFDM0IsTUFBQSxBQUFNLENBQUMsSUFBQSxBQUFJLEFBQUEsZUFBQSxBQUFlLEFBQUEsQ0FBQSxBQUFDLEFBQUEsT0FBQSxBQUFPLEFBQUEsQ0FBQSxBQUFDLENBQ3BDLENBQUEsQUFBQywyQkFPRCxpQkFBQSxBQUFpQixVQUFBLENBQUEsQUFBQyxBQUFBLFVBQUEsQUFBVSxBQUFBLENBQUEsQUFBQyxBQUFBLENBQUEsQUFBQyxBQUM3QixNQUFBLEFBQU0sQ0FBQyxJQUFBLEFBQUksQUFBQSxjQUFBLEFBQWMsQUFBQSxDQUFBLEFBQUMsQUFBQSxVQUFBLEFBQVUsQUFBQSxDQUFBLEFBQUMsQ0FDdEMsQ0FBQSxBQUFDLDJCQVFELFdBQUEsQUFBVyxVQUFBLENBQUEsQUFBQyxBQUFBLE9BQUEsQUFBTyxBQUFBLENBQUEsQUFBQyxBQUFBLENBQUEsQUFBQyxBQUNwQixNQUFBLEFBQU0sQ0FBQyxPQUFBLEFBQU8sQUFBQSxDQUFBLEFBQUMsQUFBQSxHQUFBLEFBQUcsQUFBQyxZQUFBLEFBQVksQUFBRCxzQkFBQSxBQUFzQixDQUNyRCxDQUFBLEFBQUMsMkJBT0QsT0FBQSxBQUFPLFVBQUEsQ0FBQSxBQUFDLEFBQUEsT0FBQSxBQUFPLEFBQUEsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLEFBQ2hCLE1BQUEsQUFBTSxDQUFDLE9BQUEsQUFBTyxBQUFBLENBQUEsQUFBQyxBQUFBLGNBQUEsQUFBYyxDQUM5QixDQUFBLEFBQUMsMkJBVUQsT0FBQSxBQUFPLFVBQUEsQ0FBQSxBQUFDLEFBQUEsTUFBQSxBQUFNLENBQUUsT0FBQSxBQUFPLENBQUUsU0FBQSxBQUFTLENBQUUsVUFBQSxBQUFVLEFBQUEsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLEFBQy9DLGdCQUFBLEFBQWdCLEFBQUEsQ0FBQSxBQUFDLEFBQUEsT0FBQSxBQUFPLEFBQUEsQ0FBQSxBQUFDLEFBQUEsTUFBQSxBQUFNLENBQUUsT0FBQSxBQUFPLENBQUUsU0FBQSxBQUFTLENBQUUsVUFBQSxBQUFVLEFBQUEsQ0FBQSxBQUFDLENBQ2pFLENBQUEsQUFBQyw2SUFFSCxDQUFBLEFBQUMsQUFBQSxDQUFBLEFBQUMsQUFBQSxDQUFBLEFBQUM7In0=
+					}
+					.toString()
+					.match(
+						/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+					)[1]
+				);
+
+
+eval(
+					function(){
+						new Rexjs.Module("rexjs://source/map/unary/unary-keyword-tag.js",function(Rexjs){
+"use strict";
+var UnaryTag=Rexjs.Module.memberOf("UnaryTag","./unary-tag","rexjs://source/map/unary/unary-keyword-tag.js");var UnaryKeywordTag=function(){var $Rexjs_0;return ($Rexjs_0=Rexjs.Class.create(UnaryTag,[new Rexjs.ClassProperty("extractTo",function(contentBuilder,content){contentBuilder.appendString(content);contentBuilder.appendSpace();}),new Rexjs.ClassProperty("constructor",function UnaryKeywordTag(){return Rexjs.Super.callConstructor($Rexjs_0.prototype, this, arguments);})], 1));}();Rexjs.Module.export("UnaryKeywordTag", UnaryKeywordTag);
+});
+//# sourceURL=http://sourceurl/source/map/unary/unary-keyword-tag.js
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImh0dHA6Ly9sb2NhbGhvc3Q6OTA5MC9zb3VyY2UvbWFwL3VuYXJ5L3VuYXJ5LWtleXdvcmQtdGFnLmpzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiI7OzZHQUVPLEdBQUEsQUFBRyxDQUFDLGVBQUEsQUFBZSxBQUFDLENBQUEsQUFBQyxBQUFDLFFBQUEsQUFBUSxBQUFBLENBQUEsQUFBQyxBQUFBLENBQUEsQUFBQyxBQUFBLENBQUEsQUFBQyxhQUt2QyxNQUFBLEFBQU0sOEJBQStCLFFBQUEsQUFBUSwyQkFPNUMsU0FBQSxBQUFTLFVBQUEsQ0FBQSxBQUFDLEFBQUEsY0FBQSxBQUFjLENBQUUsT0FBQSxBQUFPLEFBQUEsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLEFBRWxDLGNBQUEsQUFBYyxBQUFBLENBQUEsQUFBQyxBQUFBLFlBQUEsQUFBWSxBQUFBLENBQUEsQUFBQyxBQUFBLE9BQUEsQUFBTyxBQUFBLENBQUEsQUFBQyxDQUVwQyxjQUFBLEFBQWMsQUFBQSxDQUFBLEFBQUMsQUFBQSxXQUFBLEFBQVcsQUFBQSxDQUFBLEFBQUMsQUFBQSxDQUFBLEFBQUMsQ0FDN0IsQ0FBQSxBQUFDLG9KQUVILENBQUEsQUFBQyxBQUFBLENBQUEsQUFBQyxBQUFBLENBQUEsQUFBQzsifQ==
+					}
+					.toString()
+					.match(
+						/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+					)[1]
+				);
+
+
+eval(
+					function(){
+						new Rexjs.Module("rexjs://source/map/unary/index.js",function(Rexjs){
+"use strict";
+Rexjs.Module.exportFrom("./unary-expression","rexjs://source/map/unary/index.js");Rexjs.Module.exportFrom("./unary-keyword-tag","rexjs://source/map/unary/index.js");Rexjs.Module.exportFrom("./unary-statement","rexjs://source/map/unary/index.js");Rexjs.Module.exportFrom("./unary-tag","rexjs://source/map/unary/index.js");
+});
+//# sourceURL=http://sourceurl/source/map/unary/index.js
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImh0dHA6Ly9sb2NhbGhvc3Q6OTA5MC9zb3VyY2UvbWFwL3VuYXJ5L2luZGV4LmpzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiI7OzsifQ==
+					}
+					.toString()
+					.match(
+						/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+					)[1]
+				);
+
+
+eval(
+					function(){
 						new Rexjs.Module("rexjs://source/map/index.js",function(Rexjs){
 "use strict";
-var a=1;var globalThis={};var define=(function(exports){return function(){exports,name;for(var name in exports){globalThis[name]=exports[name];}}.apply(this[0],this[1]);}.bind([this, arguments]));var EcmaScript=Rexjs.Module.moduleOf("./ecmascript","rexjs://source/map/index.js");var BaseExpression=Rexjs.Module.moduleOf("./base-expression","rexjs://source/map/index.js");var BaseStatement=Rexjs.Module.moduleOf("./base-statement","rexjs://source/map/index.js");var BaseStatements=Rexjs.Module.moduleOf("./base-statements","rexjs://source/map/index.js");var Brace=Rexjs.Module.moduleOf("./brace","rexjs://source/map/index.js");var Bracket=Rexjs.Module.moduleOf("./bracket","rexjs://source/map/index.js");var Paren=Rexjs.Module.moduleOf("./paren","rexjs://source/map/index.js");var BaseTag=Rexjs.Module.moduleOf("./base-tag","rexjs://source/map/index.js");var Keyword=Rexjs.Module.moduleOf("./keyword","rexjs://source/map/index.js");var Comment=Rexjs.Module.moduleOf("./comment","rexjs://source/map/index.js");var FilePosition=Rexjs.Module.moduleOf("./file-position","rexjs://source/map/index.js");var Literal=Rexjs.Module.moduleOf("./literal","rexjs://source/map/index.js");var MethematicalNumber=Rexjs.Module.moduleOf("./mathematical-number","rexjs://source/map/index.js");var Identifier=Rexjs.Module.moduleOf("./identifier","rexjs://source/map/index.js");var EnvConstant=Rexjs.Module.moduleOf("./env-constant","rexjs://source/map/index.js");var Variable=Rexjs.Module.moduleOf("./variable","rexjs://source/map/index.js");var Semicolon=Rexjs.Module.moduleOf("./semicolon","rexjs://source/map/index.js");var LineTerminator=Rexjs.Module.moduleOf("./line-terminator","rexjs://source/map/index.js");var Accessor=Rexjs.Module.moduleOf("./accessor","rexjs://source/map/index.js");var Comma=Rexjs.Module.moduleOf("./comma","rexjs://source/map/index.js");define(EcmaScript);define(BaseExpression);define(BaseStatement);define(BaseStatements);define(Brace);define(Bracket);define(Paren);define(BaseTag);define(Keyword);define(Comment);define(FilePosition);define(Literal);define(MethematicalNumber);define(Identifier);define(EnvConstant);define(Variable);define(Semicolon);define(LineTerminator);define(Accessor);define(Comma);window.globalThis=globalThis;
+var a=1;var globalThis={};var define=(function(exports){return function(){exports,name;for(var name in exports){globalThis[name]=exports[name];}}.apply(this[0],this[1]);}.bind([this, arguments]));var EcmaScript=Rexjs.Module.moduleOf("./ecmascript","rexjs://source/map/index.js");var BaseExpression=Rexjs.Module.moduleOf("./base-expression","rexjs://source/map/index.js");var BaseStatement=Rexjs.Module.moduleOf("./base-statement","rexjs://source/map/index.js");var BaseStatements=Rexjs.Module.moduleOf("./base-statements","rexjs://source/map/index.js");var Brace=Rexjs.Module.moduleOf("./brace","rexjs://source/map/index.js");var Bracket=Rexjs.Module.moduleOf("./bracket","rexjs://source/map/index.js");var Paren=Rexjs.Module.moduleOf("./paren","rexjs://source/map/index.js");var BaseTag=Rexjs.Module.moduleOf("./base-tag","rexjs://source/map/index.js");var Keyword=Rexjs.Module.moduleOf("./keyword","rexjs://source/map/index.js");var Comment=Rexjs.Module.moduleOf("./comment","rexjs://source/map/index.js");var FilePosition=Rexjs.Module.moduleOf("./file-position","rexjs://source/map/index.js");var Literal=Rexjs.Module.moduleOf("./literal","rexjs://source/map/index.js");var MethematicalNumber=Rexjs.Module.moduleOf("./mathematical-number","rexjs://source/map/index.js");var Identifier=Rexjs.Module.moduleOf("./identifier","rexjs://source/map/index.js");var EnvConstant=Rexjs.Module.moduleOf("./env-constant","rexjs://source/map/index.js");var Variable=Rexjs.Module.moduleOf("./variable","rexjs://source/map/index.js");var Semicolon=Rexjs.Module.moduleOf("./semicolon","rexjs://source/map/index.js");var LineTerminator=Rexjs.Module.moduleOf("./line-terminator","rexjs://source/map/index.js");var Accessor=Rexjs.Module.moduleOf("./accessor","rexjs://source/map/index.js");var Comma=Rexjs.Module.moduleOf("./comma","rexjs://source/map/index.js");var Unary=Rexjs.Module.moduleOf("./unary","rexjs://source/map/index.js");define(EcmaScript);define(BaseExpression);define(BaseStatement);define(BaseStatements);define(Brace);define(Bracket);define(Paren);define(BaseTag);define(Keyword);define(Comment);define(FilePosition);define(Literal);define(MethematicalNumber);define(Identifier);define(EnvConstant);define(Variable);define(Semicolon);define(LineTerminator);define(Accessor);define(Comma);define(Unary);window.globalThis=globalThis;
 });
 //# sourceURL=http://sourceurl/source/map/index.js
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImh0dHA6Ly9sb2NhbGhvc3Q6OTA5MC9zb3VyY2UvbWFwL2luZGV4LmpzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiI7O0FBQUEsR0FBQSxBQUFHLENBQUMsQ0FBQSxBQUFDLEFBQUMsQ0FBQSxBQUFDLEFBQUMsQ0FBQSxBQUFDLENBQ1QsR0FBQSxBQUFHLENBQUMsVUFBQSxBQUFVLEFBQUMsQ0FBQSxBQUFDLEFBQUMsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLENBRW5CLEdBQUEsQUFBRyxDQUFDLE1BQUEsQUFBTSxBQUFDLENBQUEsQUFBQyxTQUFDLENBQUEsQUFBQyxBQUFBLE9BQUEsQUFBTyxBQUFBLENBQUEsQUFBQyxrQkFBSSxDQUFBLEFBQUMsYUFDMUIsR0FBQSxBQUFHLEFBQUEsQ0FBQSxBQUFDLEFBQUEsR0FBQSxBQUFHLENBQUMsSUFBQSxBQUFJLEFBQUMsSUFBQSxBQUFJLEFBQUQsT0FBQSxBQUFPLEFBQUEsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLEFBQ3hCLFVBQUEsQUFBVSxBQUFBLENBQUEsQUFBQyxBQUFBLElBQUEsQUFBSSxBQUFBLENBQUEsQUFBQyxBQUFDLENBQUEsQUFBQyxBQUFDLE9BQUEsQUFBTyxBQUFBLENBQUEsQUFBQyxBQUFBLElBQUEsQUFBSSxBQUFBLENBQUEsQUFBQyxDQUNqQyxDQUFBLEFBQUMsQUFDRixDQUFBLEFBQUMscXFEQXVCRCxNQUFBLEFBQU0sQUFBQSxDQUFBLEFBQUMsQUFBQSxVQUFBLEFBQVUsQUFBQSxDQUFBLEFBQUMsQ0FDbEIsTUFBQSxBQUFNLEFBQUEsQ0FBQSxBQUFDLEFBQUEsY0FBQSxBQUFjLEFBQUEsQ0FBQSxBQUFDLENBQ3RCLE1BQUEsQUFBTSxBQUFBLENBQUEsQUFBQyxBQUFBLGFBQUEsQUFBYSxBQUFBLENBQUEsQUFBQyxDQUNyQixNQUFBLEFBQU0sQUFBQSxDQUFBLEFBQUMsQUFBQSxjQUFBLEFBQWMsQUFBQSxDQUFBLEFBQUMsQ0FDdEIsTUFBQSxBQUFNLEFBQUEsQ0FBQSxBQUFDLEFBQUEsS0FBQSxBQUFLLEFBQUEsQ0FBQSxBQUFDLENBQ2IsTUFBQSxBQUFNLEFBQUEsQ0FBQSxBQUFDLEFBQUEsT0FBQSxBQUFPLEFBQUEsQ0FBQSxBQUFDLENBQ2YsTUFBQSxBQUFNLEFBQUEsQ0FBQSxBQUFDLEFBQUEsS0FBQSxBQUFLLEFBQUEsQ0FBQSxBQUFDLENBQ2IsTUFBQSxBQUFNLEFBQUEsQ0FBQSxBQUFDLEFBQUEsT0FBQSxBQUFPLEFBQUEsQ0FBQSxBQUFDLENBQ2YsTUFBQSxBQUFNLEFBQUEsQ0FBQSxBQUFDLEFBQUEsT0FBQSxBQUFPLEFBQUEsQ0FBQSxBQUFDLENBQ2YsTUFBQSxBQUFNLEFBQUEsQ0FBQSxBQUFDLEFBQUEsT0FBQSxBQUFPLEFBQUEsQ0FBQSxBQUFDLENBQ2YsTUFBQSxBQUFNLEFBQUEsQ0FBQSxBQUFDLEFBQUEsWUFBQSxBQUFZLEFBQUEsQ0FBQSxBQUFDLENBQ3BCLE1BQUEsQUFBTSxBQUFBLENBQUEsQUFBQyxBQUFBLE9BQUEsQUFBTyxBQUFBLENBQUEsQUFBQyxDQUNmLE1BQUEsQUFBTSxBQUFBLENBQUEsQUFBQyxBQUFBLGtCQUFBLEFBQWtCLEFBQUEsQ0FBQSxBQUFDLENBQzFCLE1BQUEsQUFBTSxBQUFBLENBQUEsQUFBQyxBQUFBLFVBQUEsQUFBVSxBQUFBLENBQUEsQUFBQyxDQUNsQixNQUFBLEFBQU0sQUFBQSxDQUFBLEFBQUMsQUFBQSxXQUFBLEFBQVcsQUFBQSxDQUFBLEFBQUMsQ0FDbkIsTUFBQSxBQUFNLEFBQUEsQ0FBQSxBQUFDLEFBQUEsUUFBQSxBQUFRLEFBQUEsQ0FBQSxBQUFDLENBQ2hCLE1BQUEsQUFBTSxBQUFBLENBQUEsQUFBQyxBQUFBLFNBQUEsQUFBUyxBQUFBLENBQUEsQUFBQyxDQUNqQixNQUFBLEFBQU0sQUFBQSxDQUFBLEFBQUMsQUFBQSxjQUFBLEFBQWMsQUFBQSxDQUFBLEFBQUMsQ0FDdEIsTUFBQSxBQUFNLEFBQUEsQ0FBQSxBQUFDLEFBQUEsUUFBQSxBQUFRLEFBQUEsQ0FBQSxBQUFDLENBQ2hCLE1BQUEsQUFBTSxBQUFBLENBQUEsQUFBQyxBQUFBLEtBQUEsQUFBSyxBQUFBLENBQUEsQUFBQyxDQUViLE1BQUEsQUFBTSxBQUFBLENBQUEsQUFBQyxBQUFBLFVBQUEsQUFBVSxBQUFDLENBQUEsQUFBQyxBQUFDLFVBQUEsQUFBVTsifQ==
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImh0dHA6Ly9sb2NhbGhvc3Q6OTA5MC9zb3VyY2UvbWFwL2luZGV4LmpzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiI7O0FBQUEsR0FBQSxBQUFHLENBQUMsQ0FBQSxBQUFDLEFBQUMsQ0FBQSxBQUFDLEFBQUMsQ0FBQSxBQUFDLENBQ1QsR0FBQSxBQUFHLENBQUMsVUFBQSxBQUFVLEFBQUMsQ0FBQSxBQUFDLEFBQUMsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLENBRW5CLEdBQUEsQUFBRyxDQUFDLE1BQUEsQUFBTSxBQUFDLENBQUEsQUFBQyxTQUFDLENBQUEsQUFBQyxBQUFBLE9BQUEsQUFBTyxBQUFBLENBQUEsQUFBQyxrQkFBSSxDQUFBLEFBQUMsYUFDMUIsR0FBQSxBQUFHLEFBQUEsQ0FBQSxBQUFDLEFBQUEsR0FBQSxBQUFHLENBQUMsSUFBQSxBQUFJLEFBQUMsSUFBQSxBQUFJLEFBQUQsT0FBQSxBQUFPLEFBQUEsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLEFBQ3hCLFVBQUEsQUFBVSxBQUFBLENBQUEsQUFBQyxBQUFBLElBQUEsQUFBSSxBQUFBLENBQUEsQUFBQyxBQUFDLENBQUEsQUFBQyxBQUFDLE9BQUEsQUFBTyxBQUFBLENBQUEsQUFBQyxBQUFBLElBQUEsQUFBSSxBQUFBLENBQUEsQUFBQyxDQUNqQyxDQUFBLEFBQUMsQUFDRixDQUFBLEFBQUMsOHVEQXdCRCxNQUFBLEFBQU0sQUFBQSxDQUFBLEFBQUMsQUFBQSxVQUFBLEFBQVUsQUFBQSxDQUFBLEFBQUMsQ0FDbEIsTUFBQSxBQUFNLEFBQUEsQ0FBQSxBQUFDLEFBQUEsY0FBQSxBQUFjLEFBQUEsQ0FBQSxBQUFDLENBQ3RCLE1BQUEsQUFBTSxBQUFBLENBQUEsQUFBQyxBQUFBLGFBQUEsQUFBYSxBQUFBLENBQUEsQUFBQyxDQUNyQixNQUFBLEFBQU0sQUFBQSxDQUFBLEFBQUMsQUFBQSxjQUFBLEFBQWMsQUFBQSxDQUFBLEFBQUMsQ0FDdEIsTUFBQSxBQUFNLEFBQUEsQ0FBQSxBQUFDLEFBQUEsS0FBQSxBQUFLLEFBQUEsQ0FBQSxBQUFDLENBQ2IsTUFBQSxBQUFNLEFBQUEsQ0FBQSxBQUFDLEFBQUEsT0FBQSxBQUFPLEFBQUEsQ0FBQSxBQUFDLENBQ2YsTUFBQSxBQUFNLEFBQUEsQ0FBQSxBQUFDLEFBQUEsS0FBQSxBQUFLLEFBQUEsQ0FBQSxBQUFDLENBQ2IsTUFBQSxBQUFNLEFBQUEsQ0FBQSxBQUFDLEFBQUEsT0FBQSxBQUFPLEFBQUEsQ0FBQSxBQUFDLENBQ2YsTUFBQSxBQUFNLEFBQUEsQ0FBQSxBQUFDLEFBQUEsT0FBQSxBQUFPLEFBQUEsQ0FBQSxBQUFDLENBQ2YsTUFBQSxBQUFNLEFBQUEsQ0FBQSxBQUFDLEFBQUEsT0FBQSxBQUFPLEFBQUEsQ0FBQSxBQUFDLENBQ2YsTUFBQSxBQUFNLEFBQUEsQ0FBQSxBQUFDLEFBQUEsWUFBQSxBQUFZLEFBQUEsQ0FBQSxBQUFDLENBQ3BCLE1BQUEsQUFBTSxBQUFBLENBQUEsQUFBQyxBQUFBLE9BQUEsQUFBTyxBQUFBLENBQUEsQUFBQyxDQUNmLE1BQUEsQUFBTSxBQUFBLENBQUEsQUFBQyxBQUFBLGtCQUFBLEFBQWtCLEFBQUEsQ0FBQSxBQUFDLENBQzFCLE1BQUEsQUFBTSxBQUFBLENBQUEsQUFBQyxBQUFBLFVBQUEsQUFBVSxBQUFBLENBQUEsQUFBQyxDQUNsQixNQUFBLEFBQU0sQUFBQSxDQUFBLEFBQUMsQUFBQSxXQUFBLEFBQVcsQUFBQSxDQUFBLEFBQUMsQ0FDbkIsTUFBQSxBQUFNLEFBQUEsQ0FBQSxBQUFDLEFBQUEsUUFBQSxBQUFRLEFBQUEsQ0FBQSxBQUFDLENBQ2hCLE1BQUEsQUFBTSxBQUFBLENBQUEsQUFBQyxBQUFBLFNBQUEsQUFBUyxBQUFBLENBQUEsQUFBQyxDQUNqQixNQUFBLEFBQU0sQUFBQSxDQUFBLEFBQUMsQUFBQSxjQUFBLEFBQWMsQUFBQSxDQUFBLEFBQUMsQ0FDdEIsTUFBQSxBQUFNLEFBQUEsQ0FBQSxBQUFDLEFBQUEsUUFBQSxBQUFRLEFBQUEsQ0FBQSxBQUFDLENBQ2hCLE1BQUEsQUFBTSxBQUFBLENBQUEsQUFBQyxBQUFBLEtBQUEsQUFBSyxBQUFBLENBQUEsQUFBQyxDQUNiLE1BQUEsQUFBTSxBQUFBLENBQUEsQUFBQyxBQUFBLEtBQUEsQUFBSyxBQUFBLENBQUEsQUFBQyxDQUViLE1BQUEsQUFBTSxBQUFBLENBQUEsQUFBQyxBQUFBLFVBQUEsQUFBVSxBQUFDLENBQUEsQUFBQyxBQUFDLFVBQUEsQUFBVTsifQ==
 					}
 					.toString()
 					.match(
@@ -1556,177 +1636,6 @@ var a=1;var globalThis={};var define=(function(exports){return function(){export
 	commonVisitor, getIdentifierRegExpSource
 ){
 "use strict";
-
-
-eval(
-								function(){
-									// 一元标签基类
-!function(){
-	
-this.UnaryExpression = function(){
-	/**
-	 * 一元表达式
-	 * @param {Context} context - 标签上下文
-	 */
-	function UnaryExpression(context){
-		Expression.call(this, context);
-	};
-	UnaryExpression = new Rexjs(UnaryExpression, Expression);
-	
-	UnaryExpression.props({
-		/**
-		 * 提取表达式文本内容
-		 * @param {ContentBuilder} contentBuilder - 内容生成器
-		 */
-		extractTo: function(contentBuilder){
-			// 提取一元操作符的内容
-			contentBuilder.appendContext(this.context);
-			// 提取操作对象内容
-			this.operand.extractTo(contentBuilder);
-		},
-		operand: null
-	});
-	
-	return UnaryExpression;
-}();
-
-this.UnaryStatement = function(){
-	/**
-	 * 一元语句
-	 * @param {Statements} statements - 该语句将要所处的语句块
-	 */
-	function UnaryStatement(statements){
-		ECMAScriptStatement.call(this, statements);
-	};
-	UnaryStatement = new Rexjs(UnaryStatement, ECMAScriptStatement);
-	
-	UnaryStatement.props({
-		/**
-		 * 捕获处理异常
-		 * @param {SyntaxParser} parser - 语法解析器
-		 * @param {Context} context - 语法标签上下文
-		 */
-		catch: function(){
-			// 跳出语句并设置 operand
-			this.out().operand = this.expression;
-		},
-		/**
-		 * 尝试处理异常
-		 * @param {SyntaxParser} parser - 语法解析器
-		 * @param {Context} context - 语法标签上下文
-		 */
-		try: function(parser, context){
-			var expression = this.expression;
-
-			// 如果一元标签验证该标签为表达式分隔符标签
-			if(this.target.expression.context.tag.isSeparator(context, expression)){
-				// 跳出语句并设置 operand
-				this.out().operand = expression;
-			}
-		}
-	});
-	
-	return UnaryStatement;
-}();
-
-this.UnaryTag = function(UnaryExpression, UnaryStatement, ExpressionSeparatorTag){
-	/**
-	 * 一元标签
-	 * @param {Number} _type - 标签类型
-	 */
-	function UnaryTag(_type){
-		SyntaxTag.call(this, _type);
-	};
-	UnaryTag = new Rexjs(UnaryTag, SyntaxTag);
-	
-	UnaryTag.props({
-		$class: CLASS_EXPRESSION,
-		/**
-		 * 获取绑定的表达式，一般在子类使用父类逻辑，而不使用父类表达式的情况下使用
-		 * @param {Context} context - 相关的语法标签上下文
-		 * @param {Statement} statement - 当前语句
-		 */
-		getBoundExpression: function(context){
-			return new UnaryExpression(context);
-		},
-		/**
-		 * 获取绑定的语句，一般在子类使用父类逻辑，而不使用父类语句的情况下使用
-		 * @param {Statements} statements - 该语句将要所处的语句块
-		 */
-		getBoundStatement: function(statements){
-			return new UnaryStatement(statements);
-		},
-		/**
-		 * 验证所提供的标签是否为表达式分隔符标签
-		 * @param {Context} context - 所需验证的标签上下文
-		 * @param {Expression} operand - 该一元表达式所操作的对象
-		 */
-		isSeparator: function(context){
-			return context.tag instanceof ExpressionSeparatorTag;
-		},
-		/**
-		 * 获取此标签接下来所需匹配的标签列表
-		 * @param {TagsMap} tagsMap - 标签集合映射
-		 */
-		require: function(tagsMap){
-			return tagsMap.expressionTags;
-		},
-		/**
-		 * 标签访问器
-		 * @param {SyntaxParser} parser - 语法解析器
-		 * @param {Context} context - 标签上下文
-		 * @param {Statement} statement - 当前语句
-		 * @param {Statements} statements - 当前语句块
-		 */
-		visitor: commonVisitor
-	});
-	
-	return UnaryTag;
-}(
-	this.UnaryExpression,
-	this.UnaryStatement,
-	this.ExpressionSeparatorTag
-);
-
-this.UnaryKeywordTag = function(UnaryTag){
-	/**
-	 * 一元关键字标签
-	 * @param {Number} _type - 标签类型
-	 */
-	function UnaryKeywordTag(_type){
-		UnaryTag.call(this, _type);
-	};
-	UnaryKeywordTag = new Rexjs(UnaryKeywordTag, UnaryTag);
-	
-	UnaryKeywordTag.props({
-		/**
-		 * 提取文本内容
-		 * @param {ContentBuilder} contentBuilder - 内容生成器
-		 * @param {String} content - 标签内容
-		 */
-		extractTo: function(contentBuilder, content){
-			// 追加标签内容
-			contentBuilder.appendString(content);
-			// 追加空格
-			contentBuilder.appendSpace();
-		}
-	});
-	
-	return UnaryKeywordTag;
-}(
-	this.UnaryTag
-);
-
-}.call(
-	this
-);
-								}
-								.toString()
-								.match(
-									/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-								)[1] +
-								"\n//# sourceURL=http://localhost:9090/source/map1/unary-base.js"
-							);
 
 
 eval(
