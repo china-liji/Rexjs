@@ -5,8 +5,9 @@ import { CallStatement } from "./call-statement";
 import { ECMAScriptOrders } from "../ecmascript/ecmascript-orders";
 import { ECMAScriptMethod } from "../ecmascript/ecmascript-method";
 import { ClosingCallTag } from "./closing-call-tag";
+import { ParameterSeparatorTag } from "./parameter-separator-tag";
 
-export let OpeningCallTag = function(closingCallTag){
+export let OpeningCallTag = function(closingCallTag, parameterSeparatorTag){
 	/**
 	 * 起始函数调用小括号标签
 	 * @param {Number} _type - 标签类型
@@ -81,5 +82,7 @@ export let OpeningCallTag = function(closingCallTag){
 	};
 }(
 	// closingCallTag
-	new ClosingCallTag()
+	new ClosingCallTag(),
+	// parameterSeparatorTag
+	new ParameterSeparatorTag()
 );

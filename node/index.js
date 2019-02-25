@@ -355,7 +355,6 @@ module.exports = { DevSource: this.DevSource, Source: this.Source };
 	// defaultList
 	[
 		"file-header.js",
-		"unary-exec.js",
 		"unary-non-assginment.js",
 		"unary-assginment.js",
 		"unary-assginment-extension.js",
@@ -365,7 +364,6 @@ module.exports = { DevSource: this.DevSource, Source: this.Source };
 		"question-assignment.js",
 		"exponentiation.js",
 		"ternary.js",
-		"call.js",
 		"spread.js",
 		"destructuring.js",
 		"declaration-rest-item.js",
