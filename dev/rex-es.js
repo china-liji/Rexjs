@@ -2256,9 +2256,57 @@ var AssignmentTag=Rexjs.Module.memberOf("AssignmentTag","./assignment-tag","rexj
 
 eval(
 					function(){
+						new Rexjs.Module("rexjs://source/map/assignment-operator/question-assignment-expression.js",function(Rexjs){
+"use strict";
+var BinaryExpression=Rexjs.Module.memberOf("BinaryExpression","../binary-operator/binary-expression","rexjs://source/map/assignment-operator/question-assignment-expression.js");var QuestionAssignmentExpression=function(){var $Rexjs_0;return ($Rexjs_0=Rexjs.Class.create(BinaryExpression,[new Rexjs.ClassProperty("condition","!==void 0"),new Rexjs.ClassProperty("variable",""),new Rexjs.ClassProperty("constructor",function QuestionAssignmentExpression(context,variable){var $Rexjs_1;($Rexjs_1=Rexjs.Super.callConstructor($Rexjs_0.prototype,this,[context]));$Rexjs_1.variable=variable;return $Rexjs_1;}),new Rexjs.ClassProperty("extractTo",function(contentBuilder){var $Rexjs_2=new Rexjs.ObjectDestructuringTarget((this)),variable=$Rexjs_2.get("variable");contentBuilder.appendString("(("+variable+"=");this.right.extractTo(contentBuilder);contentBuilder.appendString(")"+this.condition+"?");this.left.extractTo(contentBuilder);contentBuilder.appendString("="+variable+":"+variable+")");})], 2));}();Rexjs.Module.export("QuestionAssignmentExpression", QuestionAssignmentExpression);
+});
+//# sourceURL=http://sourceurl/source/map/assignment-operator/question-assignment-expression.js
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImh0dHA6Ly9sb2NhbGhvc3Q6OTA5MC9zb3VyY2UvbWFwL2Fzc2lnbm1lbnQtb3BlcmF0b3IvcXVlc3Rpb24tYXNzaWdubWVudC1leHByZXNzaW9uLmpzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiI7O2lMQUVPLEdBQUEsQUFBRyxDQUFDLDRCQUFBLEFBQTRCLEFBQUMsQ0FBQSxBQUFDLEFBQUMsUUFBQSxBQUFRLEFBQUEsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLGFBQ3BELE1BQUEsQUFBTSw4QkFBNEMsZ0JBQUEsQUFBZ0IsMkJBS2pFLFNBQUEsQUFBUyxFQUFHLFdBQUEsQUFBVywyQkFNdkIsUUFBQSxBQUFRLEVBQUcsRUFBQSxBQUFFLDJCQU9iLFdBQUEsQUFBVyx1Q0FBQSxDQUFBLEFBQUMsQUFBQSxPQUFBLEFBQU8sQ0FBRSxRQUFBLEFBQVEsQUFBQSxDQUFBLEFBQUMsQUFBQSxDQUFBLEFBQUMsNEVBQ3hCLE9BQUEsQUFBTyxJQUViLFFBQUEsQUFBUSxBQUFKLENBQUEsQUFBQyxBQUFBLFFBQUEsQUFBUSxBQUFDLENBQUEsQUFBQyxBQUFDLFFBQUEsQUFBUSxpQkFDekIsQ0FBQSxBQUFDLDJCQU9ELFNBQUEsQUFBUyxVQUFBLENBQUEsQUFBQyxBQUFBLGNBQUEsQUFBYyxBQUFBLENBQUEsQUFBQyxBQUFBLENBQUEsQUFBQyxBQUN6QixHQUFBLEFBQUcsU0FBYyxDQUFBLEFBQUMscUNBQUMsSUFBQSxBQUFJLEdBQWpCLFFBQUEsQUFBUSwwQkFHZCxjQUFBLEFBQWMsQUFBQSxDQUFBLEFBQUMsQUFBQSxZQUFBLEFBQVksQUFBQSxDQUFBLEFBQUMsQUFBQSxJQUFBLEFBQUksQUFBQyxDQUFBLEFBQUMsQUFBQyxRQUFBLEFBQVEsQUFBQyxDQUFBLEFBQUMsQUFBQyxHQUFBLEFBQUcsQUFBQSxDQUFBLEFBQUMsQ0FFbEQsSUFBQSxBQUFJLEFBQUEsQ0FBQSxBQUFDLEFBQUEsS0FBQSxBQUFLLEFBQUEsQ0FBQSxBQUFDLEFBQUEsU0FBQSxBQUFTLEFBQUEsQ0FBQSxBQUFDLEFBQUEsY0FBQSxBQUFjLEFBQUEsQ0FBQSxBQUFDLENBRXBDLGNBQUEsQUFBYyxBQUFBLENBQUEsQUFBQyxBQUFBLFlBQUEsQUFBWSxBQUFBLENBQUEsQUFBQyxBQUFBLEdBQUEsQUFBRyxBQUFDLENBQUEsQUFBQyxBQUFDLElBQUEsQUFBSSxBQUFBLENBQUEsQUFBQyxBQUFBLFNBQUEsQUFBUyxBQUFDLENBQUEsQUFBQyxBQUFBLEdBQUEsQUFBRyxBQUFBLENBQUEsQUFBQyxDQUV0RCxJQUFBLEFBQUksQUFBQSxDQUFBLEFBQUMsQUFBQSxJQUFBLEFBQUksQUFBQSxDQUFBLEFBQUMsQUFBQSxTQUFBLEFBQVMsQUFBQSxDQUFBLEFBQUMsQUFBQSxjQUFBLEFBQWMsQUFBQSxDQUFBLEFBQUMsQ0FFbkMsY0FBQSxBQUFjLEFBQUEsQ0FBQSxBQUFDLEFBQUEsWUFBQSxBQUFZLEFBQUEsQ0FBQSxBQUFDLEFBQUEsR0FBQSxBQUFHLEFBQUMsQ0FBQSxBQUFDLEFBQUMsUUFBQSxBQUFRLEFBQUMsQ0FBQSxBQUFDLEFBQUMsR0FBQSxBQUFHLEFBQUMsQ0FBQSxBQUFDLEFBQUMsUUFBQSxBQUFRLEFBQUMsQ0FBQSxBQUFDLEFBQUMsR0FBQSxBQUFHLEFBQUEsQ0FBQSxBQUFDLENBQ25FLENBQUEsQUFBQyxRQUVILENBQUEsQUFBQyxBQUFBLENBQUEsQUFBQyxBQUFBLENBQUEsQUFBQzsifQ==
+					}
+					.toString()
+					.match(
+						/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+					)[1]
+				);
+
+
+eval(
+					function(){
+						new Rexjs.Module("rexjs://source/map/assignment-operator/question-assignment-tag.js",function(Rexjs){
+"use strict";
+var ShorthandAssignmentTag=Rexjs.Module.memberOf("ShorthandAssignmentTag","./shorthand-assignment-tag","rexjs://source/map/assignment-operator/question-assignment-tag.js");var QuestionAssignmentExpression=Rexjs.Module.memberOf("QuestionAssignmentExpression","./question-assignment-expression","rexjs://source/map/assignment-operator/question-assignment-tag.js");var ECMAScriptConfig=Rexjs.Module.memberOf("ECMAScriptConfig","../ecmascript/ecmascript-config","rexjs://source/map/assignment-operator/question-assignment-tag.js");var QuestionAssignmentTag=function(){var $Rexjs_0;return ($Rexjs_0=Rexjs.Class.create(ShorthandAssignmentTag,[new Rexjs.ClassProperty("regexp",/\?=/),new Rexjs.ClassProperty("getBoundExpression",function(context,statement){return new QuestionAssignmentExpression(context,statement.statements.collections.generate());}),new Rexjs.ClassProperty("visitor",function(parser,context,statement,statements){if(ECMAScriptConfig.rexjs){Rexjs.Super.execMethod(this,(Rexjs.Super.getProperty($Rexjs_0.prototype,this,"visitor")),[parser,context,statement,statements]);return;}parser.error(context);}),new Rexjs.ClassProperty("constructor",function QuestionAssignmentTag(){return Rexjs.Super.callConstructor($Rexjs_0.prototype, this, arguments);})], 3));}();Rexjs.Module.export("QuestionAssignmentTag", QuestionAssignmentTag);
+});
+//# sourceURL=http://sourceurl/source/map/assignment-operator/question-assignment-tag.js
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImh0dHA6Ly9sb2NhbGhvc3Q6OTA5MC9zb3VyY2UvbWFwL2Fzc2lnbm1lbnQtb3BlcmF0b3IvcXVlc3Rpb24tYXNzaWdubWVudC10YWcuanMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6Ijs7K2dCQUlPLEdBQUEsQUFBRyxDQUFDLHFCQUFBLEFBQXFCLEFBQUMsQ0FBQSxBQUFDLEFBQUMsUUFBQSxBQUFRLEFBQUEsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLGFBSzdDLE1BQUEsQUFBTSw4QkFBcUMsc0JBQUEsQUFBc0IsMkJBS2hFLE1BQUEsQUFBTSxFQUFHLEtBQUEsQUFBSywyQkFRZCxrQkFBQSxBQUFrQixVQUFBLENBQUEsQUFBQyxBQUFBLE9BQUEsQUFBTyxDQUFFLFNBQUEsQUFBUyxBQUFBLENBQUEsQUFBQyxBQUFBLENBQUEsQUFBQyxBQUN0QyxNQUFBLEFBQU0sQ0FBQyxJQUFBLEFBQUksQUFBQSw0QkFBQSxBQUE0QixBQUFBLENBQUEsQUFBQyxBQUN2QyxPQUFBLEFBQU8sQ0FFUCxTQUFBLEFBQVMsQUFBQSxDQUFBLEFBQUMsQUFBQSxVQUFBLEFBQVUsQUFBQSxDQUFBLEFBQUMsQUFBQSxXQUFBLEFBQVcsQUFBQSxDQUFBLEFBQUMsQUFBQSxRQUFBLEFBQVEsQUFBQSxDQUFBLEFBQUMsQUFBQSxDQUFBLEFBQUMsQUFDNUMsQ0FBQSxBQUFDLENBQ0YsQ0FBQSxBQUFDLDJCQVVELE9BQUEsQUFBTyxVQUFBLENBQUEsQUFBQyxBQUFBLE1BQUEsQUFBTSxDQUFFLE9BQUEsQUFBTyxDQUFFLFNBQUEsQUFBUyxDQUFFLFVBQUEsQUFBVSxBQUFBLENBQUEsQUFBQyxBQUFBLENBQUEsQUFBQyxBQUUvQyxFQUFBLEFBQUUsQUFBQSxDQUFBLEFBQUMsQUFBQSxnQkFBQSxBQUFnQixBQUFBLENBQUEsQUFBQyxBQUFBLEtBQUEsQUFBSyxBQUFBLENBQUEsQUFBQyxBQUFBLENBQUEsQUFBQyw4RUFFcEIsT0FBQSxBQUFPLEtBQUMsTUFBQSxBQUFNLENBQUUsT0FBQSxBQUFPLENBQUUsU0FBQSxBQUFTLENBQUUsVUFBQSxBQUFVLEdBQ3BELE1BQUEsQUFBTSxDQUNQLENBQUEsQUFBQyxBQUdELE1BQUEsQUFBTSxBQUFBLENBQUEsQUFBQyxBQUFBLEtBQUEsQUFBSyxBQUFBLENBQUEsQUFBQyxBQUFBLE9BQUEsQUFBTyxBQUFBLENBQUEsQUFBQyxDQUN0QixDQUFBLEFBQUMsMEpBRUgsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDOyJ9
+					}
+					.toString()
+					.match(
+						/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+					)[1]
+				);
+
+
+eval(
+					function(){
+						new Rexjs.Module("rexjs://source/map/assignment-operator/positive-assignment-tag.js",function(Rexjs){
+"use strict";
+var QuestionAssignmentTag=Rexjs.Module.memberOf("QuestionAssignmentTag","./question-assignment-tag","rexjs://source/map/assignment-operator/positive-assignment-tag.js");var PositiveAssignmentTag=function(){var $Rexjs_0;return ($Rexjs_0=Rexjs.Class.create(QuestionAssignmentTag,[new Rexjs.ClassProperty("regexp",/\?\?=/),new Rexjs.ClassProperty("getBoundExpression",function(context,statement){var expression=Rexjs.Super.execMethod(this,(Rexjs.Super.getProperty($Rexjs_0.prototype,this,"getBoundExpression")),[context,statement]);expression.condition="";return expression;}),new Rexjs.ClassProperty("constructor",function PositiveAssignmentTag(){return Rexjs.Super.callConstructor($Rexjs_0.prototype, this, arguments);})], 2));}();Rexjs.Module.export("PositiveAssignmentTag", PositiveAssignmentTag);
+});
+//# sourceURL=http://sourceurl/source/map/assignment-operator/positive-assignment-tag.js
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImh0dHA6Ly9sb2NhbGhvc3Q6OTA5MC9zb3VyY2UvbWFwL2Fzc2lnbm1lbnQtb3BlcmF0b3IvcG9zaXRpdmUtYXNzaWdubWVudC10YWcuanMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6Ijs7eUtBRU8sR0FBQSxBQUFHLENBQUMscUJBQUEsQUFBcUIsQUFBQyxDQUFBLEFBQUMsQUFBQyxRQUFBLEFBQVEsQUFBQSxDQUFBLEFBQUMsQUFBQSxDQUFBLEFBQUMsQUFBQSxDQUFBLEFBQUMsYUFLN0MsTUFBQSxBQUFNLDhCQUFxQyxxQkFBQSxBQUFxQiwyQkFLL0QsTUFBQSxBQUFNLEVBQUcsT0FBQSxBQUFPLDJCQVFoQixrQkFBQSxBQUFrQixVQUFBLENBQUEsQUFBQyxBQUFBLE9BQUEsQUFBTyxDQUFFLFNBQUEsQUFBUyxBQUFBLENBQUEsQUFBQyxBQUFBLENBQUEsQUFBQyxBQUN0QyxHQUFBLEFBQUcsQ0FBQyxVQUFBLEFBQVUsQUFBQyxDQUFBLEFBQUMsOEVBQU8sa0JBQUEsQUFBa0IsS0FBQyxPQUFBLEFBQU8sQ0FBRSxTQUFBLEFBQVMsR0FHNUQsVUFBQSxBQUFVLEFBQUEsQ0FBQSxBQUFDLEFBQUEsU0FBQSxBQUFTLEFBQUMsQ0FBQSxBQUFDLEFBQUMsRUFBQSxBQUFFLENBQ3pCLE1BQUEsQUFBTSxDQUFDLFVBQUEsQUFBVSxDQUNsQixDQUFBLEFBQUMsMEpBRUgsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDOyJ9
+					}
+					.toString()
+					.match(
+						/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+					)[1]
+				);
+
+
+eval(
+					function(){
 						new Rexjs.Module("rexjs://source/map/assignment-operator/index.js",function(Rexjs){
 "use strict";
-Rexjs.Module.exportFrom("./assignment-tag","rexjs://source/map/assignment-operator/index.js");Rexjs.Module.exportFrom("./basic-assignment-tag","rexjs://source/map/assignment-operator/index.js");Rexjs.Module.exportFrom("./shorthand-assignment-tag","rexjs://source/map/assignment-operator/index.js");
+Rexjs.Module.exportFrom("./assignment-tag","rexjs://source/map/assignment-operator/index.js");Rexjs.Module.exportFrom("./basic-assignment-tag","rexjs://source/map/assignment-operator/index.js");Rexjs.Module.exportFrom("./positive-assignment-tag","rexjs://source/map/assignment-operator/index.js");Rexjs.Module.exportFrom("./question-assignment-expression","rexjs://source/map/assignment-operator/index.js");Rexjs.Module.exportFrom("./question-assignment-tag","rexjs://source/map/assignment-operator/index.js");Rexjs.Module.exportFrom("./shorthand-assignment-tag","rexjs://source/map/assignment-operator/index.js");
 });
 //# sourceURL=http://sourceurl/source/map/assignment-operator/index.js
 //# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImh0dHA6Ly9sb2NhbGhvc3Q6OTA5MC9zb3VyY2UvbWFwL2Fzc2lnbm1lbnQtb3BlcmF0b3IvaW5kZXguanMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6Ijs7OyJ9
@@ -2836,114 +2884,6 @@ var a=1;var globalThis={};var define=(function(exports){return function(){export
 	commonVisitor, getIdentifierRegExpSource
 ){
 "use strict";
-
-
-eval(
-								function(){
-									// 疑问赋值表达式
-!function(ShorthandAssignmentTag){
-
-this.QuestionAssignmentExpression = function(BinaryExpression){
-	/**
-	 * 疑问赋值达式
-	 * @param {Context} context - 语法标签上下文
-	 * @param {String} variable - 临时变量名
-	 */
-	function QuestionAssignmentExpression(context, variable){
-		BinaryExpression.call(this, context);
-
-		this.variable = variable;
-	};
-	QuestionAssignmentExpression = new Rexjs(QuestionAssignmentExpression, BinaryExpression);
-
-	QuestionAssignmentExpression.props({
-		/**
-		 * 提取表达式文本内容
-		 * @param {ContentBuilder} contentBuilder - 内容生成器
-		 */
-		extractTo: function(contentBuilder){
-			var variable = this.variable;
-
-			// 追加临时变量赋值操作
-			contentBuilder.appendString("((" + variable + "=");
-			// 提取右侧表达式，作为临时变量的值
-			this.right.extractTo(contentBuilder);
-			// 追加三元运算符的判断条件
-			contentBuilder.appendString(")!==void 0?");
-			// 在三元表达式的成立条件部分，提取左侧表达式
-			this.left.extractTo(contentBuilder);
-			// 在三元表达式的成立条件部分，给左侧表达式赋值；并在否定条件部分直接返回该临时变量
-			contentBuilder.appendString("=" + variable + ":" + variable + ")");
-		},
-		variable: ""
-	});
-
-	return QuestionAssignmentExpression;
-}(
-	this.BinaryExpression
-);
-
-this.QuestionAssignmentTag = function(QuestionAssignmentExpression, visitor){
-	/**
-	 * 疑问赋值标签
-	 * @param {Number} _type - 标签类型
-	 */
-	function QuestionAssignmentTag(_type){
-		ShorthandAssignmentTag.call(this, _type);
-	};
-	QuestionAssignmentTag = new Rexjs(QuestionAssignmentTag, ShorthandAssignmentTag);
-
-	QuestionAssignmentTag.props({
-		/**
-		 * 获取绑定的表达式，一般在子类使用父类逻辑，而不使用父类表达式的情况下使用
-		 * @param {Context} context - 相关的语法标签上下文
-		 * @param {Statement} statement - 当前语句
-		 */
-		getBoundExpression: function(context, statement){
-			return new QuestionAssignmentExpression(
-				context,
-				// 生成临时变量名
-				statement.statements.collections.generate()
-			);
-		},
-		regexp: /\?=/,
-		/**
-		 * 标签访问器
-		 * @param {SyntaxParser} parser - 语法解析器
-		 * @param {Context} context - 标签上下文
-		 * @param {Statement} statement - 当前语句
-		 * @param {Statements} statements - 当前语句块
-		 */
-		visitor: function(parser, context, statement, statements){
-			// 如果需要编译
-			if(config.rexjs){
-				// 调用父类方法
-				visitor.call(this, parser, context, statement, statements);
-				return;
-			}
-
-			// 报错
-			parser.error(context);
-		}
-	});
-
-	return QuestionAssignmentTag;
-}(
-	this.QuestionAssignmentExpression,
-	ShorthandAssignmentTag.prototype.visitor
-);
-
-}.call(
-	this,
-	this.ShorthandAssignmentTag
-);
-								}
-								.toString()
-								.match(
-									/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-								)[1] +
-								"\n//# sourceURL=http://localhost:9090/source/map1/question-assignment.js"
-							);
 
 
 eval(
@@ -24354,6 +24294,7 @@ this.ECMAScriptTags = function(DefaultTags, list){
 		this.OpeningMultiLineCommentTag,
 		this.OpeningTemplateTag,
 		this.PlusTag,
+		this.PositiveAssignmentTag,
 		this.QuestionAssignmentTag,
 		this.QuestionTag,
 		this.RegExpTag,

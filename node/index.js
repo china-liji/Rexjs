@@ -355,7 +355,6 @@ module.exports = { DevSource: this.DevSource, Source: this.Source };
 	// defaultList
 	[
 		"file-header.js",
-		"question-assignment.js",
 		"exponentiation.js",
 		"ternary.js",
 		"spread.js",

@@ -92,6 +92,7 @@ this.ECMAScriptTags = function(DefaultTags, list){
 		this.OpeningMultiLineCommentTag,
 		this.OpeningTemplateTag,
 		this.PlusTag,
+		this.PositiveAssignmentTag,
 		this.QuestionAssignmentTag,
 		this.QuestionTag,
 		this.RegExpTag,
