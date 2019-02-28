@@ -2704,6 +2704,38 @@ var BinaryTag=Rexjs.Module.memberOf("BinaryTag","../binary-operator/binary-tag",
 
 eval(
 					function(){
+						new Rexjs.Module("rexjs://source/map/arithmetic-operator/exponentiation-expression.js",function(Rexjs){
+"use strict";
+var BinaryExpression=Rexjs.Module.memberOf("BinaryExpression","../binary-operator","rexjs://source/map/arithmetic-operator/exponentiation-expression.js");var ECMAScriptConfig=Rexjs.Module.memberOf("ECMAScriptConfig","../ecmascript/ecmascript-config","rexjs://source/map/arithmetic-operator/exponentiation-expression.js");var ExponentiationExpression=function(){var $Rexjs_0;return ($Rexjs_0=Rexjs.Class.create(BinaryExpression,[new Rexjs.ClassProperty("extractTo",function(contentBuilder){if(ECMAScriptConfig.es6Base){contentBuilder.appendString("(Math.pow(");this.left.extractTo(contentBuilder);contentBuilder.appendString(",");this.right.extractTo(contentBuilder);contentBuilder.appendString("))");return;}Rexjs.Super.execMethod(this,(Rexjs.Super.getProperty($Rexjs_0.prototype,this,"extractTo")),[contentBuilder]);}),new Rexjs.ClassProperty("constructor",function ExponentiationExpression(){return Rexjs.Super.callConstructor($Rexjs_0.prototype, this, arguments);})], 1));}();Rexjs.Module.export("ExponentiationExpression", ExponentiationExpression);
+});
+//# sourceURL=http://sourceurl/source/map/arithmetic-operator/exponentiation-expression.js
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImh0dHA6Ly9sb2NhbGhvc3Q6OTA5MC9zb3VyY2UvbWFwL2FyaXRobWV0aWMtb3BlcmF0b3IvZXhwb25lbnRpYXRpb24tZXhwcmVzc2lvbi5qcyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOztpVUFHTyxHQUFBLEFBQUcsQ0FBQyx3QkFBQSxBQUF3QixBQUFDLENBQUEsQUFBQyxBQUFDLFFBQUEsQUFBUSxBQUFBLENBQUEsQUFBQyxBQUFBLENBQUEsQUFBQyxBQUFBLENBQUEsQUFBQyxhQU1oRCxNQUFBLEFBQU0sOEJBQXdDLGdCQUFBLEFBQWdCLDJCQU03RCxTQUFBLEFBQVMsVUFBQSxDQUFBLEFBQUMsQUFBQSxjQUFBLEFBQWMsQUFBQSxDQUFBLEFBQUMsQUFBQSxDQUFBLEFBQUMsQUFFekIsRUFBQSxBQUFFLEFBQUEsQ0FBQSxBQUFDLEFBQUEsZ0JBQUEsQUFBZ0IsQUFBQSxDQUFBLEFBQUMsQUFBQSxPQUFBLEFBQU8sQUFBQSxDQUFBLEFBQUMsQUFBQSxDQUFBLEFBQUMsQUFFNUIsY0FBQSxBQUFjLEFBQUEsQ0FBQSxBQUFDLEFBQUEsWUFBQSxBQUFZLEFBQUEsQ0FBQSxBQUFDLEFBQUEsWUFBQSxBQUFZLEFBQUEsQ0FBQSxBQUFDLENBRXpDLElBQUEsQUFBSSxBQUFBLENBQUEsQUFBQyxBQUFBLElBQUEsQUFBSSxBQUFBLENBQUEsQUFBQyxBQUFBLFNBQUEsQUFBUyxBQUFBLENBQUEsQUFBQyxBQUFBLGNBQUEsQUFBYyxBQUFBLENBQUEsQUFBQyxDQUVuQyxjQUFBLEFBQWMsQUFBQSxDQUFBLEFBQUMsQUFBQSxZQUFBLEFBQVksQUFBQSxDQUFBLEFBQUMsQUFBQSxHQUFBLEFBQUcsQUFBQSxDQUFBLEFBQUMsQ0FFaEMsSUFBQSxBQUFJLEFBQUEsQ0FBQSxBQUFDLEFBQUEsS0FBQSxBQUFLLEFBQUEsQ0FBQSxBQUFDLEFBQUEsU0FBQSxBQUFTLEFBQUEsQ0FBQSxBQUFDLEFBQUEsY0FBQSxBQUFjLEFBQUEsQ0FBQSxBQUFDLENBRXBDLGNBQUEsQUFBYyxBQUFBLENBQUEsQUFBQyxBQUFBLFlBQUEsQUFBWSxBQUFBLENBQUEsQUFBQyxBQUFBLElBQUEsQUFBSSxBQUFBLENBQUEsQUFBQyxDQUNqQyxNQUFBLEFBQU0sQ0FDUCxDQUFBLEFBQUMsOEVBR0ssU0FBQSxBQUFTLEtBQUMsY0FBQSxBQUFjLEdBQy9CLENBQUEsQUFBQyw2SkFFSCxDQUFBLEFBQUMsQUFBQSxDQUFBLEFBQUMsQUFBQSxDQUFBLEFBQUM7In0=
+					}
+					.toString()
+					.match(
+						/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+					)[1]
+				);
+
+
+eval(
+					function(){
+						new Rexjs.Module("rexjs://source/map/arithmetic-operator/exponentiation-tag.js",function(Rexjs){
+"use strict";
+var BinaryTag=Rexjs.Module.memberOf("BinaryTag","../binary-operator/binary-tag","rexjs://source/map/arithmetic-operator/exponentiation-tag.js");var ExponentiationExpression=Rexjs.Module.memberOf("ExponentiationExpression","./exponentiation-expression","rexjs://source/map/arithmetic-operator/exponentiation-tag.js");var ECMAScriptOrders=Rexjs.Module.memberOf("ECMAScriptOrders","../ecmascript/ecmascript-orders","rexjs://source/map/arithmetic-operator/exponentiation-tag.js");var ExponentiationTag=function(){var $Rexjs_0;return ($Rexjs_0=Rexjs.Class.create(BinaryTag,[new Rexjs.ClassProperty("order",ECMAScriptOrders.EXPONENTIATION),new Rexjs.ClassProperty("precedence",11),new Rexjs.ClassProperty("regexp",/\*\*/),new Rexjs.ClassProperty("getBoundExpression",function(context){return new ExponentiationExpression(context);}),new Rexjs.ClassProperty("constructor",function ExponentiationTag(){return Rexjs.Super.callConstructor($Rexjs_0.prototype, this, arguments);})], 4));}();Rexjs.Module.export("ExponentiationTag", ExponentiationTag);
+});
+//# sourceURL=http://sourceurl/source/map/arithmetic-operator/exponentiation-tag.js
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImh0dHA6Ly9sb2NhbGhvc3Q6OTA5MC9zb3VyY2UvbWFwL2FyaXRobWV0aWMtb3BlcmF0b3IvZXhwb25lbnRpYXRpb24tdGFnLmpzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiI7OzRkQUlPLEdBQUEsQUFBRyxDQUFDLGlCQUFBLEFBQWlCLEFBQUMsQ0FBQSxBQUFDLEFBQUMsUUFBQSxBQUFRLEFBQUEsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLGFBS3pDLE1BQUEsQUFBTSw4QkFBaUMsU0FBQSxBQUFTLDJCQUsvQyxLQUFBLEFBQUssRUFBRyxnQkFBQSxBQUFnQixBQUFBLENBQUEsQUFBQyxBQUFBLGNBQUEsQUFBYywyQkFNdkMsVUFBQSxBQUFVLEVBQUcsRUFBQSxBQUFFLDJCQU1mLE1BQUEsQUFBTSxFQUFHLE1BQUEsQUFBTSwyQkFPZixrQkFBQSxBQUFrQixVQUFBLENBQUEsQUFBQyxBQUFBLE9BQUEsQUFBTyxBQUFBLENBQUEsQUFBQyxBQUFBLENBQUEsQUFBQyxBQUMzQixNQUFBLEFBQU0sQ0FBQyxJQUFBLEFBQUksQUFBQSx3QkFBQSxBQUF3QixBQUFBLENBQUEsQUFBQyxBQUFBLE9BQUEsQUFBTyxBQUFBLENBQUEsQUFBQyxDQUM3QyxDQUFBLEFBQUMsc0pBRUgsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDLEFBQUEsQ0FBQSxBQUFDOyJ9
+					}
+					.toString()
+					.match(
+						/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
+					)[1]
+				);
+
+
+eval(
+					function(){
 						new Rexjs.Module("rexjs://source/map/arithmetic-operator/increment-tag.js",function(Rexjs){
 "use strict";
 Rexjs.Module.exportAs({IncrementTag:"IncrementTag"},"../plus-operator/increment-tag","rexjs://source/map/arithmetic-operator/increment-tag.js");
@@ -2834,7 +2866,7 @@ eval(
 					function(){
 						new Rexjs.Module("rexjs://source/map/arithmetic-operator/index.js",function(Rexjs){
 "use strict";
-Rexjs.Module.exportFrom("./addition-tag","rexjs://source/map/arithmetic-operator/index.js");Rexjs.Module.exportFrom("./decrement-tag","rexjs://source/map/arithmetic-operator/index.js");Rexjs.Module.exportFrom("./division-tag","rexjs://source/map/arithmetic-operator/index.js");Rexjs.Module.exportFrom("./increment-tag","rexjs://source/map/arithmetic-operator/index.js");Rexjs.Module.exportFrom("./multiplication-tag","rexjs://source/map/arithmetic-operator/index.js");Rexjs.Module.exportFrom("./negation-tag","rexjs://source/map/arithmetic-operator/index.js");Rexjs.Module.exportFrom("./plus-tag","rexjs://source/map/arithmetic-operator/index.js");Rexjs.Module.exportFrom("./postfix-decrement-tag","rexjs://source/map/arithmetic-operator/index.js");Rexjs.Module.exportFrom("./postfix-increment-tag","rexjs://source/map/arithmetic-operator/index.js");Rexjs.Module.exportFrom("./remainder-tag","rexjs://source/map/arithmetic-operator/index.js");Rexjs.Module.exportFrom("./substraction-tag","rexjs://source/map/arithmetic-operator/index.js");
+Rexjs.Module.exportFrom("./addition-tag","rexjs://source/map/arithmetic-operator/index.js");Rexjs.Module.exportFrom("./decrement-tag","rexjs://source/map/arithmetic-operator/index.js");Rexjs.Module.exportFrom("./division-tag","rexjs://source/map/arithmetic-operator/index.js");Rexjs.Module.exportFrom("./exponentiation-expression","rexjs://source/map/arithmetic-operator/index.js");Rexjs.Module.exportFrom("./exponentiation-tag","rexjs://source/map/arithmetic-operator/index.js");Rexjs.Module.exportFrom("./increment-tag","rexjs://source/map/arithmetic-operator/index.js");Rexjs.Module.exportFrom("./multiplication-tag","rexjs://source/map/arithmetic-operator/index.js");Rexjs.Module.exportFrom("./negation-tag","rexjs://source/map/arithmetic-operator/index.js");Rexjs.Module.exportFrom("./plus-tag","rexjs://source/map/arithmetic-operator/index.js");Rexjs.Module.exportFrom("./postfix-decrement-tag","rexjs://source/map/arithmetic-operator/index.js");Rexjs.Module.exportFrom("./postfix-increment-tag","rexjs://source/map/arithmetic-operator/index.js");Rexjs.Module.exportFrom("./remainder-tag","rexjs://source/map/arithmetic-operator/index.js");Rexjs.Module.exportFrom("./substraction-tag","rexjs://source/map/arithmetic-operator/index.js");
 });
 //# sourceURL=http://sourceurl/source/map/arithmetic-operator/index.js
 //# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImh0dHA6Ly9sb2NhbGhvc3Q6OTA5MC9zb3VyY2UvbWFwL2FyaXRobWV0aWMtb3BlcmF0b3IvaW5kZXguanMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6Ijs7OyJ9
@@ -2884,96 +2916,6 @@ var a=1;var globalThis={};var define=(function(exports){return function(){export
 	commonVisitor, getIdentifierRegExpSource
 ){
 "use strict";
-
-
-eval(
-								function(){
-									// 幂运算表达式相关
-!function(BinaryExpression){
-
-this.ExponentiationExpression = function(extractTo){
-	/**
-	 * 幂运算表达式
-	 * @param {Context} context - 语法标签上下文
-	 * @param {Expression} left - 左侧表达式
-	 */
-	function ExponentiationExpression(context, left){
-		BinaryExpression.call(this, context, left);
-	};
-	ExponentiationExpression = new Rexjs(ExponentiationExpression, BinaryExpression);
-
-	ExponentiationExpression.props({
-		/**
-		 * 提取表达式文本内容
-		 * @param {ContentBuilder} contentBuilder - 内容生成器
-		 */
-		extractTo: function(contentBuilder){
-			// 如果需要编译
-			if(config.es6Base){
-				// 追加算数方法
-				contentBuilder.appendString("(Math.pow(");
-				// 提取左侧的算数底值
-				this.left.extractTo(contentBuilder);
-				// 追加参数分隔符
-				contentBuilder.appendString(",");
-				// 提取幂
-				this.right.extractTo(contentBuilder);
-				// 追加方法结束小括号
-				contentBuilder.appendString("))");
-				return;
-			}
-
-			// 调用父类方法
-			extractTo.call(this, contentBuilder);
-		}
-	});
-
-	return ExponentiationExpression;
-}(
-	BinaryExpression.prototype.extractTo
-);
-
-this.ExponentiationTag = function(BinaryTag, ExponentiationExpression){
-	/**
-	 * 幂运算标签
-	 * @param {Number} _type - 标签类型
-	 */
-	function ExponentiationTag(_type){
-		BinaryTag.call(this, _type);
-	};
-	ExponentiationTag = new Rexjs(ExponentiationTag, BinaryTag);
-	
-	ExponentiationTag.props({
-		/**
-		 * 获取绑定的表达式，一般在子类使用父类逻辑，而不使用父类表达式的情况下使用
-		 * @param {Context} context - 相关的语法标签上下文
-		 */
-		getBoundExpression: function(context){
-			return new ExponentiationExpression(context);
-		},
-		// 防止与 "*" 冲突
-		order: ECMAScriptOrders.EXPONENTIATION,
-		precedence: 11,
-		regexp: /\*\*/
-	});
-	
-	return ExponentiationTag;
-}(
-	this.BinaryTag,
-	this.ExponentiationExpression
-);
-
-}.call(
-	this,
-	this.BinaryExpression
-);
-								}
-								.toString()
-								.match(
-									/^\s*function\s*\s*\(\s*\)\s*\{\s*([\s\S]*?)\s*\}\s*$/
-								)[1] +
-								"\n//# sourceURL=http://localhost:9090/source/map1/exponentiation.js"
-							);
 
 
 eval(
