@@ -21,7 +21,7 @@ export let VariableDeclarationTag = function(SCOPE_CLOSURE){
 		 * @returns {Boolean}
 		 */
 		collectTo(parser, context, statements){
-			var content = context.content;
+			let { content } = context;
 
 			// 如果已被收集
 			if(this.collected(parser, context, statements)){

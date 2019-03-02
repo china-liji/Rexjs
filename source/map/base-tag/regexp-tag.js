@@ -28,11 +28,11 @@ export let RegExpTag = function(){
 		 * @returns {void}
 		 */
 		visitor(parser, context, statement, statements){
-			var i = 0, m = 0, g = 0, u = 0, y = 0, count = 0, content = context.content;
+			let i = 0, m = 0, g = 0, u = 0, y = 0, count = 0, content = context.content;
 			
 			// 遍历正则标记
 			flags:
-			for(var n = content.length - 1;n > -1;n--){
+			for(let n = content.length - 1;n > -1;n--){
 				// 判断当前标记
 				switch(content[n]){
 					case "/":
