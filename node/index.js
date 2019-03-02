@@ -416,9 +416,6 @@ module.exports = { DevSource: this.DevSource, Source: this.Source };
 	// defaultList
 	[
 		"file-header.js",
-		"ternary.js",
-		"spread.js",
-		"destructuring.js",
 		"declaration-rest-item.js",
 		"array.js",
 		"array-spread-item.js",
