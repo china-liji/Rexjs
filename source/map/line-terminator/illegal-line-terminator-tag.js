@@ -1,4 +1,4 @@
-import { SpecialLineTerminatorTag } from "../base-tag";
+import { SpecialLineTerminatorTag } from "../base-tag/special-line-terminator-tag";
 import { ECMAScriptErrors } from "../ecmascript/ecmascript-errors";
 import { ECMAScriptOrders } from "../ecmascript/ecmascript-orders";
 

@@ -1,6 +1,6 @@
-new function({ Module, ModuleCache, File, ECMAScriptParser, JavaScriptCompiler, ModuleReady, URL, Base64 }, MAP_PATH, source, dev, baseURL, defaultList){
+new function({ Module, ModuleCache, File, ECMAScriptParser, JavaScriptCompiler, ModuleReady, URL, Base64 }, MAP_PATH, fs, path, source, dev, baseURL, defaultList){
 
-this.File = function(fs, path, url){
+this.File = function(url){
 	/**
 	 * 文件
 	 */
@@ -54,8 +54,6 @@ this.File = function(fs, path, url){
 		};
 	};
 }(
-	require("fs"),
-	require("path"),
 	require("url")
 );
 
@@ -222,7 +220,7 @@ this.Source = function(SourceModuleReady, File, EventEmitter, inited){
 		 * 根据文件列表生成源码
 		 */
 		generate(_sourceMaps){
-			let content, contents = this.contents = [];
+			let content, code, contents = this.contents = [];
 
 			if(!inited){
 				inited = true;
@@ -234,7 +232,68 @@ this.Source = function(SourceModuleReady, File, EventEmitter, inited){
 			source = this;
 
 			ModuleCache.clear();
-			new Module("./index.js");
+
+			// test ↓
+			{
+				let readDir, filenames = [];
+
+				readDir = (dir, includeCurrentDirectorFiles = true) => {
+					fs.readdirSync(dir).forEach((name) => {
+						let pathString = `${dir}/${name}`, stats = fs.statSync(pathString);
+
+						if(stats.isFile()){
+							if(includeCurrentDirectorFiles && path.parse(pathString).ext === ".js"){
+								filenames.push(pathString);
+							}
+
+							return;
+						}
+
+						if(stats.isDirectory()){
+							readDir(pathString);
+							return;
+						}
+					});
+				};
+
+				readDir(
+					path.normalize(`${__dirname}/${MAP_PATH}`),
+					false
+				);
+
+				code = (
+					function(){
+						let globalThis = {};
+
+						let define = (exports) => {
+							for(let name in exports){
+								globalThis[name] = exports[name];
+							}
+						};
+
+						// {{template}}
+
+						window.globalThis = globalThis;
+					}
+				)
+				.toString()
+				.replace(
+					/\/\/ {{template}}/,
+					filenames
+						.map((filename, index) => {
+							let variable = `imported_${index}`;
+
+							return `import * as ${variable} from "./${path.relative(`${__dirname}/${MAP_PATH}`, filename)}";\ndefine(${variable});`
+						})
+						.join("\n")
+				)
+				.match(/^\s*function\s*\(\s*\)\s*\{\s*([\s\S]*)?\s*\}\s*$/)[
+					1
+				];
+			}
+			// test ↑
+
+			new Module("./index.js", code);
 
 			source = null;
 
@@ -346,6 +405,8 @@ module.exports = { DevSource: this.DevSource, Source: this.Source };
 	require("./rex-api.bundle.js"),
 	// MAP_PATH
 	"../source/map",
+	require("fs"),
+	require("path"),
 	// source
 	null,
 	// dev

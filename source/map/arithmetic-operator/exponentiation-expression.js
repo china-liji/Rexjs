@@ -1,4 +1,4 @@
-import { BinaryExpression } from "../binary-operator";
+import { BinaryExpression } from "../binary-operator/binary-expression";
 import { ECMAScriptConfig } from "../ecmascript/ecmascript-config";
 
 export let ExponentiationExpression = function(){

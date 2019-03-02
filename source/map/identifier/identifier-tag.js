@@ -1,6 +1,6 @@
 import { SyntaxTag, CLASS_EXPRESSION } from "../core";
 import { ECMAScriptErrors } from "../ecmascript/ecmascript-errors";
-import { ECMAScriptOrders } from "../ecmascript";
+import { ECMAScriptOrders } from "../ecmascript/ecmascript-orders";
 import { IdentifierExpression } from "./identifier-expression";
 import { ECMAScriptMethod } from "../ecmascript/ecmascript-method";
 

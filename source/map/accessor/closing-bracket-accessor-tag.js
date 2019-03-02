@@ -1,4 +1,4 @@
-import { ClosingBracketTag } from "../bracket";
+import { ClosingBracketTag } from "../bracket/closing-bracket-tag";
 
 export let ClosingBracketAccessorTag = function(){
 	/**

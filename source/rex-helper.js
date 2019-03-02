@@ -1387,6 +1387,11 @@ this.Module = Module = function(ModuleCache, ModuleCompiler, stack, create, defi
 				function(dep){
 					var href = moduleReady.parseName(dep, name.href).href, module = ModuleCache.cached(href) ? ModuleCache.item(href) : new Module(href, null, _sync);
 
+					// 如果引入的是自己
+					if(module === this){
+						throw "Module has been imported by itself " + href + ".";
+					}
+
 					// 如果是重复导入
 					if(imports.indexOf(module) > -1){
 						return;

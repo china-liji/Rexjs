@@ -1,5 +1,5 @@
 import { SyntaxTag, CLASS_EXPRESSION } from "../core";
-import { ECMAScriptOrders } from "../ecmascript";
+import { ECMAScriptOrders } from "../ecmascript/ecmascript-orders";
 import { EnvConstantExpression } from "./env-constant-expression";
 
 export let EnvConstantTag = function(){

@@ -1,4 +1,4 @@
-import { UnaryAssignmentTag } from "../unary-operator/";
+import { UnaryAssignmentTag } from "../unary-operator/unary-assignment-tag";
 
 export let DecrementTag = function(){
 	/**

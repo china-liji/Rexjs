@@ -2,7 +2,7 @@ import { UnaryTag } from "./unary-tag";
 import { ECMAScriptOrders } from "../ecmascript/ecmascript-orders";
 import { UnaryAssignmentStatement } from "./unary-assigment-statement";
 import { AssignableExpression } from "../base-expression/assignable-expression";
-import { AccessorExpression } from "../accessor";
+import { AccessorExpression } from "../accessor/accessor-expression";
 
 export let UnaryAssignmentTag = function(){
 	/**

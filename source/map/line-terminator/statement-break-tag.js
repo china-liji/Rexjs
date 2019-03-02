@@ -1,4 +1,4 @@
-import { SpecialLineTerminatorTag } from "../base-tag";
+import { SpecialLineTerminatorTag } from "../base-tag/special-line-terminator-tag";
 import { CLASS_STATEMENT_END, STATE_STATEMENT_END } from "../core";
 
 export let StatementBreakTag = function(){

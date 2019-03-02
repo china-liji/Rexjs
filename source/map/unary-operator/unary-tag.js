@@ -1,5 +1,5 @@
 import { SyntaxTag, CLASS_EXPRESSION } from "../core";
-import { ECMAScriptMethod } from "../ecmascript";
+import { ECMAScriptMethod } from "../ecmascript/ecmascript-method";
 import { UnaryExpression } from "./unary-expression";
 import { UnaryStatement } from "./unary-statement";
 import { ExpressionSeparatorTag } from "../base-tag/expression-separator-tag";

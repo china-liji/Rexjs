@@ -32632,6 +32632,11 @@ this.Module = Module = function(ModuleCache, UnknownCompiler, stack, create, def
 				function(dep){
 					var href = moduleReady.parseName(dep, name.href).href, module = ModuleCache.cached(href) ? ModuleCache.item(href) : new Module(href, null, _sync);
 
+					// 如果引入的是自己
+					if(module === this){
+						throw "Module cannot import itself " + href + ".";
+					}
+
 					// 如果是重复导入
 					if(imports.indexOf(module) > -1){
 						return;
@@ -32684,21 +32689,32 @@ this.Module = Module = function(ModuleCache, UnknownCompiler, stack, create, def
 	},
 	// importedByDep
 	function(self, depModule, module, callee){
-		var imports = module.imports;
+		block:
+		{
+			if(self === depModule){
+				break block;
+			}
 
-		// 如果是两模块相互引用
-		if(imports.indexOf(self) > - 1){
-			// 报错
-			throw (
-				"Module has been imported by each other " +
-				self.name.href + " " +
-				depModule.name.href
-			);
+			var imports = module.imports;
+
+			// 如果是两模块相互引用
+			if(imports.indexOf(self) > - 1){
+				break block;
+			}
+
+			imports.forEach(function(module){
+				callee(self, depModule, module, callee);
+			});
+
+			return;
 		}
 
-		imports.forEach(function(module){
-			callee(self, depModule, module, callee);
-		});
+		// 报错
+		throw (
+			"Module has been imported by each other " +
+			self.name.href + " " +
+			depModule.name.href
+		);
 	}
 );
 

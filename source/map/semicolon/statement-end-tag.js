@@ -1,6 +1,6 @@
 import { SemicolonTag } from "./semicolon-tag";
 import { CLASS_STATEMENT_END, TYPE_MISTAKABLE, STATE_STATEMENT_END } from "../core";
-import { ECMAScriptOrders } from "../ecmascript";
+import { ECMAScriptOrders } from "../ecmascript/ecmascript-orders";
 
 export let StatementEndTag = function(){
 	/**

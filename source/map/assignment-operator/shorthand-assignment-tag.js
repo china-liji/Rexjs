@@ -1,5 +1,5 @@
 import { AssignmentTag } from "./assignment-tag";
-import { ECMAScriptOrders } from "../ecmascript";
+import { ECMAScriptOrders } from "../ecmascript/ecmascript-orders";
 
 export let ShorthandAssignmentTag = function(){
 	/**
