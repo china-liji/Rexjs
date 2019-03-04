@@ -416,7 +416,6 @@ module.exports = { DevSource: this.DevSource, Source: this.Source };
 	// defaultList
 	[
 		"file-header.js",
-		"array.js",
 		"array-spread-item.js",
 		"declaration-array.js",
 		"declaration-array-rest-item.js",
