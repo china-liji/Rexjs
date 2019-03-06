@@ -1,5 +1,5 @@
 // 对象解构声明的属性值相关
-!function(PropertyDestructuringItemExpression, OpeningDeclarationObjectTag, ClosingDeclarationObjectTag, OpeningNestedDeclarationArrayItemTag, VariableDeclarationTag, BasicAssignmentTag, closingArrayDeclarationPropertyValueTag, closingObjectDeclarationPropertyValueTag){
+!function(PropertyDestructuringItemExpression, OpeningDeclarationObjectTag, ClosingDeclarationObjectTag, OpeningDeclarationNestedArrayItemTag, VariableDeclarationTag, BasicAssignmentTag, closingArrayDeclarationPropertyValueTag, closingObjectDeclarationPropertyValueTag){
 
 this.OpeningObjectDeclarationPropertyValueTag = function(DeclarationObjectExpression, visitor){
 	/**
@@ -96,9 +96,9 @@ this.OpeningArrayDeclarationPropertyValueTag = function(DeclarationArrayExpressi
 	 * @param {Number} _type - 标签类型
 	 */
 	function OpeningArrayDeclarationPropertyValueTag(_type){
-		OpeningNestedDeclarationArrayItemTag.call(this, _type);
+		OpeningDeclarationNestedArrayItemTag.call(this, _type);
 	};
-	OpeningArrayDeclarationPropertyValueTag = new Rexjs(OpeningArrayDeclarationPropertyValueTag, OpeningNestedDeclarationArrayItemTag);
+	OpeningArrayDeclarationPropertyValueTag = new Rexjs(OpeningArrayDeclarationPropertyValueTag, OpeningDeclarationNestedArrayItemTag);
 	
 	OpeningArrayDeclarationPropertyValueTag.props({
 		/**
@@ -137,18 +137,18 @@ this.OpeningArrayDeclarationPropertyValueTag = function(DeclarationArrayExpressi
 	return OpeningArrayDeclarationPropertyValueTag;
 }(
 	this.DeclarationArrayExpression,
-	OpeningNestedDeclarationArrayItemTag.prototype.visitor
+	OpeningDeclarationNestedArrayItemTag.prototype.visitor
 );
 
-this.ClosingArrayDeclarationPropertyValueTag = function(ClosingNestedDeclarationArrayItemTag){
+this.ClosingArrayDeclarationPropertyValueTag = function(ClosingDeclarationNestedArrayItemTag){
 	/**
 	 * 数组声明属性值（即：对象解构中所嵌套的对象解构）结束标签
 	 * @param {Number} _type - 标签类型
 	 */
 	function ClosingArrayDeclarationPropertyValueTag(_type){
-		ClosingNestedDeclarationArrayItemTag.call(this, _type);
+		ClosingDeclarationNestedArrayItemTag.call(this, _type);
 	};
-	ClosingArrayDeclarationPropertyValueTag = new Rexjs(ClosingArrayDeclarationPropertyValueTag, ClosingNestedDeclarationArrayItemTag);
+	ClosingArrayDeclarationPropertyValueTag = new Rexjs(ClosingArrayDeclarationPropertyValueTag, ClosingDeclarationNestedArrayItemTag);
 	
 	ClosingArrayDeclarationPropertyValueTag.props({
 		/**
@@ -162,7 +162,7 @@ this.ClosingArrayDeclarationPropertyValueTag = function(ClosingNestedDeclaration
 	
 	return ClosingArrayDeclarationPropertyValueTag;
 }(
-	this.ClosingNestedDeclarationArrayItemTag
+	this.ClosingDeclarationNestedArrayItemTag
 );
 
 this.DeclarationPropertyValueTag = function(visitor){
@@ -252,7 +252,7 @@ closingObjectDeclarationPropertyValueTag = new this.ClosingObjectDeclarationProp
 	this.PropertyDestructuringItemExpression,
 	this.OpeningDeclarationObjectTag,
 	this.ClosingDeclarationObjectTag,
-	this.OpeningNestedDeclarationArrayItemTag,
+	this.OpeningDeclarationNestedArrayItemTag,
 	this.VariableDeclarationTag,
 	this.BasicAssignmentTag,
 	// closingArrayDeclarationPropertyValueTag

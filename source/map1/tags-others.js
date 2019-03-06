@@ -1565,7 +1565,7 @@ this.OpeningDeclarationArrayContextTags = function(DeclarationArrayItemSeparator
 	[
 		this.DeclarationArrayItemTag,
 		this.DeclarationArrayRestTag,
-		this.OpeningNestedDeclarationArrayItemTag,
+		this.OpeningDeclarationNestedArrayItemTag,
 		this.OpeningObjectDeclarationArrayItemTag
 	]
 );
