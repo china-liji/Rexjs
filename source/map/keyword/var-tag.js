@@ -1,1 +1,1 @@
-export { VarTag } from "../var/var-tag";
+export { VarTag } from "../var-declaration/var-tag";
