@@ -109,15 +109,15 @@ this.ModuleAliasTag = function(AsTag){
 	this.AsTag
 );
 
-this.ModuleVariableTag = function(ConstVariableTag){
+this.ModuleVariableTag = function(ConstantVariableTag){
 	/**
 	 * 模块变量名标签
 	 * @param {Number} _type - 标签类型
 	 */
 	function ModuleVariableTag(_type){
-		ConstVariableTag.call(this, _type);
+		ConstantVariableTag.call(this, _type);
 	};
-	ModuleVariableTag = new Rexjs(ModuleVariableTag, ConstVariableTag);
+	ModuleVariableTag = new Rexjs(ModuleVariableTag, ConstantVariableTag);
 
 	ModuleVariableTag.props({
 		/**
@@ -145,7 +145,7 @@ this.ModuleVariableTag = function(ConstVariableTag){
 
 	return ModuleVariableTag;
 }(
-	this.ConstVariableTag
+	this.ConstantVariableTag
 );
 
 }.call(

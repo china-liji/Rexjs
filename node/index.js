@@ -416,7 +416,6 @@ module.exports = { DevSource: this.DevSource, Source: this.Source };
 	// defaultList
 	[
 		"file-header.js",
-		"const.js",
 		"function.js",
 		"function-declaration.js",
 		"arguments.js",

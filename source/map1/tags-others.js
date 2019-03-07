@@ -313,7 +313,7 @@ this.VariableDeclarationTags = function(OpeningDeclarationArrayTag, OpeningDecla
 	this.OpeningDeclarationObjectTag
 );
 
-this.ConstContextTags = function(VariableDeclarationTags, ConstVariableTag){
+this.ConstContextTags = function(VariableDeclarationTags, ConstantVariableTag){
 	/**
 	 * const 关键字上下文标签列表
 	 */
@@ -321,7 +321,7 @@ this.ConstContextTags = function(VariableDeclarationTags, ConstVariableTag){
 		VariableDeclarationTags.call(this);
 		
 		this.register(
-			new ConstVariableTag()
+			new ConstantVariableTag()
 		);
 	};
 	ConstContextTags = new Rexjs(ConstContextTags, VariableDeclarationTags);
@@ -329,7 +329,7 @@ this.ConstContextTags = function(VariableDeclarationTags, ConstVariableTag){
 	return ConstContextTags;
 }(
 	this.VariableDeclarationTags,
-	this.ConstVariableTag
+	this.ConstantVariableTag
 );
 
 this.ConstructorArgumentsTags = function(OpeningConstructorArgumentsTag){

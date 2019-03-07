@@ -301,15 +301,15 @@ this.OpeningMultipleMembersTag = function(OpeningBraceTag, MultipleMembersExpres
 	this.MultipleMembersStatement
 );
 
-this.MemberVariableTag = function(ConstVariableTag, MemberExpression){
+this.MemberVariableTag = function(ConstantVariableTag, MemberExpression){
 	/**
 	 * 模块成员变量名标签
 	 * @param {Number} _type - 标签类型
 	 */
 	function MemberVariableTag(_type){
-		ConstVariableTag.call(this, _type);
+		ConstantVariableTag.call(this, _type);
 	};
-	MemberVariableTag = new Rexjs(MemberVariableTag, ConstVariableTag);
+	MemberVariableTag = new Rexjs(MemberVariableTag, ConstantVariableTag);
 
 	MemberVariableTag.props({
 		/**
@@ -336,7 +336,7 @@ this.MemberVariableTag = function(ConstVariableTag, MemberExpression){
 	
 	return MemberVariableTag;
 }(
-	this.ConstVariableTag,
+	this.ConstantVariableTag,
 	this.MemberExpression
 );
 

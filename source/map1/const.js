@@ -1,5 +1,5 @@
 // const 语句相关
-!function(VarExpression, IdentifierExpression, VarStatement, LocalVariableTag, constVariableTag, constDeclarationSeparatorTag){
+!function(VarExpression, IdentifierExpression, VarStatement, LocalVariableTag, constantVariableTag, constDeclarationSeparatorTag){
 
 this.ConstStatement = function(catchMethod, tryMethod){
 	/**
@@ -97,7 +97,7 @@ this.ConstTag = function(LetTag, ConstStatement){
 		 * 获取绑定的变量名标签
 		 */
 		get variable(){
-			return constVariableTag;
+			return constantVariableTag;
 		}
 	});
 
@@ -107,17 +107,17 @@ this.ConstTag = function(LetTag, ConstStatement){
 	this.ConstStatement
 );
 
-this.ConstVariableTag = function(collectTo){
+this.ConstantVariableTag = function(collectTo){
 	/**
 	 * 局部内变量标签
 	 * @param {Number} _type - 标签类型
 	 */
-	function ConstVariableTag(_type){
+	function ConstantVariableTag(_type){
 		LocalVariableTag.call(this, _type);
 	};
-	ConstVariableTag = new Rexjs(ConstVariableTag, LocalVariableTag);
+	ConstantVariableTag = new Rexjs(ConstantVariableTag, LocalVariableTag);
 	
-	ConstVariableTag.props({
+	ConstantVariableTag.props({
 		/**
 		 * 收集变量名
 		 * @param {SyntaxParser} parser - 语法解析器
@@ -136,7 +136,7 @@ this.ConstVariableTag = function(collectTo){
 		}
 	});
 	
-	return ConstVariableTag;
+	return ConstantVariableTag;
 }(
 	LocalVariableTag.prototype.collectTo
 );
@@ -174,7 +174,7 @@ this.ConstDeclarationSeparatorTag = function(LetDeclarationSeparatorTag, ConstSt
 	this.ConstStatement
 );
 
-constVariableTag = new this.ConstVariableTag();
+constantVariableTag = new this.ConstantVariableTag();
 constDeclarationSeparatorTag = new this.ConstDeclarationSeparatorTag();
 
 }.call(
@@ -183,7 +183,7 @@ constDeclarationSeparatorTag = new this.ConstDeclarationSeparatorTag();
 	this.IdentifierExpression,
 	this.VarStatement,
 	this.LocalVariableTag,
-	// constVariableTag
+	// constantVariableTag
 	null,
 	// constDeclarationSeparatorTag
 	null
