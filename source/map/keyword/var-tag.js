@@ -1,0 +1,1 @@
+export { VarTag } from "../var/var-tag";
