@@ -57,7 +57,7 @@ test.unit(
 			"带省略参数的分组小括号",
 			"(a, b, ...c)",
 			function(parser, err){
-				return err.context.tag instanceof Rexjs.IllegibleRestTag ? "" : "没有识别出省略小括号";
+				return err.context.tag instanceof Rexjs.ArgumentIllegibleRestOperatorTag ? "" : "没有识别出省略小括号";
 			}
 		);
 

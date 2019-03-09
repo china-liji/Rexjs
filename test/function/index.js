@@ -84,7 +84,7 @@ test.unit(
 			"省略参数出现在非最后位置",
 			"function a(a, ...b, c){}",
 			function(parser, err){
-				return err.context.tag instanceof Rexjs.RestTag ? "" : "没有捕获到省略参数拓展符";
+				return err.context.tag instanceof Rexjs.ArgumentRestOperatorTag ? "" : "没有捕获到省略参数拓展符";
 			}
 		);
 

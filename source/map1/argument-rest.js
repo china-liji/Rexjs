@@ -1,20 +1,20 @@
 // 函数省略参数相关
 !function(){
 
-this.RestArgumentExpression = function(ArgumentExpression){
+this.ArgumentRestValueExpression = function(ArgumentExpression){
 	/**
 	 * 省略参数表达式
 	 * @param {Context} context - 拓展符语法标签上下文
 	 * @param {Number} index - 省略参数位于参数列表中的索引
 	 */
-	function RestArgumentExpression(context, index){
+	function ArgumentRestValueExpression(context, index){
 		ArgumentExpression.call(this, context);
 
 		this.index = index;
 	};
-	RestArgumentExpression = new Rexjs(RestArgumentExpression, ArgumentExpression);
+	ArgumentRestValueExpression = new Rexjs(ArgumentRestValueExpression, ArgumentExpression);
 
-	RestArgumentExpression.props({
+	ArgumentRestValueExpression.props({
 		name: null,
 		/**
 		 * 提取表达式文本内容
@@ -40,29 +40,29 @@ this.RestArgumentExpression = function(ArgumentExpression){
 		index: 0
 	});
 
-	return RestArgumentExpression;
+	return ArgumentRestValueExpression;
 }(
 	this.ArgumentExpression
 );
 
-this.RestTag = function(SpreadTag, RestArgumentExpression){
+this.ArgumentRestOperatorTag = function(SpreadTag, ArgumentRestValueExpression){
 	/**
 	 * 参数省略符标签
 	 * @param {Number} _type - 标签类型
 	 */
-	function RestTag(_type){
+	function ArgumentRestOperatorTag(_type){
 		SpreadTag.call(this, _type);
 	};
-	RestTag = new Rexjs(RestTag, SpreadTag);
+	ArgumentRestOperatorTag = new Rexjs(ArgumentRestOperatorTag, SpreadTag);
 
-	RestTag.props({
+	ArgumentRestOperatorTag.props({
 		/**
 		 * 获取绑定的表达式，一般在子类使用父类逻辑，而不使用父类表达式的情况下使用
 		 * @param {Context} context - 相关的语法标签上下文
 		 * @param {Statement} statement - 当前语句
 		 */
 		getBoundExpression: function(context, statement){
-			return new RestArgumentExpression(
+			return new ArgumentRestValueExpression(
 				context,
 				statement.target.expression.arguments.inner.length
 			);
@@ -72,7 +72,7 @@ this.RestTag = function(SpreadTag, RestArgumentExpression){
 		 * @param {TagsMap} tagsMap - 标签集合映射
 		 */
 		require: function(tagsMap){
-			return tagsMap.restArgumentNameTags;
+			return tagsMap.argumentRestNameTags;
 		},
 		/**
 		 * 标签访问器
@@ -87,29 +87,29 @@ this.RestTag = function(SpreadTag, RestArgumentExpression){
 		}
 	});
 
-	return RestTag;
+	return ArgumentRestOperatorTag;
 }(
 	this.SpreadTag,
-	this.RestArgumentExpression
+	this.ArgumentRestValueExpression
 );
 
-this.RestArgumentNameTag = function(ArgumentNameTag){
+this.ArgumentRestNameTag = function(ArgumentNameTag){
 	/**
 	 * 省略参数名标签
 	 * @param {Number} _type - 标签类型
 	 */
-	function RestArgumentNameTag(_type){
+	function ArgumentRestNameTag(_type){
 		ArgumentNameTag.call(this, _type);
 	};
-	RestArgumentNameTag = new Rexjs(RestArgumentNameTag, ArgumentNameTag);
+	ArgumentRestNameTag = new Rexjs(ArgumentRestNameTag, ArgumentNameTag);
 
-	RestArgumentNameTag.props({
+	ArgumentRestNameTag.props({
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
 		 */
 		require: function(tagsMap){
-			return tagsMap.restArgumentNameContextTags;
+			return tagsMap.argumentRestNameContextTags;
 		},
 		/**
 		 * 标签访问器
@@ -127,22 +127,22 @@ this.RestArgumentNameTag = function(ArgumentNameTag){
 		}
 	});
 
-	return RestArgumentNameTag;
+	return ArgumentRestNameTag;
 }(
 	this.ArgumentNameTag
 );
 
-this.RestArgumentSeparatorTag = function(ArgumentSeparatorTag){
+this.ArgumentRestValueSeparatorTag = function(ArgumentSeparatorTag){
 	/**
 	 * 省略参数分隔符标签
 	 * @param {Number} _type - 标签类型
 	 */
-	function RestArgumentSeparatorTag(_type){
+	function ArgumentRestValueSeparatorTag(_type){
 		ArgumentSeparatorTag.call(this, _type);
 	};
-	RestArgumentSeparatorTag = new Rexjs(RestArgumentSeparatorTag, ArgumentSeparatorTag);
+	ArgumentRestValueSeparatorTag = new Rexjs(ArgumentRestValueSeparatorTag, ArgumentSeparatorTag);
 
-	RestArgumentSeparatorTag.props({
+	ArgumentRestValueSeparatorTag.props({
 		$type: TYPE_MATCHABLE,
 		/**
 		 * 标签访问器
@@ -157,7 +157,7 @@ this.RestArgumentSeparatorTag = function(ArgumentSeparatorTag){
 		}
 	});
 
-	return RestArgumentSeparatorTag;
+	return ArgumentRestValueSeparatorTag;
 }(
 	this.ArgumentSeparatorTag
 );

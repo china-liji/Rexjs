@@ -1,5 +1,5 @@
 // 分组小括号标签相关
-!function(IdentifierExpression, ArgumentExpression, ArgumentDefaultValueExpression, RestArgumentExpression, RestTag, groupingSeparatorTag, closingGroupingTag, collectTo){
+!function(IdentifierExpression, ArgumentExpression, ArgumentDefaultValueExpression, ArgumentRestValueExpression, ArgumentRestOperatorTag, groupingSeparatorTag, closingGroupingTag, collectTo){
 
 this.GroupingExpression = function(){
 	/**
@@ -21,18 +21,18 @@ this.GroupingExpression = function(){
 	return GroupingExpression;
 }();
 
-this.IllegibleRestArgumentExpression = function(){
+this.ArgumentIllegibleRestValueExpression = function(){
 	/**
 	 * 难以辨别的、可能非法的省略参数表达式
 	 * @param {Context} context - 拓展符语法标签上下文
 	 * @param {Number} index - 省略参数位于参数列表中的索引
 	 */
-	function IllegibleRestArgumentExpression(context, index){
-		RestArgumentExpression.call(this, context, index);
+	function ArgumentIllegibleRestValueExpression(context, index){
+		ArgumentRestValueExpression.call(this, context, index);
 	};
-	IllegibleRestArgumentExpression = new Rexjs(IllegibleRestArgumentExpression, RestArgumentExpression);
+	ArgumentIllegibleRestValueExpression = new Rexjs(ArgumentIllegibleRestValueExpression, ArgumentRestValueExpression);
 
-	IllegibleRestArgumentExpression.props({
+	ArgumentIllegibleRestValueExpression.props({
 		/**
 		 * 获取参数名上下文
 		 */
@@ -42,7 +42,7 @@ this.IllegibleRestArgumentExpression = function(){
 		operand: null
 	});
 
-	return IllegibleRestArgumentExpression;
+	return ArgumentIllegibleRestValueExpression;
 }();
 
 this.GroupingStatement = function(){
@@ -104,17 +104,17 @@ this.GroupingStatement = function(){
 	return GroupingStatement;
 }();
 
-this.IllegibleRestArgumentStatement = function(){
+this.ArgumentIllegibleRestValueStatement = function(){
 	/**
 	 * 难以辨别的、可能非法的省略参数语句
 	 * @param {Statements} statements - 该语句将要所处的语句块
 	 */
-	function IllegibleRestArgumentStatement(statements){
+	function ArgumentIllegibleRestValueStatement(statements){
 		ECMAScriptStatement.call(this, statements);
 	};
-	IllegibleRestArgumentStatement = new Rexjs(IllegibleRestArgumentStatement, ECMAScriptStatement);
+	ArgumentIllegibleRestValueStatement = new Rexjs(ArgumentIllegibleRestValueStatement, ECMAScriptStatement);
 
-	IllegibleRestArgumentStatement.props({
+	ArgumentIllegibleRestValueStatement.props({
 		/**
 		 * 捕获处理异常
 		 * @param {SyntaxParser} parser - 语法解析器
@@ -138,7 +138,7 @@ this.IllegibleRestArgumentStatement = function(){
 		}
 	});
 
-	return IllegibleRestArgumentStatement;
+	return ArgumentIllegibleRestValueStatement;
 }();
 
 this.GroupingContextStatement = function(ArgumentsExpression, BinaryExpression, DestructibleExpression, ArgumentDestructuringExpression, ArgumentsDestructuringStatements, ifIdentifier, ifBinary, error){
@@ -237,7 +237,7 @@ this.GroupingContextStatement = function(ArgumentsExpression, BinaryExpression, 
 		var context;
 
 		// 如果是省略参数表达式
-		if(expression instanceof RestArgumentExpression){
+		if(expression instanceof ArgumentRestValueExpression){
 			// 如果省略参数不是最后一项
 			if(i !== j - 1){
 				// 报错
@@ -361,24 +361,24 @@ this.OpeningGroupingTag = function(OpeningParenTag, GroupingExpression, Grouping
 	this.GroupingStatement
 );
 
-this.IllegibleRestTag = function(IllegibleRestArgumentExpression, IllegibleRestArgumentStatement, visitor){
+this.ArgumentIllegibleRestOperatorTag = function(ArgumentIllegibleRestValueExpression, ArgumentIllegibleRestValueStatement, visitor){
 	/**
 	 * 难以辨别的、可能非法的省略参数标签
 	 * @param {Number} _type - 标签类型
 	 */
-	function IllegibleRestTag(_type){
-		RestTag.call(this, _type);
+	function ArgumentIllegibleRestOperatorTag(_type){
+		ArgumentRestOperatorTag.call(this, _type);
 	};
-	IllegibleRestTag = new Rexjs(IllegibleRestTag, RestTag);
+	ArgumentIllegibleRestOperatorTag = new Rexjs(ArgumentIllegibleRestOperatorTag, ArgumentRestOperatorTag);
 
-	IllegibleRestTag.props({
+	ArgumentIllegibleRestOperatorTag.props({
 		/**
 		 * 获取绑定的表达式，一般在子类使用父类逻辑，而不使用父类表达式的情况下使用
 		 * @param {Context} context - 相关的语法标签上下文
 		 * @param {Statement} statement - 当前语句
 		 */
 		getBoundExpression: function(context, statement){
-			return new IllegibleRestArgumentExpression(
+			return new ArgumentIllegibleRestValueExpression(
 				context,
 				statement.target.expression.inner.length
 			);
@@ -404,7 +404,7 @@ this.IllegibleRestTag = function(IllegibleRestArgumentExpression, IllegibleRestA
 			visitor.call(this, parser, context, statement, statements);
 
 			// 设置当前语句
-			statements.statement = new IllegibleRestArgumentStatement(statements);
+			statements.statement = new ArgumentIllegibleRestValueStatement(statements);
 
 			// 如果已经标记过该属性
 			if(groupingExpression.asArguments){
@@ -418,11 +418,11 @@ this.IllegibleRestTag = function(IllegibleRestArgumentExpression, IllegibleRestA
 		}
 	});
 
-	return IllegibleRestTag;
+	return ArgumentIllegibleRestOperatorTag;
 }(
-	this.IllegibleRestArgumentExpression,
-	this.IllegibleRestArgumentStatement,
-	RestTag.prototype.visitor
+	this.ArgumentIllegibleRestValueExpression,
+	this.ArgumentIllegibleRestValueStatement,
+	ArgumentRestOperatorTag.prototype.visitor
 );
 
 this.GroupingSeparatorTag = function(CommaTag, GroupingStatement){
@@ -509,8 +509,8 @@ closingGroupingTag = new this.ClosingGroupingTag();
 	this.IdentifierExpression,
 	this.ArgumentExpression,
 	this.ArgumentDefaultValueExpression,
-	this.RestArgumentExpression,
-	this.RestTag,
+	this.ArgumentRestValueExpression,
+	this.ArgumentRestOperatorTag,
 	// groupingSeparatorTag
 	null,
 	// closingGroupingTag
