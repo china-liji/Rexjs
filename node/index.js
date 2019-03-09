@@ -416,7 +416,6 @@ module.exports = { DevSource: this.DevSource, Source: this.Source };
 	// defaultList
 	[
 		"file-header.js",
-		"function-body.js",
 		"target.js",
 		"arrow.js",
 		"property.js",
