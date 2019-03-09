@@ -13,7 +13,7 @@ export let FunctionTag = function(){
 		$class = CLASS_EXPRESSION;
 
 		/**
-		 * 标签表达式
+		 * 标签正则
 		 * @type {RegExp}
 		 */
 		regexp = /function/;
