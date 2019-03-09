@@ -163,15 +163,15 @@ this.ShorthandMethodBodyStatements = function(FunctionBodyStatements){
 	this.FunctionBodyStatements
 );
 
-this.PropertyStarTag = function(StarTag){
+this.PropertyStarTag = function(GeneratorTag){
 	/**
 	 * 函数声明星号标签
 	 * @param {Number} _type - 标签类型
 	 */
 	function PropertyStarTag(_type){
-		StarTag.call(this, _type);
+		GeneratorTag.call(this, _type);
 	};
-	PropertyStarTag = new Rexjs(PropertyStarTag, StarTag);
+	PropertyStarTag = new Rexjs(PropertyStarTag, GeneratorTag);
 
 	PropertyStarTag.props({
 		/**
@@ -196,7 +196,7 @@ this.PropertyStarTag = function(StarTag){
 
 	return PropertyStarTag;
 }(
-	this.StarTag
+	this.GeneratorTag
 );
 
 this.OpeningShorthandMethodArgumentsTag = function(ShorthandMethodValueExpression, ShorthandMethodValueStatement, visitor){

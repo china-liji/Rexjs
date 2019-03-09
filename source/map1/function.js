@@ -177,17 +177,17 @@ this.FunctionTag = function(FunctionExpression){
 	this.FunctionExpression
 );
 
-this.StarTag = function(){
+this.GeneratorTag = function(){
 	/**
 	 * 星号标签
 	 * @param {Number} _type - 标签类型
 	 */
-	function StarTag(_type){
+	function GeneratorTag(_type){
 		SyntaxTag.call(this, _type);
 	};
-	StarTag = new Rexjs(StarTag, SyntaxTag);
+	GeneratorTag = new Rexjs(GeneratorTag, SyntaxTag);
 
-	StarTag.props({
+	GeneratorTag.props({
 		regexp: /\*/,
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
@@ -209,7 +209,7 @@ this.StarTag = function(){
 		}
 	});
 
-	return StarTag;
+	return GeneratorTag;
 }();
 
 this.FunctionNameTag = function(VariableDeclarationTag, FunctionDeclarationExpression){

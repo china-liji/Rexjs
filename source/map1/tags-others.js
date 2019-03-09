@@ -887,7 +887,7 @@ this.FunctionDeclarationStarContextTags = function(FunctionVariableTag){
 	this.FunctionVariableTag
 );
 
-this.FunctionContextTags = function(StarContextTags, StarTag){
+this.FunctionContextTags = function(StarContextTags, GeneratorTag){
 	/**
 	 * 函数关键字上下文标签列表
 	 */
@@ -895,7 +895,7 @@ this.FunctionContextTags = function(StarContextTags, StarTag){
 		StarContextTags.call(this);
 		
 		this.register(
-			new StarTag()
+			new GeneratorTag()
 		);
 	};
 	FunctionContextTags = new Rexjs(FunctionContextTags, StarContextTags);
@@ -903,10 +903,10 @@ this.FunctionContextTags = function(StarContextTags, StarTag){
 	return FunctionContextTags;
 }(
 	this.StarContextTags,
-	this.StarTag
+	this.GeneratorTag
 );
 
-this.FunctionDeclarationContextTags = function(FunctionDeclarationStarContextTags, FunctionDeclarationStarTag){
+this.FunctionDeclarationContextTags = function(FunctionDeclarationStarContextTags, GeneratorDeclarationTag){
 	/**
 	 * 函数声明上下文标签列表
 	 */
@@ -914,7 +914,7 @@ this.FunctionDeclarationContextTags = function(FunctionDeclarationStarContextTag
 		FunctionDeclarationStarContextTags.call(this);
 
 		this.register(
-			new FunctionDeclarationStarTag()
+			new GeneratorDeclarationTag()
 		);
 	};
 	FunctionDeclarationContextTags = new Rexjs(FunctionDeclarationContextTags, FunctionDeclarationStarContextTags);
@@ -922,7 +922,7 @@ this.FunctionDeclarationContextTags = function(FunctionDeclarationStarContextTag
 	return FunctionDeclarationContextTags;
 }(
 	this.FunctionDeclarationStarContextTags,
-	this.FunctionDeclarationStarTag
+	this.GeneratorDeclarationTag
 );
 
 this.IfConditionTags = function(OpeningIfConditionTag){

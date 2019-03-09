@@ -91,17 +91,17 @@ this.FunctionDeclarationTag = function(FunctionTag, FunctionDeclarationExpressio
 	this.FunctionDeclarationExpression
 );
 
-this.FunctionDeclarationStarTag = function(StarTag){
+this.GeneratorDeclarationTag = function(GeneratorTag){
 	/**
 	 * 函数声明星号标签
 	 * @param {Number} _type - 标签类型
 	 */
-	function FunctionDeclarationStarTag(_type){
-		StarTag.call(this, _type);
+	function GeneratorDeclarationTag(_type){
+		GeneratorTag.call(this, _type);
 	};
-	FunctionDeclarationStarTag = new Rexjs(FunctionDeclarationStarTag, StarTag);
+	GeneratorDeclarationTag = new Rexjs(GeneratorDeclarationTag, GeneratorTag);
 
-	FunctionDeclarationStarTag.props({
+	GeneratorDeclarationTag.props({
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
@@ -111,9 +111,9 @@ this.FunctionDeclarationStarTag = function(StarTag){
 		}
 	});
 
-	return FunctionDeclarationStarTag;
+	return GeneratorDeclarationTag;
 }(
-	this.StarTag
+	this.GeneratorTag
 );
 
 this.FunctionVariableTag = function(visitor){

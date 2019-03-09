@@ -1,11 +1,11 @@
 import { SyntaxTag } from "../core";
 
-export let StarTag = function(){
+export let GeneratorTag = function(){
 	/**
-	 * 星号标签
+	 * 生成器符号标签
 	 * @param {Number} _type - 标签类型
 	 */
-	return class StarTag extends SyntaxTag {
+	return class GeneratorTag extends SyntaxTag {
 		/**
 		 * 标签正则
 		 * @type {RegExp}
