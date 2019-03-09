@@ -1,17 +1,17 @@
 // 默认函数参数相关
 !function(BasicAssignmentTag){
 
-this.DefaultArgumentExpression = function(ArgumentExpression){
+this.ArgumentDefaultValueExpression = function(ArgumentExpression){
 	/**
 	 * 省略参数表达式
 	 * @param {Context} context - 语法标签上下文
 	 */
-	function DefaultArgumentExpression(context){
+	function ArgumentDefaultValueExpression(context){
 		ArgumentExpression.call(this, context);
 	};
-	DefaultArgumentExpression = new Rexjs(DefaultArgumentExpression, ArgumentExpression);
+	ArgumentDefaultValueExpression = new Rexjs(ArgumentDefaultValueExpression, ArgumentExpression);
 
-	DefaultArgumentExpression.props({
+	ArgumentDefaultValueExpression.props({
 		assignment: null,
 		/**
 		 * 提取表达式文本内容
@@ -43,7 +43,7 @@ this.DefaultArgumentExpression = function(ArgumentExpression){
 		}
 	});
 
-	return DefaultArgumentExpression;
+	return ArgumentDefaultValueExpression;
 }(
 	this.ArgumentExpression
 );
@@ -85,7 +85,7 @@ this.ArgumentAssignmentStatement = function(){
 	return ArgumentAssignmentStatement;
 }();
 
-this.ArgumentAssignmentTag = function(DefaultArgumentExpression, ArgumentAssignmentStatement, visitor){
+this.ArgumentAssignmentTag = function(ArgumentDefaultValueExpression, ArgumentAssignmentStatement, visitor){
 	/**
 	 * 默认参数赋值标签
 	 * @param {Number} _type - 标签类型
@@ -107,7 +107,7 @@ this.ArgumentAssignmentTag = function(DefaultArgumentExpression, ArgumentAssignm
 			var expression = statement.expression;
 
 			// 设置当前表达式
-			statement.expression = new DefaultArgumentExpression(expression.context);
+			statement.expression = new ArgumentDefaultValueExpression(expression.context);
 
 			(
 				// 初始化参数赋值语句
@@ -123,7 +123,7 @@ this.ArgumentAssignmentTag = function(DefaultArgumentExpression, ArgumentAssignm
 
 	return ArgumentAssignmentTag;
 }(
-	this.DefaultArgumentExpression,
+	this.ArgumentDefaultValueExpression,
 	this.ArgumentAssignmentStatement,
 	BasicAssignmentTag.prototype.visitor
 );

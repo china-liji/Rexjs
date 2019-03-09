@@ -1,5 +1,5 @@
 // 分组小括号标签相关
-!function(IdentifierExpression, ArgumentExpression, DefaultArgumentExpression, RestArgumentExpression, RestTag, groupingSeparatorTag, closingGroupingTag, collectTo){
+!function(IdentifierExpression, ArgumentExpression, ArgumentDefaultValueExpression, RestArgumentExpression, RestTag, groupingSeparatorTag, closingGroupingTag, collectTo){
 
 this.GroupingExpression = function(){
 	/**
@@ -288,15 +288,15 @@ this.GroupingContextStatement = function(ArgumentsExpression, BinaryExpression, 
 
 			// 默认，即默认值参数表达式
 			default:
-				var defaultArgumentExpression = new DefaultArgumentExpression(context);
+				var defaultArgumentValueExpression = new ArgumentDefaultValueExpression(context);
 
 				// 设置默认参数表达式的 assignment 属性
-				defaultArgumentExpression.assignment = expression;
+				defaultArgumentValueExpression.assignment = expression;
 	
 				// 收集参数名
 				collectTo.call(context.tag, parser, context, argumentsExpression.collection);
 				// 添加默认参数表达式
-				argumentsExpression.inner.add(defaultArgumentExpression);
+				argumentsExpression.inner.add(defaultArgumentValueExpression);
 				return i;
 		}
 	},
@@ -508,7 +508,7 @@ closingGroupingTag = new this.ClosingGroupingTag();
 	this,
 	this.IdentifierExpression,
 	this.ArgumentExpression,
-	this.DefaultArgumentExpression,
+	this.ArgumentDefaultValueExpression,
 	this.RestArgumentExpression,
 	this.RestTag,
 	// groupingSeparatorTag
