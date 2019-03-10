@@ -416,7 +416,6 @@ module.exports = { DevSource: this.DevSource, Source: this.Source };
 	// defaultList
 	[
 		"file-header.js",
-		"property-iteral-name.js",
 		"property-identifier-name.js",
 		"property-initializer.js",
 		"property-computed-name.js",
