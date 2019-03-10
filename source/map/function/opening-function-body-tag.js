@@ -1,5 +1,5 @@
 import { OpeningBraceTag } from "../brace/opening-brace-tag";
-import { FunctionBodyExpression } from "./function-body";
+import { FunctionBodyExpression } from "./function-body-expression";
 import { BoxStatement } from "../base-statement/box-statement";
 import { FunctionBodyStatements } from "./function-body-statements";
 import { ClosingFunctionBodyTag } from "./closing-function-body-tag";
