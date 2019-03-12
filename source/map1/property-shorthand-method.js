@@ -163,17 +163,17 @@ this.ShorthandMethodBodyStatements = function(FunctionBodyStatements){
 	this.FunctionBodyStatements
 );
 
-this.PropertyStarTag = function(GeneratorTag){
+this.ShorthandGeneratorTag = function(GeneratorTag){
 	/**
 	 * 函数声明星号标签
 	 * @param {Number} _type - 标签类型
 	 */
-	function PropertyStarTag(_type){
+	function ShorthandGeneratorTag(_type){
 		GeneratorTag.call(this, _type);
 	};
-	PropertyStarTag = new Rexjs(PropertyStarTag, GeneratorTag);
+	ShorthandGeneratorTag = new Rexjs(ShorthandGeneratorTag, GeneratorTag);
 
-	PropertyStarTag.props({
+	ShorthandGeneratorTag.props({
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
@@ -194,7 +194,7 @@ this.PropertyStarTag = function(GeneratorTag){
 		}
 	});
 
-	return PropertyStarTag;
+	return ShorthandGeneratorTag;
 }(
 	this.GeneratorTag
 );

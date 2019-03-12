@@ -153,7 +153,7 @@ this.ClassPropertyNameTags = function(list){
 	[
 		this.ClosingClassBodyTag,
 		this.ClassPropertyPlaceholderTag,
-		this.PropertyStarTag,
+		this.ShorthandGeneratorTag,
 		this.ConstructorTag,
 		this.GetDescriptorTag,
 		this.SetDescriptorTag,
@@ -1715,7 +1715,7 @@ this.PropertyNameTags = function(list){
 		this.OpeningComputedPropertyNameTag,
 		this.GetTag,
 		this.SetTag,
-		this.PropertyStarTag,
+		this.ShorthandGeneratorTag,
 		this.PropertySpreadTag
 	]
 );
