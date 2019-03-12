@@ -36,17 +36,17 @@ this.ComputedPropertyNameExpression = function(){
 	return ComputedPropertyNameExpression;
 }();
 
-this.ObjectComputedNameStatement = function(){
+this.ComputedPropertyNameStatement = function(){
 	/**
 	 * 对象计算式语句
 	 * @param {Statements} statements - 该语句将要所处的语句块
 	 */
-	function ObjectComputedNameStatement(statements){
+	function ComputedPropertyNameStatement(statements){
 		ECMAScriptStatement.call(this, statements);
 	};
-	ObjectComputedNameStatement = new Rexjs(ObjectComputedNameStatement, ECMAScriptStatement);
+	ComputedPropertyNameStatement = new Rexjs(ComputedPropertyNameStatement, ECMAScriptStatement);
 
-	ObjectComputedNameStatement.props({
+	ComputedPropertyNameStatement.props({
 		/**
 		 * 捕获处理异常
 		 * @param {SyntaxParser} parser - 语法解析器
@@ -80,10 +80,10 @@ this.ObjectComputedNameStatement = function(){
 		}
 	})
 
-	return ObjectComputedNameStatement;
+	return ComputedPropertyNameStatement;
 }();
 
-this.OpeningComputedPropertyNameTag = function(OpeningBracketTag, ComputedPropertyNameExpression, ObjectComputedNameStatement){
+this.OpeningComputedPropertyNameTag = function(OpeningBracketTag, ComputedPropertyNameExpression, ComputedPropertyNameStatement){
 	/**
 	 * 起始对象计算式属性名标签
 	 * @param {Number} _type - 标签类型
@@ -128,7 +128,7 @@ this.OpeningComputedPropertyNameTag = function(OpeningBracketTag, ComputedProper
 			}
 			
 			// 设置当前属性
-			statements.statement = new ObjectComputedNameStatement(statements);
+			statements.statement = new ComputedPropertyNameStatement(statements);
 		}
 	});
 
@@ -136,7 +136,7 @@ this.OpeningComputedPropertyNameTag = function(OpeningBracketTag, ComputedProper
 }(
 	this.OpeningBracketTag,
 	this.ComputedPropertyNameExpression,
-	this.ObjectComputedNameStatement
+	this.ComputedPropertyNameStatement
 );
 
 this.ClosingComputedPropertyNameTag = function(ClosingBracketTag){
