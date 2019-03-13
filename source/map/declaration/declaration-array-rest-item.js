@@ -1,5 +1,5 @@
 import { ArraySpreadTag } from "../array/array-spread-tag";
-import { ArrayDestructuringRestItemExpression } from "../array/array-destructuring-rest-item-expression";
+import { ArrayRestDestructuringItemExpression } from "../array/array-rest-destructuring-item-expression";
 import { ArraySpreadItemExpression } from "../array/array-spread-item-expression";
 import { DeclarationRestStatement } from "./declaration-rest-statement";
 
@@ -15,7 +15,7 @@ export let DeclarationArrayRestTag = function(){
 		 * @returns {Expression}
 		 */
 		getBoundExpression(context){
-			return new ArrayDestructuringRestItemExpression(
+			return new ArrayRestDestructuringItemExpression(
 				new ArraySpreadItemExpression(context)
 			);
 		};

@@ -206,13 +206,13 @@ this.DestructuringItemExpression = function(DestructuringExpression){
 	this.DestructuringExpression
 );
 
-this.DestructuringDefaultItemExpression = function(DestructuringItemExpression){
+this.DefaultDestructuringItemExpression = function(DestructuringItemExpression){
 	/**
 	 * 解构默认项表达式
 	 * @param {Expression} origin - 解构赋值源表达式
 	 * @param {Statements} statements - 该表达式所处的语句块
 	 */
-	function DestructuringDefaultItemExpression(origin, statements){
+	function DefaultDestructuringItemExpression(origin, statements){
 		DestructuringItemExpression.call(this, origin);
 
 		// 如果需要编译
@@ -221,9 +221,9 @@ this.DestructuringDefaultItemExpression = function(DestructuringItemExpression){
 			this.variable = statements.collections.generate();
 		}
 	};
-	DestructuringDefaultItemExpression = new Rexjs(DestructuringDefaultItemExpression, DestructuringItemExpression);
+	DefaultDestructuringItemExpression = new Rexjs(DefaultDestructuringItemExpression, DestructuringItemExpression);
 
-	DestructuringDefaultItemExpression.props({
+	DefaultDestructuringItemExpression.props({
 		/**
 		 * 提取并编译表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
@@ -260,7 +260,7 @@ this.DestructuringDefaultItemExpression = function(DestructuringItemExpression){
 		}
 	});
 
-	return DestructuringDefaultItemExpression;
+	return DefaultDestructuringItemExpression;
 }(
 	this.DestructuringItemExpression
 );
@@ -300,17 +300,17 @@ this.PropertyDestructuringItemExpression = function(DestructuringItemExpression)
 	this.DestructuringItemExpression
 );
 
-this.PropertyDestructuringRestItemExpression = function(PropertyDestructuringItemExpression){
+this.PropertyRestDestructuringItemExpression = function(PropertyDestructuringItemExpression){
 	/**
 	 * 对象属性结构省略项表达式
 	 * @param {Expression} origin - 解构项源表达式
 	 */
-	function PropertyDestructuringRestItemExpression(origin){
+	function PropertyRestDestructuringItemExpression(origin){
 		PropertyDestructuringItemExpression.call(this, origin);
 	};
-	PropertyDestructuringRestItemExpression = new Rexjs(PropertyDestructuringRestItemExpression, PropertyDestructuringItemExpression);
+	PropertyRestDestructuringItemExpression = new Rexjs(PropertyRestDestructuringItemExpression, PropertyDestructuringItemExpression);
 
-	PropertyDestructuringRestItemExpression.props({
+	PropertyRestDestructuringItemExpression.props({
 		/**
 		 * 提取并编译表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
@@ -327,26 +327,26 @@ this.PropertyDestructuringRestItemExpression = function(PropertyDestructuringIte
 		rest: true
 	});
 
-	return PropertyDestructuringRestItemExpression;
+	return PropertyRestDestructuringItemExpression;
 }(
 	this.PropertyDestructuringItemExpression
 );
 
-this.PropertyDestructuringDefaultItemExpression = function(DestructuringDefaultItemExpression){
+this.PropertyDefaultDestructuringItemExpression = function(DefaultDestructuringItemExpression){
 	/**
 	 * 属性解构默认项表达式
 	 * @param {Expression} origin - 解构赋值源表达式
 	 * @param {BinaryExpression} assignment - 默认值赋值表达式
 	 * @param {Statements} statements - 该表达式所处的语句块
 	 */
-	function PropertyDestructuringDefaultItemExpression(origin, assignment, statements){
-		DestructuringDefaultItemExpression.call(this, origin, statements);
+	function PropertyDefaultDestructuringItemExpression(origin, assignment, statements){
+		DefaultDestructuringItemExpression.call(this, origin, statements);
 
 		this.assignment = assignment;
 	};
-	PropertyDestructuringDefaultItemExpression = new Rexjs(PropertyDestructuringDefaultItemExpression, DestructuringDefaultItemExpression);
+	PropertyDefaultDestructuringItemExpression = new Rexjs(PropertyDefaultDestructuringItemExpression, DefaultDestructuringItemExpression);
 
-	PropertyDestructuringDefaultItemExpression.props({
+	PropertyDefaultDestructuringItemExpression.props({
 		assignment: null,
 		/**
 		 * 提取表达式文本内容
@@ -382,9 +382,9 @@ this.PropertyDestructuringDefaultItemExpression = function(DestructuringDefaultI
 		}
 	});
 
-	return PropertyDestructuringDefaultItemExpression;
+	return PropertyDefaultDestructuringItemExpression;
 }(
-	this.DestructuringDefaultItemExpression
+	this.DefaultDestructuringItemExpression
 );
 
 }.call(

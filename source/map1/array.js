@@ -1,5 +1,5 @@
 // 数组相关
-!function(DestructibleExpression, DestructuringExpression, DestructuringItemExpression, DestructuringDefaultItemExpression, IdentifierExpression, AssignableExpression, BinaryExpression, BasicAssignmentTag, closingArrayTag, arrayItemSeparatorTag, destructItem){
+!function(DestructibleExpression, DestructuringExpression, DestructuringItemExpression, DefaultDestructuringItemExpression, IdentifierExpression, AssignableExpression, BinaryExpression, BasicAssignmentTag, closingArrayTag, arrayItemSeparatorTag, destructItem){
 
 this.ArrayDestructuringExpression = function(){
 	/**
@@ -136,7 +136,7 @@ this.ArrayExpression = function(ArrayDestructuringExpression, ArrayDestructuring
 							// 如果二元表达式左侧不是解构表达式
 							if(expression.left instanceof DestructuringExpression === false){
 								// 转化表达式
-								expression = new DestructuringDefaultItemExpression(expression, parser.statements);
+								expression = new DefaultDestructuringItemExpression(expression, parser.statements);
 								break;
 							}
 						}
@@ -449,7 +449,7 @@ closingArrayTag = new this.ClosingArrayTag();
 	this.DestructibleExpression,
 	this.DestructuringExpression,
 	this.DestructuringItemExpression,
-	this.DestructuringDefaultItemExpression,
+	this.DefaultDestructuringItemExpression,
 	this.IdentifierExpression,
 	this.AssignableExpression,
 	this.BinaryExpression,

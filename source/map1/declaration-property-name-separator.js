@@ -1,7 +1,7 @@
 // 对象解构声明的属性名分隔符相关
 !function(PropertyInitializerTag, PropertyNameSeparatorTag){
 
-this.DeclarationPropertyNameInitializerTag = function(PropertyDestructuringDefaultItemExpression, visitor){
+this.DeclarationPropertyNameInitializerTag = function(PropertyDefaultDestructuringItemExpression, visitor){
 	/**
 	 * 变量声明属性名初始化标签
 	 * @param {Number} _type - 标签类型
@@ -33,13 +33,13 @@ this.DeclarationPropertyNameInitializerTag = function(PropertyDestructuringDefau
 			visitor.call(this, parser, context, statement, statements);
 
 			// 绑定解构项表达式
-			statement.bound = new PropertyDestructuringDefaultItemExpression(expression, expression, statements);
+			statement.bound = new PropertyDefaultDestructuringItemExpression(expression, expression, statements);
 		}
 	});
 
 	return DeclarationPropertyNameInitializerTag;
 }(
-	this.PropertyDestructuringDefaultItemExpression,
+	this.PropertyDefaultDestructuringItemExpression,
 	PropertyInitializerTag.prototype.visitor
 );
 

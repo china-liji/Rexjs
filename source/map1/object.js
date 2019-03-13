@@ -64,7 +64,7 @@ this.ObjectDestructuringItemExpression = function(DestructuringItemExpression){
 
 this.ObjectExpression = function(
 	DestructibleExpression, ObjectDestructuringExpression, ObjectDestructuringItemExpression,
-	PropertyDestructuringItemExpression, PropertyDestructuringRestItemExpression, PropertyDestructuringDefaultItemExpression,
+	PropertyDestructuringItemExpression, PropertyRestDestructuringItemExpression, PropertyDefaultDestructuringItemExpression,
 	LiteralPropertyNameExpression, ComputedPropertyNameExpression, ShorthandMethodExpression, PropertyInitializerExpression,
 	AssignableExpression, BinaryExpression, SpreadExpression,
 	BasicAssignmentTag,
@@ -106,7 +106,7 @@ this.ObjectExpression = function(
 							// 转化表达式
 							expression = (
 								operand ?
-									new PropertyDestructuringDefaultItemExpression(expression, expression, parser.statements) :
+									new PropertyDefaultDestructuringItemExpression(expression, expression, parser.statements) :
 									new PropertyDestructuringItemExpression(expression)
 							);
 							break;
@@ -134,7 +134,7 @@ this.ObjectExpression = function(
 									// 如果二元表达式左侧不是解构表达式
 									if(!(operand.left instanceof DestructuringExpression)){
 										// 转化表达式
-										expression = new PropertyDestructuringDefaultItemExpression(expression, operand, parser.statements);
+										expression = new PropertyDefaultDestructuringItemExpression(expression, operand, parser.statements);
 										break;
 									}
 								}
@@ -185,7 +185,7 @@ this.ObjectExpression = function(
 							}
 
 							// 转化表达式
-							expression = new PropertyDestructuringRestItemExpression(expression);
+							expression = new PropertyRestDestructuringItemExpression(expression);
 							break;
 						}
 
@@ -275,8 +275,8 @@ this.ObjectExpression = function(
 	this.ObjectDestructuringExpression,
 	this.ObjectDestructuringItemExpression,
 	this.PropertyDestructuringItemExpression,
-	this.PropertyDestructuringRestItemExpression,
-	this.PropertyDestructuringDefaultItemExpression,
+	this.PropertyRestDestructuringItemExpression,
+	this.PropertyDefaultDestructuringItemExpression,
 	this.LiteralPropertyNameExpression,
 	this.ComputedPropertyNameExpression,
 	this.ShorthandMethodExpression,

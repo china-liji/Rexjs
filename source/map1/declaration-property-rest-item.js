@@ -69,7 +69,7 @@ this.DeclarationPropertyRestItemTag = function(IdentifierDeclarationPropertyName
 	this.IdentifierExpression
 );
 
-this.DeclarationPropertyRestTag = function(SpreadPropertyTag, PropertyDestructuringRestItemExpression, SpreadPropertyExpression, DeclarationPropertyRestStatement){
+this.DeclarationPropertyRestTag = function(SpreadPropertyTag, PropertyRestDestructuringItemExpression, SpreadPropertyExpression, DeclarationPropertyRestStatement){
 	/**
 	 * 变量声明对象属性省略项拓展符标签
 	 * @param {Number} _type - 标签类型
@@ -98,7 +98,7 @@ this.DeclarationPropertyRestTag = function(SpreadPropertyTag, PropertyDestructur
 			var expression = new SpreadPropertyExpression(context);
 
 			// 绑定解构项表达式
-			statement.bound = new PropertyDestructuringRestItemExpression(expression);
+			statement.bound = new PropertyRestDestructuringItemExpression(expression);
 			// 设置当前表达式
 			statement.expression = expression;
 			// 设置当前语句
@@ -109,7 +109,7 @@ this.DeclarationPropertyRestTag = function(SpreadPropertyTag, PropertyDestructur
 	return DeclarationPropertyRestTag;
 }(
 	this.SpreadPropertyTag,
-	this.PropertyDestructuringRestItemExpression,
+	this.PropertyRestDestructuringItemExpression,
 	this.SpreadPropertyExpression,
 	this.DeclarationPropertyRestStatement
 );

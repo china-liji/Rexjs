@@ -1,5 +1,5 @@
 import { DeclarationArrayItemAssignmentReadyStatement } from "./declaration-array-item-assignment-ready-statement";
-import { DestructuringDefaultItemExpression } from "../destructuring/destructuring-default-item-expression";
+import { DefaultDestructuringItemExpression } from "../destructuring/default-destructuring-item-expression";
 import { BasicAssignmentTag } from "../assignment-operator/basic-assignment-tag";
 
 export let DeclarationArrayItemAssignmentTag = function(){
@@ -28,7 +28,7 @@ export let DeclarationArrayItemAssignmentTag = function(){
 			super.visitor(parser, context, readyStatement, statements);
 
 			// 覆盖当前语句的表达式
-			statement.expression = new DestructuringDefaultItemExpression(readyStatement.expression, statements);
+			statement.expression = new DefaultDestructuringItemExpression(readyStatement.expression, statements);
 		};
 	};
 }();

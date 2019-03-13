@@ -209,7 +209,7 @@ this.DeclarationPropertyValueTag = function(visitor){
 	VariableDeclarationTag.prototype.visitor
 );
 
-this.DeclarationPropertyValueInitializerTag = function(PropertyDestructuringDefaultItemExpression, visitor){
+this.DeclarationPropertyValueInitializerTag = function(PropertyDefaultDestructuringItemExpression, visitor){
 	/**
 	 * 变量声明属性值初始化标签
 	 * @param {Number} _type - 标签类型
@@ -234,13 +234,13 @@ this.DeclarationPropertyValueInitializerTag = function(PropertyDestructuringDefa
 			visitor.call(this, parser, context, statement, statements);
 
 			// 绑定解构项表达式
-			propertyDestructuringStatement.bound = new PropertyDestructuringDefaultItemExpression(propertyDestructuringStatement.expression, statement.expression, statements);
+			propertyDestructuringStatement.bound = new PropertyDefaultDestructuringItemExpression(propertyDestructuringStatement.expression, statement.expression, statements);
 		}
 	});
 
 	return DeclarationPropertyValueInitializerTag;
 }(
-	this.PropertyDestructuringDefaultItemExpression,
+	this.PropertyDefaultDestructuringItemExpression,
 	BasicAssignmentTag.prototype.visitor
 );
 

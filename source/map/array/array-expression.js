@@ -5,12 +5,12 @@ import { EmptyExpression } from "../core";
 import { BinaryExpression } from "../binary-operator/binary-expression";
 import { BasicAssignmentTag } from "../assignment-operator/basic-assignment-tag";
 import { DestructuringExpression } from "../destructuring/destructuring-expression";
-import { DestructuringDefaultItemExpression } from "../destructuring/destructuring-default-item-expression";
+import { DefaultDestructuringItemExpression } from "../destructuring/default-destructuring-item-expression";
 import { SpreadExpression } from "../spread-operator/spread-expression";
-import { ArrayDestructuringRestItemExpression } from "./array-destructuring-rest-item-expression";
 import { ArrayDestructuringExpression } from "./array-destructuring-expression";
 import { ArrayDestructuringItemExpression } from "./array-destructuring-item-expression";
 import { ECMAScriptConfig } from "../ecmascript/ecmascript-config";
+import { ArrayRestDestructuringItemExpression } from "./array-rest-destructuring-item-expression";
 
 export let ArrayExpression = function(){
 	/**
@@ -65,7 +65,7 @@ export let ArrayExpression = function(){
 							// 如果二元表达式左侧不是解构表达式
 							if(expression.left instanceof DestructuringExpression === false){
 								// 转化表达式
-								expression = new DestructuringDefaultItemExpression(expression, parser.statements);
+								expression = new DefaultDestructuringItemExpression(expression, parser.statements);
 								break;
 							}
 						}
@@ -91,7 +91,7 @@ export let ArrayExpression = function(){
 							}
 
 							// 转化表达式
-							expression = new ArrayDestructuringRestItemExpression(expression);
+							expression = new ArrayRestDestructuringItemExpression(expression);
 							break;
 						}
 

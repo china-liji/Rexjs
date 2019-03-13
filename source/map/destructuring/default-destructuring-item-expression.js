@@ -2,8 +2,8 @@ import { DestructuringItemExpression } from "./destructuring-item-expression";
 import { ECMAScriptConfig } from "../ecmascript/ecmascript-config";
 import { ContentBuilder } from "../core";
 
-export let DestructuringDefaultItemExpression = function(){
-	return class DestructuringDefaultItemExpression extends DestructuringItemExpression {
+export let DefaultDestructuringItemExpression = function(){
+	return class DefaultDestructuringItemExpression extends DestructuringItemExpression {
 		/**
 		 * 解构默认项表达式
 		 * @param {Expression} origin - 解构赋值源表达式

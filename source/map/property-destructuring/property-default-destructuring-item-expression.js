@@ -1,8 +1,8 @@
-import { DestructuringDefaultItemExpression } from "../destructuring/destructuring-default-item-expression";
+import { DefaultDestructuringItemExpression } from "../destructuring/default-destructuring-item-expression";
 import { ContentBuilder } from "../core";
 
-export let PropertyDestructuringDefaultItemExpression = function(){
-	return class PropertyDestructuringDefaultItemExpression extends DestructuringDefaultItemExpression {
+export let PropertyDefaultDestructuringItemExpression = function(){
+	return class PropertyDefaultDestructuringItemExpression extends DefaultDestructuringItemExpression {
 		/**
 		 * 默认值赋值表达式
 		 * @type {BinaryExpression}

@@ -218,7 +218,7 @@ this.DeclarationArrayItemSeparatorTag = function(ArrayItemSeparatorTag){
 	this.ArrayItemSeparatorTag
 );
 
-this.DeclarationArrayItemAssignmentTag = function(DeclarationArrayItemAssignmentReadyStatement, DestructuringDefaultItemExpression, visitor){
+this.DeclarationArrayItemAssignmentTag = function(DeclarationArrayItemAssignmentReadyStatement, DefaultDestructuringItemExpression, visitor){
 	/**
 	 * 变量声明数组项赋值标签
 	 * @param {Number} _type - 标签类型
@@ -249,14 +249,14 @@ this.DeclarationArrayItemAssignmentTag = function(DeclarationArrayItemAssignment
 			visitor.call(this, parser, context, readyStatement, statements);
 
 			// 覆盖当前语句的表达式
-			statement.expression = new DestructuringDefaultItemExpression(readyStatement.expression, statements);
+			statement.expression = new DefaultDestructuringItemExpression(readyStatement.expression, statements);
 		}
 	});
 
 	return DeclarationArrayItemAssignmentTag;
 }(
 	this.DeclarationArrayItemAssignmentReadyStatement,
-	this.DestructuringDefaultItemExpression,
+	this.DefaultDestructuringItemExpression,
 	BasicAssignmentTag.prototype.visitor
 );
 
