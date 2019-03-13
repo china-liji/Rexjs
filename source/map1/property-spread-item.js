@@ -1,20 +1,20 @@
 // 对象属性拓展项相关
 !function(){
 
-this.PropertySpreadExpression = function(PropertyExpression, SpreadExpression){
+this.SpreadPropertyExpression = function(PropertyExpression, SpreadExpression){
 	/**
 	 * 属性拓展表达式
 	 * @param {Context} context - 语法标签上下文
 	 */
-	function PropertySpreadExpression(context){
+	function SpreadPropertyExpression(context){
 		PropertyExpression.call(this);
 
 		// 设置属性值
 		this.value = new SpreadExpression(context);
 	};
-	PropertySpreadExpression = new Rexjs(PropertySpreadExpression, PropertyExpression);
+	SpreadPropertyExpression = new Rexjs(SpreadPropertyExpression, PropertyExpression);
 
-	PropertySpreadExpression.props({
+	SpreadPropertyExpression.props({
 		/**
 		 * 提取并编译表达式文本内容
 		 * @param {ContentBuilder} contentBuilder - 内容生成器
@@ -39,23 +39,23 @@ this.PropertySpreadExpression = function(PropertyExpression, SpreadExpression){
 		name: new DefaultExpression()
 	});
 
-	return PropertySpreadExpression;
+	return SpreadPropertyExpression;
 }(
 	this.PropertyExpression,
 	this.SpreadExpression
 );
 
-this.PropertySpreadTag = function(SpreadTag, PropertySpreadExpression, SpreadStatement){
+this.SpreadPropertyTag = function(SpreadTag, SpreadPropertyExpression, SpreadStatement){
 	/**
 	 * 对象属性拓展项标签
 	 * @param {Number} _type - 标签类型
 	 */
-	function PropertySpreadTag(_type){
+	function SpreadPropertyTag(_type){
 		SpreadTag.call(this, _type);
 	};
-	PropertySpreadTag = new Rexjs(PropertySpreadTag, SpreadTag);
+	SpreadPropertyTag = new Rexjs(SpreadPropertyTag, SpreadTag);
 	
-	PropertySpreadTag.props({
+	SpreadPropertyTag.props({
 		/**
 		 * 标签访问器
 		 * @param {SyntaxParser} parser - 语法解析器
@@ -64,7 +64,7 @@ this.PropertySpreadTag = function(SpreadTag, PropertySpreadExpression, SpreadSta
 		 * @param {Statements} statements - 当前语句块
 		 */
 		visitor: function(parser, context, statement, statements){
-			var expression = new PropertySpreadExpression(context), boxStatement = new BoxStatement(statements);
+			var expression = new SpreadPropertyExpression(context), boxStatement = new BoxStatement(statements);
 
 			// 如果需要编译
 			if(config.es6Base){
@@ -86,10 +86,10 @@ this.PropertySpreadTag = function(SpreadTag, PropertySpreadExpression, SpreadSta
 		}
 	});
 	
-	return PropertySpreadTag;
+	return SpreadPropertyTag;
 }(
 	this.SpreadTag,
-	this.PropertySpreadExpression,
+	this.SpreadPropertyExpression,
 	this.SpreadStatement
 );
 

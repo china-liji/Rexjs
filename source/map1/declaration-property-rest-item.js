@@ -69,15 +69,15 @@ this.DeclarationPropertyRestItemTag = function(IdentifierDeclarationPropertyName
 	this.IdentifierExpression
 );
 
-this.DeclarationPropertyRestTag = function(PropertySpreadTag, PropertyDestructuringRestItemExpression, PropertySpreadExpression, DeclarationPropertyRestStatement){
+this.DeclarationPropertyRestTag = function(SpreadPropertyTag, PropertyDestructuringRestItemExpression, SpreadPropertyExpression, DeclarationPropertyRestStatement){
 	/**
 	 * 变量声明对象属性省略项拓展符标签
 	 * @param {Number} _type - 标签类型
 	 */
 	function DeclarationPropertyRestTag(_type){
-		PropertySpreadTag.call(this, _type);
+		SpreadPropertyTag.call(this, _type);
 	};
-	DeclarationPropertyRestTag = new Rexjs(DeclarationPropertyRestTag, PropertySpreadTag);
+	DeclarationPropertyRestTag = new Rexjs(DeclarationPropertyRestTag, SpreadPropertyTag);
 	
 	DeclarationPropertyRestTag.props({
 		/**
@@ -95,7 +95,7 @@ this.DeclarationPropertyRestTag = function(PropertySpreadTag, PropertyDestructur
 		 * @param {Statements} statements - 当前语句块
 		 */
 		visitor: function(parser, context, statement, statements){
-			var expression = new PropertySpreadExpression(context);
+			var expression = new SpreadPropertyExpression(context);
 
 			// 绑定解构项表达式
 			statement.bound = new PropertyDestructuringRestItemExpression(expression);
@@ -108,9 +108,9 @@ this.DeclarationPropertyRestTag = function(PropertySpreadTag, PropertyDestructur
 
 	return DeclarationPropertyRestTag;
 }(
-	this.PropertySpreadTag,
+	this.SpreadPropertyTag,
 	this.PropertyDestructuringRestItemExpression,
-	this.PropertySpreadExpression,
+	this.SpreadPropertyExpression,
 	this.DeclarationPropertyRestStatement
 );
 

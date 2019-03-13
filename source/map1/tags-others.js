@@ -1716,7 +1716,7 @@ this.PropertyNameTags = function(list){
 		this.GetTag,
 		this.SetTag,
 		this.ShorthandGeneratorTag,
-		this.PropertySpreadTag
+		this.SpreadPropertyTag
 	]
 );
 
