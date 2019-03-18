@@ -416,7 +416,6 @@ module.exports = { DevSource: this.DevSource, Source: this.Source };
 	// defaultList
 	[
 		"file-header.js",
-		"declaration-object.js",
 		"declaration-property-name.js",
 		"declaration-property-name-separator.js",
 		"declaration-property-value.js",
