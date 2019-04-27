@@ -163,11 +163,27 @@ test.unit(
 			}
 		);
 
+		// this.false(
+		// 	"箭头后面接表达式",
+		// 	"a => {}1",
+		// 	function(parser, err){
+		// 		return err.context.content !== "1";
+		// 	}
+		// );
+
 		this.false(
 			"语句块的箭头函数后面接除逗号外的表达式上下文",
 			"() => {} / 2",
 			function(parser, err){
-				return err.context.content === "/" ? "" : "没有识别出除号";
+				return err.context.content !== "/";
+			}
+		);
+
+		this.false(
+			"箭头后面接三元表达式",
+			"a => {} ? 1 : 2",
+			function(parser, err){
+				return err.context.content !== "?";
 			}
 		);
 

@@ -1,7 +1,7 @@
 import { ArraySpreadTag } from "../array/array-spread-tag";
 import { ArrayRestDestructuringItemExpression } from "../array/array-rest-destructuring-item-expression";
 import { ArraySpreadItemExpression } from "../array/array-spread-item-expression";
-import { DeclarationRestStatement } from "./declaration-rest-statement";
+import { DeclarationRestStatement } from "../declaration-object/declaration-rest-statement";
 
 export let DeclarationArrayRestTag = function(){
 	/**

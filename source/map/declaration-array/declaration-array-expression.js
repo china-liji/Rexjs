@@ -2,7 +2,7 @@ import { ArrayExpression } from "../array/array-expression";
 
 export let DeclarationArrayExpression = function(){
 	/**
-	 * 变量声明数组表达式
+	 * 数组变量声明表达式
 	 * @param {Context} opening - 起始标签上下文
 	 */
 	return class DeclarationArrayExpression extends ArrayExpression {

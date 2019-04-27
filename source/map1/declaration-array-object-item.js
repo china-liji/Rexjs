@@ -1,22 +1,22 @@
 // 数组声明解构内的对象解构相关
-!function(ClosingDeclarationObjectTag, closingObjectDeclarationArrayItemTag){
+!function(ClosingDeclarationObjectTag, closingDeclarationArrayObjectItemTag){
 
-this.OpeningObjectDeclarationArrayItemTag = function(OpeningDeclarationObjectTag){
+this.OpeningDeclarationArrayObjectItemTag = function(OpeningDeclarationObjectTag){
 	/**
 	 * 对象声明数组项（即数组声明解构中，所嵌套的对象解构）起始标签
 	 * @param {Number} _type - 标签类型
 	 */
-	function OpeningObjectDeclarationArrayItemTag(_type){
+	function OpeningDeclarationArrayObjectItemTag(_type){
 		OpeningDeclarationObjectTag.call(this, _type);
 	};
-	OpeningObjectDeclarationArrayItemTag = new Rexjs(OpeningObjectDeclarationArrayItemTag, OpeningDeclarationObjectTag);
+	OpeningDeclarationArrayObjectItemTag = new Rexjs(OpeningDeclarationArrayObjectItemTag, OpeningDeclarationObjectTag);
 	
-	OpeningObjectDeclarationArrayItemTag.props({
+	OpeningDeclarationArrayObjectItemTag.props({
 		/**
 		 * 获取绑定的标签，该标签一般是用于语句的 try、catch 的返回值
 		 */
 		get binding(){
-			return closingObjectDeclarationArrayItemTag;
+			return closingDeclarationArrayObjectItemTag;
 		},
 		/**
 		 * 获取拥有该对象的表达式
@@ -27,22 +27,22 @@ this.OpeningObjectDeclarationArrayItemTag = function(OpeningDeclarationObjectTag
 		}
 	});
 
-	return OpeningObjectDeclarationArrayItemTag;
+	return OpeningDeclarationArrayObjectItemTag;
 }(
 	this.OpeningDeclarationObjectTag
 );
 
-this.ClosingObjectDeclarationArrayItemTag = function(visitor){
+this.ClosingDeclarationArrayObjectItemTag = function(visitor){
 	/**
 	 * 对象声明数组项（即数组声明解构中，所嵌套的对象解构）结束标签
 	 * @param {Number} _type - 标签类型
 	 */
-	function ClosingObjectDeclarationArrayItemTag(_type){
+	function ClosingDeclarationArrayObjectItemTag(_type){
 		ClosingDeclarationObjectTag.call(this, _type);
 	};
-	ClosingObjectDeclarationArrayItemTag = new Rexjs(ClosingObjectDeclarationArrayItemTag, ClosingDeclarationObjectTag);
+	ClosingDeclarationArrayObjectItemTag = new Rexjs(ClosingDeclarationArrayObjectItemTag, ClosingDeclarationObjectTag);
 	
-	ClosingObjectDeclarationArrayItemTag.props({
+	ClosingDeclarationArrayObjectItemTag.props({
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
 		 * @param {TagsMap} tagsMap - 标签集合映射
@@ -66,16 +66,16 @@ this.ClosingObjectDeclarationArrayItemTag = function(visitor){
 		}
 	});
 	
-	return ClosingObjectDeclarationArrayItemTag;
+	return ClosingDeclarationArrayObjectItemTag;
 }(
 	ClosingDeclarationObjectTag.prototype.visitor
 );
 
-closingObjectDeclarationArrayItemTag = new this.ClosingObjectDeclarationArrayItemTag();
+closingDeclarationArrayObjectItemTag = new this.ClosingDeclarationArrayObjectItemTag();
 
 }.call(
 	this,
 	this.ClosingDeclarationObjectTag,
-	// closingObjectDeclarationArrayItemTag
+	// closingDeclarationArrayObjectItemTag
 	null
 );

@@ -477,13 +477,13 @@ this.DeclarationPropertyNameTags = function(list){
 }(
 	// list
 	[
-		this.IdentifierDeclarationPropertyNameTag,
-		this.NumberDeclarationPropertyNameTag,
-		this.BinaryNumberDeclarationPropertyNameTag,
-		this.OctalNumberDeclarationPropertyNameTag,
-		this.WordDeclarationPropertyNameTag,
-		this.StringDeclarationPropertyNameTag,
-		this.OpeningComputedDeclarationPropertyNameTag,
+		this.DeclarationIdentifierPropertyNameTag,
+		this.DeclarationNumberPropertyNameTag,
+		this.DeclarationBinaryNumberPropertyNameTag,
+		this.DeclarationOctalNumberPropertyNameTag,
+		this.DeclarationWordPropertyNameTag,
+		this.DeclarationStringPropertyNameTag,
+		this.OpeningDeclarationComputedPropertyNameTag,
 		this.DeclarationPropertyRestTag,
 		this.ClosingDeclarationObjectTag
 	]
@@ -565,7 +565,7 @@ this.DeclarationPropertyValueContextTags = function(DeclarationPropertySeparator
 	this.DeclarationPropertyValueInitializerTag
 );
 
-this.DeclarationPropertyValueTags = function(DeclarationPropertyValueTag, OpeningArrayDeclarationPropertyValueTag, OpeningObjectDeclarationPropertyValueTag){
+this.DeclarationPropertyValueTags = function(DeclarationPropertyValueTag, OpeningDeclarationArrayPropertyValueTag, OpeningDeclarationObjectPropertyValueTag){
 	/**
 	 * 变量声明属性值标签列表
 	 */
@@ -574,8 +574,8 @@ this.DeclarationPropertyValueTags = function(DeclarationPropertyValueTag, Openin
 
 		this.register(
 			new DeclarationPropertyValueTag(),
-			new OpeningArrayDeclarationPropertyValueTag(),
-			new OpeningObjectDeclarationPropertyValueTag()
+			new OpeningDeclarationArrayPropertyValueTag(),
+			new OpeningDeclarationObjectPropertyValueTag()
 		);
 	};
 	DeclarationPropertyValueTags = new Rexjs(DeclarationPropertyValueTags, IllegalTags);
@@ -583,8 +583,8 @@ this.DeclarationPropertyValueTags = function(DeclarationPropertyValueTag, Openin
 	return DeclarationPropertyValueTags;
 }(
 	this.DeclarationPropertyValueTag,
-	this.OpeningArrayDeclarationPropertyValueTag,
-	this.OpeningObjectDeclarationPropertyValueTag
+	this.OpeningDeclarationArrayPropertyValueTag,
+	this.OpeningDeclarationObjectPropertyValueTag
 );
 
 this.DestructibleExpressionContextTags = function(DestructuringAssignmentTag){
@@ -1566,7 +1566,7 @@ this.OpeningDeclarationArrayContextTags = function(DeclarationArrayItemSeparator
 		this.DeclarationArrayItemTag,
 		this.DeclarationArrayRestTag,
 		this.OpeningDeclarationNestedArrayItemTag,
-		this.OpeningObjectDeclarationArrayItemTag
+		this.OpeningDeclarationArrayObjectItemTag
 	]
 );
 

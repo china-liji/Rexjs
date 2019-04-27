@@ -1,17 +1,17 @@
 // 对象解构声明的属性名相关
-!function(IdentifierPropertyNameTag, PropertyDestructuringItemExpression, closingComputedDeclarationPropertyNameTag, require){
+!function(IdentifierPropertyNameTag, PropertyDestructuringItemExpression, closingDeclarationComputedPropertyNameTag, require){
 
-this.IdentifierDeclarationPropertyNameStatement = function(both){
+this.DeclarationIdentifierPropertyNameStatement = function(both){
 	/**
 	 * 标识符声明属性名称语句
 	 * @param {Statements} statements - 该语句将要所处的语句块
 	 */
-	function IdentifierDeclarationPropertyNameStatement(statements){
+	function DeclarationIdentifierPropertyNameStatement(statements){
 		ECMAScriptStatement.call(this, statements);
 	};
-	IdentifierDeclarationPropertyNameStatement = new Rexjs(IdentifierDeclarationPropertyNameStatement, ECMAScriptStatement);
+	DeclarationIdentifierPropertyNameStatement = new Rexjs(DeclarationIdentifierPropertyNameStatement, ECMAScriptStatement);
 
-	IdentifierDeclarationPropertyNameStatement.props({
+	DeclarationIdentifierPropertyNameStatement.props({
 		/**
 		 * 捕获处理异常
 		 * @param {SyntaxParser} parser - 语法解析器
@@ -39,7 +39,7 @@ this.IdentifierDeclarationPropertyNameStatement = function(both){
 		}
 	});
 
-	return IdentifierDeclarationPropertyNameStatement;
+	return DeclarationIdentifierPropertyNameStatement;
 }(
 	// both
 	function(parser, statement, isSeparator){
@@ -64,17 +64,17 @@ this.IdentifierDeclarationPropertyNameStatement = function(both){
 	}
 );
 
-this.IdentifierDeclarationPropertyNameTag = function(IdentifierDeclarationPropertyNameStatement, visitor){
+this.DeclarationIdentifierPropertyNameTag = function(DeclarationIdentifierPropertyNameStatement, visitor){
 	/**
 	 * 标识符声明属性名称标签
 	 * @param {Number} _type - 标签类型
 	 */
-	function IdentifierDeclarationPropertyNameTag(_type){
+	function DeclarationIdentifierPropertyNameTag(_type){
 		IdentifierPropertyNameTag.call(this, _type);
 	};
-	IdentifierDeclarationPropertyNameTag = new Rexjs(IdentifierDeclarationPropertyNameTag, IdentifierPropertyNameTag);
+	DeclarationIdentifierPropertyNameTag = new Rexjs(DeclarationIdentifierPropertyNameTag, IdentifierPropertyNameTag);
 
-	IdentifierDeclarationPropertyNameTag.props({
+	DeclarationIdentifierPropertyNameTag.props({
 		regexp: IdentifierPropertyNameTag.compileRegExp(
 			IdentifierPropertyNameTag.exceptions.join("|")
 		),
@@ -97,161 +97,161 @@ this.IdentifierDeclarationPropertyNameTag = function(IdentifierDeclarationProper
 			visitor.call(this, parser, context, statement, statements);
 
 			// 设置当前语句
-			statements.statement = new IdentifierDeclarationPropertyNameStatement(statements);
+			statements.statement = new DeclarationIdentifierPropertyNameStatement(statements);
 		}
 	});
 
-	return IdentifierDeclarationPropertyNameTag;
+	return DeclarationIdentifierPropertyNameTag;
 }(
-	this.IdentifierDeclarationPropertyNameStatement,
+	this.DeclarationIdentifierPropertyNameStatement,
 	IdentifierPropertyNameTag.prototype.visitor
 );
 
-this.NumberDeclarationPropertyNameTag = function(NumberPropertyNameTag){
+this.DeclarationNumberPropertyNameTag = function(NumberPropertyNameTag){
 	/**
 	 * 数字声明属性名称标签
 	 * @param {Number} _type - 标签类型
 	 */
-	function NumberDeclarationPropertyNameTag(_type){
+	function DeclarationNumberPropertyNameTag(_type){
 		NumberPropertyNameTag.call(this, _type);
 	};
-	NumberDeclarationPropertyNameTag = new Rexjs(NumberDeclarationPropertyNameTag, NumberPropertyNameTag);
+	DeclarationNumberPropertyNameTag = new Rexjs(DeclarationNumberPropertyNameTag, NumberPropertyNameTag);
 
-	NumberDeclarationPropertyNameTag.props({
+	DeclarationNumberPropertyNameTag.props({
 		require: require
 	});
 
-	return NumberDeclarationPropertyNameTag;
+	return DeclarationNumberPropertyNameTag;
 }(
 	this.NumberPropertyNameTag
 );
 
-this.BinaryNumberDeclarationPropertyNameTag = function(BinaryNumberPropertyNameTag){
+this.DeclarationBinaryNumberPropertyNameTag = function(BinaryNumberPropertyNameTag){
 	/**
 	 * 二进制数字声明属性名称标签
 	 * @param {Number} _type - 标签类型
 	 */
-	function BinaryNumberDeclarationPropertyNameTag(_type){
+	function DeclarationBinaryNumberPropertyNameTag(_type){
 		BinaryNumberPropertyNameTag.call(this, _type);
 	};
-	BinaryNumberDeclarationPropertyNameTag = new Rexjs(BinaryNumberDeclarationPropertyNameTag, BinaryNumberPropertyNameTag);
+	DeclarationBinaryNumberPropertyNameTag = new Rexjs(DeclarationBinaryNumberPropertyNameTag, BinaryNumberPropertyNameTag);
 
-	BinaryNumberDeclarationPropertyNameTag.props({
+	DeclarationBinaryNumberPropertyNameTag.props({
 		require: require
 	});
 
-	return BinaryNumberDeclarationPropertyNameTag;
+	return DeclarationBinaryNumberPropertyNameTag;
 }(
 	this.BinaryNumberPropertyNameTag
 );
 
-this.OctalNumberDeclarationPropertyNameTag = function(OctalNumberPropertyNameTag){
+this.DeclarationOctalNumberPropertyNameTag = function(OctalNumberPropertyNameTag){
 	/**
 	 * 八进制数字声明属性名称标签
 	 * @param {Number} _type - 标签类型
 	 */
-	function OctalNumberDeclarationPropertyNameTag(_type){
+	function DeclarationOctalNumberPropertyNameTag(_type){
 		OctalNumberPropertyNameTag.call(this, _type);
 	};
-	OctalNumberDeclarationPropertyNameTag = new Rexjs(OctalNumberDeclarationPropertyNameTag, OctalNumberPropertyNameTag);
+	DeclarationOctalNumberPropertyNameTag = new Rexjs(DeclarationOctalNumberPropertyNameTag, OctalNumberPropertyNameTag);
 
-	OctalNumberDeclarationPropertyNameTag.props({
+	DeclarationOctalNumberPropertyNameTag.props({
 		require: require
 	});
 
-	return OctalNumberDeclarationPropertyNameTag;
+	return DeclarationOctalNumberPropertyNameTag;
 }(
 	this.OctalNumberPropertyNameTag
 );
 
-this.WordDeclarationPropertyNameTag = function(WordPropertyNameTag){
+this.DeclarationWordPropertyNameTag = function(WordPropertyNameTag){
 	/**
 	 * 词组（即其他非标识符）属性名称标签
 	 * @param {Number} _type - 标签类型
 	 */
-	function WordDeclarationPropertyNameTag(_type){
+	function DeclarationWordPropertyNameTag(_type){
 		WordPropertyNameTag.call(this, _type);
 	};
-	WordDeclarationPropertyNameTag = new Rexjs(WordDeclarationPropertyNameTag, WordPropertyNameTag);
+	DeclarationWordPropertyNameTag = new Rexjs(DeclarationWordPropertyNameTag, WordPropertyNameTag);
 
-	WordDeclarationPropertyNameTag.props({
+	DeclarationWordPropertyNameTag.props({
 		require: require
 	});
 
-	return WordDeclarationPropertyNameTag;
+	return DeclarationWordPropertyNameTag;
 }(
 	this.WordPropertyNameTag
 );
 
-this.StringDeclarationPropertyNameTag = function(StringPropertyNameTag){
+this.DeclarationStringPropertyNameTag = function(StringPropertyNameTag){
 	/**
 	 * 字符串声明属性名称标签
 	 * @param {Number} _type - 标签类型
 	 */
-	function StringDeclarationPropertyNameTag(_type){
+	function DeclarationStringPropertyNameTag(_type){
 		StringPropertyNameTag.call(this, _type);
 	};
-	StringDeclarationPropertyNameTag = new Rexjs(StringDeclarationPropertyNameTag, StringPropertyNameTag);
+	DeclarationStringPropertyNameTag = new Rexjs(DeclarationStringPropertyNameTag, StringPropertyNameTag);
 
-	StringDeclarationPropertyNameTag.props({
+	DeclarationStringPropertyNameTag.props({
 		require: require
 	});
 
-	return StringDeclarationPropertyNameTag;
+	return DeclarationStringPropertyNameTag;
 }(
 	this.StringPropertyNameTag
 );
 
-this.OpeningComputedDeclarationPropertyNameTag = function(OpeningComputedPropertyNameTag){
+this.OpeningDeclarationComputedPropertyNameTag = function(OpeningComputedPropertyNameTag){
 	/**
 	 * 起始计算式属性名称标签
 	 * @param {Number} _type - 标签类型
 	 */
-	function OpeningComputedDeclarationPropertyNameTag(_type){
+	function OpeningDeclarationComputedPropertyNameTag(_type){
 		OpeningComputedPropertyNameTag.call(this, _type);
 	};
-	OpeningComputedDeclarationPropertyNameTag = new Rexjs(OpeningComputedDeclarationPropertyNameTag, OpeningComputedPropertyNameTag);
+	OpeningDeclarationComputedPropertyNameTag = new Rexjs(OpeningDeclarationComputedPropertyNameTag, OpeningComputedPropertyNameTag);
 
-	OpeningComputedDeclarationPropertyNameTag.props({
+	OpeningDeclarationComputedPropertyNameTag.props({
 		/**
 		 * 获取绑定的标签，该标签一般是用于语句的 try、catch 的返回值
 		 */
 		get binding(){
-			return closingComputedDeclarationPropertyNameTag;
+			return closingDeclarationComputedPropertyNameTag;
 		}
 	});
 
-	return OpeningComputedDeclarationPropertyNameTag;
+	return OpeningDeclarationComputedPropertyNameTag;
 }(
 	this.OpeningComputedPropertyNameTag
 );
 
-this.ClosingComputedDeclarationPropertyNameTag = function(ClosingComputedPropertyNameTag){
+this.ClosingDeclarationComputedPropertyNameTag = function(ClosingComputedPropertyNameTag){
 	/**
 	 * 结束计算式属性名称标签
 	 * @param {Number} _type - 标签类型
 	 */
-	function ClosingComputedDeclarationPropertyNameTag(_type){
+	function ClosingDeclarationComputedPropertyNameTag(_type){
 		ClosingComputedPropertyNameTag.call(this, _type);
 	};
-	ClosingComputedDeclarationPropertyNameTag = new Rexjs(ClosingComputedDeclarationPropertyNameTag, ClosingComputedPropertyNameTag);
+	ClosingDeclarationComputedPropertyNameTag = new Rexjs(ClosingDeclarationComputedPropertyNameTag, ClosingComputedPropertyNameTag);
 
-	ClosingComputedDeclarationPropertyNameTag.props({
+	ClosingDeclarationComputedPropertyNameTag.props({
 		require: require
 	});
 
-	return ClosingComputedDeclarationPropertyNameTag;
+	return ClosingDeclarationComputedPropertyNameTag;
 }(
 	this.ClosingComputedPropertyNameTag
 );
 
-closingComputedDeclarationPropertyNameTag = new this.ClosingComputedDeclarationPropertyNameTag();
+closingDeclarationComputedPropertyNameTag = new this.ClosingDeclarationComputedPropertyNameTag();
 
 }.call(
 	this,
 	this.IdentifierPropertyNameTag,
 	this.PropertyDestructuringItemExpression,
-	// closingComputedDeclarationPropertyNameTag
+	// closingDeclarationComputedPropertyNameTag
 	null,
 	// require
 	function(tagsMap){

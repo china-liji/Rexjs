@@ -25,15 +25,15 @@ this.DeclarationPropertyRestStatement = function(out){
 	SpreadStatement.prototype.out
 );
 
-this.DeclarationPropertyRestItemTag = function(IdentifierDeclarationPropertyNameTag, IdentifierExpression){
+this.DeclarationPropertyRestItemTag = function(DeclarationIdentifierPropertyNameTag, IdentifierExpression){
 	/**
 	 * 变量声明对象属性省略项标签
 	 * @param {Number} _type - 标签类型
 	 */
 	function DeclarationPropertyRestItemTag(_type){
-		IdentifierDeclarationPropertyNameTag.call(this, _type);
+		DeclarationIdentifierPropertyNameTag.call(this, _type);
 	};
-	DeclarationPropertyRestItemTag = new Rexjs(DeclarationPropertyRestItemTag, IdentifierDeclarationPropertyNameTag);
+	DeclarationPropertyRestItemTag = new Rexjs(DeclarationPropertyRestItemTag, DeclarationIdentifierPropertyNameTag);
 
 	DeclarationPropertyRestItemTag.props({
 		/**
@@ -65,7 +65,7 @@ this.DeclarationPropertyRestItemTag = function(IdentifierDeclarationPropertyName
 
 	return DeclarationPropertyRestItemTag;
 }(
-	this.IdentifierDeclarationPropertyNameTag,
+	this.DeclarationIdentifierPropertyNameTag,
 	this.IdentifierExpression
 );
 

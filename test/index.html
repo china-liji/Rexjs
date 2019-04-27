@@ -17,6 +17,7 @@
 			font-size: 12px;
 			line-height: 1.5em;
 			padding: 0 16px;
+			display: none;
 		}
 
 		input:checked ~ span > .log {
@@ -123,21 +124,21 @@
 					append(info).className = "warn";
 				};
 
-				console.error = function(info){
-					var el = append(info)
+				// console.error = function(info){
+				// 	var el = append(info)
 
-					el.className = "error";
+				// 	el.className = "error";
 					
-					el.appendChild(
-						document.createElement("br")
-					);
+				// 	el.appendChild(
+				// 		document.createElement("br")
+				// 	);
 
-					el.appendChild(
-						document.createTextNode(
-							new Error().stack
-						)
-					);
-				};
+				// 	el.appendChild(
+				// 		document.createTextNode(
+				// 			new Error().stack
+				// 		)
+				// 	);
+				// };
 
 				// Rexjs.ECMAScriptParser.config.es6Base = false;
 

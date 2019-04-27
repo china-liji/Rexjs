@@ -1405,7 +1405,7 @@ this.Expression = function(parseInt){
 		STATE_NONE: parseInt(0, 2),
 		// 表达式结束状态
 		STATE_EXPRESSION_END: parseInt(10, 2),
-		// 语句可结束状态
+		// 语句可结束状态，比如 js 中的代码换行，但是没有语句连接符，如分号
 		STATE_STATEMENT_ENDABLE: parseInt(110, 2),
 		// 语句结束状态，当开始编译，进行语句连接时，应该在两语句之间加语句连接符，如分号等
 		STATE_STATEMENT_END: parseInt(1110, 2),
