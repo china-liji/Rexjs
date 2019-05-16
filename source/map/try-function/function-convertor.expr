@@ -1,0 +1,92 @@
+import { Expression, PartnerExpression } from "../core";
+import { ECMAScriptConfig } from "../ecmascript/ecmascript-config";
+import { AccessorExpression } from "../accessor/accessor.expr";
+
+export let FunctionConvertorExpression = function(extractAccessor){
+	return class FunctionConvertorExpression extends Expression {
+		/**
+		 * 是否添加了执行函数的小括号
+		 * @type {Boolean}
+		 */
+		called = true;
+
+		/**
+		 * 被转换的函数表达式
+		 * @type {Expression}
+		 */
+		function = null;
+
+		/**
+		 * 函数转换器表达式
+		 * @param {Expression} func - 标签上下文
+		 */
+		constructor(func){
+			super(func.context);
+
+			this.function = func;
+		};
+
+		/**
+		 * 提取表达式文本内容
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 * @returns {void}
+		 */
+		extractTo(contentBuilder){
+			let { function: func } = this;
+
+			// 如果需要编译
+			if(ECMAScriptConfig.rexjs){
+				// 追加转换方法
+				contentBuilder.appendString("(Rexjs.Function.convert(");
+
+				// 如果函数是访问器形式的
+				if(func instanceof AccessorExpression){
+					// 以访问器形式提取
+					extractAccessor(contentBuilder, func, func.property);
+				}
+				else {
+					// 直接提取
+					func.extractTo(contentBuilder);
+				}
+
+				// 追加转换方法的结束小括号
+				contentBuilder.appendString(
+					// 如果没有带执行方法的小括号，则加上
+					"))" + (this.called ? "" : "()")
+				);
+
+				return;
+			}
+
+			// 直接提取
+			func.extractTo(contentBuilder);
+		};
+	};
+}(
+	// extractAccessor
+	(contentBuilder, func, property) => {
+		// 先提取函数所属对象
+		func.object.extractTo(contentBuilder);
+
+		// 追加 convert 方法的参数分隔符
+		contentBuilder.appendString(",");
+
+		// 如果是匹配组表达式，则说明是中括号 window["a"] 形式的访问器
+		if(property instanceof PartnerExpression){
+			// 将起始中括号改成小括号
+			contentBuilder.appendString("(");
+			// 提取括号内部表达式
+			property.inner.extractTo(contentBuilder);
+			// 将结束中括号改成小括号
+			contentBuilder.appendString(")");
+			return;
+		}
+
+		// 将标识符用双引号包括起来
+		contentBuilder.appendString('"');
+		// 提取标识符
+		contentBuilder.appendContext(property);
+		// 将标识符用双引号包括起来
+		contentBuilder.appendString('"');
+	}
+);

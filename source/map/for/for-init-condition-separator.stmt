@@ -1,0 +1,27 @@
+import { CommaStatement } from "../comma/comma.stmt";
+
+export let ForInitConditionSeparatorStatement = function(){
+	/**
+	 * for 循环初始化条件分隔符语句
+	 * @param {Statements} statements - 该语句将要所处的语句块
+	 */
+	return class ForInitConditionSeparatorStatement extends CommaStatement {
+		/**
+		 * 尝试处理异常
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 语法标签上下文
+		 * @returns {SyntaxTag}
+		 */
+		try(parser, context){
+			// 如果是 in 关键字
+			if(context.content === "in"){
+				// 跳出当前语句并添加表达式
+				this.out().add(this.expression);
+				return null;
+			}
+
+			// 返回父类方法处理的结果
+			return super.try(parser, context);
+		};
+	};
+}();

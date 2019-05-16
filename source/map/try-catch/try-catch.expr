@@ -1,0 +1,146 @@
+import { GenerableExpression } from "../base-expression/generable.expr";
+
+export let TryCatchExpression = function(){
+	/**
+	 * try 表达式
+	 * @param {Context} context - 标签上下文
+	 * @param {Statements} statements - 当前语句块
+	 */
+	return class TryCatchExpression extends GenerableExpression {
+		/**
+		 * catch 语句块
+		 * @type {Statements}
+		 */
+		catchBlock = null;
+
+		/**
+		 * catch 关键字上下文
+		 * @type {Context}
+		 */
+		catchContext = null;
+
+		/**
+		 * 异常表达式
+		 * @type {Expression}
+		 */
+		exception = null;
+
+		/**
+		 * finally 语句块
+		 * @type {Statements}
+		 */
+		finallyBlock = null;
+
+		/**
+		 * finally 关键字上下文
+		 * @type {Context}
+		 */
+		finallyContext = null;
+
+		/**
+		 * try 语句块
+		 * @type {Statements}
+		 */
+		tryBlock = null;
+
+		/**
+		 * 以生成器形式的提取表达式文本内容
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 * @returns {void}
+		 */
+		generateTo(contentBuilder){
+			let { exception, contextGeneratorIfNeedCompile: generator } = this,
+
+				{ variable, currentIndexString } = generator,
+			
+				exceptionIndex = generator.nextIndex(), mainFlowIndex = generator.nextIndex(), unobserveIndex = generator.nextIndex();
+
+			// 追加监听异常代码
+			contentBuilder.appendString(
+				variable + ".observe(" + exceptionIndex + ");"
+			);
+
+			// 提取 try 语句块
+			this.tryBlock.inner.extractTo(contentBuilder);
+
+			// 追加设置结束监听的代码
+			contentBuilder.appendString(
+				currentIndexString + "=" + unobserveIndex + ";break;"
+			);
+
+			// 如果异常存在，说明存在 catch 语句
+			if(exception){
+				// 追加异常索引代码
+				contentBuilder.appendString(
+					"case " + exceptionIndex + ":"
+				);
+
+				// 提取异常信息
+				exception.inner.extractTo(contentBuilder);
+				// 给异常信息赋值
+				contentBuilder.appendString("=" + variable + ".exception;");
+
+				// 提取 catch 语句块
+				this.catchBlock.extractTo(contentBuilder);
+
+				// 追加设置主流索引代码
+				contentBuilder.appendString(
+					currentIndexString + "=" + mainFlowIndex + ";break;"
+				);
+			}
+
+			contentBuilder.appendString(
+				// 追加去掉监视异常的代码
+				"case " + unobserveIndex + ":" + variable + ".unobserve();" +
+				// 追加设置主流索引代码
+				currentIndexString + "=" + mainFlowIndex + ";break;case " + mainFlowIndex + ":"
+			);
+
+			// 如果 finally 关键字存在
+			if(this.finallyContext){
+				// 提取 finally 语句块
+				this.finallyBlock.extractTo(contentBuilder);
+			}
+		};
+
+		/**
+		 * 以常规形式的提取表达式文本内容
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 * @returns {void}
+		 */
+		normalizeTo(contentBuilder){
+			let { exception, finallyContext } = this;
+			
+			// 追加 try 关键字
+			contentBuilder.appendContext(this.tryContext);
+			// 提取 try 语句块
+			this.tryBlock.extractTo(contentBuilder);
+			
+			// 如果异常存在，说明存在 catch 语句
+			if(exception){
+				// 追加 catch 关键字
+				contentBuilder.appendContext(this.catchContext);
+				// 提取异常内容
+				exception.extractTo(contentBuilder);
+				// 提取 catch 语句块
+				this.catchBlock.extractTo(contentBuilder);
+			}
+			
+			// 如果 finally 关键字存在
+			if(finallyContext){
+				// 追加 finally 关键字
+				contentBuilder.appendContext(finallyContext);
+				// 提取 finally 语句块
+				this.finallyBlock.extractTo(contentBuilder);
+			}
+		};
+		
+		/**
+		 * 获取 try 关键字上下文
+		 * @type {Context}
+		 */
+		get tryContext(){
+			return this.context;
+		};
+	};
+}();

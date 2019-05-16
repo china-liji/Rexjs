@@ -1,0 +1,18 @@
+import { BlockBodyStatements } from "../block/block-body.stmts";
+import { SwitchBodyStatement } from "./switch-body.stmt";
+
+export let SwitchBodyStatements = function(){
+	/**
+	 * switch 主体语句块
+	 * @param {Statements} target - 目标语句块，即上一层语句块
+	 */
+	return class SwitchBodyStatements extends BlockBodyStatements {
+		/**
+		 * 初始化语句
+		 * @returns {Statement}
+		 */
+		initStatement(){
+			return new SwitchBodyStatement(this);
+		};
+	};
+}();

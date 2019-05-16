@@ -1,0 +1,15 @@
+{
+	".txt": "text/plain",
+	".js": "text/javascript",
+	".expr": "text/javascript",
+	".stmt": "text/javascript",
+	".stmts": "text/javascript",
+	".tag": "text/javascript",
+	".opening": "text/javascript",
+	".closing": "text/javascript",
+	".html": "text/html",
+	".css": "text/css",
+	".json": "application/json",
+	".xml": "text/xml",
+	".md": "text/plain"
+}

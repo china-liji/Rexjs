@@ -1,0 +1,32 @@
+import { TYPE_UNEXPECTED } from "../core";
+import { ClosingBlockTag } from "../block/block.closing";
+
+export let ClosingSwitchBodyTag = function(){
+	/**
+	 * switch 主体结束标签
+	 * @param {Number} _type - 标签类型
+	 */
+	return class ClosingSwitchBodyTag extends ClosingBlockTag {
+		/**
+		 * 标签类型
+		 * @type {Number}
+		 */
+		$type = TYPE_UNEXPECTED;
+
+		/**
+		 * 标签访问器
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 标签上下文
+		 * @param {Statement} statement - 当前语句
+		 * @param {Statements} statements - 当前语句块
+		 * @returns {void}
+		 */
+		visitor(parser, context, statement, statements){
+			// 调用父类方法
+			super.visitor(parser, context, statement, statements);
+
+			// 跳出语句并设置表达式的 block 属性
+			statement.out().block = statement.expression;
+		};
+	};
+}();

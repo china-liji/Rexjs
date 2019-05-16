@@ -1,4 +1,4 @@
-new function({ Module, ModuleCache, File, ECMAScriptParser, JavaScriptCompiler, ModuleReady, URL, Base64 }, MAP_PATH, fs, path, source, dev, baseURL, defaultList){
+new function({ Module, ModuleCache, File, ECMAScriptParser, JavaScriptCompiler, ModuleReady, URL, Base64 }, MAP_PATH, fs, path, source, dev, baseURL, jsFileExts, defaultList){
 
 this.File = function(url){
 	/**
@@ -112,7 +112,9 @@ this.SourceModuleReady = function(SourceCompiler, File, Buffer, toMapPath, unmap
 		constructor(){
 			super();
 
-			this.compilers[".js"] = SourceCompiler;
+			jsFileExts.forEach((ext) => {
+				this.compilers[ext] = SourceCompiler;
+			});
 			
 			// 绑定 base64 的编译方法
 			Base64.bindBtoa(function(string){
@@ -120,7 +122,7 @@ this.SourceModuleReady = function(SourceCompiler, File, Buffer, toMapPath, unmap
 			});
 		};
 
-		xx(moduleName){
+		unmap(moduleName){
 			let url = new URL(
 				moduleName,
 				baseURL
@@ -152,7 +154,7 @@ this.SourceModuleReady = function(SourceCompiler, File, Buffer, toMapPath, unmap
 
 			let url = new URL(
 				moduleName,
-				_baseUrlString ? new URL(this.xx(_baseUrlString).href, baseURL).href : baseURL
+				_baseUrlString ? new URL(this.unmap(_baseUrlString).href, baseURL).href : baseURL
 			);
 
 			return url;
@@ -169,7 +171,7 @@ this.SourceModuleReady = function(SourceCompiler, File, Buffer, toMapPath, unmap
 				success(
 					File.read(
 						toMapPath(
-							this.xx(href).href
+							this.unmap(href).href
 						)
 					)
 				);
@@ -242,7 +244,7 @@ this.Source = function(SourceModuleReady, File, EventEmitter, inited){
 						let pathString = `${dir}/${name}`, stats = fs.statSync(pathString);
 
 						if(stats.isFile()){
-							if(includeCurrentDirectorFiles && path.parse(pathString).ext === ".js"){
+							if(includeCurrentDirectorFiles && jsFileExts.indexOf(path.parse(pathString).ext) > -1){
 								filenames.push(pathString);
 							}
 
@@ -413,25 +415,21 @@ module.exports = { DevSource: this.DevSource, Source: this.Source };
 	process.argv.indexOf("-dev") > -1,
 	// baseURL
 	"",
+	// jsFileExts
+	[require("./server/content-types.json")].map((contentTypes) => {
+		let exts = [];
+
+		for(let ext in contentTypes){
+			if(contentTypes[ext] === "text/javascript"){
+				exts.push(ext);
+			}
+		}
+
+		return exts;
+	})[0],
 	// defaultList
 	[
 		"file-header.js",
-		"label.js",
-		"terminated-flow.js",
-		"return.js",
-		"throw.js",
-		"terminated-brach-flow.js",
-		"break-continue.js",
-		"if.js",
-		"while.js",
-		"do-while.js",
-		"for.js",
-		"for-iterator.js",
-		"for-condition.js",
-		"try-function.js",
-		"try-catch.js",
-		"switch.js",
-		"case.js",
 		"yield.js",
 		"template.js",
 		"template-content.js",

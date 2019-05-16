@@ -1,1 +1,0 @@
-export { NegationTag } from "../negation-operator/negation-tag";

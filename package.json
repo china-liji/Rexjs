@@ -4,7 +4,7 @@
 	"compiler-version": "1.7.2",
 	"description": "Rexjs is a faster and smaller JavaScript(ES6+) compiler!",
 	"scripts": {
-		"start": "node ./node/dev.js",
+		"start": "node ./node/server/dev.js",
 		"build": "node ./node/uglify.js",
 		"read-me": "node ./bin/rex-api.node.js ./node/read-me.js",
 		"pretest-node": "npm run build",

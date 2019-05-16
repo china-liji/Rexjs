@@ -1,0 +1,15 @@
+import { BoxStatement } from "../base-statement/box.stmt";
+
+export let SwitchStatement = function(){
+	/**
+	 * switch 语句
+	 * @param {Statements} statements - 该语句将要所处的语句块
+	 */
+	return class SwitchStatement extends BoxStatement {
+		/**
+		 * 流类型
+		 * @type {Number}
+		 */
+		flow = BoxStatement.FLOW_LINEAR;
+	};
+}();

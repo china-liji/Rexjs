@@ -1,32 +1,32 @@
 // for 循环条件表达式相关
 !function(IdentifierExpression, VarExpression, CommaStatement, closingForConditionTag, forInitConditionItemSeparatorTag, forInTag, forOfTag, forInitConditionSeparatorTag, forLogicConditionSeparatorTag, getOpeningConditionTag){
 
-this.ForConditionInnerStatement = function(){
+this.ForConditionStatement = function(){
 	/**
 	 * for 循环条件内部语句
 	 * @param {Statements} statements - 该语句将要所处的语句块
 	 */
-	function ForConditionInnerStatement(statements){
+	function ForConditionStatement(statements){
 		ECMAScriptStatement.call(this, statements);
 	};
-	ForConditionInnerStatement = new Rexjs(ForConditionInnerStatement, ECMAScriptStatement);
+	ForConditionStatement = new Rexjs(ForConditionStatement, ECMAScriptStatement);
 	
-	ForConditionInnerStatement.props({
+	ForConditionStatement.props({
 		expression: new DefaultExpression()
 	});
 
-	return ForConditionInnerStatement;
+	return ForConditionStatement;
 }();
 
-this.ForInitConditionStatement = function(ForConditionInnerStatement, hasError){
+this.ForInitConditionStatement = function(ForConditionStatement, hasError){
 	/**
 	 * for 循环初始化条件语句
 	 * @param {Statements} statements - 该语句将要所处的语句块
 	 */
 	function ForInitConditionStatement(statements){
-		ForConditionInnerStatement.call(this, statements);
+		ForConditionStatement.call(this, statements);
 	};
-	ForInitConditionStatement = new Rexjs(ForInitConditionStatement, ForConditionInnerStatement);
+	ForInitConditionStatement = new Rexjs(ForInitConditionStatement, ForConditionStatement);
 	
 	ForInitConditionStatement.props({
 		/**
@@ -121,7 +121,7 @@ this.ForInitConditionStatement = function(ForConditionInnerStatement, hasError){
 	
 	return ForInitConditionStatement;
 }(
-	this.ForConditionInnerStatement,
+	this.ForConditionStatement,
 	// hasError
 	function(parser, expression, context){
 		// 如果是声明表达式
@@ -151,15 +151,15 @@ this.ForInitConditionStatement = function(ForConditionInnerStatement, hasError){
 	}
 );
 
-this.ForLogicConditionStatement = function(ForConditionInnerStatement){
+this.ForLogicConditionStatement = function(ForConditionStatement){
 	/**
 	 * for 循环的逻辑判断条件语句
 	 * @param {Statements} statements - 该语句将要所处的语句块
 	 */
 	function ForLogicConditionStatement(statements){
-		ForConditionInnerStatement.call(this, statements);
+		ForConditionStatement.call(this, statements);
 	};
-	ForLogicConditionStatement = new Rexjs(ForLogicConditionStatement, ForConditionInnerStatement);
+	ForLogicConditionStatement = new Rexjs(ForLogicConditionStatement, ForConditionStatement);
 	
 	ForLogicConditionStatement.props({
 		/**
@@ -184,20 +184,20 @@ this.ForLogicConditionStatement = function(ForConditionInnerStatement){
 	
 	return ForLogicConditionStatement;
 }(
-	this.ForConditionInnerStatement
+	this.ForConditionStatement
 );
 
-this.ForFinallyConditionStatement = function(ForConditionInnerStatement){
+this.ForFinalConditionStatement = function(ForConditionStatement){
 	/**
 	 * for 循环的末条件语句
 	 * @param {Statements} statements - 该语句将要所处的语句块
 	 */
-	function ForFinallyConditionStatement(statements){
-		ForConditionInnerStatement.call(this, statements);
+	function ForFinalConditionStatement(statements){
+		ForConditionStatement.call(this, statements);
 	};
-	ForFinallyConditionStatement = new Rexjs(ForFinallyConditionStatement, ForConditionInnerStatement);
+	ForFinalConditionStatement = new Rexjs(ForFinalConditionStatement, ForConditionStatement);
 	
-	ForFinallyConditionStatement.props({
+	ForFinalConditionStatement.props({
 		/**
 		 * 捕获处理异常
 		 * @param {SyntaxParser} parser - 语法解析器
@@ -209,9 +209,9 @@ this.ForFinallyConditionStatement = function(ForConditionInnerStatement){
 		}
 	});
 	
-	return ForFinallyConditionStatement;
+	return ForFinalConditionStatement;
 }(
-	this.ForConditionInnerStatement
+	this.ForConditionStatement
 );
 
 this.ForInitConditionSeparatorStatement = function(tryMethod){
@@ -414,7 +414,7 @@ this.ForInitConditionSeparatorTag = function(ForConditionSeparatorTag, ForLogicC
 	this.ForLogicConditionStatement
 );
 
-this.ForLogicConditionSeparatorTag = function(ForConditionSeparatorTag, ForFinallyConditionStatement){
+this.ForLogicConditionSeparatorTag = function(ForConditionSeparatorTag, ForFinalConditionStatement){
 	/**
 	 * for 循环条件中逻辑语句的分号标签，即 for 循环条件的第二个分号标签
 	 * @param {Number} _type - 标签类型
@@ -430,7 +430,7 @@ this.ForLogicConditionSeparatorTag = function(ForConditionSeparatorTag, ForFinal
 		 * @param {Statements} statements - 该语句将要所处的语句块
 		 */
 		getBoundStatement: function(statements){
-			return new ForFinallyConditionStatement(statements);
+			return new ForFinalConditionStatement(statements);
 		},
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
@@ -444,7 +444,7 @@ this.ForLogicConditionSeparatorTag = function(ForConditionSeparatorTag, ForFinal
 	return ForLogicConditionSeparatorTag;
 }(
 	this.ForConditionSeparatorTag,
-	this.ForFinallyConditionStatement
+	this.ForFinalConditionStatement
 );
 
 this.ClosingForConditionTag = function(ClosingParenTag, ForBodyStatement){

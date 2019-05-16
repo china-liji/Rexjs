@@ -1,18 +1,18 @@
 // try catch 语句相关
 !function(TryFunctionExpression, TryFunctionStatement, tryFunctionTag, catchTag, finallyTag){
 	
-this.TryExpression = function(GenerableExpression){
+this.TryCatchExpression = function(GenerableExpression){
 	/**
 	 * try 表达式
 	 * @param {Context} context - 标签上下文
 	 * @param {Statements} statements - 当前语句块
 	 */
-	function TryExpression(context, statements){
+	function TryCatchExpression(context, statements){
 		GenerableExpression.call(this, context, statements);
 	};
-	TryExpression = new Rexjs(TryExpression, GenerableExpression);
+	TryCatchExpression = new Rexjs(TryCatchExpression, GenerableExpression);
 	
-	TryExpression.props({
+	TryCatchExpression.props({
 		catchBlock: null,
 		catchContext: null,
 		exception: null,
@@ -115,7 +115,7 @@ this.TryExpression = function(GenerableExpression){
 		}
 	});
 	
-	return TryExpression;
+	return TryCatchExpression;
 }(
 	this.GenerableExpression
 );
@@ -240,7 +240,7 @@ this.FinallyStatement = function(){
 	return FinallyStatement;
 }();
 
-this.TryTag = function(TryExpression, TryStatement){
+this.TryTag = function(TryCatchExpression, TryStatement){
 	/**
 	 * try 标签
 	 * @param {Number} _type - 标签类型
@@ -287,7 +287,7 @@ this.TryTag = function(TryExpression, TryStatement){
 		 */
 		visitor: function(parser, context, statement, statements){
 			// 设置当前表达式
-			statement.expression = new TryExpression(context, statements);
+			statement.expression = new TryCatchExpression(context, statements);
 			// 设置当前语句
 			statements.statement = new TryStatement(statements);
 		}
@@ -295,7 +295,7 @@ this.TryTag = function(TryExpression, TryStatement){
 	
 	return TryTag;
 }(
-	this.TryExpression,
+	this.TryCatchExpression,
 	this.TryStatement
 );
 
@@ -400,7 +400,7 @@ this.ExceptionVariableTag = function(VariableDeclarationTag){
 		 * @param {Statements} statements - 当前语句块
 		 */
 		visitor: function(parser, context, statement, statements){
-			var tryExpression = statement.target.expression, generator = tryExpression.contextGeneratorIfNeedCompile;
+			var TryCatchExpression = statement.target.expression, generator = TryCatchExpression.contextGeneratorIfNeedCompile;
 
 			// 如果存在需要编译的生成器
 			if(generator){
@@ -419,7 +419,7 @@ this.ExceptionVariableTag = function(VariableDeclarationTag){
 			}
 
 			// 设置 inner
-			tryExpression.exception.inner = new Expression(context);
+			TryCatchExpression.exception.inner = new Expression(context);
 		}
 	});
 	

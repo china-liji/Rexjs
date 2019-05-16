@@ -1,6 +1,6 @@
 new function(fs, path, contentTypes, success, error){
 
-this.Server = function(DIR_NAME, EXT_REGEXP, http, readFile){
+this.Server = function(Promise, DIR_NAME, EXT_REGEXP, http){
 	/**
 	 * 服务器
 	 */
@@ -34,7 +34,7 @@ this.Server = function(DIR_NAME, EXT_REGEXP, http, readFile){
 				// 判断文件状态
 				fs.stat(
 					fullPath,
-					(err, stats) => {
+					async (err, stats) => {
 						// 如果 有错误 或 不是文件
 						if(err || !stats.isFile()){
 							// 报错
@@ -42,8 +42,17 @@ this.Server = function(DIR_NAME, EXT_REGEXP, http, readFile){
 							return;
 						}
 
-						// 直接读取文件并返回
-						readFile(fullPath, pathInfo, serverResponse);
+						try {
+							// 直接读取文件并返回
+							success(
+								serverResponse,
+								await this.readFile(fullPath, pathInfo, incomingMessage),
+								contentTypes[pathInfo.ext]
+							);
+						}
+						catch(e){
+							error(serverResponse);
+						}
 					}
 				);
 			});
@@ -66,28 +75,40 @@ this.Server = function(DIR_NAME, EXT_REGEXP, http, readFile){
 				}
 			);
 		};
+
+		async readFile(fullPath, pathInfo){
+			return await new Promise((res, rej) => {
+				fs.readFile(
+					fullPath,
+					"utf8",
+					(err, content) => {
+						if(err){
+							rej(err);
+							return;
+						}
+
+						res(content);
+					}
+				);
+			});
+		};
 	};
 }(
+	Promise,
 	// DIR_NAME
 	path.resolve(__dirname, "../../"),
 	// EXT_REGEXP
-	/^(?:\.js|\.css|\.html|\.json|\.txt|\.xml|\.md)$/,
-	require("http"),
-	// readFile
-	(fullPath, pathInfo, serverResponse) => {
-		fs.readFile(
-			fullPath,
-			"utf8",
-			(err, content) => {
-				if(err){
-					error(serverResponse);
-					return;
-				}
-
-				success(serverResponse, content, contentTypes[pathInfo.ext]);
-			}
-		);
-	}
+	new RegExp(
+		`^(?:${
+			Object
+				.keys(contentTypes)
+				.map((ext) => {
+					return `\\${ext}`;
+				})
+				.join("|")
+		})$`
+	),
+	require("http")
 );
 
 module.exports = this;
@@ -96,15 +117,7 @@ module.exports = this;
 	require("fs"),
 	require("path"),
 	// contentTypes
-	{
-		".txt": "text/plain",
-		".js": "text/javascript",
-		".html": "text/html",
-		".css": "text/css",
-		".json": "application/json",
-		".xml": "text/xml",
-		".md": "text/plain"
-	},
+	require("./content-types.json"),
 	// success
 	(serverResponse, content, contentType) => {
 		serverResponse.setHeader("Content-Type", `${contentType};charset=utf-8;`);

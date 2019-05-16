@@ -1,0 +1,20 @@
+import { ECMAScriptStatement } from "../ecmascript/ecmascript.stmt";
+
+export let LabelledStatement = function(){
+	/**
+	 * 标记语句
+	 * @param {Statements} statements - 该语句将要所处的语句块
+	 */
+	return class LabelledStatement extends ECMAScriptStatement {
+		/**
+		 * 捕获处理异常
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 语法标签上下文
+		 * @returns {SyntaxTag}
+		 */
+		catch(parser, context){
+			// 跳出语句并设置 statementExpression
+			this.out().statementExpression = this.expression
+		};
+	};
+}();

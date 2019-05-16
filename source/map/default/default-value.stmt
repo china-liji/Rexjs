@@ -1,0 +1,16 @@
+import { CaseValueStatement } from "../case/case-value.stmt";
+import { DefaultExpression } from "../core";
+
+export let DefaultValueStatement = function(){
+	/**
+	 * default 值语句
+	 * @param {Statements} statements - 该语句将要所处的语句块
+	 */
+	return class DefaultValueStatement extends CaseValueStatement {
+		/**
+		 * 语句表达式
+		 * @type {Expression}
+		 */
+		expression = new DefaultExpression();
+	};
+}();

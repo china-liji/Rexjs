@@ -1,0 +1,13 @@
+{
+    "editor.tabSize": 4,
+    "editor.insertSpaces": false,
+	"editor.detectIndentation": false,
+	"files.associations": {
+		"*.expr": "javascript",
+		"*.tag": "javascript",
+		"*.stmt": "javascript",
+		"*.stmts": "javascript",
+		"*.opening": "javascript",
+		"*.closing": "javascript"
+	}
+}

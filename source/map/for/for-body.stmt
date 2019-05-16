@@ -1,0 +1,27 @@
+import { SingleStatement } from "../base-statement/single.stmt";
+import { ECMAScriptStatement } from "../ecmascript/ecmascript.stmt";
+
+export let ForBodyStatement = function(){
+	/**
+	 * for 主体语句
+	 * @param {Statements} statements - 该语句将要所处的语句块
+	 */
+	return class ForBodyStatement extends SingleStatement {
+		/**
+		 * 流类型
+		 * @type {Number}
+		 */
+		flow = ECMAScriptStatement.FLOW_CIRCULAR;
+
+		/**
+		 * 请求跳出该语句
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 语法标签上下文
+		 * @returns {void}
+		 */
+		requestOut(parser, context){
+			// 跳出语句并设置 body
+			this.out().body = this.expression;
+		};
+	};
+}();

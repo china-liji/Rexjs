@@ -119,7 +119,7 @@ this.ExpressionContextTags = function(NewlineTags, list, ready){
 		},
 		newlineTags: null,
 		/**
-		 * 将所有标签准备就绪，即排序和初始化正则表达式，ps：这是个耗性能的方法
+		 * 将所有标签准备就绪，即排序和初始化正则表达式，这是个耗性能的方法
 		 */
 		ready: function(){
 			// 初始化新行标签列表

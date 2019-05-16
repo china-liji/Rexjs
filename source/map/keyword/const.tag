@@ -1,0 +1,1 @@
+export { ConstTag } from "../const-declaration/const.tag";

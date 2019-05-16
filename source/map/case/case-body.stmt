@@ -1,0 +1,67 @@
+import { BraceBodyStatement } from "../brace/brace-body.stmt";
+import { STATE_STATEMENT_ENDABLE } from "../core";
+
+export let CaseBodyStatement = function(isCase, isClosingBrace){
+	/**
+	 * case 语句
+	 * @param {Statements} statements - 该语句将要所处的语句块
+	 */
+	return class CaseBodyStatement extends BraceBodyStatement {
+		/**
+		 * 捕获处理异常
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 语法标签上下文
+		 * @returns {SyntaxTag}
+		 */
+		catch(parser, context){
+			switch(context.content){
+				// 如果是 case 关键字
+				case "case":
+					return isCase(parser, this, context).case;
+
+				// 如果是 default 关键字
+				case "default":
+					return isCase(parser, this, context).default;
+
+				// 如果是结束大括号
+				case "}":
+					isClosingBrace(parser, this.statements);
+					return null;
+
+				default:
+					return null;
+			}
+		};
+	};
+}(
+	// isCase
+	(parser, statement, context) => {
+		let { statements } = statement, { target: targetStatements } = statements, { expression: caseExpression } = targetStatements.statement;
+
+		// 如果语句可以结束
+		if((statement.expression.state & STATE_STATEMENT_ENDABLE) === STATE_STATEMENT_ENDABLE){
+			// 设置 case 表达式的 statements
+			caseExpression.statements = statements;
+			// 恢复语句块
+			parser.statements = targetStatements;
+			// 创建新语句
+			targetStatements.newStatement();
+		}
+		else {
+			parser.error(context);
+		}
+
+		// 返回 case 标签
+		return caseExpression.context.tag;
+	},
+	// isClosingBrace
+	(parser, statements) => {
+		(
+			// 恢复语句块
+			parser.statements = statements.target
+		)
+		.statement
+		.expression
+		.statements = statements;
+	}
+);

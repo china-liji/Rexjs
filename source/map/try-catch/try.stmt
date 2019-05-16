@@ -1,0 +1,73 @@
+import { ECMAScriptStatement } from "../ecmascript/ecmascript.stmt";
+import { TryFunctionExpression } from "../try-function/try-function.expr";
+import { TryFunctionStatement } from "../try-function/try-function.stmt";
+import { DefaultExpression } from "../core";
+import { ECMAScriptErrors } from "../ecmascript/ecmascript-errors";
+import { TryFunctionTag } from "../try-function/try-function.tag";
+
+export let TryStatement = function(toUnary){
+	/**
+	 * try 语句
+	 * @param {Statements} statements - 该语句将要所处的语句块
+	 */
+	return class TryStatement extends ECMAScriptStatement {
+		/**
+		 * 语句表达式
+		 * @type {Expression}
+		 */
+		expression = new DefaultExpression();
+
+		/**
+		 * 捕获处理异常
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 语法标签上下文
+		 * @returns {SyntaxTag}
+		 */
+		catch(parser, context){
+			let { expression } = this;
+
+			// 如果是默认表达式，即 try 关键字后面跟的不是起始大括号 "{"，因为起始大括号会给该语句重新设置表达式为 BlockExpression
+			if(expression.default){
+				return toUnary(parser, this, expression, context);
+			}
+
+			// 跳出语句并设置 tryBlock 属性
+			this.out().tryBlock = expression;
+			
+			switch(context.content){
+				// 如果是 catch
+				case "catch" :
+					return this.tagOf().catch;
+				
+				// 如果是 finally
+				case "finally" :
+					return this.tagOf().finally;
+			}
+
+			// 报错
+			parser.error(context, ECMAScriptErrors.TRY);
+		};
+	};
+}(
+	// toUnary
+	(parser, statement, expression, context) => {
+		let { tag }  = context;
+
+		// 如果匹配到的标签是可误解的
+		if(tag.type.mistakable){
+			let { statements } = statement, targetContext = statement.out().context;
+
+			// 重置标签
+			targetContext.tag = new TryFunctionTag();
+			// 重置目标语句的表达式
+			statement.target.expression = new TryFunctionExpression(targetContext);
+			// 设置当前语句为
+			statements.statement = new TryFunctionStatement(statements);
+
+			return tag;
+		}
+
+		// 报错
+		parser.error(context);
+	}
+);

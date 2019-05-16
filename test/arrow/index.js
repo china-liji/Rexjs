@@ -15,6 +15,7 @@ test.unit(
 		this.true("带语句块的箭头函数与三元运算符", "a ? ()=>{0} : ()=>{1}");
 		this.true("单层箭头函数中使用 this", "let fn = () => { this }");
 		this.true("多层箭头函数中使用 this", "let fn = () => { return () => { this } }");
+		this.true("语句块的箭头函数接换行后的一元表达式", "() => {}\n +2");
 
 		this.true(
 			"没语句块的箭头函数与逗号",
@@ -163,19 +164,19 @@ test.unit(
 			}
 		);
 
-		// this.false(
-		// 	"箭头后面接表达式",
-		// 	"a => {}1",
-		// 	function(parser, err){
-		// 		return err.context.content !== "1";
-		// 	}
-		// );
+		this.false(
+			"箭头后面接表达式",
+			"a => {}1",
+			function(parser, err){
+				return err.context.content !== "1";
+			}
+		);
 
 		this.false(
 			"语句块的箭头函数后面接除逗号外的表达式上下文",
-			"() => {} / 2",
+			"() => {} + 2",
 			function(parser, err){
-				return err.context.content !== "/";
+				return err.context.content !== "+";
 			}
 		);
 

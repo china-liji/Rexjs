@@ -1,34 +1,34 @@
 // 注释标签
 !function(CommentTag, tags){
 
-this.SingleLineCommentTag = function(){
+this.LineCommentTag = function(){
 	/**
 	 * 单行注释标签
 	 * @param {Number} _type - 标签类型
 	 */
-	function SingleLineCommentTag(_type){
+	function LineCommentTag(_type){
 		CommentTag.call(this, _type);
 	};
-	SingleLineCommentTag = new Rexjs(SingleLineCommentTag, CommentTag);
+	LineCommentTag = new Rexjs(LineCommentTag, CommentTag);
 	
-	SingleLineCommentTag.props({
+	LineCommentTag.props({
 		regexp: /\/\/.*/
 	});
 	
-	return SingleLineCommentTag;
+	return LineCommentTag;
 }();
 
-this.OpeningMultiLineCommentTag = function(){
+this.OpeningBlockCommentTag = function(){
 	/**
 	 * 多行注释起始标签
 	 * @param {Number} _type - 标签类型
 	 */
-	function OpeningMultiLineCommentTag(_type){
+	function OpeningBlockCommentTag(_type){
 		CommentTag.call(this, _type);
 	};
-	OpeningMultiLineCommentTag = new Rexjs(OpeningMultiLineCommentTag, CommentTag);
+	OpeningBlockCommentTag = new Rexjs(OpeningBlockCommentTag, CommentTag);
 	
-	OpeningMultiLineCommentTag.props({
+	OpeningBlockCommentTag.props({
 		regexp: /\/\*/,
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
@@ -41,18 +41,18 @@ this.OpeningMultiLineCommentTag = function(){
 		}
 	});
 	
-	return OpeningMultiLineCommentTag;
+	return OpeningBlockCommentTag;
 }();
 
-this.OpeningRestrictedCommentTag = function(OpeningMultiLineCommentTag){
+this.OpeningRestrictedCommentTag = function(OpeningBlockCommentTag){
 	/**
 	 * 受限制的多行注释起始标签，一般使用在表达式上下文中
 	 * @param {Number} _type - 标签类型
 	 */
 	function OpeningRestrictedCommentTag(_type){
-		OpeningMultiLineCommentTag.call(this, _type);
+		OpeningBlockCommentTag.call(this, _type);
 	};
-	OpeningRestrictedCommentTag = new Rexjs(OpeningRestrictedCommentTag, OpeningMultiLineCommentTag);
+	OpeningRestrictedCommentTag = new Rexjs(OpeningRestrictedCommentTag, OpeningBlockCommentTag);
 
 	OpeningRestrictedCommentTag.props({
 		order: ECMAScriptOrders.OPENING_RESTRICTED_COMMENT,
@@ -69,7 +69,7 @@ this.OpeningRestrictedCommentTag = function(OpeningMultiLineCommentTag){
 	
 	return OpeningRestrictedCommentTag;
 }(
-	this.OpeningMultiLineCommentTag
+	this.OpeningBlockCommentTag
 );
 
 this.CommentBreakTag = function(ExpressionBreakTag){
@@ -125,17 +125,17 @@ this.CommentContentTag = function(){
 	return CommentContentTag;
 }();
 
-this.ClosingMultiLineCommentTag = function(){
+this.ClosingBlockCommentTag = function(){
 	/**
 	 * 多行注释结束标签
 	 * @param {Number} _type - 标签类型
 	 */
-	function ClosingMultiLineCommentTag(_type){
+	function ClosingBlockCommentTag(_type){
 		CommentTag.call(this, _type);
 	};
-	ClosingMultiLineCommentTag = new Rexjs(ClosingMultiLineCommentTag, CommentTag);
+	ClosingBlockCommentTag = new Rexjs(ClosingBlockCommentTag, CommentTag);
 	
-	ClosingMultiLineCommentTag.props({
+	ClosingBlockCommentTag.props({
 		regexp: /\*\//,
 		/**
 		 * 获取此标签接下来所需匹配的标签列表
@@ -146,7 +146,7 @@ this.ClosingMultiLineCommentTag = function(){
 		}
 	});
 	
-	return ClosingMultiLineCommentTag;
+	return ClosingBlockCommentTag;
 }();
 
 }.call(

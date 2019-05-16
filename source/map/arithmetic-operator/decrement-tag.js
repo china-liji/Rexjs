@@ -1,1 +1,0 @@
-export { DecrementTag } from "../negation-operator/decrement-tag";

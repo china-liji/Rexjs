@@ -1,0 +1,80 @@
+import { TerminatedFlowStatement } from "../terminated-flow/terminated-flow.stmt";
+import { EmptyExpression } from "../core";
+import { ECMAScriptErrors } from "../ecmascript/ecmascript-errors";
+import { ECMAScriptStatements } from "../ecmascript/ecmascript.stmts";
+
+export let TerminatedBranchFlowStatement = function(withoutAnyFlow){
+	return class TerminatedBranchFlowStatement extends TerminatedFlowStatement {
+		/**
+		 * 中断分支流语句
+		 * @param {Statements} statements - 该语句将要所处的语句块
+		 */
+		constructor(statements){
+			super(statements);
+
+			this.expression = new EmptyExpression(null);
+		};
+
+		/**
+		 * 尝试处理异常
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 语法标签上下文
+		 * @returns {SyntaxTag}
+		 */
+		catch(parser, context){
+			let { expression } = this, { expression: terminatedBranchFlowExpression } = this.target;
+
+			switch(false){
+				// 如果不是空表达式，说明是属于标记表达式，而标记表达式已经经过验证
+				case expression instanceof EmptyExpression:
+					break;
+
+				// 如果存在指定的流语句中
+				case withoutAnyFlow(terminatedBranchFlowExpression, this.statements):
+					break;
+
+				// 默认
+				default:
+					// 报错
+					parser.error(
+						terminatedBranchFlowExpression.context,
+						ECMAScriptErrors.template(
+							"ILLEGAL_STATEMENT",
+							terminatedBranchFlowExpression.context.content
+						)
+					);
+					return;
+			}
+
+			// 调用父类方法
+			return super.catch(parser, context);
+		};
+	};
+}(
+	// withoutAnyFlow
+	(terminatedBranchFlowExpression, statements) => {
+		let { SCOPE_CLOSURE } = ECMAScriptStatements, { flow } = terminatedBranchFlowExpression.context.tag;
+
+		// 如果语句块存在
+		while(statements){
+			let { statement } = statements;
+
+			// 如果语句存在
+			while(statement){
+				// 如果流一致
+				if((statement.flow & flow) === flow){
+					// 设置中断流表达式所属表达式
+					terminatedBranchFlowExpression.owner = statement.target.expression;
+					return false;
+				}
+
+				statement = statement.target;
+			}
+
+			// 如果是闭包，返回 null，中断循环，否则获取 target
+			statements = (statements.scope & SCOPE_CLOSURE) === SCOPE_CLOSURE ? null : statements.target;
+		}
+
+		return true;
+	}
+);

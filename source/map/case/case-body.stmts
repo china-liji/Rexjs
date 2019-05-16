@@ -1,0 +1,18 @@
+import { SwitchBodyStatements } from "../switch/switch-body.stmts";
+import { CaseBodyStatement } from "./case-body.stmt";
+
+export let CaseBodyStatements = function(){
+	/**
+	 * case 语句块
+	 * @param {Statements} target - 目标语句块，即上一层语句块
+	 */
+	return class CaseBodyStatements extends SwitchBodyStatements {
+		/**
+		 * 初始化语句
+		 * @returns {CaseBodyStatement}
+		 */
+		initStatement(){
+			return new CaseBodyStatement(this);
+		};
+	};
+}();

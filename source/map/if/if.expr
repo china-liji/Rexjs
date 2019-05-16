@@ -1,0 +1,99 @@
+import { ConditionalExpression } from "../base-expression/conditional.expr";
+import { STATE_STATEMENT_ENDED } from "../core";
+
+export let IfExpression = function(){
+	/**
+	 * if 表达式
+	 * @param {Context} context - 表达式上下文
+	 * @param {Statements} statements - 当前语句块
+	 */
+	return class IfExpression extends ConditionalExpression {
+		/**
+		 * esle 主体表达式
+		 * @type {Expression}
+		 */
+		elseBody = null;
+
+		/**
+		 * else 关键字上下文
+		 * @type {Context}
+		 */
+		elseContext = null;
+
+		/**
+		 * if 主体表达式
+		 * @type {Expression}
+		 */
+		ifBody = null;
+		
+		/**
+		 * 以生成器形式的提取表达式文本内容
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 */
+		generateTo(contentBuilder){
+			let mainFlowIndex, { elseContext } = this;
+
+			// 如果存在 else
+			if(elseContext){
+				// 获取下一个索引，以表示新的主流索引，不直接使用 this.linearFlowIndex，是因为其将要代表 else 分支流索引
+				mainFlowIndex = this.branchFlowIndex = this.contextGeneratorIfNeedCompile.nextIndex();
+			}
+
+			// 以生成器形式去编译条件代码
+			this.generateConditionTo(this.condition.inner, contentBuilder);
+			// 编译 if 主体
+			this.generateBodyTo(this.ifBody, contentBuilder);
+
+			// 如果存在 else
+			if(elseContext){
+				// 再将其从 else 分支流中拉回到主流中
+				this.mainFlowIndex = mainFlowIndex;
+
+				// 编译 if 主体
+				this.generateBodyTo(this.elseBody, contentBuilder);
+			}
+		};
+	
+		/**
+		 * 获取 if 关键字上下文
+		 * @returns {Context}
+		 */
+		get ifContext(){
+			return this.context;
+		};
+		
+		/**
+		 * 以常规形式的提取表达式文本内容
+		 * @param {ContentBuilder} contentBuilder - 内容生成器
+		 * @returns {void}
+		 */
+		normalizeTo(contentBuilder){
+			// 追加 if 关键字
+			contentBuilder.appendContext(this.ifContext);
+			
+			// 追加条件
+			this.condition.extractTo(contentBuilder);
+			// 追加主体语句
+			this.ifBody.extractTo(contentBuilder);
+			
+			// 如果没有 else 关键字
+			if(!this.elseContext){
+				return;
+			}
+			
+			// 判断 if 主体表达式是否需要加分号
+			if((this.ifBody.state & STATE_STATEMENT_ENDED) !== STATE_STATEMENT_ENDED){
+				// 追加分号
+				contentBuilder.appendString(";");
+			}
+			
+			// 追加 else 关键字
+			contentBuilder.appendContext(this.elseContext);
+			// 追加空格
+			contentBuilder.appendSpace();
+			
+			// 提取 else 主体内容
+			this.elseBody.extractTo(contentBuilder);
+		}
+	};
+}();

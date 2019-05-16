@@ -184,14 +184,14 @@ this.ClassVariableTags = function(ClassVariableTag){
 	this.ClassVariableTag
 );
 
-this.ClosingArrowFunctionBodyContextTags = function(CommaTag, filter){
+this.ClosingArrowFunctionBodyContextTags = function(CommaTag, LastStatementEndTag, StatementBreakTag, StatementEndTag, ExpressionBreakTag, filter){
 	/**
 	 * 结束箭头函数主体上下文标签列表
 	 */
 	function ClosingArrowFunctionBodyContextTags(){
-		MistakableTags.call(this);
+		ExpressionContextTags.call(this);
 	};
-	ClosingArrowFunctionBodyContextTags = new Rexjs(ClosingArrowFunctionBodyContextTags, MistakableTags);
+	ClosingArrowFunctionBodyContextTags = new Rexjs(ClosingArrowFunctionBodyContextTags, ExpressionContextTags);
 	
 	ClosingArrowFunctionBodyContextTags.props({
 		/**
@@ -199,10 +199,27 @@ this.ClosingArrowFunctionBodyContextTags = function(CommaTag, filter){
 		 * @param {SyntaxTag} tag - 语法标签
 		 */
 		filter: function(tag){
-			// 如果是逗号
-			if(tag instanceof CommaTag){
-				// 设置类型
-				tag.type = new TagType(TYPE_MISTAKABLE);
+			// 如果是表达式上下文标签
+			if(tag.class.expressionContext){
+				switch(true){
+					// 如果是逗号标签
+					case tag instanceof CommaTag:
+					// 如果是末语句结束标签
+					case tag instanceof LastStatementEndTag:
+					// 如果语句换行标签
+					case tag instanceof StatementBreakTag:
+					// 如果是表达式换行标签
+					case tag instanceof ExpressionBreakTag:
+						// 设置类型为可误解的
+						tag.type = new TagType(TYPE_MISTAKABLE);
+						break;
+
+					default:
+						// 设置类型为未捕获的
+						tag.type = new TagType(TYPE_UNEXPECTED);
+						break;
+				}
+
 				return false;
 			}
 
@@ -213,7 +230,11 @@ this.ClosingArrowFunctionBodyContextTags = function(CommaTag, filter){
 	return ClosingArrowFunctionBodyContextTags;
 }(
 	this.CommaTag,
-	MistakableTags.prototype.filter
+	this.LastStatementEndTag,
+	this.StatementBreakTag,
+	this.StatementEndTag,
+	this.ExpressionBreakTag,
+	ExpressionContextTags.prototype.filter
 );
 
 this.ClosingCatchedExceptionTags = function(ClosingCatchedExceptionTag){
@@ -1450,7 +1471,7 @@ this.OpeningArrayContextTags = function(ArraySpreadTag){
 	this.ArraySpreadTag
 );
 
-this.OpeningMultiLineCommentContextTags = function(CommentContentTag, ClosingMultiLineCommentTag){
+this.OpeningMultiLineCommentContextTags = function(CommentContentTag, ClosingBlockCommentTag){
 	/**
 	 * 起始多行注释上下文标签列表
 	 */
@@ -1459,7 +1480,7 @@ this.OpeningMultiLineCommentContextTags = function(CommentContentTag, ClosingMul
 
 		this.register(
 			new CommentContentTag(),
-			new ClosingMultiLineCommentTag()
+			new ClosingBlockCommentTag()
 		);
 	};
 	OpeningMultiLineCommentContextTags = new Rexjs(OpeningMultiLineCommentContextTags, IllegalTags);
@@ -1467,7 +1488,7 @@ this.OpeningMultiLineCommentContextTags = function(CommentContentTag, ClosingMul
 	return OpeningMultiLineCommentContextTags;
 }(
 	this.CommentContentTag,
-	this.ClosingMultiLineCommentTag
+	this.ClosingBlockCommentTag
 );
 
 this.OpeningGroupingContextTags = function(ArgumentIllegibleRestOperatorTag){

@@ -1,0 +1,1 @@
+export { FinallyTag } from "../try-catch/finally.tag";

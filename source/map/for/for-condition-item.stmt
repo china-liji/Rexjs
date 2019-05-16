@@ -1,0 +1,26 @@
+
+import { DefaultExpression } from "../core";
+import { ECMAScriptStatement } from "../ecmascript/ecmascript.stmt";
+
+export let ForConditionItemStatement = function(){
+	/**
+	 * for 循环条件项语句
+	 * @param {Statements} statements - 该语句将要所处的语句块
+	 */
+	return class ForConditionItemStatement extends ECMAScriptStatement {
+		/**
+		 * 语句表达式
+		 * @type {Expression}
+		 */
+		expression = new DefaultExpression();
+
+		/**
+		 * 获取条件起始小括号标签
+		 * @param {ForConditionItemStatement} statement - 条件项语句
+		 * @returns {SyntaxTag}
+		 */
+		static getOpeningTag(statement){
+			return statement.target.target.expression.condition.opening.tag;
+		};
+	};
+}();

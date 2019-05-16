@@ -1,0 +1,46 @@
+import { SingleStatement } from "../base-statement/single.stmt";
+import { ECMAScriptStatement } from "../ecmascript/ecmascript.stmt";
+import { STATE_STATEMENT_ENDABLE } from "../core";
+
+export let DoStatement = function(){
+	/**
+	 * do 语句
+	 * @param {Statements} statements - 该语句将要所处的语句块
+	 */
+	return class DoStatement extends SingleStatement {
+		/**
+		 * 流类型
+		 * @type {Number}
+		 */
+		flow = ECMAScriptStatement.FLOW_CIRCULAR;
+
+		/**
+		 * 请求跳出该语句
+		 * @param {SyntaxParser} parser - 语法解析器
+		 * @param {Context} context - 语法标签上下文
+		 * @returns {SyntaxTag}
+		 */
+		requestOut(parser, context){
+			let { expression } = this;
+			
+			switch(false){
+				// 如果不是 while 关键字
+				case context.content === "while":
+					break;
+				
+				// 如果表达式没有结束
+				case (expression.state & STATE_STATEMENT_ENDABLE) === STATE_STATEMENT_ENDABLE:
+					break;
+
+				default:
+					// 跳出语句并设置 body
+					this.out().body = expression;
+					// 返回 do while 标签
+					return this.bindingOf();
+			}
+
+			// 报错
+			parser.error(context);
+		};
+	};
+}();

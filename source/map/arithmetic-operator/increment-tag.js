@@ -1,1 +1,0 @@
-export { IncrementTag } from "../plus-operator/increment-tag";
