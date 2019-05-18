@@ -1,6 +1,7 @@
 {
 	".txt": "text/plain",
 	".js": "text/javascript",
+	".ts": "text/javascript",
 	".expr": "text/javascript",
 	".stmt": "text/javascript",
 	".stmts": "text/javascript",

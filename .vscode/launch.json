@@ -4,17 +4,17 @@
 		{
 			"type": "node",
 			"request": "launch",
+			"name": "dev",
+			"program": "${workspaceFolder}/node_modules/.bin/webpack-dev-server"
+		},
+		{
+			"type": "node",
+			"request": "launch",
 			"name": "source",
 			"program": "${workspaceRoot}/node/index.js",
 			"args": [
 				"-dev"
 			]
-		},
-		{
-			"type": "node",
-			"request": "launch",
-			"name": "dev",
-			"program": "${workspaceRoot}/node/dev.js"
 		},
 		{
 			"type": "node",

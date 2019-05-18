@@ -392,10 +392,12 @@ this.forEach(
 	null,
 	Object,
 	// global
-	typeof window === "object" ? window :
-	typeof global === "object" ? global :
-	typeof self === "object" ? self :
-	Function("return this;")(),
+	(
+		typeof window === "object" ? window :
+		typeof global === "object" ? global :
+		typeof self === "object" ? self :
+		Function("return this;")()
+	),
 	Object.defineProperty,
 	Object.getPrototypeOf
 );

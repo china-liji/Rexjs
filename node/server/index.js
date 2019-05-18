@@ -1,6 +1,6 @@
 new function(fs, path, contentTypes, success, error){
 
-this.Server = function(Promise, DIR_NAME, EXT_REGEXP, http){
+this.Server = function(Promise, DIR_NAME, EXT_REGEXP, http, url){
 	/**
 	 * 服务器
 	 */
@@ -15,7 +15,11 @@ this.Server = function(Promise, DIR_NAME, EXT_REGEXP, http){
 			staticDirRegExp = new RegExp(`^(?:${staticDirs.join("|")})/`, "ig");
 			
 			server = http.createServer((incomingMessage, serverResponse) => {
-				let url = incomingMessage.url, pathInfo = path.parse(url);
+				let urlInfo = url.parse(incomingMessage.url),
+
+					urlString = urlInfo.pathname,
+				
+					pathInfo = path.parse(urlInfo.pathname);
 
 				// 设置编码
 				serverResponse.setHeader("charset", "utf8");
@@ -23,13 +27,13 @@ this.Server = function(Promise, DIR_NAME, EXT_REGEXP, http){
 				staticDirRegExp.lastIndex = EXT_REGEXP.lastIndex = 0;
 
 				// 如果不是可访问的文件类型
-				if(!staticDirRegExp.test(url) || !EXT_REGEXP.test(pathInfo.ext)){
+				if(!staticDirRegExp.test(urlString) || !EXT_REGEXP.test(pathInfo.ext)){
 					// 报错
-					error(serverResponse);
+					error(serverResponse, `文件类型不匹配：${urlString}`);
 					return;
 				}
 
-				let fullPath = DIR_NAME + url;
+				let fullPath = DIR_NAME + urlString;
 
 				// 判断文件状态
 				fs.stat(
@@ -38,7 +42,7 @@ this.Server = function(Promise, DIR_NAME, EXT_REGEXP, http){
 						// 如果 有错误 或 不是文件
 						if(err || !stats.isFile()){
 							// 报错
-							error(serverResponse);
+							error(serverResponse, "读取的目标不是文件");
 							return;
 						}
 
@@ -46,12 +50,13 @@ this.Server = function(Promise, DIR_NAME, EXT_REGEXP, http){
 							// 直接读取文件并返回
 							success(
 								serverResponse,
-								await this.readFile(fullPath, pathInfo, incomingMessage),
+								await this.readFile(fullPath, pathInfo, urlInfo, incomingMessage),
 								contentTypes[pathInfo.ext]
 							);
 						}
 						catch(e){
-							error(serverResponse);
+							console.error(e.stack);
+							error(serverResponse, e);
 						}
 					}
 				);
@@ -108,7 +113,8 @@ this.Server = function(Promise, DIR_NAME, EXT_REGEXP, http){
 				.join("|")
 		})$`
 	),
-	require("http")
+	require("http"),
+	require("url")
 );
 
 module.exports = this;
@@ -126,10 +132,10 @@ module.exports = this;
 		serverResponse.end();
 	},
 	// error
-	(serverResponse) => {
+	(serverResponse, description) => {
 		serverResponse.setHeader("Content-Type", "text/plain;charset=utf-8;");
 		serverResponse.writeHead(404);
-		serverResponse.write("找不到指定文件！");
+		serverResponse.write(`找不到指定文件：${description}。`);
 		serverResponse.end();
 	}
 );

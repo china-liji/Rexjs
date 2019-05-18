@@ -516,7 +516,7 @@ this.MappingPosition = function(Position){
 	this.Position
 );
 
-this.MappingBuilder = function(URL, MappingPosition, Base64, JSON, appendContext, appendString, complete, merge, newline){
+this.MappingBuilder = function(URL, MappingPosition, Base64, JSON, appendContext, appendString, complete, merge, newline, resolveSourceURL){
 	/**
 	 * 源码映射生成器，用来生成 sourceMap
 	 * @param {File} file - 生成器相关文件
@@ -529,6 +529,14 @@ this.MappingBuilder = function(URL, MappingPosition, Base64, JSON, appendContext
 	MappingBuilder = new Rexjs(MappingBuilder, SourceBuilder);
 	
 	MappingBuilder.static({
+		/**
+		 * 设置源码 URL 的处理器
+		 * @param {Function} func - 需要设置的处理函数，该函数需返回处理后的具体 URL 字符串
+		 * @returns {String}
+		 */
+		setSourceURLResolver(func){
+			resolveSourceURL = func;
+		},
 		/**
 		 * 判断是否支持 sourceMaps
 		 */
@@ -623,7 +631,7 @@ this.MappingBuilder = function(URL, MappingPosition, Base64, JSON, appendContext
 			if(Base64.btoa(
 				JSON.stringify({
 					version: 3,
-					sources: [ url.href ],
+					sources: [ resolveSourceURL(url) ],
 					names: [],
 					mappings: this.mappings
 				}),
@@ -677,7 +685,11 @@ this.MappingBuilder = function(URL, MappingPosition, Base64, JSON, appendContext
 	SourceBuilder.prototype.appendString,
 	SourceBuilder.prototype.complete,
 	SourceBuilder.prototype.merge,
-	SourceBuilder.prototype.newline
+	SourceBuilder.prototype.newline,
+	// resolveSourceURL
+	function(url){
+		return url.href;
+	}
 );
 
 }.call(

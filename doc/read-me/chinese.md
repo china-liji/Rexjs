@@ -27,7 +27,7 @@ git clone https://github.com/china-liji/Rexjs.git
 
 [rex-api.min.js](https://raw.githubusercontent.com/china-liji/Rexjs/master/./dist/rex-api.min.js) - 252KB
 
-[rex-browser-helper.min.js](https://raw.githubusercontent.com/china-liji/Rexjs/master/./dist/rex-browser-helper.min.js) - 18KB
+[rex-browser-helper.min.js](https://raw.githubusercontent.com/china-liji/Rexjs/master/./dist/rex-browser-helper.min.js) - 19KB
 
 -----
 
